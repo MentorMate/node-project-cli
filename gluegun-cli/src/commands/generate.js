@@ -63,11 +63,20 @@ module.exports = {
     ])
 
     userInput.appDir = path.join(pwd, userInput.projectName)
+    userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`
+
     info(userInput)
     filesystem.dir(`${pwd}/${userInput.projectName}`)
     await system.run(
       `cd ${userInput.appDir} && npm init -y --scope ${userInput.projectScope}`
     )
-    await toolbox.jsLinters(userInput)
+
+    const stepsOfExecution = [
+      toolbox.jsLinters(userInput),
+      toolbox.releaseWorkflow(userInput),
+      toolbox.testWorkflow(userInput),
+    ]
+
+    await Promise.all(stepsOfExecution)
   },
 }
