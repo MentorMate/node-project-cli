@@ -1,0 +1,31 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx run lint-staged 
+npx ls-lint
+npm run initsecrets
+pre-commit run
+
+# TODO: Need more info about these: '&& npm run typecheck && npm run check-circular-deps'
+
+# Enforce branch naming conventions
+
+LC_ALL=C
+
+local_branch="$(git rev-parse --abbrev-ref HEAD)"
+
+# THE CURRENT PATTERN WILL MATCH ANY NAME. PLEASE INSERT A REGEX PATTERN ACCORDING TO YOUR PROJECT BRANCH NAMING CONVENTION.
+valid_branch_regex=".*"
+
+message="Please include the ticket number and/or description. Branch name must adhere to this contract: $valid_branch_regex. Your commit will be rejected. You should rename your branch to a valid name and try again. Here are some examples of valid branch names:
+
+INSERT VALID BRANCH NAMES ACCORDING TO YOUR CUSTOM REGEX
+"
+
+if [[ ! $local_branch =~ $valid_branch_regex ]]
+then
+    echo "$message"
+    exit 1
+fi
+
+exit 0

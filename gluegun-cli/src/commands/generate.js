@@ -1,4 +1,4 @@
-const path = require('path')
+'use strict'
 
 module.exports = {
   name: 'generate',
@@ -8,10 +8,14 @@ module.exports = {
       parameters,
       system,
       strings,
-      filesystem,
+      filesystem: { path, dir, write },
       print: { info },
       prompt,
+      meta
     } = toolbox
+
+    const CLI_PATH = path(`${meta.src}`, '..');
+    const ASSETS_PATH = path(CLI_PATH, 'assets');
 
     const pwd = strings.trim(await system.run('pwd'))
     let projectName = parameters.first
@@ -51,23 +55,41 @@ module.exports = {
         message: 'Select the features you want to be prebuilt',
         choices: [
           { message: 'JS Code Linters', value: 'JSLinters' },
-          { message: 'Bash Script Linters', value: 'bashLinter' },
-          { message: 'Pre-commit hooks with `husky`', value: 'preCommitHooks' },
-          { message: 'Commit message linting', value: 'commitLinting' },
-          { message: 'Branch name linting', value: 'branchLinting' },
+          { message: 'Hooks with `husky`', value: 'huskyHooks', choices: [
+            { message: 'Commit message linting', value: 'commitMsgLint' }, 
+            { message: 'Pre-commit hook', value: 'preCommit' },
+            { message: 'Pre-push hook', value: 'prePush' },
+          ]},
           { message: 'GitHub test workflow', value: 'testWorkflow' },
           { message: 'GitHub release workflow', value: 'releaseWorkflow' },
         ],
-        initial: [0, 1, 2, 3, 4, 5, 6],
+        initial: [0, 1, 5, 6],
       },
     ])
 
-    userInput.appDir = path.join(pwd, userInput.projectName)
+    userInput.appDir = path(pwd, userInput.projectName)
+    userInput.assetsPath = ASSETS_PATH;
+    userInput.pkgJsonScripts = [];
     info(userInput)
-    filesystem.dir(`${pwd}/${userInput.projectName}`)
+    dir(`${pwd}/${userInput.projectName}`)
     await system.run(
       `cd ${userInput.appDir} && npm init -y --scope ${userInput.projectScope}`
     )
-    await toolbox.jsLinters(userInput)
+
+    // TODO: Setup package.json scripts according to features
+
+    const stepsOfExecution = [
+      toolbox.jsLinters(userInput),
+    ]
+
+    if (userInput.features.includes('huskyHooks') || userInput.features.includes('commitMsgLint') || userInput.features.includes('preCommit') || userInput.features.includes('prePush')) {
+      stepsOfExecution.push(toolbox.setupHusky(userInput))
+    }
+
+    await Promise.all(stepsOfExecution)
+
+    const packageJson = require(`${userInput.appDir}/package.json`)
+    packageJson.scripts = userInput.pkgJsonScripts.reduce((acc, scr) => ({...acc, ...scr}), packageJson.scripts)
+    write(`${userInput.appDir}/package.json`, packageJson)
   },
 }

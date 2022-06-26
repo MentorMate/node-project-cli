@@ -4,7 +4,7 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  "extends": ['google'],
+  "extends": ['google', "plugin:prettier/recommended"],
   <% if (props.ts) { %>parser: '@typescript-eslint/parser',<% } else { %>parser: null,<% } %>
   parserOptions: {
     ecmaVersion: 'latest',
