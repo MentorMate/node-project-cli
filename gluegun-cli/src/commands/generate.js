@@ -70,6 +70,8 @@ module.exports = {
     userInput.appDir = path(pwd, userInput.projectName)
     userInput.assetsPath = ASSETS_PATH;
     userInput.pkgJsonScripts = [];
+    userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`
+
     info(userInput)
     dir(`${pwd}/${userInput.projectName}`)
     await system.run(
@@ -84,6 +86,10 @@ module.exports = {
 
     if (userInput.features.includes('huskyHooks') || userInput.features.includes('commitMsgLint') || userInput.features.includes('preCommit') || userInput.features.includes('prePush')) {
       stepsOfExecution.push(toolbox.setupHusky(userInput))
+    }
+
+    if (userInput.features.includes('testWorkflow')) {
+      stepsOfExecution.push(toolbox.testWorkflow(userInput))
     }
 
     await Promise.all(stepsOfExecution)
