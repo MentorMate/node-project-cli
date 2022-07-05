@@ -1,0 +1,16 @@
+module.exports = {
+  env: {
+    <% if (props.cjs) { %>commonjs: true,<% } else { %>commonjs: false,<% } %>
+    es2021: true,
+    node: true,
+  },
+  "extends": ['google', "plugin:prettier/recommended"],
+  <% if (props.ts) { %>parser: '@typescript-eslint/parser',<% } else { %>parser: null,<% } %>
+  parserOptions: {
+    ecmaVersion: 'latest',
+    <% if (!props.cjs) { %>"sourceType": 'module',<% } else { %>"sourceType": 'script',<% } %>
+  },
+  <% if (props.ts) { %>"plugins": ['@typescript-eslint'],<% } else { %>"plugins": [],<% } %>
+  "rules": {},
+};
+
