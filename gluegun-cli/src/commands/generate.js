@@ -11,11 +11,11 @@ module.exports = {
       filesystem: { path, dir, write },
       print: { info },
       prompt,
-      meta
+      meta,
     } = toolbox
 
-    const CLI_PATH = path(`${meta.src}`, '..');
-    const ASSETS_PATH = path(CLI_PATH, 'assets');
+    const CLI_PATH = path(`${meta.src}`, '..')
+    const ASSETS_PATH = path(CLI_PATH, 'assets')
 
     const pwd = strings.trim(await system.run('pwd'))
     let projectName = parameters.first
@@ -25,11 +25,15 @@ module.exports = {
         name: 'projectName',
         message: 'Specify a project name:',
         initial: projectName,
+        format: (v) => v.replace(/\s/g, '-'),
+        result: (v) => v.replace(/\s/g, '-'),
       },
       {
         type: 'input',
         name: 'projectScope',
         message: 'Specify project scope [blank if not scoped]:',
+        format: (v) => v.replace(/\s/g, '-'),
+        result: (v) => v.replace(/\s/g, '-'),
       },
       {
         type: 'select',
@@ -55,11 +59,15 @@ module.exports = {
         message: 'Select the features you want to be prebuilt',
         choices: [
           { message: 'JS Code Linters', value: 'JSLinters' },
-          { message: 'Hooks with `husky`', value: 'huskyHooks', choices: [
-            { message: 'Commit message linting', value: 'commitMsgLint' }, 
-            { message: 'Pre-commit hook', value: 'preCommit' },
-            { message: 'Pre-push hook', value: 'prePush' },
-          ]},
+          {
+            message: 'Hooks with `husky`',
+            value: 'huskyHooks',
+            choices: [
+              { message: 'Commit message linting', value: 'commitMsgLint' },
+              { message: 'Pre-commit hook', value: 'preCommit' },
+              { message: 'Pre-push hook', value: 'prePush' },
+            ],
+          },
           { message: 'GitHub test workflow', value: 'testWorkflow' },
           { message: 'GitHub release workflow', value: 'releaseWorkflow' },
         ],
@@ -68,8 +76,8 @@ module.exports = {
     ])
 
     userInput.appDir = path(pwd, userInput.projectName)
-    userInput.assetsPath = ASSETS_PATH;
-    userInput.pkgJsonScripts = [];
+    userInput.assetsPath = ASSETS_PATH
+    userInput.pkgJsonScripts = []
     userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`
 
     info(userInput)
@@ -80,11 +88,14 @@ module.exports = {
 
     // TODO: Setup package.json scripts according to features
 
-    const stepsOfExecution = [
-      toolbox.jsLinters(userInput),
-    ]
+    const stepsOfExecution = [toolbox.jsLinters(userInput)]
 
-    if (userInput.features.includes('huskyHooks') || userInput.features.includes('commitMsgLint') || userInput.features.includes('preCommit') || userInput.features.includes('prePush')) {
+    if (
+      userInput.features.includes('huskyHooks') ||
+      userInput.features.includes('commitMsgLint') ||
+      userInput.features.includes('preCommit') ||
+      userInput.features.includes('prePush')
+    ) {
       stepsOfExecution.push(toolbox.setupHusky(userInput))
     }
 
@@ -95,7 +106,10 @@ module.exports = {
     await Promise.all(stepsOfExecution)
 
     const packageJson = require(`${userInput.appDir}/package.json`)
-    packageJson.scripts = userInput.pkgJsonScripts.reduce((acc, scr) => ({...acc, ...scr}), packageJson.scripts)
+    packageJson.scripts = userInput.pkgJsonScripts.reduce(
+      (acc, scr) => ({ ...acc, ...scr }),
+      packageJson.scripts
+    )
     write(`${userInput.appDir}/package.json`, packageJson)
   },
 }

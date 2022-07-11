@@ -1,11 +1,17 @@
 'use strict'
 
 module.exports = (toolbox) => {
-  toolbox.jsLinters = async ({ appDir, projectLanguage, moduleType, pkgJsonScripts, assetsPath }) => {
+  toolbox.jsLinters = async ({
+    appDir,
+    projectLanguage,
+    moduleType,
+    pkgJsonScripts,
+    assetsPath,
+  }) => {
     const {
       system,
       template: { generate },
-      filesystem: { copyAsync }
+      filesystem: { copyAsync },
     } = toolbox
 
     await Promise.all([
@@ -28,13 +34,14 @@ module.exports = (toolbox) => {
       copyAsync(`${assetsPath}/.prettierignore`, `${appDir}/.prettierignore`),
     ])
 
-    const lintScript = projectLanguage == 'TS' ? 'eslint . --ext .js .ts' : 'eslint . --ext .js'
+    const lintScript =
+      projectLanguage == 'TS' ? 'eslint . --ext .js .ts' : 'eslint . --ext .js'
 
     pkgJsonScripts.push({
-      ['prettier:format']: 'prettier --write', 
-      ['prettier:check-format']: 'prettier --list-different', 
-      ['lint']: lintScript, 
-      ['lint:fix']: 'npm run lint --fix' 
+      ['prettier:format']: 'prettier --write',
+      ['prettier:check-format']: 'prettier --list-different',
+      ['lint']: lintScript,
+      ['lint:fix']: 'npm run lint --fix',
     })
   }
 }

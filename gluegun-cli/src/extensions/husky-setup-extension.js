@@ -1,9 +1,14 @@
 'use strict'
 
-const { filesystem } = require("gluegun")
+const { filesystem } = require('gluegun')
 
 module.exports = (toolbox) => {
-  toolbox.setupHusky = async ({ appDir, assetsPath, features, pkgJsonScripts }) => {
+  toolbox.setupHusky = async ({
+    appDir,
+    assetsPath,
+    features,
+    pkgJsonScripts,
+  }) => {
     const {
       system: { run },
       filesystem: { copy, dir, copyAsync },
@@ -14,28 +19,29 @@ module.exports = (toolbox) => {
 
     dir(appHuskyPath)
     pkgJsonScripts.push({
-      ['prepare']: 'husky install', 
+      ['prepare']: 'husky install',
     })
 
     await Promise.all([
-      run(
-        `cd ${appDir} && npm install --save-dev husky`
-      ),
-      copyAsync(`${assetHuskyPath}/.gitignore`, `${appHuskyPath}/.gitignore`)
+      run(`cd ${appDir} && npm install --save-dev husky`),
+      copyAsync(`${assetHuskyPath}/.gitignore`, `${appHuskyPath}/.gitignore`),
     ])
 
     if (features.includes('commitMsgLint')) {
       pkgJsonScripts.push({
-        ['validate:commit-message']: 'commitlint --edit $1', 
+        ['validate:commit-message']: 'commitlint --edit $1',
       })
 
       await Promise.all([
         run(
           `cd ${appDir} && npm install --save-dev @commitlint/cli @commitlint/config-conventional commitizen cz-conventional-changelog`
         ),
-        copyAsync(`${assetsPath}/.commitlintrc.js`, `${appDir}/.commitlintrc.js`),
+        copyAsync(
+          `${assetsPath}/.commitlintrc.js`,
+          `${appDir}/.commitlintrc.js`
+        ),
         copyAsync(`${assetsPath}/.czrc`, `${appDir}/.czrc`),
-        copyAsync(`${assetHuskyPath}/commit-msg`, `${appHuskyPath}/commit-msg`)
+        copyAsync(`${assetHuskyPath}/commit-msg`, `${appHuskyPath}/commit-msg`),
       ])
     }
 
@@ -43,7 +49,7 @@ module.exports = (toolbox) => {
       dir(`${appDir}/scripts`)
 
       pkgJsonScripts.push({
-        ['initsecrets']: 'scripts/detect-secrets.js', 
+        ['initsecrets']: 'scripts/detect-secrets.js',
       })
 
       await Promise.all([
@@ -53,8 +59,14 @@ module.exports = (toolbox) => {
         copyAsync(`${assetHuskyPath}/pre-commit`, `${appHuskyPath}/pre-commit`),
         copyAsync(`${assetsPath}/.lintstagedrc`, `${appDir}/.lintstagedrc`),
         copyAsync(`${assetsPath}/.ls-lint.yml`, `${appDir}/.ls-lint.yml`),
-        copyAsync(`${assetsPath}/.pre-commit-config.yaml`, `${appDir}/.pre-commit-config.yaml`),
-        copyAsync(`${assetsPath}/detect-secrets.sh`, `${appDir}/scripts/detect-secrets.sh`)
+        copyAsync(
+          `${assetsPath}/.pre-commit-config.yaml`,
+          `${appDir}/.pre-commit-config.yaml`
+        ),
+        copyAsync(
+          `${assetsPath}/detect-secrets.sh`,
+          `${appDir}/scripts/detect-secrets.sh`
+        ),
       ])
     }
 
@@ -63,4 +75,3 @@ module.exports = (toolbox) => {
     }
   }
 }
-
