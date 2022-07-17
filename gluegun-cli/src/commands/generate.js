@@ -9,7 +9,7 @@ module.exports = {
       system,
       strings,
       filesystem: { path, dir, write },
-      print: { info },
+      print: { debug, success, error, muted },
       prompt,
       meta,
     } = toolbox
@@ -78,17 +78,19 @@ module.exports = {
     userInput.appDir = path(pwd, userInput.projectName)
     userInput.assetsPath = ASSETS_PATH
     userInput.pkgJsonScripts = []
+    userInput.pkgJsonInstalls = []
     userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`
 
-    info(userInput)
+    debug(userInput, 'Selected User Input:')
     dir(`${pwd}/${userInput.projectName}`)
     await system.run(
       `cd ${userInput.appDir} && npm init -y --scope ${userInput.projectScope}`
     )
 
-    // TODO: Setup package.json scripts according to features
-
-    const stepsOfExecution = [toolbox.jsLinters(userInput)]
+    const stepsOfExecution = [
+      toolbox.jsLinters(userInput),
+      toolbox.jestConfig(userInput),
+    ]
 
     if (
       userInput.features.includes('huskyHooks') ||
@@ -103,12 +105,42 @@ module.exports = {
       stepsOfExecution.push(toolbox.testWorkflow(userInput))
     }
 
-    await Promise.all(stepsOfExecution)
+    if (userInput.features.includes('releaseWorkflow')) {
+      stepsOfExecution.push(toolbox.releaseWorkflow(userInput))
+    }
+
+    const asyncOperations = []
+
+    stepsOfExecution.forEach((step) => {
+      step.syncOperations && step.syncOperations()
+      step.asyncOperations && asyncOperations.push(step.asyncOperations())
+    })
+
+    asyncOperations.push(
+      (async () => {
+        muted('Installing dev dependencies...')
+        try {
+          await system.run(
+            `cd ${
+              userInput.appDir
+            } && npm install --save-dev ${userInput.pkgJsonInstalls.join(' ')}`
+          )
+        } catch (err) {
+          error(
+            `An error has occurred while installing dev dependencies: ${err}`
+          )
+        }
+
+        success('All dev dependencies have been installed successfully')
+      })()
+    )
+
+    await Promise.all(asyncOperations)
 
     const packageJson = require(`${userInput.appDir}/package.json`)
     packageJson.scripts = userInput.pkgJsonScripts.reduce(
       (acc, scr) => ({ ...acc, ...scr }),
-      packageJson.scripts
+      {}
     )
     write(`${userInput.appDir}/package.json`, packageJson)
   },

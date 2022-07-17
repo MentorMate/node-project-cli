@@ -1,24 +1,31 @@
 const YAML = require('yaml')
-const jetpack = require('fs-jetpack')
 
 module.exports = (toolbox) => {
-  toolbox.testWorkflow = async ({ appDir, workflowsFolder }) => {
+  toolbox.testWorkflow = ({ appDir, workflowsFolder }) => {
     const {
-      parameters,
-      system,
-      strings,
-      filesystem,
-      print: { info },
-      prompt,
-      template: { generate },
+      filesystem: { dir, writeAsync },
+      print: { error, success, muted },
     } = toolbox
 
-    const content = YAML.stringify({
-      name: 'Test Workflow',
-    })
+    async function asyncOperations() {
+      muted('Creating a Test workflow...')
+      try {
+        const content = YAML.stringify({
+          name: 'Test Workflow',
+        })
+        dir(workflowsFolder)
 
-    jetpack.dir(workflowsFolder)
+        await writeAsync(
+          `${appDir}/.github/workflows/test-workflow.yaml`,
+          content
+        )
+      } catch (err) {
+        error(`An error has occurred while creating a test workflow: ${err}`)
+      }
 
-    jetpack.write(`${appDir}/.github/workflows/test-workflow.yaml`, content)
+      success('Test workflow created successfully')
+    }
+
+    return { asyncOperations }
   }
 }

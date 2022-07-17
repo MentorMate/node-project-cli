@@ -1,24 +1,31 @@
 const YAML = require('yaml')
-const jetpack = require('fs-jetpack')
 
 module.exports = (toolbox) => {
-  toolbox.releaseWorkflow = async ({ appDir, workflowsFolder }) => {
+  toolbox.releaseWorkflow = ({ appDir, workflowsFolder }) => {
     const {
-      parameters,
-      system,
-      strings,
-      filesystem,
-      print: { info },
-      prompt,
-      template: { generate },
+      filesystem: { dir, writeAsync },
+      print: { error, success, muted },
     } = toolbox
 
-    const content = YAML.stringify({
-      name: 'Release Workflow',
-    })
+    async function asyncOperations() {
+      muted('Creating a Release workflow...')
+      try {
+        const content = YAML.stringify({
+          name: 'Release Workflow',
+        })
+        dir(workflowsFolder)
 
-    jetpack.dir(workflowsFolder)
+        await writeAsync(
+          `${appDir}/.github/workflows/release-workflow.yaml`,
+          content
+        )
+      } catch (err) {
+        error(`An error has occurred while creating a release workflow: ${err}`)
+      }
 
-    jetpack.write(`${appDir}/.github/workflows/release-workflow.yaml`, content)
+      success('Release workflow created successfully')
+    }
+
+    return { asyncOperations }
   }
 }
