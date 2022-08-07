@@ -37,15 +37,6 @@ module.exports = {
       },
       {
         type: 'select',
-        name: 'projectLanguage',
-        message: 'TypeScript or Vanilla JS',
-        choices: [
-          { message: 'TypeScript', value: 'TS' },
-          { message: 'Vanilla JS', value: 'JS' },
-        ],
-      },
-      {
-        type: 'select',
         name: 'moduleType',
         message: 'CommonJS or ES Modules',
         choices: [

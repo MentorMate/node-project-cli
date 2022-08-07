@@ -5,12 +5,12 @@ module.exports = {
     node: true,
   },
   "extends": ['google', "plugin:prettier/recommended"],
-  <% if (props.ts) { %>parser: '@typescript-eslint/parser',<% } else { %>parser: null,<% } %>
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
     <% if (!props.cjs) { %>"sourceType": 'module',<% } else { %>"sourceType": 'script',<% } %>
   },
-  <% if (props.ts) { %>"plugins": ['@typescript-eslint'],<% } else { %>"plugins": [],<% } %>
+  "plugins": ['@typescript-eslint'],
   "rules": {},
 };
 
