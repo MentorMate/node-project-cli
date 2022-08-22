@@ -18,6 +18,7 @@ module.exports = {
     const ASSETS_PATH = path(CLI_PATH, 'assets')
 
     const pwd = strings.trim(await system.run('pwd'))
+    let pickedFramework
     let projectName = parameters.first
     let userInput = await prompt.ask([
       {
@@ -36,36 +37,73 @@ module.exports = {
         result: (v) => v.replace(/\s/g, '-'),
       },
       {
+        // The code for installing the framework and copying the folder structure is
+        // not yet implemented. WIP
         type: 'select',
-        name: 'moduleType',
-        message: 'CommonJS or ES Modules',
+        name: 'framework',
+        message: 'Pick a framework for your project',
         choices: [
-          { message: 'CommonJS', value: 'CJS' },
-          { message: 'ES Modules', value: 'ESM' },
-        ],
-      },
-      {
-        type: 'multiselect',
-        name: 'features',
-        message: 'Select the features you want to be prebuilt',
-        choices: [
-          { message: 'JS Code Linters', value: 'JSLinters' },
+          { message: 'Express', value: 'express' },
+          { message: 'Fastify', value: 'fastify' },
           {
-            message: 'Hooks with `husky`',
-            value: 'huskyHooks',
-            choices: [
-              { message: 'Commit message linting', value: 'commitMsgLint' },
-              { message: 'Pre-commit hook', value: 'preCommit' },
-              { message: 'Pre-push hook', value: 'prePush' },
-            ],
+            message: 'Nest with Express (TS only)',
+            value: 'nest-express',
           },
-          { message: 'GitHub test workflow', value: 'testWorkflow' },
-          { message: 'GitHub release workflow', value: 'releaseWorkflow' },
+          { message: 'Nest with Fastify (TS only)', value: 'nest-fastify' },
         ],
-        initial: [0, 1, 5, 6],
+        result(v) {
+          pickedFramework = v
+          return v
+        },
       },
     ])
+    userInput = Object.assign(
+      userInput,
+      await prompt.ask([
+        {
+          type: 'select',
+          name: 'projectLanguage',
+          message:
+            'TypeScript should be selected unless there is a sufficient reason not to use it in your project.\n  Please contact the responsible architect on the project for approving Vanilla JS usage',
+          choices: [
+            { message: 'TypeScript', value: 'TS' },
+            { message: 'Vanilla JS', value: 'JS' },
+          ],
+          skip: pickedFramework.includes('nest'),
+        },
+        {
+          type: 'select',
+          name: 'moduleType',
+          message: 'CommonJS or ES Modules',
+          choices: [
+            { message: 'CommonJS', value: 'CJS' },
+            { message: 'ES Modules', value: 'ESM' },
+          ],
+        },
+        {
+          type: 'multiselect',
+          name: 'features',
+          message: 'Select the features you want to be prebuilt',
+          choices: [
+            { message: 'JS Code Linters', value: 'JSLinters' },
+            {
+              message: 'Hooks with `husky`',
+              value: 'huskyHooks',
+              choices: [
+                { message: 'Commit message linting', value: 'commitMsgLint' },
+                { message: 'Pre-commit hook', value: 'preCommit' },
+                { message: 'Pre-push hook', value: 'prePush' },
+              ],
+            },
+            { message: 'GitHub test workflow', value: 'testWorkflow' },
+            { message: 'GitHub release workflow', value: 'releaseWorkflow' },
+          ],
+          initial: [0, 1, 5, 6],
+        },
+      ])
+    )
 
+    userInput.projectLanguage = userInput.projectLanguage || 'TS'
     userInput.appDir = path(pwd, userInput.projectName)
     userInput.assetsPath = ASSETS_PATH
     userInput.pkgJsonScripts = []
@@ -73,6 +111,7 @@ module.exports = {
     userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`
 
     debug(userInput, 'Selected User Input:')
+    debug(pickedFramework, 'pickedFramework')
     dir(`${pwd}/${userInput.projectName}`)
     await system.run(
       `cd ${userInput.appDir} && npm init -y --scope ${userInput.projectScope}`

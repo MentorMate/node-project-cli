@@ -3,6 +3,7 @@
 module.exports = (toolbox) => {
   toolbox.jsLinters = ({
     appDir,
+    projectLanguage,
     moduleType,
     pkgJsonScripts,
     pkgJsonInstalls,
@@ -22,6 +23,7 @@ module.exports = (toolbox) => {
             template: 'eslintrc-model.js.ejs',
             target: `${appDir}/.eslintrc.js`,
             props: {
+              ts: projectLanguage == 'TS',
               cjs: moduleType == 'CJS',
             },
           }),
@@ -45,10 +47,15 @@ module.exports = (toolbox) => {
     }
 
     function syncOperations() {
+      const lintScript =
+        projectLanguage == 'TS'
+          ? 'eslint . --ext .js .ts'
+          : 'eslint . --ext .js'
+
       pkgJsonScripts.push({
         ['prettier:format']: 'prettier --write',
         ['prettier:check-format']: 'prettier --list-different',
-        ['lint']: 'eslint . --ext .js .ts',
+        ['lint']: lintScript,
         ['lint:fix']: 'npm run lint --fix',
       })
       pkgJsonInstalls.push(
