@@ -1,9 +1,12 @@
 // Sync object
 /** @type {import('@jest/types').Config.InitialOptions} */
 const config = {
+  moduleFileExtensions: ['js', 'json', 'ts'],
+  rootDir: 'src',
   collectCoverage: true,
   collectCoverageFrom: ['**/*.{js,jsx}', '!**/node_modules/**', '!**/coverage/**', '!*.config.js'],
   coverageDirectory: 'coverage',
+  testEnvironment: 'node',
   coverageThreshold: {
     global: {
       branches: 85,

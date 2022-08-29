@@ -6,5 +6,5 @@ import { SamplesService } from './samples.service'
 const samplesService = SamplesService({Sample});
 
 export const SamplesController = {
-    // ...
+  // ...
 }

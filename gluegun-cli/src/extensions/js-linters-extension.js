@@ -23,8 +23,8 @@ module.exports = (toolbox) => {
             template: 'eslintrc-model.js.ejs',
             target: `${appDir}/.eslintrc.js`,
             props: {
-              ts: projectLanguage == 'TS',
-              cjs: moduleType == 'CJS',
+              ts: projectLanguage === 'TS',
+              cjs: moduleType === 'CJS',
             },
           }),
           generate({
@@ -48,7 +48,7 @@ module.exports = (toolbox) => {
 
     function syncOperations() {
       const lintScript =
-        projectLanguage == 'TS'
+        projectLanguage === 'TS'
           ? 'eslint . --ext .js .ts'
           : 'eslint . --ext .js'
 
@@ -59,8 +59,13 @@ module.exports = (toolbox) => {
         ['lint:fix']: 'npm run lint --fix',
       })
       pkgJsonInstalls.push(
-        'prettier eslint eslint-config-prettier eslint-config-google @typescript-eslint/eslint-plugin @typescript-eslint/parser'
+        'prettier eslint eslint-config-prettier eslint-config-google'
       )
+      if (projectLanguage === 'TS') {
+        pkgJsonInstalls.push(
+          '@typescript-eslint/eslint-plugin @typescript-eslint/parser'
+        )
+      }
     }
 
     return {

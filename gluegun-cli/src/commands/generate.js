@@ -8,7 +8,7 @@ module.exports = {
       parameters,
       system,
       strings,
-      filesystem: { path, dir, write },
+      filesystem: { path, dir, write, copyAsync },
       print: { debug, success, error, muted },
       prompt,
       meta,
@@ -46,10 +46,9 @@ module.exports = {
           { message: 'Express', value: 'express' },
           { message: 'Fastify', value: 'fastify' },
           {
-            message: 'Nest with Express (TS only)',
-            value: 'nest-express',
+            message: 'NestJS (TS only) with pre-installed linters',
+            value: 'nest',
           },
-          { message: 'Nest with Fastify (TS only)', value: 'nest-fastify' },
         ],
         result(v) {
           pickedFramework = v
@@ -79,6 +78,7 @@ module.exports = {
             { message: 'CommonJS', value: 'CJS' },
             { message: 'ES Modules', value: 'ESM' },
           ],
+          skip: pickedFramework.includes('nest'),
         },
         {
           type: 'multiselect',
@@ -95,15 +95,18 @@ module.exports = {
                 { message: 'Pre-push hook', value: 'prePush' },
               ],
             },
-            { message: 'GitHub test workflow', value: 'testWorkflow' },
-            { message: 'GitHub release workflow', value: 'releaseWorkflow' },
+            {
+              message: 'Dockerizing GitHub workflow step',
+              value: 'dockerizeWorkflow',
+            },
           ],
-          initial: [0, 1, 5, 6],
+          initial: [0, 1, 5],
         },
       ])
     )
 
     userInput.projectLanguage = userInput.projectLanguage || 'TS'
+    userInput.moduleType = userInput.moduleType || 'CJS'
     userInput.appDir = path(pwd, userInput.projectName)
     userInput.assetsPath = ASSETS_PATH
     userInput.pkgJsonScripts = []
@@ -111,16 +114,21 @@ module.exports = {
     userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`
 
     debug(userInput, 'Selected User Input:')
-    debug(pickedFramework, 'pickedFramework')
-    dir(`${pwd}/${userInput.projectName}`)
-    await system.run(
-      `cd ${userInput.appDir} && npm init -y --scope ${userInput.projectScope}`
-    )
+    const stepsOfExecution = []
+    const asyncOperations = []
 
-    const stepsOfExecution = [
-      toolbox.jsLinters(userInput),
-      toolbox.jestConfig(userInput),
-    ]
+    if (pickedFramework === 'nest') {
+      await toolbox.installNest(userInput)
+    } else if (pickedFramework) {
+      await toolbox.installFramework(userInput)
+      stepsOfExecution.push(toolbox.jsLinters(userInput))
+    }
+
+    stepsOfExecution.push(toolbox.jestConfig(userInput))
+
+    if (userInput.projectLanguage === 'TS') {
+      stepsOfExecution.push(toolbox.setupTs(userInput))
+    }
 
     if (
       userInput.features.includes('huskyHooks') ||
@@ -131,15 +139,11 @@ module.exports = {
       stepsOfExecution.push(toolbox.setupHusky(userInput))
     }
 
-    if (userInput.features.includes('testWorkflow')) {
-      stepsOfExecution.push(toolbox.testWorkflow(userInput))
+    if (userInput.features.includes('dockerizeWorkflow')) {
+      stepsOfExecution.push(toolbox.dockerizeWorkflow(userInput))
     }
 
-    if (userInput.features.includes('releaseWorkflow')) {
-      stepsOfExecution.push(toolbox.releaseWorkflow(userInput))
-    }
-
-    const asyncOperations = []
+    dir(userInput.workflowsFolder)
 
     stepsOfExecution.forEach((step) => {
       step.syncOperations && step.syncOperations()
@@ -162,16 +166,37 @@ module.exports = {
         }
 
         success('All dev dependencies have been installed successfully')
+      })(),
+      (async () => {
+        await copyAsync(
+          `${ASSETS_PATH}/.gitignore`,
+          `${userInput.appDir}/.gitignore`
+        )
+        if (userInput.projectLanguage == 'TS') {
+          await system.run(`echo "dist/\n" >> ${userInput.appDir}/.gitignore`)
+        }
       })()
     )
 
     await Promise.all(asyncOperations)
 
     const packageJson = require(`${userInput.appDir}/package.json`)
-    packageJson.scripts = userInput.pkgJsonScripts.reduce(
+    const newScripts = userInput.pkgJsonScripts.reduce(
       (acc, scr) => ({ ...acc, ...scr }),
       {}
     )
+    if (pickedFramework === 'nest') {
+      Object.assign(newScripts, packageJson.scripts)
+      packageJson.jest.coverageThreshold = {
+        global: {
+          branches: 85,
+          functions: 85,
+          lines: 85,
+          statements: 85,
+        },
+      }
+    }
+    packageJson.scripts = newScripts
     write(`${userInput.appDir}/package.json`, packageJson)
   },
 }

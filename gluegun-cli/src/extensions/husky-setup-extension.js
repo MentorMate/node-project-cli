@@ -3,6 +3,7 @@
 module.exports = (toolbox) => {
   toolbox.setupHusky = ({
     appDir,
+    projectLanguage,
     assetsPath,
     features,
     pkgJsonScripts,
@@ -75,8 +76,12 @@ module.exports = (toolbox) => {
     }
 
     function syncOperations() {
+      const prepareScript =
+        projectLanguage === 'TS'
+          ? 'husky install && npm run build'
+          : 'husky install'
       pkgJsonScripts.push({
-        ['prepare']: 'husky install',
+        ['prepare']: prepareScript,
       })
       pkgJsonInstalls.push('husky')
 

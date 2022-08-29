@@ -1,10 +1,11 @@
-# Setup this check to be required in your branch protection rules
 name: 'coverage'
+
 on:
   pull_request:
     branches:
       - master
       - main
+
 jobs:
   coverage:
     permissions:
@@ -13,6 +14,9 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: ArtiomTr/jest-coverage-report-action@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get test coverage
+        uses: ArtiomTr/jest-coverage-report-action@v2
+
       

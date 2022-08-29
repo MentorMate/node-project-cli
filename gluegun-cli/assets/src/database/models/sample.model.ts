@@ -3,5 +3,5 @@
 import { SampleModel } from "../interfaces";
 
 export const Sample: SampleModel = {
-    // The Sample model for your database
+  // The Sample model for your database
 }

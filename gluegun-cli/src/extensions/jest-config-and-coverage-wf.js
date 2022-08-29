@@ -3,10 +3,12 @@
 module.exports = (toolbox) => {
   toolbox.jestConfig = ({
     appDir,
+    projectLanguage,
     workflowsFolder,
     pkgJsonScripts,
     pkgJsonInstalls,
     assetsPath,
+    framework,
   }) => {
     const {
       print: { error, success, muted },
@@ -16,15 +18,17 @@ module.exports = (toolbox) => {
     async function asyncOperations() {
       muted('Configuring Jest...')
       try {
-        dir(workflowsFolder)
-
-        await Promise.all([
-          copyAsync(
-            `${assetsPath}/.github/workflows/coverage.yaml`,
-            `${workflowsFolder}/coverage.yaml`
-          ),
-          copyAsync(`${assetsPath}/jest.config.js`, `${appDir}/jest.config.js`),
-        ])
+        await copyAsync(
+          `${assetsPath}/.github/workflows/coverage.yaml`,
+          `${workflowsFolder}/coverage.yaml`
+        )
+        if (framework !== 'nest') {
+          const jestConfigFile =
+            projectLanguage === 'TS'
+              ? `${assetsPath}/jest.config.ts.js`
+              : `${assetsPath}/jest.config.vanilla.js`
+          await copyAsync(jestConfigFile, `${appDir}/jest.config.js`)
+        }
       } catch (err) {
         error(
           `An error has occurred while copying jest configuration and workflow: ${err}`
@@ -39,6 +43,9 @@ module.exports = (toolbox) => {
         ['test']: 'jest',
       })
       pkgJsonInstalls.push('jest')
+      if (projectLanguage === 'TS') {
+        pkgJsonInstalls.push('ts-jest @types/jest')
+      }
     }
 
     return {

@@ -4,5 +4,5 @@ import { SampleModel } from '../../../database/interfaces'
 import { SampleService as SampleServiceType, SampleObject } from '../interfaces'
 
 export function SamplesService({ Sample }: { Sample: SampleModel }) {
-    // ...
+  // ...
 }
