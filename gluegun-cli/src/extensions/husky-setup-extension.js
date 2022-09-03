@@ -23,7 +23,7 @@ module.exports = (toolbox) => {
         dir(appHuskyPath)
 
         await copyAsync(
-          `${assetHuskyPath}/.gitignore`,
+          `${assetHuskyPath}/.project-gitignr`,
           `${appHuskyPath}/.gitignore`
         )
 

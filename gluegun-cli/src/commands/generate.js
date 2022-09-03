@@ -9,7 +9,7 @@ module.exports = {
       system,
       strings,
       filesystem: { path, dir, write, copyAsync },
-      print: { debug, success, error, muted },
+      print: { success, error, muted },
       prompt,
       meta,
     } = toolbox
@@ -113,7 +113,6 @@ module.exports = {
     userInput.pkgJsonInstalls = []
     userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`
 
-    debug(userInput, 'Selected User Input:')
     const stepsOfExecution = []
     const asyncOperations = []
 
@@ -169,7 +168,7 @@ module.exports = {
       })(),
       (async () => {
         await copyAsync(
-          `${ASSETS_PATH}/.gitignore`,
+          `${ASSETS_PATH}/.project-gitignr`,
           `${userInput.appDir}/.gitignore`
         )
         if (userInput.projectLanguage == 'TS') {

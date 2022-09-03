@@ -21,7 +21,7 @@ module.exports = (toolbox) => {
       muted('Creating a Dockerizing workflow step...')
       try {
         await Promise.all([
-          copyAsync(`${assetsPath}/.npmignore`, `${appDir}/.npmignore`),
+          copyAsync(`${assetsPath}/.project-npmignr`, `${appDir}/.npmignore`),
           copyAsync(`${assetsPath}/scripts/`, `${appDir}/scripts/`),
           copyAsync(`${assetsPath}/Dockerfile`, `${appDir}/Dockerfile`),
           copyAsync(
