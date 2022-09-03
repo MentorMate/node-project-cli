@@ -1,4 +1,4 @@
-// Here there should be the service for the sample module
+// Here there should be the service for the samples module
 
 import { SampleModel } from '../../../database/interfaces'
 import { SampleService as SampleServiceType, SampleObject } from '../interfaces'
