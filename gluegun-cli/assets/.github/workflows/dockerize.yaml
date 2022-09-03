@@ -1,0 +1,24 @@
+name: 'dockerize'
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Dockerize
+        run: |
+          bash ./scripts/dockerize.sh custom-app-name
+        # This will create a docker image for your application. 
+        # Continue this step by pushing this image to a preferred
+        # vendor e.g. DockerHub or AWS ECR. If you don't want a
+        # Docker image you can use the following step to have an
+        # artefact ready for publishing:
+      # - name: Build artefact
+      #   run: |
+      #     bash ./scripts/build_package.sh
+        # Continue this step by publishing the artefact located
+        # at ./target/ or just use it in your next jobs/workflows
+      

@@ -1,66 +1,112 @@
 'use strict'
 
-const { filesystem } = require("gluegun")
-
 module.exports = (toolbox) => {
-  toolbox.setupHusky = async ({ appDir, assetsPath, features, pkgJsonScripts }) => {
+  toolbox.setupHusky = ({
+    appDir,
+    projectLanguage,
+    assetsPath,
+    features,
+    pkgJsonScripts,
+    pkgJsonInstalls,
+  }) => {
     const {
-      system: { run },
-      filesystem: { copy, dir, copyAsync },
+      filesystem: { dir, copyAsync },
+      print: { error, success, muted },
     } = toolbox
 
     const appHuskyPath = `${appDir}/.husky`
     const assetHuskyPath = `${assetsPath}/.husky`
 
-    dir(appHuskyPath)
-    pkgJsonScripts.push({
-      ['prepare']: 'husky install', 
-    })
+    async function asyncOperations() {
+      muted('Creating Husky hooks...')
+      try {
+        dir(appHuskyPath)
 
-    await Promise.all([
-      run(
-        `cd ${appDir} && npm install --save-dev husky`
-      ),
-      copyAsync(`${assetHuskyPath}/.gitignore`, `${appHuskyPath}/.gitignore`)
-    ])
+        await copyAsync(
+          `${assetHuskyPath}/.gitignore`,
+          `${appHuskyPath}/.gitignore`
+        )
 
-    if (features.includes('commitMsgLint')) {
-      pkgJsonScripts.push({
-        ['validate:commit-message']: 'commitlint --edit $1', 
-      })
+        if (features.includes('commitMsgLint')) {
+          await Promise.all([
+            copyAsync(
+              `${assetsPath}/.commitlintrc.js`,
+              `${appDir}/.commitlintrc.js`
+            ),
+            copyAsync(`${assetsPath}/.czrc`, `${appDir}/.czrc`),
+            copyAsync(
+              `${assetHuskyPath}/commit-msg`,
+              `${appHuskyPath}/commit-msg`
+            ),
+          ])
+        }
 
-      await Promise.all([
-        run(
-          `cd ${appDir} && npm install --save-dev @commitlint/cli @commitlint/config-conventional commitizen cz-conventional-changelog`
-        ),
-        copyAsync(`${assetsPath}/.commitlintrc.js`, `${appDir}/.commitlintrc.js`),
-        copyAsync(`${assetsPath}/.czrc`, `${appDir}/.czrc`),
-        copyAsync(`${assetHuskyPath}/commit-msg`, `${appHuskyPath}/commit-msg`)
-      ])
+        if (features.includes('preCommit')) {
+          dir(`${appDir}/scripts`)
+
+          await Promise.all([
+            copyAsync(
+              `${assetHuskyPath}/pre-commit`,
+              `${appHuskyPath}/pre-commit`
+            ),
+            copyAsync(`${assetsPath}/.lintstagedrc`, `${appDir}/.lintstagedrc`),
+            copyAsync(`${assetsPath}/.ls-lint.yml`, `${appDir}/.ls-lint.yml`),
+            copyAsync(
+              `${assetsPath}/.pre-commit-config.yaml`,
+              `${appDir}/.pre-commit-config.yaml`
+            ),
+            copyAsync(
+              `${assetsPath}/detect-secrets.sh`,
+              `${appDir}/scripts/detect-secrets.sh`
+            ),
+          ])
+        }
+
+        if (features.includes('prePush')) {
+          await copyAsync(
+            `${assetHuskyPath}/pre-push`,
+            `${appHuskyPath}/pre-push`
+          )
+        }
+      } catch (err) {
+        error(`An error has occurred while creating husky hooks: ${err}`)
+      }
+
+      success('Husky hooks created successfully')
     }
 
-    if (features.includes('preCommit')) {
-      dir(`${appDir}/scripts`)
-
+    function syncOperations() {
+      const prepareScript =
+        projectLanguage === 'TS'
+          ? 'husky install && npm run build'
+          : 'husky install'
       pkgJsonScripts.push({
-        ['initsecrets']: 'scripts/detect-secrets.js', 
+        ['prepare']: prepareScript,
       })
+      pkgJsonInstalls.push('husky')
 
-      await Promise.all([
-        run(
-          `cd ${appDir} && npm install --save-dev lint-staged shellcheck sort-package-json @ls-lint/ls-lint`
-        ),
-        copyAsync(`${assetHuskyPath}/pre-commit`, `${appHuskyPath}/pre-commit`),
-        copyAsync(`${assetsPath}/.lintstagedrc`, `${appDir}/.lintstagedrc`),
-        copyAsync(`${assetsPath}/.ls-lint.yml`, `${appDir}/.ls-lint.yml`),
-        copyAsync(`${assetsPath}/.pre-commit-config.yaml`, `${appDir}/.pre-commit-config.yaml`),
-        copyAsync(`${assetsPath}/detect-secrets.sh`, `${appDir}/scripts/detect-secrets.sh`)
-      ])
+      if (features.includes('commitMsgLint')) {
+        pkgJsonScripts.push({
+          ['validate:commit-message']: 'commitlint --edit $1',
+        })
+        pkgJsonInstalls.push(
+          '@commitlint/cli @commitlint/config-conventional commitizen cz-conventional-changelog'
+        )
+      }
+
+      if (features.includes('preCommit')) {
+        pkgJsonScripts.push({
+          ['initsecrets']: 'scripts/detect-secrets.js',
+        })
+        pkgJsonInstalls.push(
+          'lint-staged shellcheck sort-package-json @ls-lint/ls-lint'
+        )
+      }
     }
 
-    if (features.includes('prePush')) {
-      copy(`${assetHuskyPath}/pre-push`, `${appHuskyPath}/pre-push`)
+    return {
+      asyncOperations,
+      syncOperations,
     }
   }
 }
-
