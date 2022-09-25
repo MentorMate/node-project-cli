@@ -11,6 +11,7 @@ module.exports = (toolbox) => {
   }) => {
     const {
       filesystem: { dir, copyAsync },
+      system: { run },
       print: { error, success, muted },
     } = toolbox
 
@@ -59,6 +60,10 @@ module.exports = (toolbox) => {
               `${assetsPath}/detect-secrets.sh`,
               `${appDir}/scripts/detect-secrets.sh`
             ),
+            copyAsync(
+              `${assetsPath}/.secrets.baseline`,
+              `${appDir}/.secrets.baseline`
+            ),
           ])
         }
 
@@ -96,7 +101,7 @@ module.exports = (toolbox) => {
 
       if (features.includes('preCommit')) {
         pkgJsonScripts.push({
-          ['initsecrets']: 'scripts/detect-secrets.js',
+          ['initsecrets']: 'scripts/detect-secrets.sh',
         })
         pkgJsonInstalls.push(
           'lint-staged shellcheck sort-package-json @ls-lint/ls-lint'

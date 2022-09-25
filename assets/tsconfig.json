@@ -1,7 +1,15 @@
 {
   "extends": "@tsconfig/recommended/tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@api-v1/*": ["src/api/*"],
+      "@database/*": ["src/database/*"],
+      "@guards/*": ["src/guards/*"],
+      "@helpers/*": ["src/helpers/*"],
+      "@global-test-helpers/*": ["test/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.spec.*", "**/*.test.*"]

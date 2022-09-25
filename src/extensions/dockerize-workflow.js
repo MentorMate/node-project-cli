@@ -13,7 +13,7 @@ module.exports = (toolbox) => {
     const {
       filesystem: { copyAsync },
       print: { error, success, muted },
-      system,
+      system: { run },
       patching,
     } = toolbox
 
@@ -31,7 +31,7 @@ module.exports = (toolbox) => {
         ])
 
         if (projectLanguage === 'TS') {
-          await system.run(`echo "src/" >> ${appDir}/.npmignore`)
+          await run(`echo "src/" >> ${appDir}/.npmignore`)
           await patching.replace(
             `${appDir}/Dockerfile`,
             './src/index.js',
@@ -54,7 +54,7 @@ module.exports = (toolbox) => {
         }
 
         const imageName = projectScope
-          ? `${projectScope}/${projectName}`
+          ? `${projectScope}_${projectName}`
           : projectName
 
         await patching.replace(

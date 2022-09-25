@@ -9,7 +9,7 @@ module.exports = (toolbox) => {
     assetsPath,
   }) => {
     const {
-      system,
+      system: { run },
       print: { error, success, muted },
       filesystem: { dir, copyAsync },
     } = toolbox
@@ -17,8 +17,8 @@ module.exports = (toolbox) => {
     muted(`Installing ${framework}...`)
     try {
       dir(`${appDir}`)
-      await system.run(`cd ${appDir} && npm init -y --scope ${projectScope}`)
-      await system.run(`cd ${appDir} && npm install ${framework}`)
+      await run(`cd ${appDir} && npm init -y --scope ${projectScope}`)
+      await run(`cd ${appDir} && npm install ${framework}`)
 
       if (projectLanguage === 'TS') {
         await Promise.all([
@@ -26,7 +26,7 @@ module.exports = (toolbox) => {
           copyAsync(`${assetsPath}/test/`, `${appDir}/test/`),
         ])
       }
-      await system.run(`cd ${appDir} && git init -b main`)
+      await run(`cd ${appDir} && git init -b main`)
     } catch (err) {
       error(`An error has occurred while installing ${framework}: ${err}`)
     }

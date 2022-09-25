@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export BASELINE_PATH=$1
+
 # Install detect-secrets if not found
 if ! command -v detect-secrets &> /dev/null
 then
@@ -11,6 +13,9 @@ then
       pip3 install git+https://github.com/Yelp/detect-secrets
     fi
 fi
+
+# Generate secrets baseline
+detect-secrets scan > $BASELINE_PATH
 
 # Install pre-commit if not found
 if ! command -v pre-commit &> /dev/null

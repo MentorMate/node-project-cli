@@ -7,3 +7,4 @@ repos:
         language: python
         entry: detect-secrets-hook
         args: ['--baseline', '.secrets.baseline']
+        

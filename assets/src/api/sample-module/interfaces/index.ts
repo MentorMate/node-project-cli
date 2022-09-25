@@ -2,12 +2,14 @@
 
 export interface SampleObject {
   // ...
-} 
+};
 
 export interface SampleService {
+  sampleAction: Function
   // ...
-}
+};
 
 export interface SampleController {
   // ...
-}
+  sampleAction: Function
+};

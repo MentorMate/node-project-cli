@@ -2,11 +2,12 @@
 
 module.exports = {
   name: 'generate',
-  alias: ['g'],
+  description: 'Generate a Node.js project',
+  alias: ['g', '-g', '--generate'],
   run: async (toolbox) => {
     const {
       parameters,
-      system,
+      system: { run },
       strings,
       filesystem: { path, dir, write, copyAsync },
       print: { success, error, muted },
@@ -17,7 +18,7 @@ module.exports = {
     const CLI_PATH = path(`${meta.src}`, '..')
     const ASSETS_PATH = path(CLI_PATH, 'assets')
 
-    const pwd = strings.trim(await system.run('pwd'))
+    const pwd = strings.trim(await run('pwd'))
     let pickedFramework
     let projectName = parameters.first
     let userInput = await prompt.ask([
@@ -153,7 +154,7 @@ module.exports = {
       (async () => {
         muted('Installing dev dependencies...')
         try {
-          await system.run(
+          await run(
             `cd ${
               userInput.appDir
             } && npm install --save-dev ${userInput.pkgJsonInstalls.join(' ')}`
@@ -172,7 +173,7 @@ module.exports = {
           `${userInput.appDir}/.gitignore`
         )
         if (userInput.projectLanguage == 'TS') {
-          await system.run(`echo "dist/\n" >> ${userInput.appDir}/.gitignore`)
+          await run(`echo "dist/\n" >> ${userInput.appDir}/.gitignore`)
         }
       })()
     )
@@ -197,5 +198,8 @@ module.exports = {
     }
     packageJson.scripts = newScripts
     write(`${userInput.appDir}/package.json`, packageJson)
+    await run(
+      `cd ${userInput.appDir} && npx husky install && bash ${ASSETS_PATH}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}/.secrets.baseline`
+    )
   },
 }

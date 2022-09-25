@@ -49,17 +49,17 @@ module.exports = (toolbox) => {
     function syncOperations() {
       const lintScript =
         projectLanguage === 'TS'
-          ? 'eslint . --ext .js .ts'
-          : 'eslint . --ext .js'
+          ? 'eslint . --ext .js,.cjs,.mjs,.ts'
+          : 'eslint . --ext .js,.cjs,.mjs'
 
       pkgJsonScripts.push({
-        ['prettier:format']: 'prettier --write',
-        ['prettier:check-format']: 'prettier --list-different',
+        ['prettier:format']: 'prettier . --write',
+        ['prettier:check-format']: 'prettier . --list-different',
         ['lint']: lintScript,
         ['lint:fix']: 'npm run lint --fix',
       })
       pkgJsonInstalls.push(
-        'prettier eslint eslint-config-prettier eslint-config-google'
+        'prettier eslint eslint-config-prettier eslint-config-google eslint-plugin-prettier'
       )
       if (projectLanguage === 'TS') {
         pkgJsonInstalls.push(

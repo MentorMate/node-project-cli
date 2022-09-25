@@ -16,7 +16,6 @@ module.exports = {
         'ci',
       ],
     ],
-    'references-empty': [2, 'never'],
     'subject-case': [2, 'always', ['sentence-case']],
   },
   parserPreset: {

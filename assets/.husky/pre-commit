@@ -1,7 +1,7 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npx run lint-staged 
+npx lint-staged 
 npx ls-lint
 npm run initsecrets
 pre-commit run

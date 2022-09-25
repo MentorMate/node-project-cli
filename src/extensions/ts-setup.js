@@ -36,10 +36,10 @@ module.exports = (toolbox) => {
       if (framework !== 'nest') {
         copy(`${assetsPath}/tsconfig.json`, `${appDir}/tsconfig.json`)
         pkgJsonScripts.push({
-          ['build']: 'tsc --build',
+          ['build']: 'tsc --build && tsc-alias',
           ['prepare']: 'npm run build',
         })
-        pkgJsonInstalls.push('typescript @tsconfig/recommended')
+        pkgJsonInstalls.push('typescript @tsconfig/recommended tsc-alias')
       }
       const tsConfig = require(`${appDir}/tsconfig.json`)
 
