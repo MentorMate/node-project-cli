@@ -6,12 +6,12 @@ npx ls-lint
 npm run initsecrets
 pre-commit run
 
-# TODO: Need more info about these: '&& npm run typecheck && npm run check-circular-deps'
-
 # Enforce branch naming conventions
 
 LC_ALL=C
 
+if git show HEAD
+then
 local_branch="$(git rev-parse --abbrev-ref HEAD)"
 
 # THE CURRENT PATTERN WILL MATCH ANY NAME. PLEASE INSERT A REGEX PATTERN ACCORDING TO YOUR PROJECT BRANCH NAMING CONVENTION.
@@ -26,6 +26,10 @@ if [[ ! $local_branch =~ $valid_branch_regex ]]
 then
     echo "$message"
     exit 1
+fi
+
+else
+echo "Initial commit, no branch name linting"
 fi
 
 exit 0
