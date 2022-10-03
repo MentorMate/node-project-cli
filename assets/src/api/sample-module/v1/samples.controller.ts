@@ -1,13 +1,24 @@
 // This should be the controller for the samples module with all the routes needed.
 
-import { Sample } from '@database/models'; // Check the `tsconfig.json` to see the paths that have aliases
-import { SamplesService } from './samples.service';
+import { SampleService, SampleController } from '../interfaces';
 
-const samplesService = SamplesService({Sample});
-
-export const SamplesController = {
-  sampleAction() {
-    samplesService.sampleAction();
+/**
+ * Defines the service for the sample-module
+ * @param {SamplesService} ServiceInstance - instance of the SampleService for the database
+ * @return {Object} - the Service for sample-module with all its possible methods
+ */
+export function sampleController(ServiceInstance: SampleService): SampleController {
+  /**
+   * Just a sample method
+   * @return {String}
+   */
+  function sampleAction() {
+    return ServiceInstance.sampleMethod();
   }
+
   // ...
-};
+
+  return {
+    sampleAction
+  };
+}

@@ -7,7 +7,13 @@ const config = {
   },
   rootDir: 'src',
   collectCoverage: true,
-  collectCoverageFrom: ['!**/node_modules/**', '!**/coverage/**', '**/*.(t|j)s'],
+  collectCoverageFrom: [
+    '**/*.(t|j)s',
+    '!**/node_modules/**',
+    '!**/coverage/**',
+    '!**/database/models/**',
+    '!*.config.js'
+  ],
   coverageDirectory: 'coverage',
   testEnvironment: 'node',
   coverageThreshold: {

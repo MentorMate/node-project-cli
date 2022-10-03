@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-export BASELINE_PATH=$1
+APP_PATH=$1
+CURRENT_PATH="$PWD"
 
 # Install detect-secrets if not found
 if ! command -v detect-secrets &> /dev/null
@@ -8,14 +9,17 @@ then
     echo "detect-secrets could not be found. Installing detect-secrets..."
     if ! command -v pip3 &> /dev/null
     then
-      pip install git+https://github.com/Yelp/detect-secrets
+      pip install git+https://github.com/Yelp/detect-secrets@v1.2.0
     else
-      pip3 install git+https://github.com/Yelp/detect-secrets
+      pip3 install git+https://github.com/Yelp/detect-secrets@1.2.0
     fi
 fi
 
 # Generate secrets baseline
-detect-secrets scan > $BASELINE_PATH
+cd "$APP_PATH"
+detect-secrets scan > .secrets.baseline
+detect-secrets scan package.json --all-files --baseline .secrets.baseline
+cd "$CURRENT_PATH"
 
 # Install pre-commit if not found
 if ! command -v pre-commit &> /dev/null

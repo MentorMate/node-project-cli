@@ -97,7 +97,7 @@ module.exports = {
               ],
             },
             {
-              message: 'Dockerizing GitHub workflow step',
+              message: 'Dockerize GitHub workflow step',
               value: 'dockerizeWorkflow',
             },
           ],
@@ -199,7 +199,7 @@ module.exports = {
     packageJson.scripts = newScripts
     write(`${userInput.appDir}/package.json`, packageJson)
     await run(
-      `cd ${userInput.appDir} && npx husky install && bash ${ASSETS_PATH}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}/.secrets.baseline`
+      `cd ${userInput.appDir} && npx husky install && npx sort-package-json && bash ${ASSETS_PATH}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}`
     )
   },
 }

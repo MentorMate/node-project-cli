@@ -3,6 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": ".",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "paths": {
       "@api-v1/*": ["src/api/*"],
       "@database/*": ["src/database/*"],

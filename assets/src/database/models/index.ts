@@ -3,6 +3,6 @@
 import { Sample } from './sample.model';
 
 export {
-    Sample
-    // export all other models you have defined for you database
+  Sample
+  // export all other models you have defined for you database
 };
