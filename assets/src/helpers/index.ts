@@ -1,1 +1,1 @@
-// Here you can place stateless helper functions and utils 
+// Here you can place stateless helper functions and utils

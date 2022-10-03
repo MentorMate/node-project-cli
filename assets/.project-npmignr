@@ -7,3 +7,4 @@ tsconfig.*
 .vscode/
 test/
 target/
+src/coverage/

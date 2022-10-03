@@ -4,7 +4,7 @@ const config = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: 'src',
   collectCoverage: true,
-  collectCoverageFrom: ['**/*.{js,jsx}', '!**/node_modules/**', '!**/coverage/**', '!*.config.js'],
+  collectCoverageFrom: ['**/*.{js,jsx}', '!**/node_modules/**', '!**/coverage/**', '!**/database/models/**'],
   coverageDirectory: 'coverage',
   testEnvironment: 'node',
   coverageThreshold: {
