@@ -26,6 +26,7 @@ module.exports = (toolbox) => {
       )
     } catch (err) {
       error(`An error has occurred while installing Nest: ${err}`)
+      process.exit(1)
     }
 
     success('Nest installation completed successfully')

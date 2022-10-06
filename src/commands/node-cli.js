@@ -4,7 +4,7 @@ const command = {
     const { print } = toolbox
 
     print.info(
-      'Generate a Node.js project using `node-cli -g [project name]` or `node-cli --generate [project name]'
+      'Generate a Node.js project using `node-cli g [project name]` or `node-cli generate [project name]'
     )
   },
 }

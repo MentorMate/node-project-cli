@@ -33,6 +33,7 @@ module.exports = (toolbox) => {
         error(
           `An error has occurred while copying jest configuration and workflow: ${err}`
         )
+        process.exit(1)
       }
 
       success('Jest configured successfully')

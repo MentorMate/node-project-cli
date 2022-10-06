@@ -26,6 +26,7 @@ module.exports = (toolbox) => {
           error(
             `An error has occurred while executing TS configuration: ${err}`
           )
+          process.exit(1)
         }
 
         success('TS configured successfully')
