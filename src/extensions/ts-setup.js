@@ -23,10 +23,9 @@ module.exports = (toolbox) => {
             `${appDir}/tsconfig.build.json`
           )
         } catch (err) {
-          error(
+          throw new Error(
             `An error has occurred while executing TS configuration: ${err}`
           )
-          process.exit(1)
         }
 
         success('TS configured successfully')

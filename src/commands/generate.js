@@ -161,10 +161,9 @@ module.exports = {
             } && npm install --save-dev ${userInput.pkgJsonInstalls.join(' ')}`
           )
         } catch (err) {
-          error(
+          throw new Error(
             `An error has occurred while installing dev dependencies: ${err}`
           )
-          process.exit(1)
         }
         success('All dev dependencies have been installed successfully')
       })(),
@@ -178,8 +177,7 @@ module.exports = {
             await run(`echo "dist/\n" >> ${userInput.appDir}/.gitignore`)
           }
         } catch (err) {
-          error(`An error has occurred while setting up .gitignore: ${err}`)
-          process.exit(1)
+          throw new Error(`An error has occurred while setting up .gitignore: ${err}`)
         }
       })()
     )
@@ -209,10 +207,9 @@ module.exports = {
         `cd ${userInput.appDir} && npx husky install && npx sort-package-json && bash ${ASSETS_PATH}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}`
       )
     } catch (err) {
-      error(
+      throw new Error(
         `An error has occurred while setting up husky and detect-secrets ${err}`
       )
-      process.exit(1)
     }
   },
 }
