@@ -9,7 +9,7 @@ module.exports = {
       parameters,
       system: { run },
       strings,
-      filesystem: { path, dir, write, copyAsync },
+      filesystem: { path, dir, write, read, copyAsync },
       print: { success, error, muted },
       prompt,
       meta,
@@ -58,6 +58,7 @@ module.exports = {
       },
     ])
     userInput = Object.assign(
+      {},
       userInput,
       await prompt.ask([
         {
@@ -180,7 +181,7 @@ module.exports = {
 
     await Promise.all(asyncOperations)
 
-    const packageJson = require(`${userInput.appDir}/package.json`)
+    const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`))
     const newScripts = userInput.pkgJsonScripts.reduce(
       (acc, scr) => ({ ...acc, ...scr }),
       {}
