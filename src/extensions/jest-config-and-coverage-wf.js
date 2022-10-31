@@ -30,10 +30,9 @@ module.exports = (toolbox) => {
           await copyAsync(jestConfigFile, `${appDir}/jest.config.js`)
         }
       } catch (err) {
-        error(
+        throw new Error(
           `An error has occurred while copying jest configuration and workflow: ${err}`
         )
-        process.exit(1)
       }
 
       success('Jest configured successfully')

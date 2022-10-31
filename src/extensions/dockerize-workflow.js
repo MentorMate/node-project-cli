@@ -63,10 +63,9 @@ module.exports = (toolbox) => {
           imageName.toLowerCase()
         )
       } catch (err) {
-        error(
+        throw new Error(
           `An error has occurred while creating a dockerize workflow step: ${err}`
         )
-        process.exit(1)
       }
 
       success('Dockerize workflow step created successfully')
