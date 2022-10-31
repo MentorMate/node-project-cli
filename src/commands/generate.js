@@ -9,7 +9,7 @@ module.exports = {
       parameters,
       system: { run },
       strings,
-      filesystem: { path, dir, write, copyAsync },
+      filesystem: { path, dir, write, copyAsync, cwd },
       print: { success, error, muted },
       prompt,
       meta,
@@ -18,7 +18,7 @@ module.exports = {
     const CLI_PATH = path(`${meta.src}`, '..')
     const ASSETS_PATH = path(CLI_PATH, 'assets')
 
-    const pwd = strings.trim(await run('pwd'))
+    const pwd = strings.trim(cwd());
     let pickedFramework
     let projectName = parameters.first
     let userInput = await prompt.ask([
