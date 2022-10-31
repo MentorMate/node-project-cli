@@ -10,7 +10,7 @@ module.exports = (toolbox) => {
     framework,
   }) => {
     const {
-      filesystem: { copyAsync, copy, write },
+      filesystem: { copyAsync, copy, write, read },
       print: { error, success, muted },
     } = toolbox
 
@@ -42,7 +42,7 @@ module.exports = (toolbox) => {
         })
         pkgJsonInstalls.push('typescript @tsconfig/recommended tsc-alias')
       }
-      const tsConfig = require(`${appDir}/tsconfig.json`)
+      const tsConfig = JSON.parse(read(`${appDir}/tsconfig.json`))
 
       if (moduleType === 'ESM') {
         tsConfig.compilerOptions = {

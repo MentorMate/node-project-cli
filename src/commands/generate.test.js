@@ -1,59 +1,12 @@
-const { strings } = require('gluegun');
 const generate = require('./generate');
+const { createToolboxMock, createExtensionInput } = require('../utils/test/mocks');
 
-const userInput = {
-  projectName: 'project-name',
-  projectScope: 'scope',
-  framework: 'express',
-  projectLanguage: 'TS',
-  moduleType: 'CJS',
-  features: [
-    'JSLinters',
-    'huskyHooks',
-    'commitMsgLint',
-    'preCommit',
-    'prePush',
-    'dockerizeWorkflow'
-  ]
-};
+describe('generate', () => {
+  const userInput = createExtensionInput();
+  const toolbox = createToolboxMock();
 
-const toolbox = {
-  filesystem: {
-    copyAsync: async (from, to, options) => {},
-    dir: (path, criteria) => {},
-    path: (...args) => '',
-    read: (path) => JSON.stringify({ scripts: {}, jest: {} }),
-    write: (path, data, options) => {},
-  },
-  parameters: {
-    plugin: 'node-cli',
-    command: 'generate',
-    array: [ 'project-name' ],
-    options: {},
-    raw: [
-      '/path/to/node',
-      '/path/to/project/bin/node-cli',
-      'generate',
-      'project-name',
-    ],
-    argv: [
-      '/path/to/node',
-      '/path/to/project/bin/node-cli',
-      'generate',
-      'project-name'
-    ],
-    first: 'project-name',
-    second: undefined,
-    third: undefined,
-    string: 'project-name'
-  },
-  print: {
-    success: (msg) => {},
-    error: (msg) => {},
-    muted: (msg) => {},
-  },
-  prompt: {
-    ask: jest.fn(async (questions) => {
+  beforeAll(() => {
+    toolbox.prompt.ask = jest.fn(async (questions) => {
       const answers = questions.map(q => {
         const answer = [q.format, q.result]
           .filter(Boolean)
@@ -61,26 +14,11 @@ const toolbox = {
         return [q.name, answer];
       });
       return Object.fromEntries(answers);
-    }),
-  },
-  strings,
-  system: {
-    run: (cmd) => ''
-  },
-  meta: {
-    src: '/path/to/project/src',
-  },
-  // Extensions
-  installFramework: async () => {},
-  installNest: async () => {},
-  jsLinters: () => ({ syncOperations: () => {}, asyncOperations: async () => {} }),
-  jestConfig: () => ({ syncOperations: () => {}, asyncOperations: async () => {} }),
-  setupTs: () => ({ syncOperations: () => {}, asyncOperations: async () => {} }),
-  setupHusky: () => ({ syncOperations: () => {}, asyncOperations: async () => {} }),
-  dockerizeWorkflow: () => ({ syncOperations: () => {}, asyncOperations: async () => {} }),
-};
+    });
+    
+    toolbox.filesystem.read = () => JSON.stringify({ scripts: {}, jest: {} });
+  })
 
-describe('generate', () => {
   it('should be defined', () => {
     expect(generate).toBeDefined();
     expect(generate.name).toBeDefined();
@@ -107,11 +45,9 @@ describe('generate', () => {
       expect(questions[2].name).toBe('framework');
 
       const answers = await toolbox.prompt.ask.mock.results[0].value;
-      expect(answers).toEqual({
-        projectName: 'project-name',
-        projectScope: 'scope',
-        framework: 'express'
-      });
+      const { projectName, projectScope, framework } = userInput;
+      const expectedAnswers = { projectName, projectScope, framework };
+      expect(answers).toEqual(expectedAnswers);
     });
 
     it('should ask for the project language, module system and app features', async () => {
@@ -123,18 +59,9 @@ describe('generate', () => {
       expect(questions[2].name).toBe('features');
 
       const answers = await toolbox.prompt.ask.mock.results[1].value;
-      expect(answers).toEqual({
-        projectLanguage: 'TS',
-        moduleType: 'CJS',
-        features: [
-          'JSLinters',
-          'huskyHooks',
-          'commitMsgLint',
-          'preCommit',
-          'prePush',
-          'dockerizeWorkflow'
-        ]
-      });
+      const { projectLanguage, moduleType, features } = userInput;
+      const expectedAnswers = { projectLanguage, moduleType, features };
+      expect(answers).toEqual(expectedAnswers);
     });
   });
 });

@@ -41,6 +41,10 @@
     "coverageDirectory": "../coverage",
     "collectCoverageFrom": [
       "**/*.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "cli.js",
+      "mocks.js"
     ]
   },
   "prettier": {
