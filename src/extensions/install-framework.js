@@ -26,9 +26,10 @@ module.exports = (toolbox) => {
           copyAsync(`${assetsPath}/test/`, `${appDir}/test/`),
         ])
       }
-      await run(`cd ${appDir} && git init -b main`)
+      await run(`cd ${appDir} && git init && git checkout -b main`)
     } catch (err) {
       error(`An error has occurred while installing ${framework}: ${err}`)
+      process.exit(1)
     }
 
     success(`${framework} installation completed successfully`)

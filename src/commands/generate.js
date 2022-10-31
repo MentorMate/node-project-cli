@@ -3,7 +3,7 @@
 module.exports = {
   name: 'generate',
   description: 'Generate a Node.js project',
-  alias: ['g', '-g', '--generate'],
+  alias: 'g',
   run: async (toolbox) => {
     const {
       parameters,
@@ -163,17 +163,22 @@ module.exports = {
           error(
             `An error has occurred while installing dev dependencies: ${err}`
           )
+          process.exit(1)
         }
-
         success('All dev dependencies have been installed successfully')
       })(),
       (async () => {
-        await copyAsync(
-          `${ASSETS_PATH}/.project-gitignr`,
-          `${userInput.appDir}/.gitignore`
-        )
-        if (userInput.projectLanguage == 'TS') {
-          await run(`echo "dist/\n" >> ${userInput.appDir}/.gitignore`)
+        try {
+          await copyAsync(
+            `${ASSETS_PATH}/.project-gitignr`,
+            `${userInput.appDir}/.gitignore`
+          )
+          if (userInput.projectLanguage == 'TS') {
+            await run(`echo "dist/\n" >> ${userInput.appDir}/.gitignore`)
+          }
+        } catch (err) {
+          error(`An error has occurred while setting up .gitignore: ${err}`)
+          process.exit(1)
         }
       })()
     )
@@ -197,9 +202,16 @@ module.exports = {
       }
     }
     packageJson.scripts = newScripts
-    write(`${userInput.appDir}/package.json`, packageJson)
-    await run(
-      `cd ${userInput.appDir} && npx husky install && npx sort-package-json && bash ${ASSETS_PATH}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}`
-    )
+    try {
+      write(`${userInput.appDir}/package.json`, packageJson)
+      await run(
+        `cd ${userInput.appDir} && npx husky install && npx sort-package-json && bash ${ASSETS_PATH}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}`
+      )
+    } catch (err) {
+      error(
+        `An error has occurred while setting up husky and detect-secrets ${err}`
+      )
+      process.exit(1)
+    }
   },
 }

@@ -66,6 +66,7 @@ module.exports = (toolbox) => {
         error(
           `An error has occurred while creating a dockerize workflow step: ${err}`
         )
+        process.exit(1)
       }
 
       success('Dockerize workflow step created successfully')

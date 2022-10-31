@@ -41,6 +41,7 @@ module.exports = (toolbox) => {
         error(
           `An error has occurred while executing JS linters configuration: ${err}`
         )
+        process.exit(1)
       }
 
       success('JS linters configured successfully')
