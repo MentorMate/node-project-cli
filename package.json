@@ -37,8 +37,14 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "modulePathIgnorePatterns": [
-      "<rootDir>/assets/"
+    "rootDir": "src",
+    "coverageDirectory": "../coverage",
+    "collectCoverageFrom": [
+      "**/*.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "cli.js",
+      "mocks.js"
     ]
   },
   "prettier": {

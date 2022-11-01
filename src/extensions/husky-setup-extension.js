@@ -83,7 +83,7 @@ module.exports = (toolbox) => {
           )
         }
       } catch (err) {
-        error(`An error has occurred while creating husky hooks: ${err}`)
+        throw new Error(`An error has occurred while creating husky hooks: ${err}`)
       }
 
       success('Husky hooks created successfully')

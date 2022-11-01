@@ -38,7 +38,7 @@ module.exports = (toolbox) => {
           ),
         ])
       } catch (err) {
-        error(
+        throw new Error(
           `An error has occurred while executing JS linters configuration: ${err}`
         )
       }
