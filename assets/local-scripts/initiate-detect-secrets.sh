@@ -6,13 +6,8 @@ CURRENT_PATH="$PWD"
 # Install detect-secrets if not found
 if ! command -v detect-secrets &> /dev/null
 then
-    echo "detect-secrets could not be found. Installing detect-secrets..."
-    if ! command -v pip3 &> /dev/null
-    then
-      pip install git+https://github.com/Yelp/detect-secrets@v1.2.0
-    else
-      pip3 install git+https://github.com/Yelp/detect-secrets@1.2.0
-    fi
+  echo "detect-secrets could not be found. Installing detect-secrets..."
+  pip3 install git+https://github.com/Yelp/detect-secrets@1.2.0
 fi
 
 # Generate secrets baseline
@@ -27,7 +22,7 @@ then
     echo "pre-commit could not be found. Installing pre-commit..."
     if ! command -v brew &> /dev/null
     then
-      pip install pre-commit
+      pip3 install pre-commit
     else
       brew install pre-commit
     fi

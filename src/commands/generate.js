@@ -7,17 +7,44 @@ module.exports = {
   run: async (toolbox) => {
     const {
       parameters,
-      system: { run },
+      system: { run, which },
       strings,
       filesystem: { path, dir, write, read, copyAsync },
-      print: { success, error, muted },
+      print: { success, muted, warning },
       prompt,
       meta,
     } = toolbox
 
     const CLI_PATH = path(`${meta.src}`, '..')
     const ASSETS_PATH = path(CLI_PATH, 'assets')
+    const pip3Installation = which('pip3')
+    
+    if (!pip3Installation) {
+      warning('No `pip3` found on your system, some of the offered functionalities won\'t be available')
+    }
+    
+    const featureChoices = [
+            { message: 'JS Code Linters', value: 'JSLinters' },
+            {
+              message: 'Hooks with `husky`',
+              value: 'huskyHooks',
+              choices: [
+                { message: 'Commit message linting', value: 'commitMsgLint' },
+                { message: 'Pre-commit hook', value: 'preCommit' },
+                { message: 'Pre-push hook', value: 'prePush' },
+              ],
+            },
+            {
+              message: 'Dockerize GitHub workflow step',
+              value: 'dockerizeWorkflow',
+            },
+          ];
+    const initialFeatureChoices = [0, 1, 5];
 
+    if (!pip3Installation) {
+      featureChoices.splice(1,1)
+      initialFeatureChoices.pop();
+    }
     const pwd = strings.trim(await run('pwd'))
     let pickedFramework
     let projectName = parameters.first
@@ -86,23 +113,8 @@ module.exports = {
           type: 'multiselect',
           name: 'features',
           message: 'Select the features you want to be prebuilt',
-          choices: [
-            { message: 'JS Code Linters', value: 'JSLinters' },
-            {
-              message: 'Hooks with `husky`',
-              value: 'huskyHooks',
-              choices: [
-                { message: 'Commit message linting', value: 'commitMsgLint' },
-                { message: 'Pre-commit hook', value: 'preCommit' },
-                { message: 'Pre-push hook', value: 'prePush' },
-              ],
-            },
-            {
-              message: 'Dockerize GitHub workflow step',
-              value: 'dockerizeWorkflow',
-            },
-          ],
-          initial: [0, 1, 5],
+          choices: featureChoices,
+          initial: initialFeatureChoices,
         },
       ])
     )
@@ -201,15 +213,32 @@ module.exports = {
       }
     }
     packageJson.scripts = newScripts
+
     try {
       write(`${userInput.appDir}/package.json`, packageJson)
-      await run(
-        `cd ${userInput.appDir} && npx husky install && npx sort-package-json && bash ${ASSETS_PATH}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}`
-      )
     } catch (err) {
-      throw new Error(
-        `An error has occurred while setting up husky and detect-secrets ${err}`
-      )
+      throw new Error(`An error occured while writing the new package.json file: ${err}`)
+    }
+
+    if (
+      userInput.features.includes('huskyHooks') ||
+      userInput.features.includes('commitMsgLint') ||
+      userInput.features.includes('preCommit') ||
+      userInput.features.includes('prePush')
+    ) {
+      let script = `cd ${userInput.appDir} && npx husky install && npx sort-package-json`
+
+      if (userInput.features.includes('huskyHooks') || userInput.features.includes('preCommit')) {
+        script += ` && bash ${ASSETS_PATH}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}` 
+      }
+
+      try {
+        await run(script)
+      } catch (err) {
+        throw new Error(
+          `An error has occurred while setting up husky and relevant hooks ${err}`
+        )
+      }
     }
   },
 }
