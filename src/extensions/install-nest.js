@@ -4,7 +4,7 @@ module.exports = (toolbox) => {
   toolbox.installNest = async ({ projectScope, projectName }) => {
     const {
       system: { run },
-      print: { error, success, muted },
+      print: { success, muted },
     } = toolbox
 
     muted('Installing Nest...')
