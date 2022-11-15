@@ -11,8 +11,7 @@ module.exports = (toolbox) => {
   }) => {
     const {
       filesystem: { dir, copyAsync },
-      system: { run },
-      print: { error, success, muted },
+      print: { success, muted },
     } = toolbox
 
     const appHuskyPath = `${appDir}/.husky`
