@@ -10,7 +10,7 @@ module.exports = (toolbox) => {
   }) => {
     const {
       system: { run },
-      print: { error, success, muted },
+      print: { success, muted },
       filesystem: { dir, copyAsync },
     } = toolbox
 
