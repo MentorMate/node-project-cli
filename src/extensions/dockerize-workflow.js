@@ -12,7 +12,7 @@ module.exports = (toolbox) => {
   }) => {
     const {
       filesystem: { copyAsync },
-      print: { error, success, muted },
+      print: { success, muted },
       system: { run },
       patching,
     } = toolbox
