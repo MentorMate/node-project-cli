@@ -12,7 +12,7 @@ module.exports = (toolbox) => {
     const {
       template: { generate },
       filesystem: { copyAsync },
-      print: { error, success, muted },
+      print: { success, muted },
     } = toolbox
 
     async function asyncOperations() {

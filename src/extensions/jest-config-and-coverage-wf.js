@@ -11,8 +11,8 @@ module.exports = (toolbox) => {
     framework,
   }) => {
     const {
-      print: { error, success, muted },
-      filesystem: { dir, copyAsync },
+      print: { success, muted },
+      filesystem: { copyAsync },
     } = toolbox
 
     async function asyncOperations() {

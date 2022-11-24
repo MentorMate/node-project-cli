@@ -9,8 +9,8 @@ module.exports = {
       parameters,
       system: { run, which },
       strings,
-      filesystem: { path, dir, write, read, copyAsync },
-      print: { success, muted, warning },
+      filesystem: { path, dir, write, copyAsync, cwd, read },
+      print: { success, warning, muted },
       prompt,
       meta,
     } = toolbox
@@ -45,7 +45,7 @@ module.exports = {
       featureChoices.splice(1,1)
       initialFeatureChoices.pop();
     }
-    const pwd = strings.trim(await run('pwd'))
+    const pwd = strings.trim(cwd());
     let pickedFramework
     let projectName = parameters.first
     let userInput = await prompt.ask([
