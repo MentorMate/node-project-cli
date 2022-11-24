@@ -10,9 +10,19 @@ module.exports = (toolbox) => {
     pkgJsonInstalls,
   }) => {
     const {
-      filesystem: { dir, copyAsync },
-      print: { success, muted },
+      filesystem: { dir, copyAsync, read, writeAsync },
+      system: { run },
+      print: { error, success, muted },
     } = toolbox
+
+    const isWin = process.platform === "win32";
+    const lintstagedrc = read(`${assetsPath}/.lintstagedrc`, 'json');
+
+    /*
+      We need to delete the *.sh option on windows since
+      the package we use - shellcheck doesn't support windows
+    */
+    const lintstagedrcData = isWin ? delete lintstagedrc['*.sh'] && lintstagedrc : lintstagedrc;
 
     const appHuskyPath = `${appDir}/.husky`
     const assetHuskyPath = `${assetsPath}/.husky`
@@ -49,7 +59,7 @@ module.exports = (toolbox) => {
               `${assetHuskyPath}/pre-commit`,
               `${appHuskyPath}/pre-commit`
             ),
-            copyAsync(`${assetsPath}/.lintstagedrc`, `${appDir}/.lintstagedrc`),
+            writeAsync(`${appDir}/.lintstagedrc`, lintstagedrcData),
             copyAsync(`${assetsPath}/.ls-lint.yml`, `${appDir}/.ls-lint.yml`),
             copyAsync(
               `${assetsPath}/.pre-commit-config.yaml`,
@@ -103,7 +113,7 @@ module.exports = (toolbox) => {
           ['initsecrets']: 'scripts/detect-secrets.sh',
         })
         pkgJsonInstalls.push(
-          'lint-staged shellcheck sort-package-json @ls-lint/ls-lint'
+          `lint-staged${isWin ? '' : ' shellcheck' } sort-package-json @ls-lint/ls-lint`
         )
       }
     }
