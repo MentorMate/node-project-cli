@@ -2,8 +2,8 @@
 
 import { SampleModel } from '@database/interfaces'; // Check the `tsconfig.json` to see the paths that have aliases
 import { samplesService } from './samples.service';
-import { sampleService as inputData } from './__data__/input.json';
-import { sampleService as outputData } from './__data__/output.json';
+import { sampleService as inputData } from '../__data__/input.json';
+import { sampleService as outputData } from '../__data__/output.json';
 
 const service = samplesService({ Sample: {} as SampleModel });
 
