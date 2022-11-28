@@ -1,0 +1,10 @@
+*.spec.*
+*.test.*
+*.tsbuildinfo
+tsconfig.*
+.github/
+.husky/
+.vscode/
+test/
+target/
+src/coverage/

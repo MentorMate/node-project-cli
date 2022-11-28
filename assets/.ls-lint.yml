@@ -1,0 +1,19 @@
+ls:
+  .js: kebab-case
+  .config.js: kebab-case
+  .controller.js: kebab-case
+  .service.js: kebab-case
+  .dto.js: kebab-case
+  .model.js: kebab-case
+  .test.js: kebab-case
+  .mock.js: kebab-case
+  .integration.test.js: kebab-case
+
+ignore:
+  - node_modules
+  - .git
+  - .github
+  - .vscode
+  - .commitlintrc.js
+  - .prettierrc.js
+  - .eslintrc.js
