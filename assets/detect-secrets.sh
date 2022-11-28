@@ -4,11 +4,12 @@
 if ! command -v detect-secrets &> /dev/null
 then
     echo "detect-secrets could not be found. Installing detect-secrets..."
-    if ! command -v pip3 &> /dev/null
+    if command -v pip3 &> /dev/null
     then
-      pip install git+https://github.com/Yelp/detect-secrets
+      pip3 install git+https://github.com/Yelp/detect-secrets@1.2.0
     else
-      pip3 install git+https://github.com/Yelp/detect-secrets
+      echo "pip3 not found, could not install detect-secrets"
+      exit 1
     fi
 fi
 
@@ -16,11 +17,15 @@ fi
 if ! command -v pre-commit &> /dev/null
 then
     echo "pre-commit could not be found. Installing pre-commit..."
-    if ! command -v brew &> /dev/null
+    if command -v brew &> /dev/null
     then
-      pip install pre-commit
-    else
       brew install pre-commit
+      elif command -v pip3 &> /dev/null
+      then
+      pip3 install pre-commit
+    else
+      echo "neither brew, nor pip3 found, could not install pre-commit"
+      exit 1
     fi
 fi
 
