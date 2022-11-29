@@ -5,20 +5,6 @@ describe('generate', () => {
   const userInput = createExtensionInput();
   const toolbox = createToolboxMock();
 
-  beforeAll(() => {
-    toolbox.prompt.ask = jest.fn(async (questions) => {
-      const answers = questions.map(q => {
-        const answer = [q.format, q.result]
-          .filter(Boolean)
-          .reduce((val, fn) => fn(val), userInput[q.name])
-        return [q.name, answer];
-      });
-      return Object.fromEntries(answers);
-    });
-    
-    toolbox.filesystem.read = () => JSON.stringify({ scripts: {}, jest: {} });
-  })
-
   it('should be defined', () => {
     expect(generate).toBeDefined();
     expect(generate.name).toBeDefined();
@@ -27,8 +13,28 @@ describe('generate', () => {
     expect(generate.run).toBeDefined();
   });
 
-  describe('run', () => {
+  describe('no pip3 run', () => {
     beforeAll(async () => {
+      toolbox.system.which = () => false;
+      await generate.run(toolbox);
+    });
+
+    it('should log a warning for not having pip3', () => {
+      expect(toolbox.print.warning.toHaveBeenCalled)
+    })
+  })
+
+  describe('normal run', () => {
+    beforeAll(async () => {
+     toolbox.prompt.ask = jest.fn(async (questions) => {
+      const answers = questions.map(q => {
+        const answer = [q.format, q.result]
+          .filter(Boolean)
+          .reduce((val, fn) => fn(val), userInput[q.name])
+        return [q.name, answer];
+      });
+      return Object.fromEntries(answers);
+    });;
       await generate.run(toolbox);
     });
 
