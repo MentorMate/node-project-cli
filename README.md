@@ -7,7 +7,7 @@ running `node-cli g [project name]` inside your root Projects folder. The genera
 be in its own folder inside the current one.
 
 ## Commands
-- `generate` / `g` / `--generate` / `-g` `[project name]` - This command starts the process of generating your Node.js project.
+- `generate` / `g` `[project name]` - This command starts the process of generating your Node.js project.
     You will have to answer a couple of question so the result will be customized according to your needs.
 - `version` / `v` / `--version` / `-v` - Outputs the current version of the CLI tool
 - `help` / `h` / `--help` / `-h` - Lists the available commands and their aliases
