@@ -1,5 +1,8 @@
 const generate = require('./generate');
-const { createToolboxMock, createExtensionInput } = require('../utils/test/mocks');
+const {
+  createToolboxMock,
+  createExtensionInput,
+} = require('../utils/test/mocks');
 
 describe('generate', () => {
   const userInput = createExtensionInput();
@@ -20,21 +23,21 @@ describe('generate', () => {
     });
 
     it('should log a warning for not having pip3', () => {
-      expect(toolbox.print.warning.toHaveBeenCalled)
-    })
-  })
+      expect(toolbox.print.warning.toHaveBeenCalled);
+    });
+  });
 
   describe('normal run', () => {
     beforeAll(async () => {
-     toolbox.prompt.ask = jest.fn(async (questions) => {
-      const answers = questions.map(q => {
-        const answer = [q.format, q.result]
-          .filter(Boolean)
-          .reduce((val, fn) => fn(val), userInput[q.name])
-        return [q.name, answer];
+      toolbox.prompt.ask = jest.fn(async (questions) => {
+        const answers = questions.map((q) => {
+          const answer = [q.format, q.result]
+            .filter(Boolean)
+            .reduce((val, fn) => fn(val), userInput[q.name]);
+          return [q.name, answer];
+        });
+        return Object.fromEntries(answers);
       });
-      return Object.fromEntries(answers);
-    });;
       await generate.run(toolbox);
     });
 

@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 module.exports = {
   name: 'generate',
@@ -10,44 +10,46 @@ module.exports = {
       system: { run, which },
       strings,
       filesystem: { path, dir, write, copyAsync, cwd, read },
-      print: { success, warning, muted },
+      print: { success, warning, muted, highlight },
       prompt,
       meta,
-    } = toolbox
+    } = toolbox;
 
-    const CLI_PATH = path(`${meta.src}`, '..')
-    const ASSETS_PATH = path(CLI_PATH, 'assets')
-    const pip3Installation = which('pip3')
-    
+    const CLI_PATH = path(`${meta.src}`, '..');
+    const ASSETS_PATH = path(CLI_PATH, 'assets');
+    const pip3Installation = which('pip3');
+
     if (!pip3Installation) {
-      warning('No `pip3` found on your system, some of the offered functionalities won\'t be available')
+      warning(
+        "No `pip3` found on your system, some of the offered functionalities won't be available"
+      );
     }
-    
+
     const featureChoices = [
-            { message: 'JS Code Linters', value: 'JSLinters' },
-            {
-              message: 'Hooks with `husky`',
-              value: 'huskyHooks',
-              choices: [
-                { message: 'Commit message linting', value: 'commitMsgLint' },
-                { message: 'Pre-commit hook', value: 'preCommit' },
-                { message: 'Pre-push hook', value: 'prePush' },
-              ],
-            },
-            {
-              message: 'Dockerize GitHub workflow step',
-              value: 'dockerizeWorkflow',
-            },
-          ];
+      { message: 'JS Code Linters', value: 'JSLinters' },
+      {
+        message: 'Hooks with `husky`',
+        value: 'huskyHooks',
+        choices: [
+          { message: 'Commit message linting', value: 'commitMsgLint' },
+          { message: 'Pre-commit hook', value: 'preCommit' },
+          { message: 'Pre-push hook', value: 'prePush' },
+        ],
+      },
+      {
+        message: 'Dockerize GitHub workflow step',
+        value: 'dockerizeWorkflow',
+      },
+    ];
     const initialFeatureChoices = [0, 1, 5];
 
     if (!pip3Installation) {
-      featureChoices.splice(1,1)
+      featureChoices.splice(1, 1);
       initialFeatureChoices.pop();
     }
     const pwd = strings.trim(cwd());
-    let pickedFramework
-    let projectName = parameters.first
+    let pickedFramework;
+    let projectName = parameters.first;
     let userInput = await prompt.ask([
       {
         type: 'input',
@@ -79,11 +81,11 @@ module.exports = {
           },
         ],
         result(v) {
-          pickedFramework = v
-          return v
+          pickedFramework = v;
+          return v;
         },
       },
-    ])
+    ]);
     userInput = Object.assign(
       {},
       userInput,
@@ -117,30 +119,30 @@ module.exports = {
           initial: initialFeatureChoices,
         },
       ])
-    )
+    );
 
-    userInput.projectLanguage = userInput.projectLanguage || 'TS'
-    userInput.moduleType = userInput.moduleType || 'CJS'
-    userInput.appDir = path(pwd, userInput.projectName)
-    userInput.assetsPath = ASSETS_PATH
-    userInput.pkgJsonScripts = []
-    userInput.pkgJsonInstalls = []
-    userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`
+    userInput.projectLanguage = userInput.projectLanguage || 'TS';
+    userInput.moduleType = userInput.moduleType || 'CJS';
+    userInput.appDir = path(pwd, userInput.projectName);
+    userInput.assetsPath = ASSETS_PATH;
+    userInput.pkgJsonScripts = [];
+    userInput.pkgJsonInstalls = [];
+    userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`;
 
-    const stepsOfExecution = []
-    const asyncOperations = []
+    const stepsOfExecution = [];
+    const asyncOperations = [];
 
     if (pickedFramework === 'nest') {
-      await toolbox.installNest(userInput)
+      await toolbox.installNest(userInput);
     } else if (pickedFramework) {
-      await toolbox.installFramework(userInput)
-      stepsOfExecution.push(toolbox.jsLinters(userInput))
+      await toolbox.installFramework(userInput);
+      stepsOfExecution.push(toolbox.jsLinters(userInput));
     }
 
-    stepsOfExecution.push(toolbox.jestConfig(userInput))
+    stepsOfExecution.push(toolbox.jestConfig(userInput));
 
     if (userInput.projectLanguage === 'TS') {
-      stepsOfExecution.push(toolbox.setupTs(userInput))
+      stepsOfExecution.push(toolbox.setupTs(userInput));
     }
 
     if (
@@ -149,60 +151,67 @@ module.exports = {
       userInput.features.includes('preCommit') ||
       userInput.features.includes('prePush')
     ) {
-      stepsOfExecution.push(toolbox.setupHusky(userInput))
+      stepsOfExecution.push(toolbox.setupHusky(userInput));
     }
 
     if (userInput.features.includes('dockerizeWorkflow')) {
-      stepsOfExecution.push(toolbox.dockerizeWorkflow(userInput))
+      stepsOfExecution.push(toolbox.dockerizeWorkflow(userInput));
     }
 
-    dir(userInput.workflowsFolder)
+    dir(userInput.workflowsFolder);
 
     stepsOfExecution.forEach((step) => {
-      step.syncOperations && step.syncOperations()
-      step.asyncOperations && asyncOperations.push(step.asyncOperations())
-    })
+      step.syncOperations && step.syncOperations();
+      step.asyncOperations && asyncOperations.push(step.asyncOperations());
+    });
 
     asyncOperations.push(
       (async () => {
-        muted('Installing dev dependencies...')
+        muted('Installing dev dependencies...');
         try {
           await run(
             `cd ${
               userInput.appDir
             } && npm install --save-dev ${userInput.pkgJsonInstalls.join(' ')}`
-          )
+          );
         } catch (err) {
           throw new Error(
             `An error has occurred while installing dev dependencies: ${err}`
-          )
+          );
         }
-        success('All dev dependencies have been installed successfully')
+        success(
+          'All dev dependencies have been installed successfully. Please wait for the other steps to be completed...'
+        );
       })(),
       (async () => {
         try {
           await copyAsync(
             `${ASSETS_PATH}/.project-gitignr`,
             `${userInput.appDir}/.gitignore`
-          )
+          );
           if (userInput.projectLanguage == 'TS') {
-            await run(`echo "dist/\n" >> ${userInput.appDir}/.gitignore`)
+            await run(`echo "dist/\n" >> ${userInput.appDir}/.gitignore`);
           }
         } catch (err) {
-          throw new Error(`An error has occurred while setting up .gitignore: ${err}`)
+          throw new Error(
+            `An error has occurred while setting up .gitignore: ${err}`
+          );
         }
+        success(
+          '.gitignore file created successfully. Please wait for the other steps to be completed...'
+        );
       })()
-    )
+    );
 
-    await Promise.all(asyncOperations)
+    await Promise.all(asyncOperations);
 
-    const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`))
+    const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`));
     const newScripts = userInput.pkgJsonScripts.reduce(
       (acc, scr) => ({ ...acc, ...scr }),
       {}
-    )
+    );
     if (pickedFramework === 'nest') {
-      Object.assign(newScripts, packageJson.scripts)
+      Object.assign(newScripts, packageJson.scripts);
       packageJson.jest.coverageThreshold = {
         global: {
           branches: 85,
@@ -210,14 +219,16 @@ module.exports = {
           lines: 85,
           statements: 85,
         },
-      }
+      };
     }
-    packageJson.scripts = newScripts
+    packageJson.scripts = newScripts;
 
     try {
-      write(`${userInput.appDir}/package.json`, packageJson)
+      write(`${userInput.appDir}/package.json`, packageJson);
     } catch (err) {
-      throw new Error(`An error occured while writing the new package.json file: ${err}`)
+      throw new Error(
+        `An error occured while writing the new package.json file: ${err}`
+      );
     }
 
     if (
@@ -226,19 +237,34 @@ module.exports = {
       userInput.features.includes('preCommit') ||
       userInput.features.includes('prePush')
     ) {
-      let script = `cd ${userInput.appDir} && npx husky install && npx sort-package-json`
+      let script = `cd ${userInput.appDir} && npx husky install && npx sort-package-json`;
 
-      if (userInput.features.includes('huskyHooks') || userInput.features.includes('preCommit')) {
-        script += ` && bash ${ASSETS_PATH}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}` 
+      if (
+        userInput.features.includes('huskyHooks') ||
+        userInput.features.includes('preCommit')
+      ) {
+        script += ` && bash ${ASSETS_PATH}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}`;
       }
 
       try {
-        await run(script)
+        await run(script);
       } catch (err) {
         throw new Error(
           `An error has occurred while setting up husky and relevant hooks ${err}`
-        )
+        );
       }
     }
+
+    highlight('\nProject generation completed!\n');
+    success(`Run "cd ${userInput.appDir}" to enter your project's folder.`);
+    success(
+      'Use "git remote add origin [your remote repository address]" to link your local and remote repositories.'
+    );
+    success(
+      'Use "git add . && git commit -m "feat: initial commit" && git push -u origin main" to push your initial local repository contents to your remote one.'
+    );
+    success(
+      'You can then procede managing your repositories according to your usual pracitces.'
+    );
   },
-}
+};

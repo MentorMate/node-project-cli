@@ -13,7 +13,7 @@ const createToolboxMock = () => ({
   parameters: {
     plugin: 'node-cli',
     command: 'generate',
-    array: [ 'project-name' ],
+    array: ['project-name'],
     options: {},
     raw: [
       '/path/to/node',
@@ -25,28 +25,30 @@ const createToolboxMock = () => ({
       '/path/to/node',
       '/path/to/project/bin/node-cli',
       'generate',
-      'project-name'
+      'project-name',
     ],
     first: 'project-name',
     second: undefined,
     third: undefined,
-    string: 'project-name'
+    string: 'project-name',
   },
   patching: {
-    replace: (filename, oldContent, newContent) => filename.replace(oldContent, newContent),
+    replace: (filename, oldContent, newContent) =>
+      filename.replace(oldContent, newContent),
   },
   print: {
     success: (msg) => {},
+    highlight: (msg) => {},
     error: (msg) => {},
     muted: (msg) => {},
     warning: (msg) => {},
   },
   prompt: {
     ask: async (questions) => {
-      const answers = questions.map(q => {
+      const answers = questions.map((q) => {
         const answer = [q.format, q.result]
           .filter(Boolean)
-          .reduce((val, fn) => fn(val), `${q.name}Answer`)
+          .reduce((val, fn) => fn(val), `${q.name}Answer`);
         return [q.name, answer];
       });
       return Object.fromEntries(answers);
@@ -56,7 +58,6 @@ const createToolboxMock = () => ({
   system: {
     run: (cmd) => '',
     which: () => true,
-
   },
   meta: {
     src: '/path/to/project/src',
@@ -67,11 +68,26 @@ const createToolboxMock = () => ({
   // Extensions
   installFramework: async () => {},
   installNest: async () => {},
-  jsLinters: () => ({ syncOperations: () => {}, asyncOperations: async () => {} }),
-  jestConfig: () => ({ syncOperations: () => {}, asyncOperations: async () => {} }),
-  setupTs: () => ({ syncOperations: () => {}, asyncOperations: async () => {} }),
-  setupHusky: () => ({ syncOperations: () => {}, asyncOperations: async () => {} }),
-  dockerizeWorkflow: () => ({ syncOperations: () => {}, asyncOperations: async () => {} }),
+  jsLinters: () => ({
+    syncOperations: () => {},
+    asyncOperations: async () => {},
+  }),
+  jestConfig: () => ({
+    syncOperations: () => {},
+    asyncOperations: async () => {},
+  }),
+  setupTs: () => ({
+    syncOperations: () => {},
+    asyncOperations: async () => {},
+  }),
+  setupHusky: () => ({
+    syncOperations: () => {},
+    asyncOperations: async () => {},
+  }),
+  dockerizeWorkflow: () => ({
+    syncOperations: () => {},
+    asyncOperations: async () => {},
+  }),
 });
 
 const createExtensionInput = () => ({
@@ -89,7 +105,7 @@ const createExtensionInput = () => ({
     'commitMsgLint',
     'preCommit',
     'prePush',
-    'dockerizeWorkflow'
+    'dockerizeWorkflow',
   ],
   pkgJsonScripts: [],
   pkgJsonInstalls: [],

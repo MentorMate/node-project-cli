@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 module.exports = (toolbox) => {
   toolbox.jestConfig = ({
@@ -13,44 +13,46 @@ module.exports = (toolbox) => {
     const {
       print: { success, muted },
       filesystem: { copyAsync },
-    } = toolbox
+    } = toolbox;
 
     async function asyncOperations() {
-      muted('Configuring Jest...')
+      muted('Configuring Jest...');
       try {
         await copyAsync(
           `${assetsPath}/.github/workflows/coverage.yaml`,
           `${workflowsFolder}/coverage.yaml`
-        )
+        );
         if (framework !== 'nest') {
           const jestConfigFile =
             projectLanguage === 'TS'
               ? `${assetsPath}/jest.config.ts.js`
-              : `${assetsPath}/jest.config.vanilla.js`
-          await copyAsync(jestConfigFile, `${appDir}/jest.config.js`)
+              : `${assetsPath}/jest.config.vanilla.js`;
+          await copyAsync(jestConfigFile, `${appDir}/jest.config.js`);
         }
       } catch (err) {
         throw new Error(
           `An error has occurred while copying jest configuration and workflow: ${err}`
-        )
+        );
       }
 
-      success('Jest configured successfully')
+      success(
+        'Jest configured successfully. Please wait for the other steps to be completed...'
+      );
     }
 
     function syncOperations() {
       pkgJsonScripts.push({
         ['test']: 'jest',
-      })
-      pkgJsonInstalls.push('jest')
+      });
+      pkgJsonInstalls.push('jest');
       if (projectLanguage === 'TS') {
-        pkgJsonInstalls.push('ts-jest @types/jest')
+        pkgJsonInstalls.push('ts-jest @types/jest');
       }
     }
 
     return {
       asyncOperations,
       syncOperations,
-    }
-  }
-}
+    };
+  };
+};
