@@ -8,6 +8,7 @@ const createToolboxMock = () => ({
     path: (...args) => '',
     read: (path) => JSON.stringify({}),
     write: (path, data, options) => {},
+    cwd: () => {},
   },
   parameters: {
     plugin: 'node-cli',
@@ -38,6 +39,7 @@ const createToolboxMock = () => ({
     success: (msg) => {},
     error: (msg) => {},
     muted: (msg) => {},
+    warning: (msg) => {},
   },
   prompt: {
     ask: async (questions) => {
@@ -52,7 +54,9 @@ const createToolboxMock = () => ({
   },
   strings,
   system: {
-    run: (cmd) => ''
+    run: (cmd) => '',
+    which: () => true,
+
   },
   meta: {
     src: '/path/to/project/src',

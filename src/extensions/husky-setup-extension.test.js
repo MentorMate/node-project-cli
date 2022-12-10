@@ -150,6 +150,7 @@ describe('husky-setup-extension', () => {
         toolbox.print.error = jest.fn(() => {})
         toolbox.filesystem.dir = jest.fn(() => {})
         toolbox.filesystem.copyAsync = jest.fn(() => {})
+        toolbox.filesystem.writeAsync = jest.fn(() => {})
       })
 
       beforeEach(async () => {
@@ -218,10 +219,10 @@ describe('husky-setup-extension', () => {
           )
         })
 
-        it('should copy the lintstaged config', () => {
-          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${assetsPath}/.lintstagedrc`,
-            `${appDir}/.lintstagedrc`
+        it('should write the lintstaged config', () => {
+          expect(toolbox.filesystem.writeAsync).toHaveBeenCalledWith(
+            `${appDir}/.lintstagedrc`,
+            '{}'
           )
         })
 
