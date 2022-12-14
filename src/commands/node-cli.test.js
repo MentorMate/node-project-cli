@@ -2,7 +2,7 @@ const nodeCli = require('./node-cli');
 
 const toolbox = {
   print: {
-    info: jest.fn((msg) => {}),
+    info: jest.fn(() => {}),
   },
 };
 

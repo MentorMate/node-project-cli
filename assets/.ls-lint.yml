@@ -17,3 +17,4 @@ ignore:
   - .commitlintrc.js
   - .prettierrc.js
   - .eslintrc.js
+  - dist
