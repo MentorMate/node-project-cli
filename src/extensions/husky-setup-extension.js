@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 module.exports = (toolbox) => {
   toolbox.setupHusky = ({
@@ -11,31 +11,32 @@ module.exports = (toolbox) => {
   }) => {
     const {
       filesystem: { dir, copyAsync, read, writeAsync },
-      system: { run },
-      print: { error, success, muted },
-    } = toolbox
+      print: { success, muted },
+    } = toolbox;
 
-    const isWin = process.platform === "win32";
+    const isWin = process.platform === 'win32';
     const lintstagedrc = read(`${assetsPath}/.lintstagedrc`, 'json');
 
     /*
       We need to delete the *.sh option on windows since
       the package we use - shellcheck doesn't support windows
     */
-    const lintstagedrcData = isWin ? delete lintstagedrc['*.sh'] && lintstagedrc : lintstagedrc;
+    const lintstagedrcData = isWin
+      ? delete lintstagedrc['*.sh'] && lintstagedrc
+      : lintstagedrc;
 
-    const appHuskyPath = `${appDir}/.husky`
-    const assetHuskyPath = `${assetsPath}/.husky`
+    const appHuskyPath = `${appDir}/.husky`;
+    const assetHuskyPath = `${assetsPath}/.husky`;
 
     async function asyncOperations() {
-      muted('Creating Husky hooks...')
+      muted('Creating Husky hooks...');
       try {
-        dir(appHuskyPath)
+        dir(appHuskyPath);
 
         await copyAsync(
           `${assetHuskyPath}/.project-gitignr`,
           `${appHuskyPath}/.gitignore`
-        )
+        );
 
         if (features.includes('commitMsgLint')) {
           await Promise.all([
@@ -48,11 +49,11 @@ module.exports = (toolbox) => {
               `${assetHuskyPath}/commit-msg`,
               `${appHuskyPath}/commit-msg`
             ),
-          ])
+          ]);
         }
 
         if (features.includes('preCommit')) {
-          dir(`${appDir}/scripts`)
+          dir(`${appDir}/scripts`);
 
           await Promise.all([
             copyAsync(
@@ -73,54 +74,60 @@ module.exports = (toolbox) => {
               `${assetsPath}/.secrets.baseline`,
               `${appDir}/.secrets.baseline`
             ),
-          ])
+          ]);
         }
 
         if (features.includes('prePush')) {
           await copyAsync(
             `${assetHuskyPath}/pre-push`,
             `${appHuskyPath}/pre-push`
-          )
+          );
         }
       } catch (err) {
-        throw new Error(`An error has occurred while creating husky hooks: ${err}`)
+        throw new Error(
+          `An error has occurred while creating husky hooks: ${err}`
+        );
       }
 
-      success('Husky hooks created successfully')
+      success(
+        'Husky hooks created successfully. Please wait for the other steps to be completed...'
+      );
     }
 
     function syncOperations() {
       const prepareScript =
         projectLanguage === 'TS'
           ? 'husky install && npm run build'
-          : 'husky install'
+          : 'husky install';
       pkgJsonScripts.push({
         ['prepare']: prepareScript,
-      })
-      pkgJsonInstalls.push('husky')
+      });
+      pkgJsonInstalls.push('husky');
 
       if (features.includes('commitMsgLint')) {
         pkgJsonScripts.push({
           ['validate:commit-message']: 'commitlint --edit $1',
-        })
+        });
         pkgJsonInstalls.push(
           '@commitlint/cli @commitlint/config-conventional commitizen cz-conventional-changelog'
-        )
+        );
       }
 
       if (features.includes('preCommit')) {
         pkgJsonScripts.push({
           ['initsecrets']: 'scripts/detect-secrets.sh',
-        })
+        });
         pkgJsonInstalls.push(
-          `lint-staged${isWin ? '' : ' shellcheck' } sort-package-json @ls-lint/ls-lint`
-        )
+          `lint-staged${
+            isWin ? '' : ' shellcheck'
+          } sort-package-json @ls-lint/ls-lint`
+        );
       }
     }
 
     return {
       asyncOperations,
       syncOperations,
-    }
-  }
-}
+    };
+  };
+};
