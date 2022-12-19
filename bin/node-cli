@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-const { print } = require('gluegun')
+const { print } = require('gluegun');
 
 // run the CLI with the current process arguments
 require('../src/cli')
   .run(process.argv)
-  .catch(err => {
+  .catch((err) => {
     print.error(err.message);
     process.exit(1);
   });
