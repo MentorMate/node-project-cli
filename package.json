@@ -5,6 +5,9 @@
   "bin": {
     "node-cli": "bin/node-cli"
   },
+  "repository": {
+    "url": "https://github.com/MentorMate/node-project-cli"
+  },
   "scripts": {
     "format": "eslint \"**/*.{js,jsx}\" --fix && prettier \"**/*.{js,jsx,json}\" --write",
     "test": "jest",
