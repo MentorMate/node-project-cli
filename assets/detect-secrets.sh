@@ -6,7 +6,7 @@ then
     echo "detect-secrets could not be found. Installing detect-secrets..."
     if command -v pip3 &> /dev/null
     then
-      pip3 install git+https://github.com/Yelp/detect-secrets@1.2.0
+      pip3 install detect-secrets
     else
       echo "pip3 not found, could not install detect-secrets"
       exit 1

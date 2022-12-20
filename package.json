@@ -1,9 +1,12 @@
 {
   "name": "@mentormate/node-cli",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.2",
   "description": "Node CLI",
   "bin": {
     "node-cli": "bin/node-cli"
+  },
+  "repository": {
+    "url": "https://github.com/MentorMate/node-project-cli"
   },
   "scripts": {
     "format": "eslint \"**/*.{js,jsx}\" --fix && prettier \"**/*.{js,jsx,json}\" --write",
@@ -48,7 +51,7 @@
     ]
   },
   "prettier": {
-    "semi": false,
+    "semi": true,
     "singleQuote": true
   },
   "husky": {

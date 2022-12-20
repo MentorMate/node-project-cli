@@ -16,7 +16,7 @@ module.exports = {
         'ci',
       ],
     ],
-    'subject-case': [2, 'always', ['sentence-case']],
+    'subject-case': [2, 'always', ['lower-case', 'sentence-case']],
   },
   parserPreset: {
     parserOpts: {
