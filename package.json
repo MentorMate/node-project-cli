@@ -36,18 +36,6 @@
     "prettier": "^2.2.1",
     "pretty-quick": "^3.1.0"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "rootDir": "src",
-    "coverageDirectory": "../coverage",
-    "collectCoverageFrom": [
-      "**/*.js"
-    ],
-    "coveragePathIgnorePatterns": [
-      "cli.js",
-      "mocks.js"
-    ]
-  },
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
