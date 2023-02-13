@@ -16,13 +16,12 @@
     "bin"
   ],
   "scripts": {
-    "coverage": "jest --coverage",
-    "eslint": "eslint \"**/*.js\" --fix --cache",
-    "format": "npm run eslint && npm run prettier",
+    "format": "prettier \"**/*.js\" --write --cache --cache-strategy metadata --cache-location .prettiercache",
+    "lint": "eslint \"**/*.js\" --fix --cache",
     "prepare": "husky install",
-    "prettier": "prettier \"**/*.js\" --write --cache --cache-strategy metadata --cache-location .prettiercache",
     "test": "jest",
-    "watch": "jest --watch"
+    "test:cov": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "gluegun": "^5.1.2"
