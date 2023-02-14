@@ -32,8 +32,28 @@ describe('dockerize-workflow', () => {
       ops = toolbox.setupHusky(input);
     });
 
-    it('should return asyncOperations when the extension is called', () => {
+    it('should return syncOperations and asyncOperations when the extension is called', () => {
+      expect(ops.syncOperations).toBeDefined();
       expect(ops.asyncOperations).toBeDefined();
+    });
+
+    describe('syncOperations', () => {
+      let scripts;
+      let packages;
+
+      beforeEach(() => {
+        toolbox.dockerizeWorkflow(input).syncOperations();
+        scripts = Object.assign({}, ...input.pkgJsonScripts);
+        packages = input.pkgJsonInstalls.map((s) => s.split(' ')).flat(1);
+      });
+
+      it('should add a image:build script', () => {
+        expect(scripts['image:build']).toMatch(/docker build/);
+      });
+
+      it('should add a image:run script', () => {
+        expect(scripts['image:run']).toMatch(/docker run/);
+      });
     });
 
     describe('asyncOperations', () => {
@@ -71,6 +91,13 @@ describe('dockerize-workflow', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/Dockerfile`,
           `${input.appDir}/Dockerfile`
+        );
+      });
+
+      it('should copy .dockerignore', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/.dockerignore`,
+          `${input.appDir}/.dockerignore`
         );
       });
 

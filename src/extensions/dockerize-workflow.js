@@ -7,6 +7,7 @@ module.exports = (toolbox) => {
     workflowsFolder,
     projectLanguage,
     framework,
+    pkgJsonScripts,
   }) => {
     const {
       filesystem: { copyAsync },
@@ -22,6 +23,7 @@ module.exports = (toolbox) => {
           copyAsync(`${assetsPath}/.project-npmignr`, `${appDir}/.npmignore`),
           copyAsync(`${assetsPath}/scripts/`, `${appDir}/scripts/`),
           copyAsync(`${assetsPath}/Dockerfile`, `${appDir}/Dockerfile`),
+          copyAsync(`${assetsPath}/.dockerignore`, `${appDir}/.dockerignore`),
           copyAsync(
             `${assetsPath}/.github/workflows/dockerize.yaml`,
             `${workflowsFolder}/dockerize.yaml`
@@ -71,6 +73,17 @@ module.exports = (toolbox) => {
       );
     }
 
-    return { asyncOperations };
+    function syncOperations() {
+      pkgJsonScripts.push({
+        'image:build': `DOCKER_BUILDKIT=1 docker build -t ${projectName} .`,
+        // TODO: add `--env-file .env` with .env support
+        'image:run': `docker run --rm --net host ${projectName}`,
+      });
+    }
+
+    return {
+      asyncOperations,
+      syncOperations,
+    };
   };
 };
