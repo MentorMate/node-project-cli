@@ -1,11 +1,16 @@
-/**
- * @type {import("eslint").Linter.Config}
- */
 module.exports = {
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: 'module',
+  env: {
+    commonjs: true,
+    es2021: true,
+    node: true,
+    jest: true,
   },
-  extends: ['prettier', 'plugin:prettier/recommended'],
+  extends: [
+    'eslint:recommended',
+    'prettier',
+  ],
+  parserOptions: {
+    ecmaVersion: 'latest',
+  },
   rules: {},
 };

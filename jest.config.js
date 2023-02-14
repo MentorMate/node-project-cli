@@ -1,15 +1,15 @@
 /**
  * @type {import('@jest/types').Config.InitialOptions}
  */
-const config = {
+module.exports = {
   testEnvironment: 'node',
   rootDir: 'src',
   coverageDirectory: '../coverage',
-  collectCoverageFrom: ['**/*.js'],
+  collectCoverageFrom: [
+    '**/*.js'
+  ],
   coveragePathIgnorePatterns: [
     'cli.js',
-    'mocks.js'
+    'utils/test/mocks.js'
   ],
 };
-
-module.exports = config;

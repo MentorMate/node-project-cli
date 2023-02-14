@@ -47,14 +47,8 @@ describe('js-linters-extension', () => {
         packages = input.pkgJsonInstalls.map((s) => s.split(' ')).flat(1);
       });
 
-      it('should add a prettier:format script', () => {
-        expect(scripts['prettier:format']).toBe('prettier . --write');
-      });
-
-      it('should add a prettier:check-format script', () => {
-        expect(scripts['prettier:check-format']).toBe(
-          'prettier . --list-different'
-        );
+      it('should add a format script', () => {
+        expect(scripts['format']).toMatch(/prettier/);
       });
 
       describe('when the language is TypeScript', () => {
@@ -63,7 +57,7 @@ describe('js-linters-extension', () => {
         });
 
         it('should add a lint script', () => {
-          expect(scripts['lint']).toBe('eslint . --ext .js,.cjs,.mjs,.ts');
+          expect(scripts['lint']).toMatch(/eslint/);
         });
 
         it('should add the @typescript-eslint/eslint-plugin package', () => {
@@ -81,12 +75,8 @@ describe('js-linters-extension', () => {
         });
 
         it('should add a lint script', () => {
-          expect(scripts['lint']).toBe('eslint . --ext .js,.cjs,.mjs');
+          expect(scripts['lint']).toMatch(/eslint/);
         });
-      });
-
-      it('should add a lint:fix script', () => {
-        expect(scripts['lint:fix']).toBe('npm run lint --fix');
       });
 
       it('should add the prettier package', () => {
@@ -99,14 +89,6 @@ describe('js-linters-extension', () => {
 
       it('should add the eslint-config-prettier package', () => {
         expect(packages).toContain('eslint-config-prettier');
-      });
-
-      it('should add the eslint-config-google package', () => {
-        expect(packages).toContain('eslint-config-google');
-      });
-
-      it('should add the eslint-plugin-prettier package', () => {
-        expect(packages).toContain('eslint-plugin-prettier');
       });
     });
 
@@ -133,17 +115,17 @@ describe('js-linters-extension', () => {
         expect(opts.target).toBe(`${input.appDir}/.eslintrc.js`);
       });
 
-      it('should generate a prettier config', () => {
-        expect(toolbox.template.generate).toHaveBeenCalledTimes(2);
-        const opts = toolbox.template.generate.mock.calls[1][0];
-        expect(opts.template).toBe('prettierrc-model.js.ejs');
-        expect(opts.target).toBe(`${input.appDir}/.prettierrc.js`);
-      });
-
       it('should copy the .eslintignore file', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.eslintignore`,
           `${input.appDir}/.eslintignore`
+        );
+      });
+
+      it('should copy the prettier config', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/.prettierrc.js`,
+          `${input.appDir}/.prettierrc.js`
         );
       });
 

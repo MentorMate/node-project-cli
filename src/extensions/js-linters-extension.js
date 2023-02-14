@@ -27,11 +27,8 @@ module.exports = (toolbox) => {
               cjs: moduleType === 'CJS',
             },
           }),
-          generate({
-            template: 'prettierrc-model.js.ejs',
-            target: `${appDir}/.prettierrc.js`,
-          }),
           copyAsync(`${assetsPath}/.eslintignore`, `${appDir}/.eslintignore`),
+          copyAsync(`${assetsPath}/.prettierrc.js`, `${appDir}/.prettierrc.js`),
           copyAsync(
             `${assetsPath}/.prettierignore`,
             `${appDir}/.prettierignore`
@@ -51,18 +48,15 @@ module.exports = (toolbox) => {
     function syncOperations() {
       const lintScript =
         projectLanguage === 'TS'
-          ? 'eslint . --ext .js,.cjs,.mjs,.ts'
-          : 'eslint . --ext .js,.cjs,.mjs';
+          ? 'eslint . --ext .js,.cjs,.mjs,.ts --fix --cache'
+          : 'eslint . --ext .js,.cjs,.mjs --fix --cache';
 
       pkgJsonScripts.push({
-        ['prettier:format']: 'prettier . --write',
-        ['prettier:check-format']: 'prettier . --list-different',
+        ['format']:
+          'prettier "**/*.js" --write --cache --cache-strategy metadata --cache-location .prettiercache',
         ['lint']: lintScript,
-        ['lint:fix']: 'npm run lint --fix',
       });
-      pkgJsonInstalls.push(
-        'prettier eslint eslint-config-prettier eslint-config-google eslint-plugin-prettier'
-      );
+      pkgJsonInstalls.push('prettier eslint eslint-config-prettier');
       if (projectLanguage === 'TS') {
         pkgJsonInstalls.push(
           '@typescript-eslint/eslint-plugin @typescript-eslint/parser'

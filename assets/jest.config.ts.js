@@ -3,7 +3,7 @@
 const config = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest'
+    '^.+\\.(t|j)s$': 'ts-jest',
   },
   rootDir: 'src',
   collectCoverage: true,
@@ -12,7 +12,7 @@ const config = {
     '!**/node_modules/**',
     '!**/coverage/**',
     '!**/database/models/**',
-    '!*.config.js'
+    '!*.config.js',
   ],
   coverageDirectory: 'coverage',
   testEnvironment: 'node',
@@ -21,9 +21,9 @@ const config = {
       branches: 85,
       functions: 85,
       lines: 85,
-      statements: 85
-    }
-  }
+      statements: 85,
+    },
+  },
 };
 
 module.exports = config;
