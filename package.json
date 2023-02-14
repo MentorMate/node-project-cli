@@ -27,15 +27,14 @@
     "gluegun": "^5.1.2"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^17.4.2",
-    "commitlint": "^17.4.2",
-    "eslint": "^7.22.0",
-    "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-prettier": "^3.3.1",
-    "husky": "^8.0.0",
-    "jest": "^26.6.3",
-    "lint-staged": "^13.1.1",
-    "prettier": "^2.8",
+    "@commitlint/config-conventional": "^17.4.3",
+    "commitlint": "^17.4.3",
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "husky": "^8.0.3",
+    "jest": "^29.4.2",
+    "lint-staged": "^13.1.2",
+    "prettier": "^2.8.4",
     "sort-package-json": "^2.4.1"
   }
 }

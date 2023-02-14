@@ -3,8 +3,13 @@ module.exports = {
     <% if (props.cjs) { %>commonjs: true,<% } else { %>commonjs: false,<% } %>
     es2021: true,
     node: true,
+    jest: true,
   },
-  extends: ['google', 'plugin:prettier/recommended'],
+  extends: [
+    'eslint:recommended',
+    <% if (props.ts) { %>'plugin:@typescript-eslint/recommended',<% } %>
+    'prettier',
+  ],
   <% if (props.ts) { %>parser: '@typescript-eslint/parser',<% } else { %>parser: null,<% } %>
   parserOptions: {
     ecmaVersion: 'latest',
@@ -13,4 +18,3 @@ module.exports = {
   <% if (props.ts) { %>plugins: ['@typescript-eslint'],<% } else { %>plugins: [],<% } %>
   rules: {},
 };
-

@@ -39,12 +39,10 @@ describe('dockerize-workflow', () => {
 
     describe('syncOperations', () => {
       let scripts;
-      let packages;
 
       beforeEach(() => {
         toolbox.dockerizeWorkflow(input).syncOperations();
         scripts = Object.assign({}, ...input.pkgJsonScripts);
-        packages = input.pkgJsonInstalls.map((s) => s.split(' ')).flat(1);
       });
 
       it('should add a image:build script', () => {
