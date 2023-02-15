@@ -7,6 +7,7 @@ const createToolboxMock = () => ({
     copy: (from, to, options) => {},
     copyAsync: async (from, to, options) => {},
     dir: (path, criteria) => {},
+    exists: (path) => false,
     path: (...args) => '',
     read: (path) => JSON.stringify({}),
     write: (path, data, options) => {},
@@ -68,6 +69,9 @@ const createToolboxMock = () => ({
     generate: (opts) => '',
   },
   // Extensions
+  createProjectDirectory: async () => {},
+  initializeNpm: async () => {},
+  initializeGit: async () => {},
   installFramework: async () => {},
   installNest: async () => {},
   jsLinters: () => ({

@@ -135,9 +135,13 @@ module.exports = {
     if (pickedFramework === 'nest') {
       await toolbox.installNest(userInput);
     } else if (pickedFramework) {
+      await toolbox.createProjectDirectory(userInput);
+      await toolbox.initializeNpm(userInput);
       await toolbox.installFramework(userInput);
       stepsOfExecution.push(toolbox.jsLinters(userInput));
     }
+
+    await toolbox.initializeGit(userInput);
 
     stepsOfExecution.push(toolbox.jestConfig(userInput));
 

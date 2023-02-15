@@ -43,16 +43,6 @@ describe('install-framework', () => {
       expect(toolbox.print.error).not.toHaveBeenCalled();
     });
 
-    it('should create the app directory', () => {
-      expect(toolbox.filesystem.dir).toHaveBeenCalledWith(input.appDir);
-    });
-
-    it('should initialize npm', () => {
-      expect(toolbox.system.run).toHaveBeenCalledWith(
-        `cd ${input.appDir} && npm init -y --scope ${input.projectScope}`
-      );
-    });
-
     it('should install the framework package', () => {
       expect(toolbox.system.run).toHaveBeenCalledWith(
         `cd ${input.appDir} && npm install ${input.framework}`
@@ -79,17 +69,11 @@ describe('install-framework', () => {
       });
     });
 
-    it('should initialize git and create the main branch', () => {
-      expect(toolbox.system.run).toHaveBeenCalledWith(
-        `cd ${input.appDir} && git init && git checkout -b main`
-      );
-    });
-
     describe('when an error is thrown', () => {
       const error = new Error('the-error');
 
       beforeEach(() => {
-        toolbox.filesystem.dir = jest.fn(() => {
+        toolbox.filesystem.copyAsync = jest.fn(() => {
           throw error;
         });
       });
