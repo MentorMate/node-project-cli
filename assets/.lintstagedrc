@@ -1,7 +1,7 @@
 {
     "*.{js,cjs,mjs,ts}": [
         "prettier --write",
-        "eslint --ext .js,.cjs,.mjs,.ts"
+        "eslint --fix"
     ],
     "*.sh": "shellcheck -x",
     "package.json": "sort-package-json"
