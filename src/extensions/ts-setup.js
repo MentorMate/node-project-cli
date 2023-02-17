@@ -4,8 +4,7 @@ module.exports = (toolbox) => {
   toolbox.setupTs = ({
     appDir,
     moduleType,
-    pkgJsonScripts,
-    pkgJsonInstalls,
+    pkgJson,
     assetsPath,
     framework,
   }) => {
@@ -37,12 +36,18 @@ module.exports = (toolbox) => {
     function syncOperations() {
       if (framework !== 'nest') {
         copy(`${assetsPath}/tsconfig.json`, `${appDir}/tsconfig.json`);
-        pkgJsonScripts.push({
-          ['build']: 'tsc --build && tsc-alias',
-          ['prepare']: 'npm run build',
+
+        Object.assign(pkgJson.scripts, {
+          build: 'tsc --build && tsc-alias',
         });
-        pkgJsonInstalls.push('typescript @tsconfig/recommended tsc-alias');
+
+        Object.assign(pkgJson.devDependencies, {
+          typescript: '^4.9.5',
+          '@tsconfig/recommended': '^1.0.2',
+          'tsc-alias': '^1.8.2',
+        });
       }
+
       const tsConfig = JSON.parse(read(`${appDir}/tsconfig.json`));
 
       if (moduleType === 'ESM') {

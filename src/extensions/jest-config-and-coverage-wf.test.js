@@ -35,7 +35,7 @@ describe('jest-config-and-coverage-wf', () => {
 
     describe('syncOperations', () => {
       let scripts;
-      let packages;
+      let devDependencies;
 
       beforeAll(() => {
         input.projectLanguage = 'JS';
@@ -43,13 +43,8 @@ describe('jest-config-and-coverage-wf', () => {
 
       beforeEach(() => {
         toolbox.jestConfig(input).syncOperations();
-        scripts = Object.assign({}, ...input.pkgJsonScripts);
-        packages = input.pkgJsonInstalls.map((s) => s.split(' ')).flat(1);
-      });
-
-      it('should add npm packages and scripts', () => {
-        expect(input.pkgJsonInstalls.length).toBeGreaterThan(0);
-        expect(input.pkgJsonScripts.length).toBeGreaterThan(0);
+        scripts = input.pkgJson.scripts;
+        devDependencies = input.pkgJson.devDependencies;
       });
 
       it('should add the test script', () => {
@@ -57,7 +52,7 @@ describe('jest-config-and-coverage-wf', () => {
       });
 
       it('should add the jest package', () => {
-        expect(packages).toContain('jest');
+        expect(devDependencies).toHaveProperty('jest');
       });
 
       describe('when the languange is TypeScript', () => {
@@ -66,11 +61,11 @@ describe('jest-config-and-coverage-wf', () => {
         });
 
         it('should add the ts-jest package', () => {
-          expect(packages).toContain('ts-jest');
+          expect(devDependencies).toHaveProperty('ts-jest');
         });
 
         it('should add the @types/jest package', () => {
-          expect(packages).toContain('@types/jest');
+          expect(devDependencies).toHaveProperty('@types/jest');
         });
       });
     });

@@ -69,6 +69,9 @@ const createToolboxMock = () => ({
     generate: (opts) => '',
   },
   // Extensions
+  os: {
+    isWin: () => false,
+  },
   createProjectDirectory: async () => {},
   initializeNpm: async () => {},
   initializeGit: async () => {},
@@ -113,8 +116,11 @@ const createExtensionInput = () => ({
     'prePush',
     'dockerizeWorkflow',
   ],
-  pkgJsonScripts: [],
-  pkgJsonInstalls: [],
+  pkgJson: {
+    scripts: {},
+    dependencies: {},
+    devDependencies: {},
+  },
 });
 
 module.exports = {

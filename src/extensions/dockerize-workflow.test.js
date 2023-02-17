@@ -42,7 +42,7 @@ describe('dockerize-workflow', () => {
 
       beforeEach(() => {
         toolbox.dockerizeWorkflow(input).syncOperations();
-        scripts = Object.assign({}, ...input.pkgJsonScripts);
+        scripts = input.pkgJson.scripts;
       });
 
       it('should add a image:build script', () => {
