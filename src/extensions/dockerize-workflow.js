@@ -7,7 +7,7 @@ module.exports = (toolbox) => {
     workflowsFolder,
     projectLanguage,
     framework,
-    pkgJsonScripts,
+    pkgJson,
   }) => {
     const {
       filesystem: { copyAsync },
@@ -74,7 +74,7 @@ module.exports = (toolbox) => {
     }
 
     function syncOperations() {
-      pkgJsonScripts.push({
+      Object.assign(pkgJson.scripts, {
         'image:build': `DOCKER_BUILDKIT=1 docker build -t ${projectName} .`,
         // TODO: add `--env-file .env` with .env support
         'image:run': `docker run --rm --net host ${projectName}`,

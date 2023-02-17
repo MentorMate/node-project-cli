@@ -39,7 +39,7 @@ describe('husky-setup-extension', () => {
 
     describe('syncOperations', () => {
       let scripts;
-      let packages;
+      let devDependencies;
 
       beforeAll(() => {
         input.features = [];
@@ -47,32 +47,16 @@ describe('husky-setup-extension', () => {
 
       beforeEach(() => {
         ops.syncOperations();
-        scripts = Object.assign({}, ...input.pkgJsonScripts);
-        packages = input.pkgJsonInstalls.map((s) => s.split(' ')).flat(1);
+        scripts = input.pkgJson.scripts;
+        devDependencies = input.pkgJson.devDependencies;
       });
 
-      describe('when the language is TypeScript', () => {
-        beforeAll(() => {
-          input.projectLanguage = 'TS';
-        });
-
-        it('should add a prepare script which builds the app', () => {
-          expect(scripts['prepare']).toBe('husky install && npm run build');
-        });
-      });
-
-      describe('when the language is JavaScript', () => {
-        beforeAll(() => {
-          input.projectLanguage = 'JS';
-        });
-
-        it('should add a prepare script', () => {
-          expect(scripts['prepare']).toBe('husky install');
-        });
+      it('should add a prepare script which builds the app', () => {
+        expect(scripts['prepare']).toBe('husky install');
       });
 
       it('should add the husky package', () => {
-        expect(packages).toContain('husky');
+        expect(devDependencies).toHaveProperty('husky');
       });
 
       describe('when the features include commit message linting', () => {
@@ -86,20 +70,22 @@ describe('husky-setup-extension', () => {
           );
         });
 
-        it('should add the @commitlint/cli package', () => {
-          expect(packages).toContain('@commitlint/cli');
+        it('should add the commitlint package', () => {
+          expect(devDependencies).toHaveProperty('commitlint');
         });
 
         it('should add the @commitlint/config-conventional package', () => {
-          expect(packages).toContain('@commitlint/config-conventional');
+          expect(devDependencies).toHaveProperty(
+            '@commitlint/config-conventional'
+          );
         });
 
         it('should add the commitizen package', () => {
-          expect(packages).toContain('commitizen');
+          expect(devDependencies).toHaveProperty('commitizen');
         });
 
         it('should add the cz-conventional-changelog package', () => {
-          expect(packages).toContain('cz-conventional-changelog');
+          expect(devDependencies).toHaveProperty('cz-conventional-changelog');
         });
       });
 
@@ -113,19 +99,41 @@ describe('husky-setup-extension', () => {
         });
 
         it('should add the lint-staged package', () => {
-          expect(packages).toContain('lint-staged');
-        });
-
-        it('should add the shellcheck package', () => {
-          expect(packages).toContain('shellcheck');
+          expect(devDependencies).toHaveProperty('lint-staged');
         });
 
         it('should add the sort-package-json package', () => {
-          expect(packages).toContain('sort-package-json');
+          expect(devDependencies).toHaveProperty('sort-package-json');
         });
 
         it('should add the @ls-lint/ls-lint package', () => {
-          expect(packages).toContain('@ls-lint/ls-lint');
+          expect(devDependencies).toHaveProperty('@ls-lint/ls-lint');
+        });
+
+        describe('and the OS is not Windows', () => {
+          beforeEach(() => {
+            delete input.pkgJson.devDependencies['shellcheck'];
+            toolbox.os.isWin = jest.fn(() => false);
+            toolbox.setupHusky(input).syncOperations();
+            devDependencies = input.pkgJson.devDependencies;
+          });
+
+          it('should add the shellcheck package', () => {
+            expect(devDependencies).toHaveProperty('shellcheck');
+          });
+        });
+
+        describe('and the OS is Windows', () => {
+          beforeEach(() => {
+            delete input.pkgJson.devDependencies['shellcheck'];
+            toolbox.os.isWin = jest.fn(() => true);
+            toolbox.setupHusky(input).syncOperations();
+            devDependencies = input.pkgJson.devDependencies;
+          });
+
+          it('should not add the shellcheck package', () => {
+            expect(devDependencies).not.toHaveProperty('shellcheck');
+          });
         });
       });
     });

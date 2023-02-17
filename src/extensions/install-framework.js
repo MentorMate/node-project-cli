@@ -6,17 +6,23 @@ module.exports = (toolbox) => {
     framework,
     appDir,
     assetsPath,
+    pkgJson,
   }) => {
     const {
       filesystem: { copyAsync },
       print: { success, muted },
-      system: { run },
     } = toolbox;
 
-    muted(`Installing ${framework}...`);
-    try {
-      await run(`cd ${appDir} && npm install ${framework}`);
+    const frameworkVersion = {
+      express: '^4.18.2',
+      fastify: '^4.13.0',
+    };
 
+    muted(`Installing ${framework}...`);
+
+    pkgJson.dependencies[framework] = frameworkVersion[framework];
+
+    try {
       if (projectLanguage === 'TS') {
         await Promise.all([
           copyAsync(`${assetsPath}/src/`, `${appDir}/src/`),

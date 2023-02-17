@@ -5,8 +5,7 @@ module.exports = (toolbox) => {
     appDir,
     projectLanguage,
     moduleType,
-    pkgJsonScripts,
-    pkgJsonInstalls,
+    pkgJson,
     assetsPath,
   }) => {
     const {
@@ -51,17 +50,21 @@ module.exports = (toolbox) => {
           ? 'eslint . --ext .js,.cjs,.mjs,.ts --fix --cache'
           : 'eslint . --ext .js,.cjs,.mjs --fix --cache';
 
-      pkgJsonScripts.push({
-        ['format']:
+      Object.assign(pkgJson.scripts, {
+        format:
           'prettier "**/*.js" --write --cache --cache-strategy metadata --cache-location .prettiercache',
-        ['lint']: lintScript,
+        lint: lintScript,
       });
-      pkgJsonInstalls.push('prettier eslint eslint-config-prettier');
-      if (projectLanguage === 'TS') {
-        pkgJsonInstalls.push(
-          '@typescript-eslint/eslint-plugin @typescript-eslint/parser'
-        );
-      }
+
+      Object.assign(pkgJson.devDependencies, {
+        prettier: '^2.8.4',
+        eslint: '^8.34.0',
+        'eslint-config-prettier': '^8.6.0',
+        ...(projectLanguage === 'TS' && {
+          '@typescript-eslint/eslint-plugin': '^5.52.0',
+          '@typescript-eslint/parser': '^5.52.0',
+        }),
+      });
     }
 
     return {

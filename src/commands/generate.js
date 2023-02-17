@@ -10,7 +10,7 @@ module.exports = {
       system: { run, which },
       strings,
       filesystem: { path, dir, write, copyAsync, cwd, read },
-      print: { success, warning, muted, highlight },
+      print: { success, warning, highlight },
       prompt,
       meta,
     } = toolbox;
@@ -125,9 +125,13 @@ module.exports = {
     userInput.moduleType = userInput.moduleType || 'CJS';
     userInput.appDir = path(pwd, userInput.projectName);
     userInput.assetsPath = ASSETS_PATH;
-    userInput.pkgJsonScripts = [];
-    userInput.pkgJsonInstalls = [];
     userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`;
+
+    userInput.pkgJson = {
+      scripts: {},
+      dependencies: {},
+      devDependencies: {},
+    };
 
     const stepsOfExecution = [];
     const asyncOperations = [];
@@ -171,23 +175,6 @@ module.exports = {
 
     asyncOperations.push(
       (async () => {
-        muted('Installing dev dependencies...');
-        try {
-          await run(
-            `cd ${
-              userInput.appDir
-            } && npm install --save-dev ${userInput.pkgJsonInstalls.join(' ')}`
-          );
-        } catch (err) {
-          throw new Error(
-            `An error has occurred while installing dev dependencies: ${err}`
-          );
-        }
-        success(
-          'All dev dependencies have been installed successfully. Please wait for the other steps to be completed...'
-        );
-      })(),
-      (async () => {
         try {
           await copyAsync(
             `${ASSETS_PATH}/.project-gitignr`,
@@ -210,12 +197,20 @@ module.exports = {
     await Promise.all(asyncOperations);
 
     const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`));
-    const newScripts = userInput.pkgJsonScripts.reduce(
-      (acc, scr) => ({ ...acc, ...scr }),
-      {}
-    );
+    packageJson.scripts = {
+      ...packageJson.scripts,
+      ...userInput.pkgJson.scripts,
+    };
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      ...userInput.pkgJson.dependencies,
+    };
+    packageJson.devDependencies = {
+      ...packageJson.devDependencies,
+      ...userInput.pkgJson.devDependencies,
+    };
+
     if (pickedFramework === 'nest') {
-      Object.assign(newScripts, packageJson.scripts);
       packageJson.jest.coverageThreshold = {
         global: {
           branches: 85,
@@ -225,7 +220,6 @@ module.exports = {
         },
       };
     }
-    packageJson.scripts = newScripts;
 
     try {
       write(`${userInput.appDir}/package.json`, packageJson);

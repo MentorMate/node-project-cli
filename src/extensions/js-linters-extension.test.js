@@ -35,7 +35,7 @@ describe('js-linters-extension', () => {
 
     describe('syncOperations', () => {
       let scripts;
-      let packages;
+      let devDependencies;
 
       beforeAll(() => {
         input.projectLanguage = 'JS';
@@ -43,8 +43,8 @@ describe('js-linters-extension', () => {
 
       beforeEach(() => {
         toolbox.jsLinters(input).syncOperations();
-        scripts = Object.assign({}, ...input.pkgJsonScripts);
-        packages = input.pkgJsonInstalls.map((s) => s.split(' ')).flat(1);
+        scripts = input.pkgJson.scripts;
+        devDependencies = input.pkgJson.devDependencies;
       });
 
       it('should add a format script', () => {
@@ -61,11 +61,13 @@ describe('js-linters-extension', () => {
         });
 
         it('should add the @typescript-eslint/eslint-plugin package', () => {
-          expect(packages).toContain('@typescript-eslint/eslint-plugin');
+          expect(devDependencies).toHaveProperty(
+            '@typescript-eslint/eslint-plugin'
+          );
         });
 
         it('should add the @typescript-eslint/parser package', () => {
-          expect(packages).toContain('@typescript-eslint/parser');
+          expect(devDependencies).toHaveProperty('@typescript-eslint/parser');
         });
       });
 
@@ -80,15 +82,15 @@ describe('js-linters-extension', () => {
       });
 
       it('should add the prettier package', () => {
-        expect(packages).toContain('prettier');
+        expect(devDependencies).toHaveProperty('prettier');
       });
 
       it('should add the eslint package', () => {
-        expect(packages).toContain('eslint');
+        expect(devDependencies).toHaveProperty('eslint');
       });
 
       it('should add the eslint-config-prettier package', () => {
-        expect(packages).toContain('eslint-config-prettier');
+        expect(devDependencies).toHaveProperty('eslint-config-prettier');
       });
     });
 

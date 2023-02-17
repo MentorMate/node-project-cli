@@ -22,6 +22,7 @@ describe('install-framework', () => {
 
   describe('installFramework', () => {
     const input = createExtensionInput();
+    let dependencies;
 
     beforeAll(() => {
       input.projectLanguage = 'JS';
@@ -35,6 +36,7 @@ describe('install-framework', () => {
       toolbox.filesystem.copyAsync = jest.fn(() => {});
       toolbox.system.run = jest.fn(() => {});
       toolbox.installFramework(input);
+      dependencies = input.pkgJson.dependencies;
     });
 
     it('should print a muted and a success message', async () => {
@@ -43,10 +45,8 @@ describe('install-framework', () => {
       expect(toolbox.print.error).not.toHaveBeenCalled();
     });
 
-    it('should install the framework package', () => {
-      expect(toolbox.system.run).toHaveBeenCalledWith(
-        `cd ${input.appDir} && npm install ${input.framework}`
-      );
+    it('should install add the framework to dependencies', () => {
+      expect(dependencies).toHaveProperty(input.framework);
     });
 
     describe('when the language is TypeScript', () => {

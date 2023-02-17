@@ -5,8 +5,7 @@ module.exports = (toolbox) => {
     appDir,
     projectLanguage,
     workflowsFolder,
-    pkgJsonScripts,
-    pkgJsonInstalls,
+    pkgJson,
     assetsPath,
     framework,
   }) => {
@@ -41,13 +40,14 @@ module.exports = (toolbox) => {
     }
 
     function syncOperations() {
-      pkgJsonScripts.push({
-        ['test']: 'jest',
-      });
-      pkgJsonInstalls.push('jest');
-      if (projectLanguage === 'TS') {
-        pkgJsonInstalls.push('ts-jest @types/jest');
-      }
+      (pkgJson.scripts['test'] = 'jest'),
+        Object.assign(pkgJson.devDependencies, {
+          jest: '^29.4.2',
+          ...(projectLanguage === 'TS' && {
+            'ts-jest': '^29.0.5',
+            '@types/jest': '^29.4.0',
+          }),
+        });
     }
 
     return {

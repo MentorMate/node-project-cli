@@ -1,27 +1,20 @@
 'use strict';
 
 module.exports = (toolbox) => {
-  toolbox.setupHusky = ({
-    appDir,
-    projectLanguage,
-    assetsPath,
-    features,
-    pkgJsonScripts,
-    pkgJsonInstalls,
-  }) => {
+  toolbox.setupHusky = ({ appDir, assetsPath, features, pkgJson }) => {
     const {
       filesystem: { dir, copyAsync, read, writeAsync },
       print: { success, muted },
+      os,
     } = toolbox;
 
-    const isWin = process.platform === 'win32';
     const lintstagedrc = read(`${assetsPath}/.lintstagedrc`, 'json');
 
     /*
       We need to delete the *.sh option on windows since
       the package we use - shellcheck doesn't support windows
     */
-    const lintstagedrcData = isWin
+    const lintstagedrcData = os.isWin()
       ? delete lintstagedrc['*.sh'] && lintstagedrc
       : lintstagedrc;
 
@@ -95,33 +88,31 @@ module.exports = (toolbox) => {
     }
 
     function syncOperations() {
-      const prepareScript =
-        projectLanguage === 'TS'
-          ? 'husky install && npm run build'
-          : 'husky install';
-      pkgJsonScripts.push({
-        ['prepare']: prepareScript,
-      });
-      pkgJsonInstalls.push('husky');
+      pkgJson.scripts['prepare'] = 'husky install';
+      pkgJson.devDependencies['husky'] = '^8.0.3';
 
       if (features.includes('commitMsgLint')) {
-        pkgJsonScripts.push({
-          ['validate:commit-message']: 'commitlint --edit $1',
+        pkgJson.scripts['validate:commit-message'] = 'commitlint --edit $1';
+
+        Object.assign(pkgJson.devDependencies, {
+          commitlint: '^17.4.3',
+          '@commitlint/config-conventional': '^17.4.3',
+          commitizen: '^4.3.0',
+          'cz-conventional-changelog': '^3.3.0',
         });
-        pkgJsonInstalls.push(
-          '@commitlint/cli @commitlint/config-conventional commitizen cz-conventional-changelog'
-        );
       }
 
       if (features.includes('preCommit')) {
-        pkgJsonScripts.push({
-          ['initsecrets']: 'scripts/detect-secrets.sh',
+        pkgJson.scripts['initsecrets'] = 'scripts/detect-secrets.sh';
+
+        Object.assign(pkgJson.devDependencies, {
+          'lint-staged': '^13.1.2',
+          'sort-package-json': '^2.4.1',
+          '@ls-lint/ls-lint': '^1.11.2',
+          ...(!os.isWin() && {
+            shellcheck: '^2.2.0',
+          }),
         });
-        pkgJsonInstalls.push(
-          `lint-staged${
-            isWin ? '' : ' shellcheck'
-          } sort-package-json @ls-lint/ls-lint`
-        );
       }
     }
 

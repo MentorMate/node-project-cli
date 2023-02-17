@@ -35,7 +35,7 @@ describe('ts-setup', () => {
 
     describe('syncOperations', () => {
       let scripts;
-      let packages;
+      let devDependencies;
 
       beforeAll(() => {
         input.framework = 'nest';
@@ -48,8 +48,8 @@ describe('ts-setup', () => {
         );
         toolbox.filesystem.write = jest.fn(() => {});
         toolbox.setupTs(input).syncOperations();
-        scripts = Object.assign({}, ...input.pkgJsonScripts);
-        packages = input.pkgJsonInstalls.map((s) => s.split(' ')).flat(1);
+        scripts = input.pkgJson.scripts;
+        devDependencies = input.pkgJson.devDependencies;
       });
 
       describe('when the framework is not Nest', () => {
@@ -70,37 +70,33 @@ describe('ts-setup', () => {
           expect(scripts['build']).toBe('tsc --build && tsc-alias');
         });
 
-        it('should add a prepare script', () => {
-          expect(scripts['prepare']).toBe('npm run build');
-        });
-
         it('should add the typescript package', () => {
-          expect(packages).toContain('typescript');
+          expect(devDependencies).toHaveProperty('typescript');
         });
 
         it('should add the @tsconfig/recommended package', () => {
-          expect(packages).toContain('@tsconfig/recommended');
+          expect(devDependencies).toHaveProperty('@tsconfig/recommended');
         });
 
         it('should add the tsc-alias package', () => {
-          expect(packages).toContain('tsc-alias');
+          expect(devDependencies).toHaveProperty('tsc-alias');
         });
       });
 
       describe('when the framework is Nest', () => {
         beforeAll(() => {
           input.framework = 'nest';
-          input.pkgJsonScripts = [];
-          input.pkgJsonInstalls = [];
+          input.pkgJson.scripts = {};
+          input.pkgJson.devDependencies = {};
         });
 
         it('should not copy the tsconfig', () => {
           expect(toolbox.filesystem.copy).not.toHaveBeenCalled();
         });
 
-        it('should not add any scripts or packages', () => {
+        it('should not add any scripts or devDependencies', () => {
           expect(Object.keys(scripts).length).toBe(0);
-          expect(packages.length).toBe(0);
+          expect(Object.keys(devDependencies).length).toBe(0);
         });
       });
 

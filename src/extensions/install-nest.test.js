@@ -50,13 +50,7 @@ describe('install-nest', () => {
 
       it('should init a new scoped project', () => {
         expect(toolbox.system.run).toHaveBeenCalledWith(
-          `nest new @${input.projectScope}/${input.projectName} --skip-git --package-manager npm`
-        );
-      });
-
-      it('should move the generated code to the current directory', () => {
-        expect(toolbox.system.run).toHaveBeenCalledWith(
-          `mv @${input.projectScope}/${input.projectName} ./ && rm -d @${input.projectScope}`
+          `nest new @${input.projectScope}/${input.projectName} --directory ${input.projectName} --skip-git --skip-install --package-manager npm`
         );
       });
     });
@@ -68,7 +62,7 @@ describe('install-nest', () => {
 
       it('should init a new project', () => {
         expect(toolbox.system.run).toHaveBeenCalledWith(
-          `nest new ${input.projectName} --skip-git --package-manager npm`
+          `nest new ${input.projectName} --directory ${input.projectName} --skip-git --skip-install --package-manager npm`
         );
       });
     });
