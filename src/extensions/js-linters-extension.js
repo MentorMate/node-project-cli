@@ -45,15 +45,18 @@ module.exports = (toolbox) => {
     }
 
     function syncOperations() {
-      const lintScript =
-        projectLanguage === 'TS'
-          ? 'eslint . --ext .js,.cjs,.mjs,.ts --fix --cache'
-          : 'eslint . --ext .js,.cjs,.mjs --fix --cache';
+      const ext = ['js', 'cjs', 'mjs'];
+
+      if (projectLanguage === 'TS') {
+        ext.push('ts');
+      }
+
+      const formatExt = ext.join(',');
+      const lintExt = ext.map((e) => `.${e}`).join(',');
 
       Object.assign(pkgJson.scripts, {
-        format:
-          'prettier "**/*.js" --write --cache --cache-strategy metadata --cache-location .prettiercache',
-        lint: lintScript,
+        format: `prettier "**/*.{${formatExt}}" --write --cache --cache-strategy metadata --cache-location .prettiercache`,
+        lint: `eslint . --ext ${lintExt} --fix --cache`,
       });
 
       Object.assign(pkgJson.devDependencies, {
