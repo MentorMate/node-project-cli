@@ -9,14 +9,12 @@ module.exports = {
       parameters,
       system: { run, which },
       strings,
-      filesystem: { path, dir, write, copyAsync, cwd, read },
+      filesystem: { path, dir, write, cwd, read },
       print: { success, warning, highlight },
       prompt,
       meta,
     } = toolbox;
 
-    const CLI_PATH = path(`${meta.src}`, '..');
-    const ASSETS_PATH = path(CLI_PATH, 'assets');
     const pip3Installation = which('pip3');
 
     if (!pip3Installation) {
@@ -124,7 +122,7 @@ module.exports = {
     userInput.projectLanguage = userInput.projectLanguage || 'TS';
     userInput.moduleType = userInput.moduleType || 'CJS';
     userInput.appDir = path(pwd, userInput.projectName);
-    userInput.assetsPath = ASSETS_PATH;
+    userInput.assetsPath = path(meta.src, '..', 'assets');
     userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`;
 
     userInput.pkgJson = {
@@ -173,27 +171,6 @@ module.exports = {
       step.asyncOperations && asyncOperations.push(step.asyncOperations());
     });
 
-    asyncOperations.push(
-      (async () => {
-        try {
-          await copyAsync(
-            `${ASSETS_PATH}/.project-gitignr`,
-            `${userInput.appDir}/.gitignore`
-          );
-          if (userInput.projectLanguage == 'TS') {
-            await run(`echo "dist/\n" >> ${userInput.appDir}/.gitignore`);
-          }
-        } catch (err) {
-          throw new Error(
-            `An error has occurred while setting up .gitignore: ${err}`
-          );
-        }
-        success(
-          '.gitignore file created successfully. Please wait for the other steps to be completed...'
-        );
-      })()
-    );
-
     await Promise.all(asyncOperations);
 
     const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`));
@@ -241,7 +218,7 @@ module.exports = {
         userInput.features.includes('huskyHooks') ||
         userInput.features.includes('preCommit')
       ) {
-        script += ` && bash ${ASSETS_PATH}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}`;
+        script += ` && bash ${userInput.assetsPath}/local-scripts/initiate-detect-secrets.sh ${userInput.appDir}`;
       }
 
       try {
