@@ -1,10 +1,18 @@
 'use strict';
 
 module.exports = (toolbox) => {
-  toolbox.setupHusky = ({ appDir, assetsPath, features, pkgJson }) => {
+  toolbox.setupHusky = ({
+    appDir,
+    assetsPath,
+    features,
+    pkgJson,
+    projectLanguage,
+  }) => {
     const {
       filesystem: { dir, copyAsync, read, writeAsync },
       print: { success, muted },
+      template: { generate },
+      system: { run },
       os,
     } = toolbox;
 
@@ -27,7 +35,7 @@ module.exports = (toolbox) => {
         dir(appHuskyPath);
 
         await copyAsync(
-          `${assetHuskyPath}/.project-gitignr`,
+          `${assetHuskyPath}/.gitignore`,
           `${appHuskyPath}/.gitignore`
         );
 
@@ -49,10 +57,15 @@ module.exports = (toolbox) => {
           dir(`${appDir}/scripts`);
 
           await Promise.all([
-            copyAsync(
-              `${assetHuskyPath}/pre-commit`,
-              `${appHuskyPath}/pre-commit`
-            ),
+            generate({
+              template: 'husky/pre-commit.ejs',
+              target: `${appDir}/.husky/pre-commit`,
+              props: {
+                ts: projectLanguage === 'TS',
+              },
+            }).then(() => {
+              run(`chmod +x ${appDir}/.husky/pre-commit`);
+            }),
             writeAsync(`${appDir}/.lintstagedrc`, lintstagedrcData),
             copyAsync(`${assetsPath}/.ls-lint.yml`, `${appDir}/.ls-lint.yml`),
             copyAsync(
@@ -92,8 +105,6 @@ module.exports = (toolbox) => {
       pkgJson.devDependencies['husky'] = '^8.0.3';
 
       if (features.includes('commitMsgLint')) {
-        pkgJson.scripts['validate:commit-message'] = 'commitlint --edit $1';
-
         Object.assign(pkgJson.devDependencies, {
           commitlint: '^17.4.3',
           '@commitlint/config-conventional': '^17.4.3',

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 . "$(dirname "$0")/_/husky.sh"
 
-echo "Here you can set your own pre-push hook, no such hook is set for now"
+npm test

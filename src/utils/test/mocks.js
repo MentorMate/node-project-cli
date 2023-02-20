@@ -66,7 +66,7 @@ const createToolboxMock = () => ({
     src: '/path/to/project/src',
   },
   template: {
-    generate: (opts) => '',
+    generate: (opts) => Promise.resolve(''),
   },
   // Extensions
   os: {
