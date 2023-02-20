@@ -64,12 +64,6 @@ describe('husky-setup-extension', () => {
           input.features = ['commitMsgLint'];
         });
 
-        it('should add a commit message validation script', () => {
-          expect(scripts['validate:commit-message']).toBe(
-            'commitlint --edit $1'
-          );
-        });
-
         it('should add the commitlint package', () => {
           expect(devDependencies).toHaveProperty('commitlint');
         });
@@ -159,6 +153,8 @@ describe('husky-setup-extension', () => {
         toolbox.filesystem.dir = jest.fn(() => {});
         toolbox.filesystem.copyAsync = jest.fn(() => {});
         toolbox.filesystem.writeAsync = jest.fn(() => {});
+        toolbox.template.generate = jest.fn(() => Promise.resolve(''));
+        toolbox.system.run = jest.fn(() => {});
       });
 
       beforeEach(async () => {
@@ -177,7 +173,7 @@ describe('husky-setup-extension', () => {
 
       it('should copy the husky .gitignore', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${assetHuskyPath}/.project-gitignr`,
+          `${assetHuskyPath}/.gitignore`,
           `${appHuskyPath}/.gitignore`
         );
       });
@@ -221,9 +217,16 @@ describe('husky-setup-extension', () => {
         });
 
         it('should copy the pre-commit hook', () => {
-          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${assetHuskyPath}/pre-commit`,
-            `${appHuskyPath}/pre-commit`
+          expect(toolbox.template.generate).toHaveBeenCalledWith({
+            template: 'husky/pre-commit.ejs',
+            target: `${appDir}/.husky/pre-commit`,
+            props: {
+              ts: input.projectLanguage === 'TS',
+            },
+          });
+
+          expect(toolbox.system.run).toHaveBeenCalledWith(
+            `chmod +x ${appDir}/.husky/pre-commit`
           );
         });
 
