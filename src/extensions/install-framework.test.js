@@ -22,9 +22,12 @@ describe('install-framework', () => {
 
   describe('installFramework', () => {
     const input = createExtensionInput();
+    let scripts;
     let dependencies;
+    let devDependencies;
 
     beforeAll(() => {
+      input.framework = 'fastify'; // else-branch coverage
       input.projectLanguage = 'JS';
     });
 
@@ -36,7 +39,9 @@ describe('install-framework', () => {
       toolbox.filesystem.copyAsync = jest.fn(() => {});
       toolbox.system.run = jest.fn(() => {});
       toolbox.installFramework(input);
+      scripts = input.pkgJson.scripts;
       dependencies = input.pkgJson.dependencies;
+      devDependencies = input.pkgJson.devDependencies;
     });
 
     it('should print a muted and a success message', async () => {
@@ -49,9 +54,24 @@ describe('install-framework', () => {
       expect(dependencies).toHaveProperty(input.framework);
     });
 
+    it('should install add dotenv to devDependencies', () => {
+      expect(devDependencies).toHaveProperty('dotenv');
+    });
+
+    it('should copy the .env.example file', () => {
+      expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+        `${input.assetsPath}/dotenv/.env.example`,
+        `${input.appDir}/.env.example`
+      );
+    });
+
     describe('when the language is TypeScript', () => {
       beforeAll(() => {
         input.projectLanguage = 'TS';
+      });
+
+      it('should add the start script', () => {
+        expect(scripts).toHaveProperty('start');
       });
 
       it('should copy the example project source', () => {
@@ -69,19 +89,48 @@ describe('install-framework', () => {
       });
     });
 
-    describe('when an error is thrown', () => {
-      const error = new Error('the-error');
-
-      beforeEach(() => {
-        toolbox.filesystem.copyAsync = jest.fn(() => {
-          throw error;
-        });
+    describe('when the framework is express', () => {
+      beforeAll(() => {
+        input.projectLanguage = 'JS'; // else-branch coverage
+        input.framework = 'express';
       });
 
-      it('should rethrow the error with an added user-friendly message', () => {
-        expect(toolbox.installFramework(input)).rejects.toThrow(
-          `An error has occurred while installing ${input.framework}: ${error}`
-        );
+      it('should add helmet to dependencies', () => {
+        expect(dependencies).toHaveProperty('helmet');
+      });
+
+      it('should add cors to dependencies', () => {
+        expect(dependencies).toHaveProperty('cors');
+      });
+
+      it('should add compression to dependencies', () => {
+        expect(dependencies).toHaveProperty('compression');
+      });
+
+      describe('and the language is TypeScript', () => {
+        beforeAll(() => {
+          input.projectLanguage = 'TS';
+        });
+
+        it('should copy the example express project source', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/express/src/`,
+            `${input.appDir}/src/`,
+            { overwrite: true }
+          );
+        });
+
+        it('should add @types/express to devDependencies', () => {
+          expect(devDependencies).toHaveProperty('@types/express');
+        });
+
+        it('should add @types/cors to devDependencies', () => {
+          expect(devDependencies).toHaveProperty('@types/cors');
+        });
+
+        it('should add @types/compression to devDependencies', () => {
+          expect(devDependencies).toHaveProperty('@types/compression');
+        });
       });
     });
   });

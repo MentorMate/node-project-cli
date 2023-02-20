@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 
-const port = 3000;
+const port = process.env.PORT;
 const app = express();
 
 app.use(helmet());
