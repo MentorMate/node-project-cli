@@ -28,16 +28,43 @@ describe('initialize-git', () => {
     });
 
     beforeEach(() => {
+      toolbox.filesystem.copyAsync = jest.fn(() => {});
       toolbox.print.muted = jest.fn(() => {});
       toolbox.system.run = jest.fn(() => {});
-      toolbox.initializeGit(input);
+      toolbox.system.which = jest.fn(() => {});
     });
 
-    it('should initialize git and create the main branch', () => {
-      expect(toolbox.system.run).toHaveBeenCalledWith(
-        `git init && git checkout -b main`,
-        { cwd: input.appDir }
-      );
+    describe('when git is not found', () => {
+      beforeEach(() => {
+        toolbox.system.which = jest.fn(() => undefined);
+      });
+
+      it('should throw an exception', () => {
+        expect(toolbox.initializeGit(input)).rejects.toThrow(
+          `Command 'git' not found.`
+        );
+      });
+    });
+
+    describe('when git is found', () => {
+      beforeEach(() => {
+        toolbox.system.which = jest.fn(() => '/usr/bin/git');
+        toolbox.initializeGit(input);
+      });
+
+      it('should initialize git and create the main branch', () => {
+        expect(toolbox.system.run).toHaveBeenCalledWith(
+          `git init && git checkout -b main`,
+          { cwd: input.appDir }
+        );
+      });
+
+      it('should copy the .gitignore file over', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/git/.gitignore`,
+          `${input.appDir}/.gitignore`
+        );
+      });
     });
   });
 });
