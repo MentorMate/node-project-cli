@@ -9,7 +9,7 @@ module.exports = {
       parameters,
       system: { run, which },
       strings,
-      filesystem: { path, dir, write, cwd, read },
+      filesystem: { path, dir, write, cwd, copyAsync, read },
       print: { success, warning, highlight },
       prompt,
       meta,
@@ -170,6 +170,10 @@ module.exports = {
       step.syncOperations && step.syncOperations();
       step.asyncOperations && asyncOperations.push(step.asyncOperations());
     });
+
+    asyncOperations.push(
+      copyAsync(`${userInput.assetsPath}/.nvmrc`, `${userInput.appDir}/.nvmrc`)
+    );
 
     await Promise.all(asyncOperations);
 
