@@ -76,8 +76,7 @@ module.exports = (toolbox) => {
     function syncOperations() {
       Object.assign(pkgJson.scripts, {
         'image:build': `DOCKER_BUILDKIT=1 docker build -t ${projectName} .`,
-        // TODO: add `--env-file .env` with .env support
-        'image:run': `docker run --rm --net host ${projectName}`,
+        'image:run': `docker run --rm --net host --env-file .env ${projectName}`,
       });
     }
 
