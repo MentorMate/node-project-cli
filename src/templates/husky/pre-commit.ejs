@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname "$0")/_/husky.sh"
 
-<% if (props.ts) { %>npx tsc --noEmit<% } %>
-npx lint-staged
-npx ls-lint
+<% if (props.ts) { %>npx --no -- tsc --noEmit<% } %>
+npx --no -- lint-staged
+npx --no -- ls-lint
 npm run initsecrets
 pre-commit run
 
