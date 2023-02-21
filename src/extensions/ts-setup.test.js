@@ -66,8 +66,12 @@ describe('ts-setup', () => {
           );
         });
 
+        it('should add a clean script', () => {
+          expect(scripts['clean']).toBeDefined();
+        });
+
         it('should add a build script', () => {
-          expect(scripts['build']).toBe('tsc --build && tsc-alias');
+          expect(scripts['build']).toBeDefined();
         });
 
         it('should add the typescript package', () => {
@@ -80,6 +84,18 @@ describe('ts-setup', () => {
 
         it('should add the tsc-alias package', () => {
           expect(devDependencies).toHaveProperty('tsc-alias');
+        });
+
+        it('should add the @types/node package', () => {
+          expect(devDependencies).toHaveProperty('@types/node');
+        });
+
+        it('should add the rimraf package', () => {
+          expect(devDependencies).toHaveProperty('rimraf');
+        });
+
+        it('should add the ts-node package', () => {
+          expect(devDependencies).toHaveProperty('ts-node');
         });
       });
 

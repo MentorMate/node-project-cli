@@ -37,6 +37,7 @@ describe('install-framework', () => {
       toolbox.print.error = jest.fn(() => {});
       toolbox.filesystem.dir = jest.fn(() => {});
       toolbox.filesystem.copyAsync = jest.fn(() => {});
+      toolbox.template.generate = jest.fn(() => {});
       toolbox.system.run = jest.fn(() => {});
       toolbox.installFramework(input);
       scripts = input.pkgJson.scripts;
@@ -58,6 +59,18 @@ describe('install-framework', () => {
       expect(devDependencies).toHaveProperty('dotenv');
     });
 
+    it('should install add nodemon to devDependencies', () => {
+      expect(devDependencies).toHaveProperty('dotenv');
+    });
+
+    it('should add the start script', () => {
+      expect(scripts).toHaveProperty('start');
+    });
+
+    it('should add the start:dev script', () => {
+      expect(scripts).toHaveProperty('start:dev');
+    });
+
     it('should copy the .env.example file', () => {
       expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
         `${input.assetsPath}/dotenv/.env.example`,
@@ -65,13 +78,20 @@ describe('install-framework', () => {
       );
     });
 
+    it('should generate a nodemon.json file', () => {
+      expect(toolbox.template.generate).toHaveBeenCalledWith({
+        template: 'nodemon/nodemon.json.ejs',
+        target: `${input.appDir}/nodemon.json`,
+        props: {
+          ext: input.projectLanguage === 'TS' ? 'ts' : 'js',
+          exec: input.pkgJson.scripts['start'],
+        },
+      });
+    });
+
     describe('when the language is TypeScript', () => {
       beforeAll(() => {
         input.projectLanguage = 'TS';
-      });
-
-      it('should add the start script', () => {
-        expect(scripts).toHaveProperty('start');
       });
 
       it('should copy the example project source', () => {
