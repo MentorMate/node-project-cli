@@ -11,6 +11,7 @@ module.exports = (toolbox) => {
     const {
       filesystem: { copyAsync },
       print: { success, muted },
+      template: { generate },
     } = toolbox;
 
     const frameworkVersion = {
@@ -24,17 +25,34 @@ module.exports = (toolbox) => {
       [framework]: frameworkVersion[framework],
     });
 
-    // dotenv
     Object.assign(pkgJson.devDependencies, {
       dotenv: '^16.0.3',
+      nodemon: '^2.0.20',
     });
 
-    copyAsync(`${assetsPath}/dotenv/.env.example`, `${appDir}/.env.example`);
+    const executable = projectLanguage === 'TS' ? 'npx ts-node' : 'node';
+
+    Object.assign(pkgJson.scripts, {
+      start: `${executable} -r dotenv/config src/index`,
+      'start:dev': 'nodemon',
+    });
+
+    await copyAsync(
+      `${assetsPath}/dotenv/.env.example`,
+      `${appDir}/.env.example`
+    );
+
+    await generate({
+      template: 'nodemon/nodemon.json.ejs',
+      target: `${appDir}/nodemon.json`,
+      props: {
+        ext: projectLanguage === 'TS' ? 'ts' : 'js',
+        exec: pkgJson.scripts['start'],
+      },
+    });
 
     // TypeScript
     if (projectLanguage === 'TS') {
-      pkgJson.scripts['start'] = 'node -r dotenv/config dist/index';
-
       await Promise.all([
         copyAsync(`${assetsPath}/src/`, `${appDir}/src/`),
         copyAsync(`${assetsPath}/test/`, `${appDir}/test/`),
