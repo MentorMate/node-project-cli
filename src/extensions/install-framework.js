@@ -65,12 +65,17 @@ module.exports = (toolbox) => {
         helmet: '^6.0.1',
         cors: '^2.8.5',
         compression: '^1.7.4',
+        'http-terminator': '^3.2.0',
       });
 
       // with TypeScript
       if (projectLanguage === 'TS') {
         copyAsync(`${assetsPath}/${framework}/src/`, `${appDir}/src/`, {
           overwrite: true,
+        });
+
+        Object.assign(pkgJson.dependencies, {
+          zod: '^3.20.6',
         });
 
         Object.assign(pkgJson.devDependencies, {
