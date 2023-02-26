@@ -1,0 +1,11 @@
+{
+  "watch": [
+    "dist"
+  ],
+  "ext": "js",
+  "ignore": [
+    "**/*.spec.*",
+    "**/*.test.*"
+  ],
+  "signal": "SIGINT"
+}

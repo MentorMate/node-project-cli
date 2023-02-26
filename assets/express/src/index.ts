@@ -1,19 +1,45 @@
 import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
-import compression from 'compression';
+import { createHttpTerminator } from 'http-terminator';
+import { Environment, envSchema } from './common';
 
-const port = process.env.PORT;
+import { init } from './app';
+
+const env: Environment = envSchema.parse(process.env);
 const app = express();
 
-app.use(helmet());
-app.use(cors());
-app.use(compression());
+init(app);
 
-app.get('/', function (_req, res) {
-  res.send('Hello World')
-})
-
-app.listen(port, () => {
-  console.log(`App is running on http://localhost:${port}`);
+// Start server
+const server = app.listen(env.PORT, () => {
+  console.log(`App is running on http://localhost:${env.PORT}`);
 });
+
+// Graceful Shutdown
+const httpTerminator = createHttpTerminator({ server });
+
+const shutdown = async () => {
+  console.log('Shutting down...');
+  await httpTerminator.terminate();
+};
+
+const onSignal = (signal: NodeJS.Signals) => {
+  console.log(`${signal} received`);
+  shutdown();
+};
+
+process.on('SIGTERM', onSignal);
+process.on('SIGINT', onSignal);
+
+// DO NOT: listen to uncaughtException: https://expressjs.com/en/advanced/best-practice-performance.html#what-not-to-do
+const onUncaughtException: NodeJS.UncaughtExceptionListener = (error) => {
+  console.error('uncaughtException', error);
+  shutdown();
+};
+
+const onUnhandledRejectionn: NodeJS.UnhandledRejectionListener = (reason) => {
+  console.error('unhandledRejection', reason);
+  shutdown();
+};
+
+process.on('uncaughtException', onUncaughtException);
+process.on('unhandledRejection', onUnhandledRejectionn);
