@@ -135,6 +135,10 @@ describe('install-framework', () => {
         expect(dependencies).toHaveProperty('pino');
       });
 
+      it('should add http-errors to dependencies', () => {
+        expect(dependencies).toHaveProperty('http-errors');
+      });
+
       describe('and the language is TypeScript', () => {
         beforeAll(() => {
           input.projectLanguage = 'TS';

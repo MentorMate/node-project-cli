@@ -5,6 +5,7 @@ import compression from 'compression';
 import { createHttpTerminator } from 'http-terminator';
 import z from 'zod';
 import pino, { Logger } from 'pino';
+import createError from 'http-errors';
 
 //
 // Environment
@@ -33,7 +34,9 @@ const validateRequest = function (schema: RequestSchema): RequestHandler {
     const result = schema.safeParse(req);
 
     if (!result.success) {
-      return next(result.error);
+      const error = createError.UnprocessableEntity('Bad Data');
+      error.errors = result.error.issues;
+      return next(error);
     }
 
     for (const [k, v] of Object.entries(result.data)) {
@@ -46,8 +49,6 @@ const validateRequest = function (schema: RequestSchema): RequestHandler {
 
 const errorHandler = function (logger: Logger): ErrorRequestHandler {
   return function (err, _req, res, next) {
-    logger.error(err);
-
     // https://expressjs.com/en/guide/error-handling.html
     // If you call next() with an error after you have started writing the response (for example, if you encounter an error while streaming
     // the response to the client) the Express default error handler closes the connection and fails the request.
@@ -57,12 +58,20 @@ const errorHandler = function (logger: Logger): ErrorRequestHandler {
       return next(err)
     }
 
-    res
-      .status(500)
-      .send({
-        status: 500,
-        message: 'Iternal Server Error',
-      });
+    if (createError.isHttpError(err)) {
+      res
+        .status(err.statusCode)
+        .send({
+          message: err.message,
+          ...(err.errors && { errors: err.errors }),
+        });
+    } else {
+      logger.error(err);
+
+      res
+        .status(500)
+        .send({ message: 'Internal Server Error' });
+    }
   };
 };
 
