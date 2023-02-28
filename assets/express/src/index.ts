@@ -1,10 +1,10 @@
-import express, { json, RequestHandler } from 'express';
+import express, { json, ErrorRequestHandler, RequestHandler } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import { createHttpTerminator } from 'http-terminator';
 import z from 'zod';
-
+import pino, { Logger } from 'pino';
 
 //
 // Environment
@@ -16,27 +16,55 @@ const envSchema = z.object({
 
 type Environment = z.infer<typeof envSchema>;
 
-
 //
 // Middleware
 //
-const logRequest = function (): RequestHandler {
-  return function(req, _res, next) {
+const logRequest = function (logger: Logger): RequestHandler {
+  return function({ method, path }, _res, next) {
     // DO NOT use console: https://expressjs.com/en/advanced/best-practice-performance.html#do-logging-correctly
-    console.info(`${req.method} ${req.path}`);
+    logger.info({ method, path });
     next();
   };
 };
 
-const middleware = [
-  logRequest(),
-  helmet(),
-  cors(),
-  json(),
-  // DO compression: https://expressjs.com/en/advanced/best-practice-performance.html#use-gzip-compression
-  compression(),
-];
+// This will modify the request with the result of the validation, as well
+const validateRequest = function (schema: RequestSchema): RequestHandler {
+  return function(req, _res, next) {
+    const result = schema.safeParse(req);
 
+    if (!result.success) {
+      return next(result.error);
+    }
+
+    for (const [k, v] of Object.entries(result.data)) {
+      req[k as RequestKey] = v;
+    }
+
+    next();
+  }
+};
+
+const errorHandler = function (logger: Logger): ErrorRequestHandler {
+  return function (err, _req, res, next) {
+    logger.error(err);
+
+    // https://expressjs.com/en/guide/error-handling.html
+    // If you call next() with an error after you have started writing the response (for example, if you encounter an error while streaming
+    // the response to the client) the Express default error handler closes the connection and fails the request.
+    // So when you add a custom error handler, you must delegate to the default Express error handler, when the headers have already
+    // been sent to the client
+    if (res.headersSent) {
+      return next(err)
+    }
+
+    res
+      .status(500)
+      .send({
+        status: 500,
+        message: 'Iternal Server Error',
+      });
+  };
+};
 
 //
 // Validation
@@ -179,13 +207,15 @@ const asyncHandler = (handler: RequestHandler): RequestHandler => {
   };
 };
 
-type RequestKey = 'headers' | 'params' | 'query' | 'body';
+type HttpMethod = 'all' | 'get' | 'post' | 'put' | 'delete' | 'patch' | 'options' | 'head';
+type RequestKey = 'params' | 'query' | 'body';
 type RequestSchema = z.ZodObject<{ [k in RequestKey]?: z.AnyZodObject }>;
 type ResponseSchema = z.AnyZodObject;
 
 interface Route {
-  method: 'all' | 'get' | 'post' | 'put' | 'delete' | 'patch' | 'options' | 'head';
+  method: HttpMethod;
   path: string;
+  middleware?: RequestHandler[];
   handler: RequestHandler;
   request?: RequestSchema;
   response?: ResponseSchema;
@@ -206,8 +236,7 @@ const routes: Route[] = [
     method: 'post',
     path: '/todos',
     request: z.object({
-      body: todoModelSchema
-        .pick({ name: true, note: true }),
+      body: todoFieldsSchema,
     }),
     response: todoModelSchema,
     handler: asyncHandler(async (req, res) => {
@@ -222,8 +251,7 @@ const routes: Route[] = [
       params: z.object({
         id: attrs.id(z.coerce),
       }),
-      body: todoModelSchema
-        .pick({ name: true, note: true }),
+      body: todoFieldsSchema,
     }),
     handler: asyncHandler(async (req, res) => {
       const todo = await todoRepo.update(req.params.id as never as number, req.body);
@@ -242,9 +270,7 @@ const routes: Route[] = [
       params: z.object({
         id: attrs.id(z.coerce),
       }),
-      body: todoModelSchema
-        .pick({ name: true, note: true })
-        .partial(),
+      body: todoFieldsSchema.partial(),
     }),
     handler: asyncHandler(async (req, res) => {
       const todo = await todoRepo.update(req.params.id as never as number, req.body);
@@ -328,23 +354,6 @@ const routes: Route[] = [
   }
 ];
 
-// This will modify the request with the result of the validation, as well
-const validateRequest = function(schema: RequestSchema): RequestHandler {
-  return function(req, _res, next) {
-    const result = schema.safeParse(req);
-
-    if (!result.success) {
-      next(result.error);
-      return;
-    }
-
-    for (const [k, v] of Object.entries(result.data)) {
-      req[k as RequestKey] = v;
-    }
-    next();
-  }
-};
-
 //
 // Bootstrap
 //
@@ -355,19 +364,45 @@ function bootstrap() {
   // Create app
   const app = express();
 
+  const logger = pino({
+    name: 'http',
+    ...(env.NODE_ENV !== 'production' && {
+      transport: {
+        target: 'pino-pretty',
+        colorize: false
+      },
+    }),
+  });
+
+  const middleware = [
+    logRequest(logger),
+    helmet(),
+    cors(),
+    json(),
+    // DO compression: https://expressjs.com/en/advanced/best-practice-performance.html#use-gzip-compression
+    compression(),
+  ];
+
   // Register middleware
   app.use(middleware);
 
   // Register routes
   for (const route of routes) {
-    const middleware = [];
+    const middleware = route.middleware ? [...route.middleware] : [];
 
     if (route.request) {
       middleware.push(validateRequest(route.request));
     }
 
-    app[route.method](route.path, middleware, route.handler);
+    if (middleware.length > 0) {
+      app[route.method](route.path, middleware, route.handler);
+    } else {
+      app[route.method](route.path, route.handler);
+    }
   }
+
+  // Register error handler
+  app.use(errorHandler(logger));
 
   // Start server
   const server = app.listen(env.PORT, () => {
@@ -389,20 +424,6 @@ function bootstrap() {
 
   process.on('SIGTERM', onSignal);
   process.on('SIGINT', onSignal);
-
-  // DO NOT: listen to uncaughtException: https://expressjs.com/en/advanced/best-practice-performance.html#what-not-to-do
-  const onUncaughtException: NodeJS.UncaughtExceptionListener = (error) => {
-    console.error('uncaughtException', error);
-    shutdown();
-  };
-
-  const onUnhandledRejectionn: NodeJS.UnhandledRejectionListener = (reason) => {
-    console.error('unhandledRejection', reason);
-    shutdown();
-  };
-
-  process.on('uncaughtException', onUncaughtException);
-  process.on('unhandledRejection', onUnhandledRejectionn);
 };
 
 bootstrap();
