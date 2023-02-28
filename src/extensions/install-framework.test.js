@@ -127,6 +127,14 @@ describe('install-framework', () => {
         expect(dependencies).toHaveProperty('compression');
       });
 
+      it('should add http-terminator to dependencies', () => {
+        expect(dependencies).toHaveProperty('http-terminator');
+      });
+
+      it('should add pino to dependencies', () => {
+        expect(dependencies).toHaveProperty('pino');
+      });
+
       describe('and the language is TypeScript', () => {
         beforeAll(() => {
           input.projectLanguage = 'TS';
@@ -150,6 +158,10 @@ describe('install-framework', () => {
 
         it('should add @types/compression to devDependencies', () => {
           expect(devDependencies).toHaveProperty('@types/compression');
+        });
+
+        it('should add pino-pretty to devDependencies', () => {
+          expect(devDependencies).toHaveProperty('pino-pretty');
         });
       });
     });

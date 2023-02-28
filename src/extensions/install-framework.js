@@ -66,6 +66,7 @@ module.exports = (toolbox) => {
         cors: '^2.8.5',
         compression: '^1.7.4',
         'http-terminator': '^3.2.0',
+        pino: '^8.11.0',
       });
 
       // with TypeScript
@@ -82,6 +83,7 @@ module.exports = (toolbox) => {
           '@types/express': '^4.17.17',
           '@types/cors': '^2.8.5',
           '@types/compression': '^1.7.2',
+          'pino-pretty': '^9.4.0',
         });
       }
     }
