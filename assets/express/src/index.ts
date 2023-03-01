@@ -3,10 +3,21 @@ import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import { createHttpTerminator } from 'http-terminator';
-import z from 'zod';
+import {
+  extendZodWithOpenApi,
+  OpenAPIRegistry,
+  OpenAPIGenerator,
+  RouteConfig,
+  ResponseConfig,
+} from '@asteasolutions/zod-to-openapi';
+import z, { AnyZodObject, ZodType } from 'zod';
 import pino, { Logger } from 'pino';
 import createError from 'http-errors';
 import * as pg from 'pg';
+import httpStatuses from 'statuses';
+import { writeFileSync } from 'fs';
+
+extendZodWithOpenApi(z);
 
 //
 // Environment
@@ -31,7 +42,7 @@ pg.types.setTypeParser(pg.types.builtins.DATE, (v) => v); // keep as string for 
 // Middleware
 //
 const logRequest = function (logger: Logger): RequestHandler {
-  return function({ method, path }, _res, next) {
+  return function ({ method, path }, _res, next) {
     // DO NOT use console: https://expressjs.com/en/advanced/best-practice-performance.html#do-logging-correctly
     logger.info({ method, path });
     next();
@@ -40,8 +51,8 @@ const logRequest = function (logger: Logger): RequestHandler {
 
 // This will modify the request with the result of the validation, as well
 const validateRequest = function (schema: RequestSchema): RequestHandler {
-  return function(req, _res, next) {
-    const result = schema.safeParse(req);
+  return function (req, _res, next) {
+    const result = z.object(schema).safeParse(req);
 
     if (!result.success) {
       const error = createError.UnprocessableEntity('Bad Data');
@@ -54,7 +65,7 @@ const validateRequest = function (schema: RequestSchema): RequestHandler {
     }
 
     next();
-  }
+  };
 };
 
 const errorHandler = function (logger: Logger): ErrorRequestHandler {
@@ -65,22 +76,19 @@ const errorHandler = function (logger: Logger): ErrorRequestHandler {
     // So when you add a custom error handler, you must delegate to the default Express error handler, when the headers have already
     // been sent to the client
     if (res.headersSent) {
-      return next(err)
+      logger.error(err);
+      return next(err);
     }
 
     if (createError.isHttpError(err)) {
-      res
-        .status(err.statusCode)
-        .send({
-          message: err.message,
-          ...(err.errors && { errors: err.errors }),
-        });
+      res.status(err.statusCode).send({
+        message: err.message,
+        ...(err.errors && { errors: err.errors }),
+      });
     } else {
       logger.error(err);
 
-      res
-        .status(500)
-        .send({ message: 'Internal Server Error' });
+      res.status(500).send({ message: 'Internal Server Error' });
     }
   };
 };
@@ -94,59 +102,103 @@ const paginationMetaSchema = z.object({
   total: z.number(),
 });
 
+const paginated = <S extends ZodType<unknown>>(schema: S) =>
+  z.object({
+    data: z.array(schema),
+    meta: paginationMetaSchema,
+  });
+
 type Zod = typeof z | typeof z.coerce;
 
 const attrs = {
-  id: (z: Zod) => z.number().int().positive(),
-  name: (z: Zod) => z.string().min(1).max(50),
-  note: (z: Zod) => z.string().min(1).max(255),
-  ts: (z: Zod) => z.string().datetime(),
+  ID: (z: Zod) => z.number().int().positive().openapi({ example: 1 }),
+  Name: (z: Zod) => z.string().min(1).max(50).openapi({ example: 'Laundry' }),
+  Note: (z: Zod) =>
+    z.string().min(1).max(255).openapi({ example: 'Buy detergent' }),
+  Timestamp: (z: Zod) =>
+    z.string().datetime().openapi({ example: '2023-02-28T14:39:24.086Z' }),
 };
 
 const idSchema = z.object({
-  id: attrs.id(z),
+  id: attrs.ID(z),
 });
 
 const timestampsSchema = z.object({
-  createdAt: attrs.ts(z),
-  updatedAt: attrs.ts(z),
-  deletedAt: attrs.ts(z).nullable(),
+  createdAt: attrs.Timestamp(z),
+  updatedAt: attrs.Timestamp(z),
+  deletedAt: attrs.Timestamp(z).nullable(),
 });
 
 const todoFieldsSchema = z.object({
-  name: attrs.name(z),
-  note: attrs.note(z).nullable(),
+  name: attrs.Name(z),
+  note: attrs.Note(z).nullable(),
 });
 
-const todoModelSchema = todoFieldsSchema
-  .merge(idSchema)
-  .merge(timestampsSchema);
+const todoSchema = todoFieldsSchema.merge(idSchema).merge(timestampsSchema);
 
-type Todo = z.infer<typeof todoModelSchema>;
+type Todo = z.infer<typeof todoSchema>;
+
+const registry = new OpenAPIRegistry();
+
+const schemaNames = {
+  Todo: todoSchema,
+} as const;
+
+const models = Object.fromEntries(
+  Object.entries(schemaNames).map(([name, schema]) => [
+    name,
+    registry.register(name, schema),
+  ])
+) as typeof schemaNames;
+
+// const schemas = schemaNames;
+const error = (message: string) =>
+  z.object({ message: z.string().openapi({ example: message }) });
+
+const zodErrorIssue = z.object({
+  code: z.string().openapi({ example: 'invalid_type' }),
+  expected: z.string().openapi({ example: 'string' }),
+  received: z.string().openapi({ example: 'number' }),
+  path: z.array(z.string()).openapi({ example: ['address', 'zip'] }),
+  message: z.string().openapi({ example: 'Expected string, received number' }),
+});
+
+const response = {
+  NoContent: () => ({ description: httpStatuses.message[204] as string }),
+  NotFound: (message = 'Record not found') => error(message),
+  Conflict: (message = 'Record already exists') => error(message),
+  UnprocessableEntity: (message = 'Invalid input') =>
+    error(message).extend({ errors: z.array(zodErrorIssue) }),
+};
 
 //
 // A mock database table using an array
 //
-const todosStore: Todo[] = [{
-  id: 1,
-  name: 'Laundry',
-  note: null,
-  createdAt: (new Date()).toISOString(),
-  updatedAt: (new Date()).toISOString(),
-  deletedAt: null,
-}];
+const todosStore: Todo[] = [
+  {
+    id: 1,
+    name: 'Laundry',
+    note: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    deletedAt: null,
+  },
+];
 
 export type IsNullable<T, K> = null extends T ? K : never;
 export type NullableKeys<T> = { [K in keyof T]: IsNullable<T[K], K> }[keyof T];
-export type NullableKeysPartial<T> = Omit<T, NullableKeys<T>> & Partial<Pick<T, NullableKeys<T>>>;
+export type NullableKeysPartial<T> = Omit<T, NullableKeys<T>> &
+  Partial<Pick<T, NullableKeys<T>>>;
 
 //
 // A mock repository just to have some async functionality
 //
 const todoRepo = {
   // Doesn't really need to be async
-  async create(input: NullableKeysPartial<Pick<Todo, 'name' | 'note'>>): Promise<Todo> {
-    if (todosStore.find(todo => todo.name === input.name)) {
+  async create(
+    input: NullableKeysPartial<Pick<Todo, 'name' | 'note'>>
+  ): Promise<Todo> {
+    if (todosStore.find((todo) => todo.name === input.name)) {
       throw new Error(`name already taken`);
     }
 
@@ -154,8 +206,8 @@ const todoRepo = {
       id: todosStore.length + 1,
       name: input.name,
       note: input.note ?? null,
-      createdAt: (new Date()).toISOString(),
-      updatedAt: (new Date()).toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       deletedAt: null,
     };
 
@@ -164,39 +216,45 @@ const todoRepo = {
     return todo;
   },
   async find(id: number): Promise<Todo | undefined> {
-    return todosStore.find(todo => (todo.id === id) && (todo.deletedAt === null));
+    return todosStore.find((todo) => todo.id === id && todo.deletedAt === null);
   },
-  async update(id: number, input: Partial<Pick<Todo, 'name' | 'note'>>): Promise<Todo | undefined> {
-    const todo = todosStore.find(todo => (todo.id === id) && (todo.deletedAt === null));
+  async update(
+    id: number,
+    input: Partial<Pick<Todo, 'name' | 'note'>>
+  ): Promise<Todo | undefined> {
+    const todo = todosStore.find(
+      (todo) => todo.id === id && todo.deletedAt === null
+    );
 
     if (!todo) {
       return;
     }
 
-    if (todosStore.find(todo => (todo.name === input.name) && (todo.id !== id))) {
+    if (todosStore.find((todo) => todo.name === input.name && todo.id !== id)) {
       throw new Error(`name already taken`);
     }
 
     return Object.assign(todo, {
       ...input,
-      updatedAt: (new Date()).toISOString(),
+      updatedAt: new Date().toISOString(),
     });
   },
   async delete(id: number): Promise<number> {
-    const todo = todosStore.find(todo => (todo.id === id) && (todo.deletedAt === null));
+    const todo = todosStore.find(
+      (todo) => todo.id === id && todo.deletedAt === null
+    );
 
     if (!todo) {
       return 0;
     }
 
-    todo.deletedAt = (new Date()).toISOString();
+    todo.deletedAt = new Date().toISOString();
     return 1;
   },
   async list(): Promise<Todo[]> {
-    return todosStore.filter(todo => todo.deletedAt === null);
+    return todosStore.filter((todo) => todo.deletedAt === null);
   },
 };
-
 
 //
 // Routes
@@ -226,54 +284,98 @@ const asyncHandler = (handler: RequestHandler): RequestHandler => {
   };
 };
 
-type HttpMethod = 'all' | 'get' | 'post' | 'put' | 'delete' | 'patch' | 'options' | 'head';
-type RequestKey = 'params' | 'query' | 'body';
-type RequestSchema = z.ZodObject<{ [k in RequestKey]?: z.AnyZodObject }>;
-type ResponseSchema = z.AnyZodObject;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type HttpMethod = RouteConfig['method'];
+type RequestKey = keyof NonNullable<RouteConfig['request']>;
+type RequestSchema = Omit<
+  NonNullable<RouteConfig['request']>,
+  'body' | 'headers'
+> & { body?: AnyZodObject; headers?: AnyZodObject };
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type ResponseSchema = RouteConfig['responses'];
 
-interface Route {
-  method: HttpMethod;
-  path: string;
+interface Route
+  extends Omit<
+    RouteConfig,
+    'request' | 'responses' | 'parameters' | 'requestBody'
+  > {
   middleware?: RequestHandler[];
   handler: RequestHandler;
   request?: RequestSchema;
-  response?: ResponseSchema;
+  responses: Record<string, AnyZodObject | ResponseConfig>;
 }
 
 const routes: Route[] = [
   // Hello World
   {
+    operationId: 'hello-world',
+    summary: 'Hello, World!',
+    description: 'Says "Hello, World!"',
     method: 'get',
     path: '/',
     handler: function (_req, res) {
       res.send('Hello, World!');
     },
+    responses: {
+      200: {
+        description: 'Says hi.',
+        content: {
+          'text/plain': {
+            schema: {
+              type: 'string',
+              example: 'Hello, World!',
+            },
+          },
+        },
+      },
+    },
   },
 
   // Todos
   {
+    operationId: 'todo-create',
+    summary: 'Create a To-Do',
+    description: 'Create a new To-Do item',
+    tags: ['Todo'],
     method: 'post',
     path: '/todos',
-    request: z.object({
-      body: todoFieldsSchema,
-    }),
-    response: todoModelSchema,
+    request: {
+      body: models.Todo.pick({ name: true, note: true }),
+    },
+    responses: {
+      201: models.Todo,
+      409: response.Conflict(),
+      422: response.UnprocessableEntity(),
+    },
     handler: asyncHandler(async (req, res) => {
       const todo = await todoRepo.create(req.body);
       res.status(201).send(todo);
     }),
   },
   {
+    operationId: 'todo-replace',
+    summary: 'Update a To-Do',
+    description: 'Update a To-Do item',
+    tags: ['Todo'],
     method: 'put',
     path: '/todos/:id',
-    request: z.object({
+    request: {
       params: z.object({
-        id: attrs.id(z.coerce),
+        id: attrs.ID(z.coerce),
       }),
-      body: todoFieldsSchema,
-    }),
+      body: models.Todo.pick({ name: true, note: true }),
+    },
+    responses: {
+      200: models.Todo,
+      404: response.NotFound(),
+      409: response.Conflict(),
+      422: response.UnprocessableEntity(),
+    },
     handler: asyncHandler(async (req, res) => {
-      const todo = await todoRepo.update(req.params.id as never as number, req.body);
+      const todo = await todoRepo.update(
+        req.params.id as never as number,
+        req.body
+      );
 
       if (todo) {
         res.send(todo);
@@ -283,16 +385,23 @@ const routes: Route[] = [
     }),
   },
   {
+    operationId: 'todo-update',
+    summary: 'Partially update a To-Do',
+    description: 'Partially update a To-Do item',
+    tags: ['Todo'],
     method: 'patch',
     path: '/todos/:id',
-    request: z.object({
+    request: {
       params: z.object({
-        id: attrs.id(z.coerce),
+        id: attrs.ID(z.coerce),
       }),
       body: todoFieldsSchema.partial(),
-    }),
+    },
     handler: asyncHandler(async (req, res) => {
-      const todo = await todoRepo.update(req.params.id as never as number, req.body);
+      const todo = await todoRepo.update(
+        req.params.id as never as number,
+        req.body
+      );
 
       if (todo) {
         res.send(todo);
@@ -300,30 +409,55 @@ const routes: Route[] = [
         res.status(404).send();
       }
     }),
+    responses: {
+      200: models.Todo,
+      404: response.NotFound(),
+      409: response.Conflict(),
+      422: response.UnprocessableEntity(),
+    },
   },
   {
+    operationId: 'todo-delete',
+    summary: 'Delete a To-Do',
+    description: 'Soft delete a To-Do item',
+    tags: ['Todo'],
     method: 'delete',
     path: '/todos/:id',
-    request: z.object({
+    request: {
       params: z.object({
-        id: attrs.id(z.coerce),
+        id: attrs.ID(z.coerce),
       }),
-    }),
+    },
+    responses: {
+      204: response.NoContent(),
+      404: response.NotFound(),
+      422: response.UnprocessableEntity(),
+    },
     handler: asyncHandler(async (req, res) => {
-      const deletedCount = await todoRepo.delete(req.params.id as never as number);
+      const deletedCount = await todoRepo.delete(
+        req.params.id as never as number
+      );
       const status = deletedCount === 0 ? 404 : 204;
       res.status(status).send();
     }),
   },
   {
+    operationId: 'todo-get',
+    summary: 'Get a To-Do',
+    description: 'Get a To-Do item',
+    tags: ['Todo'],
     method: 'get',
     path: '/todos/:id',
-    request: z.object({
+    request: {
       params: z.object({
-        id: attrs.id(z.coerce),
+        id: attrs.ID(z.coerce),
       }),
-    }),
-    response: todoModelSchema,
+    },
+    responses: {
+      200: models.Todo,
+      404: response.NotFound(),
+      422: response.UnprocessableEntity(),
+    },
     handler: asyncHandler(async (req, res) => {
       const todo = await todoRepo.find(req.params.id as never as number);
 
@@ -335,12 +469,15 @@ const routes: Route[] = [
     }),
   },
   {
+    operationId: 'todo-list',
+    summary: 'List To-Dos',
+    description: 'List To-Do items',
+    tags: ['Todo'],
     method: 'get',
     path: '/todos',
-    response: z.object({
-      data: z.array(todoModelSchema),
-      meta: paginationMetaSchema,
-    }),
+    responses: {
+      200: paginated(models.Todo),
+    },
     handler: asyncHandler(async (_req, res) => {
       // TODO: impl pagination
       const todos = await todoRepo.list();
@@ -358,20 +495,103 @@ const routes: Route[] = [
 
   // Healthchecks
   {
+    operationId: 'health-liveness',
+    tags: ['Healthchecks'],
     method: 'get',
     path: '/healthz/live',
     handler: function (_req, res) {
       res.send('OK');
-    }
+    },
+    responses: {
+      200: {
+        description: 'Liveness endpoint',
+        content: {
+          'text/plain': {
+            schema: {
+              type: 'string',
+              example: 'OK',
+            },
+          },
+        },
+      },
+    },
   },
   {
+    operationId: 'health-readiness',
+    tags: ['Healthchecks'],
     method: 'get',
     path: '/healthz/ready',
+    responses: {
+      200: {
+        description: 'Readiness endpoint',
+        content: {
+          'text/plain': {
+            schema: {
+              type: 'string',
+              example: 'OK',
+            },
+          },
+        },
+      },
+    },
     handler: function (_req, res) {
       res.send('OK');
-    }
-  }
+    },
+  },
 ];
+
+for (const route of routes) {
+  registry.registerPath({
+    operationId: route.operationId,
+    tags: route.tags,
+    summary: route.summary,
+    description: route.description,
+    method: route.method,
+    path: route.path.replaceAll(/:[a-zA-Z]+/g, match => `{${match.substring(1)}}`),
+    ...(route.request && {
+      request: {
+        params: route.request.params,
+        query: route.request.query,
+        headers: route.request.headers,
+        ...(route.request.body && {
+          body: {
+            content: {
+              'applicatin/json': {
+                schema: route.request.body,
+              },
+            },
+          },
+        }),
+      },
+    }),
+    responses: Object.fromEntries(
+      Object.entries(route.responses).map(([code, schema]) => [
+        code,
+        schema instanceof z.ZodObject
+          ? {
+              description:
+                httpStatuses.message[code as never as number] ??
+                'Unknown response code',
+              content: { 'applicatin/json': { schema } },
+            }
+          : schema,
+      ])
+    ),
+  });
+}
+
+const generator = new OpenAPIGenerator(registry.definitions, '3.0.0');
+
+const document = generator.generateDocument({
+  info: {
+    version: '1.0.0',
+    title: 'My API',
+    description: 'This is the API',
+  },
+  servers: [{ url: '' }],
+});
+
+writeFileSync('swagger.json', JSON.stringify(document, null, 2), { encoding: 'utf-8' });
 
 //
 // Bootstrap
@@ -388,7 +608,7 @@ function bootstrap() {
     ...(env.NODE_ENV !== 'production' && {
       transport: {
         target: 'pino-pretty',
-        colorize: false
+        colorize: false,
       },
     }),
   });
@@ -432,7 +652,7 @@ function bootstrap() {
   const httpTerminator = createHttpTerminator({ server });
 
   const shutdown = async () => {
-    console.log('Shutting down...')
+    console.log('Shutting down...');
     await httpTerminator.terminate();
   };
 
@@ -443,6 +663,6 @@ function bootstrap() {
 
   process.on('SIGTERM', onSignal);
   process.on('SIGINT', onSignal);
-};
+}
 
 bootstrap();
