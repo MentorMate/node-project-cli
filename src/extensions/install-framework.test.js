@@ -152,6 +152,18 @@ describe('install-framework', () => {
           );
         });
 
+        it('should add zod to dependencies', () => {
+          expect(dependencies).toHaveProperty('zod');
+        });
+
+        it('should add @asteasolutions/zod-to-openapi to dependencies', () => {
+          expect(dependencies).toHaveProperty('@asteasolutions/zod-to-openapi');
+        });
+
+        it('should add statuses to dependencies', () => {
+          expect(dependencies).toHaveProperty('statuses');
+        });
+
         it('should add @types/express to devDependencies', () => {
           expect(devDependencies).toHaveProperty('@types/express');
         });
@@ -166,6 +178,10 @@ describe('install-framework', () => {
 
         it('should add pino-pretty to devDependencies', () => {
           expect(devDependencies).toHaveProperty('pino-pretty');
+        });
+
+        it('should add @types/statuses to devDependencies', () => {
+          expect(devDependencies).toHaveProperty('@types/statuses');
         });
       });
     });

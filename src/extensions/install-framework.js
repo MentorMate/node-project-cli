@@ -80,6 +80,8 @@ module.exports = (toolbox) => {
 
         Object.assign(pkgJson.dependencies, {
           zod: '^3.20.6',
+          '@asteasolutions/zod-to-openapi': '^4.4.0',
+          statuses: '^2.0.1',
         });
 
         Object.assign(pkgJson.devDependencies, {
@@ -88,6 +90,7 @@ module.exports = (toolbox) => {
           '@types/compression': '^1.7.2',
           'pino-pretty': '^9.4.0',
           '@types/http-errors': '^2.0.1',
+          '@types/statuses': '^2.0.1',
         });
       }
     }
