@@ -22,6 +22,7 @@ describe('install-framework', () => {
 
   describe('installFramework', () => {
     const input = createExtensionInput();
+    let envVars;
     let scripts;
     let dependencies;
     let devDependencies;
@@ -40,6 +41,7 @@ describe('install-framework', () => {
       toolbox.template.generate = jest.fn(() => {});
       toolbox.system.run = jest.fn(() => {});
       toolbox.installFramework(input);
+      envVars = input.envVars;
       scripts = input.pkgJson.scripts;
       dependencies = input.pkgJson.dependencies;
       devDependencies = input.pkgJson.devDependencies;
@@ -49,6 +51,11 @@ describe('install-framework', () => {
       expect(toolbox.print.muted).toHaveBeenCalledTimes(1);
       expect(toolbox.print.success).toHaveBeenCalledTimes(1);
       expect(toolbox.print.error).not.toHaveBeenCalled();
+    });
+
+    it('should add the HTTP env var section', () => {
+      expect(envVars).toHaveProperty('HTTP');
+      expect(envVars['HTTP']).toHaveProperty('PORT');
     });
 
     it('should install add the framework to dependencies', () => {
@@ -69,13 +76,6 @@ describe('install-framework', () => {
 
     it('should add the start:dev script', () => {
       expect(scripts).toHaveProperty('start:dev');
-    });
-
-    it('should copy the .env.example file', () => {
-      expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-        `${input.assetsPath}/dotenv/.env.example`,
-        `${input.appDir}/.env.example`
-      );
     });
 
     it('should generate a nodemon.json file', () => {

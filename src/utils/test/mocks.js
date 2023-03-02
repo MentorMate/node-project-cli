@@ -8,10 +8,10 @@ const createToolboxMock = () => ({
     copyAsync: async (from, to, options) => {},
     dir: (path, criteria) => {},
     exists: (path) => false,
-    path: (...args) => '',
+    path: (...args) => args.join('/'),
     read: (path) => JSON.stringify({}),
     write: (path, data, options) => {},
-    cwd: () => {},
+    cwd: () => '/path/to',
   },
   parameters: {
     plugin: 'node-cli',
@@ -20,7 +20,7 @@ const createToolboxMock = () => ({
     options: {},
     raw: [
       '/path/to/node',
-      '/path/to/project/bin/node-cli',
+      '/path/to/app/bin/node-cli',
       'generate',
       'project-name',
     ],
@@ -63,7 +63,7 @@ const createToolboxMock = () => ({
     which: () => true,
   },
   meta: {
-    src: '/path/to/project/src',
+    src: '/path/to/project-name/src',
   },
   template: {
     generate: (opts) => Promise.resolve(''),
@@ -105,9 +105,9 @@ const createExtensionInput = () => ({
   framework: 'express',
   projectLanguage: 'TS',
   moduleType: 'CJS',
-  appDir: '/path/to/app',
-  assetsPath: '/path/to/app/assets',
-  workflowsFolder: '/path/to/app/workflows',
+  appDir: '/path/to/project-name',
+  assetsPath: '/path/to/project-name/assets',
+  workflowsFolder: '/path/to/project-name/workflows',
   features: [
     'JSLinters',
     'huskyHooks',
@@ -121,6 +121,12 @@ const createExtensionInput = () => ({
     dependencies: {},
     devDependencies: {},
   },
+  envVars: {
+    Node: {
+      NODE_ENV: 'development',
+    },
+  },
+  db: 'none',
 });
 
 module.exports = {

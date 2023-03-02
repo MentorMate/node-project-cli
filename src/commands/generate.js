@@ -13,6 +13,7 @@ module.exports = {
       print: { success, warning, highlight },
       prompt,
       meta,
+      template: { generate },
     } = toolbox;
 
     const pip3Installation = which('pip3');
@@ -48,6 +49,7 @@ module.exports = {
     const pwd = strings.trim(cwd());
     let pickedFramework;
     let projectName = parameters.first;
+
     let userInput = await prompt.ask([
       {
         type: 'input',
@@ -84,6 +86,7 @@ module.exports = {
         },
       },
     ]);
+
     userInput = Object.assign(
       {},
       userInput,
@@ -116,6 +119,16 @@ module.exports = {
           choices: featureChoices,
           initial: initialFeatureChoices,
         },
+        {
+          type: 'select',
+          name: 'db',
+          message: 'Select a Database',
+          choices: [
+            { message: 'None', value: 'none' },
+            { message: 'PostgreSQL', value: 'pg' },
+          ],
+          initial: 0,
+        },
       ])
     );
 
@@ -124,6 +137,12 @@ module.exports = {
     userInput.appDir = path(pwd, userInput.projectName);
     userInput.assetsPath = path(meta.src, '..', 'assets');
     userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`;
+
+    userInput.envVars = {
+      Node: {
+        NODE_ENV: 'development',
+      },
+    };
 
     userInput.pkgJson = {
       scripts: {},
@@ -164,6 +183,10 @@ module.exports = {
       stepsOfExecution.push(toolbox.dockerizeWorkflow(userInput));
     }
 
+    if (userInput.db === 'pg') {
+      stepsOfExecution.push(toolbox.setupPostgreSQL(userInput));
+    }
+
     dir(userInput.workflowsFolder);
 
     stepsOfExecution.forEach((step) => {
@@ -172,7 +195,12 @@ module.exports = {
     });
 
     asyncOperations.push(
-      copyAsync(`${userInput.assetsPath}/.nvmrc`, `${userInput.appDir}/.nvmrc`)
+      copyAsync(`${userInput.assetsPath}/.nvmrc`, `${userInput.appDir}/.nvmrc`),
+      generate({
+        template: 'dotenv/.env.example.ejs',
+        target: `${userInput.appDir}/.env.example`,
+        props: { groups: userInput.envVars },
+      })
     );
 
     await Promise.all(asyncOperations);
