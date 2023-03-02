@@ -7,6 +7,7 @@ module.exports = (toolbox) => {
     appDir,
     assetsPath,
     pkgJson,
+    envVars,
   }) => {
     const {
       filesystem: { copyAsync },
@@ -20,6 +21,12 @@ module.exports = (toolbox) => {
     };
 
     muted(`Installing ${framework}...`);
+
+    Object.assign(envVars, {
+      HTTP: {
+        PORT: 3000,
+      },
+    });
 
     Object.assign(pkgJson.dependencies, {
       [framework]: frameworkVersion[framework],
@@ -36,11 +43,6 @@ module.exports = (toolbox) => {
       start: `${executable} -r dotenv/config src/index`,
       'start:dev': 'nodemon',
     });
-
-    await copyAsync(
-      `${assetsPath}/dotenv/.env.example`,
-      `${appDir}/.env.example`
-    );
 
     await generate({
       template: 'nodemon/nodemon.json.ejs',
