@@ -7,6 +7,7 @@ module.exports = (toolbox) => {
     appDir,
     assetsPath,
     pkgJson,
+    envVars,
   }) => {
     const {
       filesystem: { copyAsync },
@@ -20,6 +21,12 @@ module.exports = (toolbox) => {
     };
 
     muted(`Installing ${framework}...`);
+
+    Object.assign(envVars, {
+      HTTP: {
+        PORT: 3000,
+      },
+    });
 
     Object.assign(pkgJson.dependencies, {
       [framework]: frameworkVersion[framework],
@@ -36,11 +43,6 @@ module.exports = (toolbox) => {
       start: `${executable} -r dotenv/config src/index`,
       'start:dev': 'nodemon',
     });
-
-    await copyAsync(
-      `${assetsPath}/dotenv/.env.example`,
-      `${appDir}/.env.example`
-    );
 
     await generate({
       template: 'nodemon/nodemon.json.ejs',
@@ -65,6 +67,9 @@ module.exports = (toolbox) => {
         helmet: '^6.0.1',
         cors: '^2.8.5',
         compression: '^1.7.4',
+        'http-terminator': '^3.2.0',
+        pino: '^8.11.0',
+        'http-errors': '^2.0.0',
       });
 
       // with TypeScript
@@ -73,10 +78,16 @@ module.exports = (toolbox) => {
           overwrite: true,
         });
 
+        Object.assign(pkgJson.dependencies, {
+          zod: '^3.20.6',
+        });
+
         Object.assign(pkgJson.devDependencies, {
           '@types/express': '^4.17.17',
           '@types/cors': '^2.8.5',
           '@types/compression': '^1.7.2',
+          'pino-pretty': '^9.4.0',
+          '@types/http-errors': '^2.0.1',
         });
       }
     }

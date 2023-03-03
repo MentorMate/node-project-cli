@@ -38,6 +38,7 @@ describe('generate', () => {
         });
         return Object.fromEntries(answers);
       });
+      toolbox.template.generate = jest.fn(() => {});
       await generate.run(toolbox);
     });
 
@@ -59,18 +60,27 @@ describe('generate', () => {
       expect(answers).toEqual(expectedAnswers);
     });
 
-    it('should ask for the project language, module system and app features', async () => {
+    it('should ask for the project language, module system, app features and database', async () => {
       const questions = toolbox.prompt.ask.mock.calls[1][0];
 
-      expect(questions).toHaveLength(3);
+      expect(questions).toHaveLength(4);
       expect(questions[0].name).toBe('projectLanguage');
       expect(questions[1].name).toBe('moduleType');
       expect(questions[2].name).toBe('features');
+      expect(questions[3].name).toBe('db');
 
       const answers = await toolbox.prompt.ask.mock.results[1].value;
-      const { projectLanguage, moduleType, features } = userInput;
-      const expectedAnswers = { projectLanguage, moduleType, features };
+      const { projectLanguage, moduleType, features, db } = userInput;
+      const expectedAnswers = { projectLanguage, moduleType, features, db };
       expect(answers).toEqual(expectedAnswers);
+    });
+
+    it('should produce a .env.example file', () => {
+      expect(toolbox.template.generate).toHaveBeenCalledWith({
+        template: 'dotenv/.env.example.ejs',
+        target: `${userInput.appDir}/.env.example`,
+        props: { groups: userInput.envVars },
+      });
     });
   });
 });
