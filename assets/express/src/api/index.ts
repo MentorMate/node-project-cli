@@ -1,13 +1,21 @@
-import { DbLayerCollection } from '@database/interfaces';
-import { userModuleFactory } from './user';
-import { MiddlewareCollection, ApiRoutesDefinition } from './user/interfaces';
+import { DbCollection } from '@database';
+import { HealthzController, healthzModuleFactory } from './healthz';
+import { UserController,  userModuleFactory } from './user';
+
+export interface ApiRoutesDefinition extends Record<string, object> {
+  healthz: HealthzController;
+  users: UserController;
+  // todos: TodosController
+}
+
+export type ApiRoutes = UserController[keyof UserController] | HealthzController[keyof HealthzController]
 
 export const apiDefinitionFactory = function (
-  dbLayers: DbLayerCollection,
-  middlewares: MiddlewareCollection
+  dbCollection: DbCollection,
 ): ApiRoutesDefinition {
   return {
-    users: userModuleFactory(dbLayers, middlewares),
-    // todos: todosModuleFactory(dbLayers, middlewares)
+    healthz: healthzModuleFactory(),
+    users: userModuleFactory(dbCollection),
+    // todos: todosModuleFactory(dbCollection)
   };
 };

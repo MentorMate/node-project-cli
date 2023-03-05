@@ -1,11 +1,13 @@
 {
   "watch": [
-    "dist"
+    "src"
   ],
-  "ext": "js",
+  "ext": "ts",
   "ignore": [
     "**/*.spec.*",
     "**/*.test.*"
   ],
-  "signal": "SIGINT"
+  "signal": "SIGINT",
+  "exec": "npx ts-node -r dotenv/config -r tsconfig-paths/register src/index"
 }
+

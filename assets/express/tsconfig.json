@@ -6,11 +6,11 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "paths": {
-      "@api-v1/*": [
-        "src/api/*"
+      "@api": [
+        "src/api"
       ],
-      "@common/*": [
-        "src/common/*"
+      "@services": [
+        "src/services"
       ],
       "@common": [
         "src/common"
@@ -18,14 +18,11 @@
       "@entities": [
         "src/entities"
       ],
-      "@database/*": [
-        "src/database/*"
+      "@middleware": [
+        "src/middleware"
       ],
-      "@guards/*": [
-        "src/guards/*"
-      ],
-      "@helpers/*": [
-        "src/helpers/*"
+      "@database": [
+        "src/database"
       ],
       "@global-test-helpers/*": [
         "test/*"

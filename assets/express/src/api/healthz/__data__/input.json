@@ -1,0 +1,6 @@
+{
+  "info": "This file should be used in tests for storing the input for the functions and scenarios that are tested",
+  "sampleService": {
+    "sampleMethod": "John Doe"
+  }
+}

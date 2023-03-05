@@ -1,9 +1,14 @@
 import { User, UserPayload } from '@entities';
-import { IDbLayer } from '@common';
 
-export type UsersMethods = IDbLayer<string, UserPayload, User>;
+export type UserRepository = {
+  getUser: (email: string) => Promise<User | null>;
+  getAllUsers: () => Promise<User[] | null>;
+  createUser: (payload: UserPayload) => Promise<User | null>;
+  updateUser: (payload: UserPayload) =>Promise<User | null>; 
+  deleteUser: (email: string) => Promise<boolean>;
+}
 
-export type DbLayerCollection = {
-  userDbLayer: UsersMethods;
+export type DbCollection = {
+  userRepoitory: UserRepository;
   // todoDbLayer: TodosMethods;
 };

@@ -1,8 +1,9 @@
+import { DbCollection } from '../interfaces';
 import usersModelMethods from './user.model';
 
-export const dbFactory = function (dbConnection: unknown) {
+export const dbFactory = function (dbConnection: unknown): DbCollection {
   return {
-    userDbLayer: usersModelMethods(dbConnection),
+    userRepoitory: usersModelMethods(dbConnection),
     // todosDbLayer: todosModelMethods(dbConnection),
     // ...
   };

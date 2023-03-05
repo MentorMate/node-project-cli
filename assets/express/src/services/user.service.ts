@@ -1,43 +1,31 @@
-import { ServiceFactory } from '@common';
-import { UserModuleHelpersFunctions } from '../helpers';
 import {
-  loginUserRequestPayload,
-  loginUserResponsePayload,
-  createUserRequestPayload,
-  createOrUpdateUserResponsePayload,
-  deleteUserRequestPayload,
-  deleteUserResponsePayload,
-  getUserRequestPayload,
-  getUserResponsePayload,
-  updateUserRequestPayload,
+  STATUS,
   UserService,
-} from '../interfaces';
+} from './interfaces';
 
 import jwt from 'jsonwebtoken';
-import { User, UserPayload } from '../../../entities';
+import { UserPayload } from '../entities';
+import { hashPassword, compareHash } from './helpers';
+import { UserRepository } from '@database';
 
 const JWT_SECRET: string = process.env.JWT_SECRET_KEY || 'Jw7_S3Cr37K3y';
 
-export const userServiceFactory: ServiceFactory<
-  { id: string; payload: UserPayload; entity: User },
-  UserService,
-  UserModuleHelpersFunctions
-> = function (userDbLayer, helpers) {
+export function userServiceFactory(userRepository: UserRepository): UserService {
   async function loginUser(
-    payload: loginUserRequestPayload
-  ): Promise<loginUserResponsePayload> {
+    payload: { email: string, password: string }
+  ) { 
     const { email, password } = payload;
     const errors = [];
     let token;
 
     try {
-      const user = await userDbLayer.get(email);
+      const user = await userRepository.getUser(email);
       console.log({ user });
       if (!user) {
         throw new Error('Wrong email or password');
       }
 
-      const passwordCheck = await helpers.compareHash(password, user.password);
+      const passwordCheck = await compareHash(password, user.password);
 
       if (!passwordCheck) {
         throw new Error('Wrong email or password');
@@ -63,22 +51,22 @@ export const userServiceFactory: ServiceFactory<
 
     return {
       errors,
-      status: data.length ? 'Success' : 'Failure',
+      status: data.length ? STATUS.SUCCESS : STATUS.FAILURE,
       data,
     };
   }
 
   async function createUser(
-    payload: createUserRequestPayload
-  ): Promise<createOrUpdateUserResponsePayload> {
+    payload: UserPayload
+  ) {
     const { email, password, ...attributes } = payload;
     console.log({ payload });
     const errors: Error[] = [];
     let user;
 
     try {
-      const hashedPassword = await helpers.hashPassword(10, password);
-      user = await userDbLayer.create({
+      const hashedPassword = await hashPassword(10, password);
+      user = await userRepository.createUser({
         email,
         password: hashedPassword,
         ...attributes,
@@ -90,81 +78,82 @@ export const userServiceFactory: ServiceFactory<
 
     return {
       errors,
-      status: !errors.length && user ? 'Success' : 'Failure',
+      status: !errors.length && user ? STATUS.SUCCESS: STATUS.FAILURE,
       data: !errors.length && user ? [user] : [],
     };
   }
 
-  async function getAllUsers(): Promise<getUserResponsePayload> {
+  async function getAllUsers() {
     let users;
     const errors: Error[] = [];
 
     try {
-      users = await userDbLayer.getAll();
+      users = await userRepository.getAllUsers();
     } catch (err) {
       errors.push(err as Error);
     }
 
     return {
       errors,
-      status: !errors.length && users ? 'Success' : 'Failure',
+      status: !errors.length && users ? STATUS.SUCCESS : STATUS.FAILURE,
       data: !errors.length && users ? users : [],
     };
   }
 
   async function getUser(
-    payload: getUserRequestPayload
-  ): Promise<getUserResponsePayload> {
+    payload: { email: string }
+  ) {
     let user;
     const errors: Error[] = [];
 
     try {
-      user = await userDbLayer.get(payload.email);
+      user = await userRepository.getUser(payload.email);
     } catch (err) {
       errors.push(err as Error);
     }
 
     return {
       errors,
-      status: !errors.length && user ? 'Success' : 'Failure',
+      status: !errors.length && user ? STATUS.SUCCESS: STATUS.FAILURE,
       data: !errors.length && user ? [user] : [],
     };
   }
 
   async function updateUser(
-    payload: updateUserRequestPayload
-  ): Promise<createOrUpdateUserResponsePayload> {
+    payload: UserPayload
+  ) {
     let updatedUser;
     const errors: Error[] = [];
 
     try {
-      updatedUser = await userDbLayer.update(payload);
+      updatedUser = await userRepository.updateUser(payload);
     } catch (err) {
       errors.push(err as Error);
     }
 
     return {
       errors,
-      status: !errors.length && updatedUser ? 'Success' : 'Failure',
+      status: !errors.length && updatedUser ? STATUS.SUCCESS: STATUS.FAILURE,
       data: !errors.length && updatedUser ? [updatedUser] : [],
     };
   }
 
   async function deleteUser(
-    payload: deleteUserRequestPayload
-  ): Promise<deleteUserResponsePayload> {
+    payload: { email: string }
+  ) {
     let deleteOperation;
     const errors: Error[] = [];
 
     try {
-      deleteOperation = await userDbLayer.delete(payload.email);
+      deleteOperation = await userRepository.deleteUser(payload.email);
     } catch (err) {
       errors.push(err as Error);
     }
 
     return {
       errors,
-      status: !errors.length && deleteOperation ? 'Success' : 'Failure',
+      status: !errors.length && deleteOperation ? STATUS.SUCCESS : STATUS.FAILURE,
+      data: []
     };
   }
 

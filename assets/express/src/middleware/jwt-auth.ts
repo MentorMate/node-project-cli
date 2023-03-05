@@ -1,5 +1,6 @@
+// Check ready to use express middlewares ( jwt-express, passport )
 import jwt, { VerifyCallback } from 'jsonwebtoken';
-import { RequestHandler } from '@common';
+import { RequestHandler } from 'express';
 
 const JWT_SECRET: string = process.env.JWT_SECRET_KEY || 'Jw7_S3Cr37K3y';
 

@@ -1,43 +1,50 @@
 import express, { Express } from 'express';
+import { Logger } from 'pino'
 
-import { mockDB } from '@database/config/database-config';
-import { dbFactory } from '@database/models';
-import { apiDefinitionFactory } from './api';
-import { middlewareFactory } from './middleware';
-import { UserController } from '@api-v1/user/interfaces';
+import { dbConnection as mockDB, dbFactory } from '@database';
+import { apiDefinitionFactory, ApiRoutes, ApiRoutesDefinition } from '@api';
+import { initateMiddlewares, validateRequest } from '@middleware';
 
-export async function init(app: Express) {
+export async function init(app: Express, logger: Logger) {
   // await db connection
 
   const dbLayers = dbFactory(mockDB); // here we'll pass the real DB connection
-  const middlewares = middlewareFactory(app);
 
-  const { users } = apiDefinitionFactory(dbLayers, middlewares);
-  const userRoutes = express.Router();
+  const apiRoutes = apiDefinitionFactory(dbLayers);
 
-  Object.values(users).forEach(
-    ({
-      method,
-      url,
-      middlewares,
-      handler,
-    }: UserController[keyof UserController]) => {
-      userRoutes[method](url, ...middlewares, handler);
-    }
-  );
+  const routesPrefixes: Record<keyof ApiRoutesDefinition, string> = {
+    healthz: '/v1/healthz',
+    users: '/v1/users'
+  }
 
-  app.use('/users', userRoutes);
+  Object.keys(apiRoutes).forEach((apiModuleKey: keyof ApiRoutesDefinition) => {
+    const router = express.Router();
 
-  // Healthchecks
-  app.get('/healthz/live', (_req, res) => {
-    res.send('OK')
-  })
-  app.get('/healthz/ready', (_req, res) => {
-    res.send('OK')
-  })
+    Object.values(apiRoutes[apiModuleKey]).forEach(
+      ({
+        method,
+        url,
+        requestSchema,
+        middlewares,
+        handler,
+      }: ApiRoutes) => {
+        if (requestSchema) {
+          middlewares.push(validateRequest(requestSchema))
+        }
+
+        router[method](url, ...middlewares, handler);
+      }
+    );
+
+    app.use(routesPrefixes[apiModuleKey], router);
+  });
 
   // Hello world
   app.get('/', (_req, res) => {
-    res.send('Hello, World')
+    throw new Error('test')
+    res.send('Hello world')
   })
+
+  
+  app.use(initateMiddlewares(logger))
 }
