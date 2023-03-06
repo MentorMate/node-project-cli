@@ -14,6 +14,7 @@ import z, { AnyZodObject, ZodType } from 'zod';
 import pino, { Logger } from 'pino';
 import createError from 'http-errors';
 import * as pg from 'pg';
+import Knex from 'knex';
 import httpStatuses from 'statuses';
 import { writeFileSync } from 'fs';
 
@@ -33,10 +34,17 @@ type Environment = z.infer<typeof envSchema>;
 // PG Initialization
 //
 
-// Parses 64bit integers, list of type IDs here https://github.com/brianc/node-pg-types/blob/master/lib/builtins.js
+// https://github.com/brianc/node-pg-types/blob/master/lib/builtins.js
 pg.types.setTypeParser(pg.types.builtins.INT8, parseInt);
 pg.types.setTypeParser(pg.types.builtins.NUMERIC, parseFloat);
 pg.types.setTypeParser(pg.types.builtins.DATE, (v) => v); // keep as string for now
+
+
+//
+// Knex
+//
+const knex = Knex({ client: 'pg', connection: {} });
+
 
 //
 // Middleware
@@ -97,8 +105,6 @@ const errorHandler = function (logger: Logger): ErrorRequestHandler {
 // Validation
 //
 const paginationMetaSchema = z.object({
-  page: z.number(),
-  perPage: z.number(),
   total: z.number(),
 });
 
@@ -136,8 +142,6 @@ const todoFieldsSchema = z.object({
 
 const todoSchema = todoFieldsSchema.merge(idSchema).merge(timestampsSchema);
 
-type Todo = z.infer<typeof todoSchema>;
-
 const registry = new OpenAPIRegistry();
 
 const schemaNames = {
@@ -171,88 +175,68 @@ const response = {
     error(message).extend({ errors: z.array(zodErrorIssue) }),
 };
 
-//
-// A mock database table using an array
-//
-const todosStore: Todo[] = [
-  {
-    id: 1,
-    name: 'Laundry',
-    note: null,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    deletedAt: null,
-  },
-];
-
 export type IsNullable<T, K> = null extends T ? K : never;
 export type NullableKeys<T> = { [K in keyof T]: IsNullable<T[K], K> }[keyof T];
 export type NullableKeysPartial<T> = Omit<T, NullableKeys<T>> &
   Partial<Pick<T, NullableKeys<T>>>;
 
+export type Todo = z.infer<typeof todoSchema>;
+export type InsertTodo = NullableKeysPartial<z.infer<typeof todoFieldsSchema>>;
+export type UpdateTodo = Partial<InsertTodo>;
+
+
 //
 // A mock repository just to have some async functionality
 //
+
+const first = <T>([record]: T[]) => record;
+
+const postTodoInput = z.object({
+  name: models.Todo.shape.name,
+  note: models.Todo.shape.note.default(null),
+});
+
+const putTodoInput = z.object({
+  name: models.Todo.shape.name,
+  note: models.Todo.shape.note.default(null),
+});
+
+const patchTodoInput = todoFieldsSchema.partial();
+
+type CreateTodoInput = z.infer<typeof postTodoInput>;
+type UpdateTodoInput = z.infer<typeof patchTodoInput>;
+
 const todoRepo = {
-  // Doesn't really need to be async
-  async create(
-    input: NullableKeysPartial<Pick<Todo, 'name' | 'note'>>
-  ): Promise<Todo> {
-    if (todosStore.find((todo) => todo.name === input.name)) {
-      throw new Error(`name already taken`);
-    }
-
-    const todo = {
-      id: todosStore.length + 1,
-      name: input.name,
-      note: input.note ?? null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      deletedAt: null,
-    };
-
-    todosStore.push(todo);
-
-    return todo;
+  // These don't really need to use async/await
+  async create(input: CreateTodoInput): Promise<Todo> {
+    return await knex('todos')
+      .insert(input)
+      .returning('*')
+      .then(first);
   },
-  async find(id: number): Promise<Todo | undefined> {
-    return todosStore.find((todo) => todo.id === id && todo.deletedAt === null);
-  },
-  async update(
-    id: number,
-    input: Partial<Pick<Todo, 'name' | 'note'>>
-  ): Promise<Todo | undefined> {
-    const todo = todosStore.find(
-      (todo) => todo.id === id && todo.deletedAt === null
-    );
-
-    if (!todo) {
-      return;
-    }
-
-    if (todosStore.find((todo) => todo.name === input.name && todo.id !== id)) {
-      throw new Error(`name already taken`);
-    }
-
-    return Object.assign(todo, {
-      ...input,
-      updatedAt: new Date().toISOString(),
-    });
+  async update(id: number, input: UpdateTodoInput): Promise<Todo | undefined> {
+    return await knex('todos')
+      .where({ id })
+      .whereNull('deletedAt')
+      .update(input)
+      .returning('*')
+      .then(first);
   },
   async delete(id: number): Promise<number> {
-    const todo = todosStore.find(
-      (todo) => todo.id === id && todo.deletedAt === null
-    );
-
-    if (!todo) {
-      return 0;
-    }
-
-    todo.deletedAt = new Date().toISOString();
-    return 1;
+    return await knex('todos')
+      .where({ id })
+      .whereNull('deletedAt')
+      .update('deletedAt', new Date());
+  },
+  async find(id: number): Promise<Todo | undefined> {
+    return await knex('todos')
+      .where({ id })
+      .whereNull('deletedAt')
+      .first();
   },
   async list(): Promise<Todo[]> {
-    return todosStore.filter((todo) => todo.deletedAt === null);
+    return await knex('todos')
+      .whereNull('deletedAt')
   },
 };
 
@@ -340,7 +324,7 @@ const routes: Route[] = [
     method: 'post',
     path: '/todos',
     request: {
-      body: models.Todo.pick({ name: true, note: true }),
+      body: postTodoInput,
     },
     responses: {
       201: models.Todo,
@@ -349,6 +333,7 @@ const routes: Route[] = [
     },
     handler: asyncHandler(async (req, res) => {
       const todo = await todoRepo.create(req.body);
+
       res.status(201).send(todo);
     }),
   },
@@ -363,7 +348,7 @@ const routes: Route[] = [
       params: z.object({
         id: attrs.ID(z.coerce),
       }),
-      body: models.Todo.pick({ name: true, note: true }),
+      body: putTodoInput,
     },
     responses: {
       200: models.Todo,
@@ -395,7 +380,7 @@ const routes: Route[] = [
       params: z.object({
         id: attrs.ID(z.coerce),
       }),
-      body: todoFieldsSchema.partial(),
+      body: patchTodoInput,
     },
     handler: asyncHandler(async (req, res) => {
       const todo = await todoRepo.update(
@@ -479,15 +464,12 @@ const routes: Route[] = [
       200: paginated(models.Todo),
     },
     handler: asyncHandler(async (_req, res) => {
-      // TODO: impl pagination
       const todos = await todoRepo.list();
 
       res.send({
         data: todos,
         meta: {
           total: todos.length,
-          page: 1,
-          perPage: 20,
         },
       });
     }),
@@ -654,6 +636,7 @@ function bootstrap() {
   const shutdown = async () => {
     console.log('Shutting down...');
     await httpTerminator.terminate();
+    await knex.destroy();
   };
 
   const onSignal = (signal: NodeJS.Signals) => {
