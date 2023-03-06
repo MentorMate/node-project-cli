@@ -6,6 +6,7 @@ import { createHttpTerminator } from 'http-terminator';
 import z from 'zod';
 import pino, { Logger } from 'pino';
 import createError from 'http-errors';
+import * as pg from 'pg';
 
 //
 // Environment
@@ -16,6 +17,15 @@ const envSchema = z.object({
 });
 
 type Environment = z.infer<typeof envSchema>;
+
+//
+// PG Initialization
+//
+
+// Parses 64bit integers, list of type IDs here https://github.com/brianc/node-pg-types/blob/master/lib/builtins.js
+pg.types.setTypeParser(pg.types.builtins.INT8, parseInt);
+pg.types.setTypeParser(pg.types.builtins.NUMERIC, parseFloat);
+pg.types.setTypeParser(pg.types.builtins.DATE, (v) => v); // keep as string for now
 
 //
 // Middleware

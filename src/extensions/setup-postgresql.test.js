@@ -40,6 +40,7 @@ describe('setup-postgresql', () => {
     describe('syncOperations', () => {
       let envVars;
       let dependencies;
+      let devDependencies;
 
       beforeAll(() => {
         input.features = [];
@@ -49,6 +50,7 @@ describe('setup-postgresql', () => {
         ops.syncOperations();
         envVars = input.envVars;
         dependencies = input.pkgJson.dependencies;
+        devDependencies = input.pkgJson.devDependencies;
       });
 
       it('should add the postgres env vars', () => {
@@ -61,8 +63,12 @@ describe('setup-postgresql', () => {
         });
       });
 
-      it('should add the pg package', () => {
+      it('should add the pg dependency', () => {
         expect(dependencies).toHaveProperty('pg');
+      });
+
+      it('should add the @types/pg dev dependency', () => {
+        expect(devDependencies).toHaveProperty('@types/pg');
       });
     });
 
