@@ -20,6 +20,10 @@ module.exports = (toolbox) => {
       Object.assign(pkgJson.dependencies, {
         pg: '^8.9.0',
       });
+
+      Object.assign(pkgJson.devDependencies, {
+        '@types/pg': '^8.6.6',
+      });
     };
 
     const asyncOperations = async () => {
