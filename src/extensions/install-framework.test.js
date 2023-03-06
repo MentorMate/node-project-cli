@@ -183,6 +183,32 @@ describe('install-framework', () => {
         it('should add @types/statuses to devDependencies', () => {
           expect(devDependencies).toHaveProperty('@types/statuses');
         });
+
+        describe('and the database is PostgreSQL', () => {
+          beforeAll(() => {
+            input.db = 'pg';
+          });
+
+          it('should add knex to dependencies', () => {
+            expect(dependencies).toHaveProperty('knex');
+          });
+
+          it('shoudl add knex migration scripts', () => {
+            expect(Object.keys(scripts)).toEqual(
+              expect.arrayContaining([
+                'db:connection:print',
+                'db:migrate:make',
+                'db:migrate:up',
+                'db:migrate:down',
+                'db:migrate:latest',
+                'db:migrate:rollback',
+                'db:migrate:version',
+                'db:migrate:status',
+                'db:migrate:reset',
+              ])
+            );
+          });
+        });
       });
     });
   });
