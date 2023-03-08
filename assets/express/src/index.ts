@@ -24,11 +24,38 @@ extendZodWithOpenApi(z);
 // Environment
 //
 const envSchema = z.object({
+  // Node
   NODE_ENV: z.enum(['development', 'production']),
+
+  // HTTP
   PORT: z.coerce.number().int().gte(1024).lte(65535),
+
+  // PostgreSQL
+  // TODO: this limits your options, should be revisited
+  PGHOST: z.string().nonempty(),
+  PGPORT: z.coerce.number().int().gte(1024).lte(65535),
+  PGUSER: z.string().nonempty(),
+  PGPASSWORD: z.string().nonempty(),
+  PGDATABASE: z.string().nonempty(),
 });
 
 type Environment = z.infer<typeof envSchema>;
+
+// Validate env
+const env: Environment = envSchema.parse(process.env);
+
+//
+// Logger
+//
+const logger = pino({
+  name: 'http',
+  ...(env.NODE_ENV !== 'production' && {
+    transport: {
+      target: 'pino-pretty',
+      colorize: false,
+    },
+  }),
+});
 
 //
 // PG Initialization
@@ -39,12 +66,27 @@ pg.types.setTypeParser(pg.types.builtins.INT8, parseInt);
 pg.types.setTypeParser(pg.types.builtins.NUMERIC, parseFloat);
 pg.types.setTypeParser(pg.types.builtins.DATE, (v) => v); // keep as string for now
 
-
 //
 // Knex
 //
-const knex = Knex({ client: 'pg', connection: {} });
-
+const knex = Knex({
+  client: 'pg',
+  // We don't need to specify the connection options as we're using the default env var names
+  // see https://node-postgres.com/features/connecting#environment-variables
+  // see https://www.postgresql.org/docs/9.1/libpq-envars.html
+  connection: {},
+  pool: {
+    // the minimum is for all connections rather than alive, so it has to be set to zero
+    // see https://knexjs.org/guide/#pool
+    min: 0,
+  }, 
+  log: {
+    warn: logger.warn.bind(logger),
+    error: logger.error.bind(logger),
+    debug: logger.debug.bind(logger),
+    deprecate: logger.warn.bind(logger),
+  },
+});
 
 //
 // Middleware
@@ -52,7 +94,7 @@ const knex = Knex({ client: 'pg', connection: {} });
 const logRequest = function (logger: Logger): RequestHandler {
   return function ({ method, path }, _res, next) {
     // DO NOT use console: https://expressjs.com/en/advanced/best-practice-performance.html#do-logging-correctly
-    logger.info({ method, path });
+    logger.info(`${method} ${path}`);
     next();
   };
 };
@@ -140,7 +182,9 @@ const todoFieldsSchema = z.object({
   note: attrs.Note(z).nullable(),
 });
 
-const todoSchema = todoFieldsSchema.merge(idSchema).merge(timestampsSchema);
+const todoSchema = todoFieldsSchema
+  .merge(idSchema)
+  .merge(timestampsSchema);
 
 const registry = new OpenAPIRegistry();
 
@@ -579,21 +623,8 @@ writeFileSync('swagger.json', JSON.stringify(document, null, 2), { encoding: 'ut
 // Bootstrap
 //
 function bootstrap() {
-  // Validate env
-  const env: Environment = envSchema.parse(process.env);
-
   // Create app
   const app = express();
-
-  const logger = pino({
-    name: 'http',
-    ...(env.NODE_ENV !== 'production' && {
-      transport: {
-        target: 'pino-pretty',
-        colorize: false,
-      },
-    }),
-  });
 
   const middleware = [
     logRequest(logger),

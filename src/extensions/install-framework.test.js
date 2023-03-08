@@ -189,6 +189,10 @@ describe('install-framework', () => {
             input.db = 'pg';
           });
 
+          it('should add Knex to envVars', () => {
+            expect(envVars).toHaveProperty('Knex');
+          });
+
           it('should add knex to dependencies', () => {
             expect(dependencies).toHaveProperty('knex');
           });

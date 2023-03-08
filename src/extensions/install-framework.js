@@ -96,6 +96,12 @@ module.exports = (toolbox) => {
 
         // TODO: Move out
         if (db === 'pg') {
+          Object.assign(envVars, {
+            Knex: {
+              DEBUG: 'knex:query',
+            },
+          });
+
           Object.assign(pkgJson.dependencies, {
             knex: '^2.4.2',
           });
