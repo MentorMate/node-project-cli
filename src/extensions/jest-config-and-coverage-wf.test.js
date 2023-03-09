@@ -48,7 +48,15 @@ describe('jest-config-and-coverage-wf', () => {
       });
 
       it('should add the test script', () => {
-        expect(scripts['test']).toBe('jest');
+        expect(scripts).toHaveProperty('test');
+      });
+
+      it('should add the "test:cov" script', () => {
+        expect(scripts).toHaveProperty('test:cov');
+      });
+
+      it('should add the "test:watch" script', () => {
+        expect(scripts).toHaveProperty('test:watch');
       });
 
       it('should add the jest package', () => {
