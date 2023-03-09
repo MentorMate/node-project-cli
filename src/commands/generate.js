@@ -206,6 +206,9 @@ module.exports = {
     await Promise.all(asyncOperations);
 
     const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`));
+
+    packageJson.private = true;
+
     packageJson.scripts = {
       ...packageJson.scripts,
       ...userInput.pkgJson.scripts,
