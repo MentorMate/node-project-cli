@@ -6,15 +6,15 @@ const config = {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
   rootDir: 'src',
-  collectCoverage: true,
   collectCoverageFrom: [
     '**/*.(t|j)s',
     '!**/node_modules/**',
     '!**/coverage/**',
-    '!**/database/models/**',
+    '!**/database/**',
     '!*.config.js',
+    '!<rootDir>/index.ts',
   ],
-  coverageDirectory: 'coverage',
+  coverageDirectory: '../coverage',
   testEnvironment: 'node',
   coverageThreshold: {
     global: {
