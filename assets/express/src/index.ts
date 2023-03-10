@@ -10,12 +10,13 @@ import {
   RouteConfig,
   ResponseConfig,
 } from '@asteasolutions/zod-to-openapi';
-import z, { AnyZodObject, ZodType } from 'zod';
+import z, { AnyZodObject, ZodType, ZodEnum } from 'zod';
 import pino, { Logger } from 'pino';
 import createError, { NotFound, Conflict } from 'http-errors';
 import pg, { DatabaseError } from 'pg';
 import { PostgresError } from 'pg-error-enum';
-import Knex from 'knex';
+import Knex, { Knex as KnexType } from 'knex';
+import { Tables } from 'knex/types/tables';
 import httpStatuses from 'statuses';
 import { writeFileSync } from 'fs';
 
@@ -171,13 +172,229 @@ const handleServiceError: ErrorRequestHandler = (err, _req, _res, next) => {
   next(error);
 };
 
+
+//
+// Sort List Paginate utilities
+//
+const sortOrder = z.enum(['asc', 'desc']);
+
+type SortOrder = z.infer<typeof sortOrder>;
+
+export interface Sort<SortColumn extends string> {
+  column: SortColumn;
+  order?: SortOrder;
+}
+
+const pagination = z.object({
+  page: z.coerce.number().int().positive(),
+  items: z.coerce.number().int().positive(),
+}).partial();
+
+const paginationMeta = pagination
+  .required()
+  .extend({
+    total: z.number().int().nonnegative(),
+  });
+
+export type Pagination = z.infer<typeof pagination>
+export type PaginationMeta = z.infer<typeof paginationMeta>;
+
+interface Paginated<Record> {
+  data: Record[];
+  meta: PaginationMeta;
+}
+
+const paginated = <S extends ZodType<unknown>>(schema: S) =>
+  z.object({
+    data: z.array(schema),
+    meta: paginationMeta,
+  });
+
+
+const paginationDefaults = {
+  page: 1,
+  items: 20,
+};
+
+const extractPagination = (pagination?: Pagination) => Object.assign({}, paginationDefaults, pagination);
+
+/**
+ * A Filter is a function that accepts a QueryBuilder for a given entity and a value,
+ * applies the filter to the QueryBuilder and returns it.
+ *
+ * Example:
+ * ```
+ * import { Knex } from 'knex';
+ * import { Tables } from 'knex/types/tables';
+ * 
+ * type FilterByName = Filter<Knex.QueryBuilder<Tables['todos']>, Todo['name']>;
+ * 
+ * const filterByName: FilterByName = (qb, name) => qb.where({ name });
+ * ```
+ */
+type Filter<QueryBuilder extends KnexType.QueryBuilder, Value> = (qb: QueryBuilder, value: Value) => QueryBuilder;
+
+/**
+ * A FilerMap is a map is a mapping from query param names to filters.
+ * The type requires that the list of keys is exhaustive, in order to
+ * enforce that all query parameters have a corresponding filter implemented.
+ * 
+ * Example:
+ * ```
+ * import { Knex } from 'knex';
+ * import { Tables } from 'knex/types/tables';
+ * 
+ * // This would typically be obtained via z.infer<typeof listTodosFiltersSchema>
+ * interface ListTodosFilters {
+ *   id?: number;
+ *   name?: string;
+ * };
+ * 
+ * const listTodosFilterMap: FilterMap<KnexType.QueryBuilder<Tables['todos']>, ListTodosFilters> = {
+ *   id: (qb, id) => qb.where({ id }),
+ *   name: (qb, name) => qb.whereILike('name', `%${name}%`),
+ * };
+ * ```
+ */
+export type FilterMap<QueryBuilder extends KnexType.QueryBuilder, Filters> = {
+  // Since query params are usually optional,
+  // we loop through the query params removing their optionality via `-?`,
+  // then map them to a filter of their value excluding undefined.
+  [K in keyof Filters]-?: Filter<QueryBuilder, Exclude<Filters[K], undefined>>;
+};
+
+/**
+ * A Sorter is a function that accepts a QueryBuilder for a given entity and a sort order,
+ * applies the sorting to the QueryBuilder and returns it.
+ *
+ * Example:
+ * ```
+ * import { Knex } from 'knex';
+ * import { Tables } from 'knex/types/tables';
+ * 
+ * type SortByName = Sorter<Knex.QueryBuilder<Tables['todos']>>;
+ * 
+ * const sortByName: SortByName = (qb, order) => qb.orderBy('name', order);
+ * ```
+ */
+type Sorter<QueryBuilder extends KnexType.QueryBuilder> = (qb: QueryBuilder, order?: SortOrder) => QueryBuilder;
+
+/**
+ * A SorterMap is a map is a mapping from query param names to sorters.
+ * The type requires that the list of keys is exhaustive, in order to
+ * enforce that all sort parameters have a corresponding sorter implemented.
+ * 
+ * Example:
+ * ```
+ * import { Knex } from 'knex';
+ * import { Tables } from 'knex/types/tables';
+ *
+ * type ListTodoSortColumn = 'name' | 'createdAt';
+ *
+ * const listTodosSorterMap: SorterMap<KnexType.QueryBuilder<Tables['todos']>, ListTodoSortColumn> = {
+ *   name: (qb, order) => qb.orderBy('name', order),
+ *   createdAt: (qb, order) => qb.orderBy('createdAt', order),
+ * };
+ * ```
+ */
+export type SorterMap<QueryBuilder extends KnexType.QueryBuilder, SortColumn extends string> = Record<SortColumn, Sorter<QueryBuilder>>;
+
+export interface ListQuery<Filters, Sort, Pagination> {
+  filters?: Filters;
+  sorts?: Sort[];
+  pagination?: Pagination;
+}
+
+
+//
+// Knex extensions
+//
+const filter = <
+  QB extends KnexType.QueryBuilder,
+  Query extends Record<string, unknown>,
+  Filters extends FilterMap<QB, Query>
+>(
+  qb: QB,
+  filters: Query,
+  filterMap: Filters,
+): QB =>
+  Object.entries(filters)
+    .filter(([, v]) => v !== undefined)
+    .reduce<QB>((qb, [k, v]) => filterMap[k as keyof Filters](qb, v as never), qb);
+
+const sort = <
+  QB extends KnexType.QueryBuilder,
+  SortColumn extends string,
+>(
+  qb: QB,
+  sorts: Sort<SortColumn>[],
+  sorterMap: SorterMap<QB, SortColumn>,
+): QB =>
+  sorts.reduce<QB>((qb, sort) => sorterMap[sort.column](qb, sort.order), qb);
+
+const paginate = <QB extends KnexType.QueryBuilder>(qb: QB, pagination?: Pagination) => {
+  const { page, items } = extractPagination(pagination);
+
+  return qb
+    .offset((page - 1) * items)
+    .limit(items);
+};
+
+export const list = <
+  QB extends KnexType.QueryBuilder,
+  Filters,
+  SortColumn extends string,
+  FM extends FilterMap<KnexType.QueryBuilder, Filters>,
+  SM extends SorterMap<KnexType.QueryBuilder, SortColumn>,
+>(
+  qb: QB,
+  query: ListQuery<Filters, Sort<SortColumn>, Pagination>,
+  { filterMap, sorterMap }: { filterMap: FM; sorterMap: SM; },
+): QB =>
+  qb
+    .filter(query.filters, filterMap)
+    .sort(query.sorts, sorterMap)
+    .paginate(query.pagination);
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+if (!Knex.filter) {
+  Knex.QueryBuilder.extend('filter', function (filters, filterMap) {
+    return filters ? filter(this, filters, filterMap) : this;
+  });
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+if (!Knex.sort) {
+  Knex.QueryBuilder.extend('sort', function (sorts, sorterMap) {
+    return sorts ? sort(this, sorts || [], sorterMap) : this;
+  });
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+if (!Knex.paginate) {
+  Knex.QueryBuilder.extend('paginate', function (pagination) {
+    return paginate(this, pagination);
+  });
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+if (!Knex.list) {
+  Knex.QueryBuilder.extend('list', function (input, listMaps) {
+    return list(this, input, listMaps);
+  });
+}
+
+
 //
 // Middleware
 //
 const logRequest = function (logger: Logger): RequestHandler {
-  return function ({ method, path }, _res, next) {
-    // DO NOT use console: https://expressjs.com/en/advanced/best-practice-performance.html#do-logging-correctly
-    logger.info(`${method} ${path}`);
+  return function ({ method, url }, _res, next) {
+    logger.info(`${method} ${url}`);
     next();
   };
 };
@@ -229,16 +446,6 @@ const errorHandler = function (logger: Logger): ErrorRequestHandler {
 //
 // Validation
 //
-const paginationMetaSchema = z.object({
-  total: z.number(),
-});
-
-const paginated = <S extends ZodType<unknown>>(schema: S) =>
-  z.object({
-    data: z.array(schema),
-    meta: paginationMetaSchema,
-  });
-
 type Zod = typeof z | typeof z.coerce;
 
 const attrs = {
@@ -282,7 +489,6 @@ const models = Object.fromEntries(
   ])
 ) as typeof schemaNames;
 
-// const schemas = schemaNames;
 const error = (message: string) =>
   z.object({ message: z.string().openapi({ example: message }) });
 
@@ -311,12 +517,58 @@ export type Todo = z.infer<typeof todoSchema>;
 export type InsertTodo = NullableKeysPartial<z.infer<typeof todoFieldsSchema>>;
 export type UpdateTodo = Partial<InsertTodo>;
 
+//
+// List To-Dos inputs
+//
+const listTodosFilters = z.object({
+  id: z.coerce.number().optional(),
+  name: z.string().optional(),
+});
+
+type ListTodosFilters = z.infer<typeof listTodosFilters>;
+
+const listTodosFilterMap: FilterMap<KnexType.QueryBuilder<Tables['todos']>, ListTodosFilters> = {
+  id: (qb, id) => qb.where({ id }),
+  name: (qb, name) => qb.whereILike('name', `%${name}%`),
+};
+
+const listTodosSortColumn = z.enum(['name', 'createdAt']);
+
+type ListTodosSortColumn = z.infer<typeof listTodosSortColumn>;
+
+const sorts = <S extends ZodEnum<[string, ...string[]]>>(schema: S) =>
+  z.array(z.object({
+    column: schema,
+    order: sortOrder.optional(),
+  }))
+
+const listTodosSorts = sorts(listTodosSortColumn);
+
+const listTodosSorterMap: SorterMap<KnexType.QueryBuilder<Tables['todos']>, ListTodosSortColumn> = {
+  name: (qb, order) => qb.orderBy('name', order),
+  createdAt: (qb, order) => qb.orderBy('createdAt', order),
+};
+
+const listTodosMaps = { filterMap: listTodosFilterMap, sorterMap: listTodosSorterMap };
+
+const listTodosQuery = z.object({
+  filters: listTodosFilters.optional(),
+  sorts: listTodosSorts.optional(),
+  pagination: pagination.optional(),
+});
+
+type ListTodosQuery = z.infer<typeof listTodosQuery>;
 
 //
 // A mock repository just to have some async functionality
 //
 
 const first = <T>([record]: T[]) => record;
+
+const parseCount = ([{ count }]: Array<{ count?: string | number }>): number =>
+  typeof count === 'string'
+    ? parseInt(count)
+    : count as number;
 
 const postTodoInput = z.object({
   name: models.Todo.shape.name,
@@ -368,9 +620,24 @@ const todoRepo = {
       .first()
       .then(definedOrNotFound('To-Do not found'))
   },
-  async list(): Promise<Todo[]> {
-    return await knex('todos')
-      .whereNull('deletedAt')
+  async list(query: ListTodosQuery): Promise<Paginated<Todo>> {
+    const qb = knex('todos').whereNull('deletedAt');
+
+    const data = await qb.clone()
+      .list(query, listTodosMaps);
+
+    const total = await qb.clone()
+      .filter(query.filters, listTodosFilterMap)
+      .count()
+      .then(parseCount);
+
+    return {
+      data: data,
+      meta: {
+        ...extractPagination(query.pagination),
+        total,
+      },
+    };
   },
 };
 
@@ -580,18 +847,16 @@ const routes: Route[] = [
     tags: ['Todo'],
     method: 'get',
     path: '/todos',
+    request: {
+      query: listTodosQuery,
+    },
     responses: {
       200: paginated(models.Todo),
     },
-    handler: asyncHandler(async (_req, res) => {
-      const todos = await todoRepo.list();
+    handler: asyncHandler(async (req, res) => {
+      const todos = await todoRepo.list(req.query as never as ListTodosQuery);
 
-      res.send({
-        data: todos,
-        meta: {
-          total: todos.length,
-        },
-      });
+      res.send(todos);
     }),
   },
 

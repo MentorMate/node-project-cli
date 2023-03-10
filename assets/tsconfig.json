@@ -5,6 +5,7 @@
     "baseUrl": ".",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "skipLibCheck": false,
     "lib": ["ES2021"],
     "paths": {
       "@api-v1/*": ["src/api/*"],
@@ -15,5 +16,8 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["**/*.spec.*", "**/*.test.*"]
+  "exclude": ["**/*.spec.*", "**/*.test.*"],
+  "ts-node": {
+    "files": true
+  }
 }
