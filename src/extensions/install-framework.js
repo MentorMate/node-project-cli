@@ -104,6 +104,7 @@ module.exports = (toolbox) => {
 
           Object.assign(pkgJson.dependencies, {
             knex: '^2.4.2',
+            'pg-error-enum': '^0.6.0',
           });
 
           Object.assign(pkgJson.scripts, {

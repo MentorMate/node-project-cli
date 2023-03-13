@@ -12,8 +12,9 @@ import {
 } from '@asteasolutions/zod-to-openapi';
 import z, { AnyZodObject, ZodType } from 'zod';
 import pino, { Logger } from 'pino';
-import createError from 'http-errors';
-import * as pg from 'pg';
+import createError, { NotFound, Conflict } from 'http-errors';
+import pg, { DatabaseError } from 'pg';
+import { PostgresError } from 'pg-error-enum';
 import Knex from 'knex';
 import httpStatuses from 'statuses';
 import { writeFileSync } from 'fs';
@@ -69,6 +70,7 @@ pg.types.setTypeParser(pg.types.builtins.DATE, (v) => v); // keep as string for 
 //
 // Knex
 //
+
 const knex = Knex({
   client: 'pg',
   // We don't need to specify the connection options as we're using the default env var names
@@ -87,6 +89,87 @@ const knex = Knex({
     deprecate: logger.warn.bind(logger),
   },
 });
+
+//
+// Error Handling
+//
+
+// Service layer exceptions
+class DuplicateRecordException extends Error {
+  constructor(message = 'Record already exists') {
+    super(message);
+    this.name = DuplicateRecordException.name;
+  }
+}
+
+class RecordNotFoundException extends Error {
+  constructor(message = 'Record not found') {
+    super(message);
+    this.name = RecordNotFoundException.name;
+  }
+}
+
+// These aliases are just for readability
+type DatabaseErrorCode = Exclude<DatabaseError['code'], undefined>;
+type DatabaseConstraintName = string;
+type ErrorConstructor = () => Error;
+
+const dbToServiceErrorMap: Record<DatabaseErrorCode, Record<DatabaseConstraintName, ErrorConstructor>> = {
+  [PostgresError.UNIQUE_VIOLATION]: {
+    'unq_todos_name': () => new DuplicateRecordException('To-Do name already taken'),
+  },
+
+  // To-Dos don't hold a `userId`, this is just an example
+  [PostgresError.FOREIGN_KEY_VIOLATION]: {
+    'fk_todos_user_id': () => new RecordNotFoundException('User not found'),
+  }
+};
+
+const handleDbError = (e: unknown) => {
+  if (!(e instanceof DatabaseError) || e.code === undefined || e.constraint === undefined) {
+    throw e;
+  }
+
+  const constructor = dbToServiceErrorMap[e.code]?.[e.constraint];
+
+  if (constructor) {
+    throw constructor();
+  }
+
+  throw e;
+};
+
+const definedOrFail = <T>(errorFactory: () => Error) => {
+  return (result: T | undefined): T => {
+    if (!result) {
+      throw errorFactory();
+    }
+    return result;
+  };
+};
+
+const updatedOrFail = (errorFactory: () => Error) => {
+  return (result: number): number => {
+    if (result === 0) {
+      throw errorFactory();
+    }
+    return result;
+  };
+};
+
+const definedOrNotFound = <T>(message?: string) => definedOrFail<T>(() => new RecordNotFoundException(message));
+const updatedOrNotFound = (message?: string) => updatedOrFail(() => new RecordNotFoundException(message));
+
+const serviceToHttpErrorMap = {
+  [RecordNotFoundException.name]: NotFound,
+  [DuplicateRecordException.name]: Conflict,
+};
+
+const handleServiceError: ErrorRequestHandler = (err, _req, _res, next) => {
+  const klass = serviceToHttpErrorMap[err.name];
+  const error = klass ? new klass(err.message) : err;
+  next(error);
+};
 
 //
 // Middleware
@@ -256,27 +339,34 @@ const todoRepo = {
     return await knex('todos')
       .insert(input)
       .returning('*')
-      .then(first);
+      .then(first)
+      .catch(handleDbError);
   },
+  // TODO: Handle the empty object in request body:
+  // Empty .update() call detected! Update data does not contain any values to update. This will result in a faulty query
   async update(id: number, input: UpdateTodoInput): Promise<Todo | undefined> {
     return await knex('todos')
       .where({ id })
       .whereNull('deletedAt')
       .update(input)
       .returning('*')
-      .then(first);
+      .then(first)
+      .catch(handleDbError)
+      .then(definedOrNotFound('To-Do not found'));
   },
   async delete(id: number): Promise<number> {
     return await knex('todos')
       .where({ id })
       .whereNull('deletedAt')
-      .update('deletedAt', new Date());
+      .update('deletedAt', new Date())
+      .then(updatedOrNotFound('To-Do not found'));
   },
   async find(id: number): Promise<Todo | undefined> {
     return await knex('todos')
       .where({ id })
       .whereNull('deletedAt')
-      .first();
+      .first()
+      .then(definedOrNotFound('To-Do not found'))
   },
   async list(): Promise<Todo[]> {
     return await knex('todos')
@@ -406,11 +496,7 @@ const routes: Route[] = [
         req.body
       );
 
-      if (todo) {
-        res.send(todo);
-      } else {
-        res.status(404).send();
-      }
+      res.send(todo);
     }),
   },
   {
@@ -432,11 +518,7 @@ const routes: Route[] = [
         req.body
       );
 
-      if (todo) {
-        res.send(todo);
-      } else {
-        res.status(404).send();
-      }
+      res.send(todo);
     }),
     responses: {
       200: models.Todo,
@@ -463,11 +545,9 @@ const routes: Route[] = [
       422: response.UnprocessableEntity(),
     },
     handler: asyncHandler(async (req, res) => {
-      const deletedCount = await todoRepo.delete(
-        req.params.id as never as number
-      );
-      const status = deletedCount === 0 ? 404 : 204;
-      res.status(status).send();
+      await todoRepo.delete(req.params.id as never as number);
+
+      res.status(204).send();
     }),
   },
   {
@@ -490,11 +570,7 @@ const routes: Route[] = [
     handler: asyncHandler(async (req, res) => {
       const todo = await todoRepo.find(req.params.id as never as number);
 
-      if (todo) {
-        res.send(todo);
-      } else {
-        res.status(404).send();
-      }
+      res.send(todo);
     }),
   },
   {
@@ -653,7 +729,8 @@ function bootstrap() {
     }
   }
 
-  // Register error handler
+  // Register error handlers
+  app.use(handleServiceError);
   app.use(errorHandler(logger));
 
   // Start server
