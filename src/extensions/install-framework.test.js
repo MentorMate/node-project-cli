@@ -197,6 +197,10 @@ describe('install-framework', () => {
             expect(dependencies).toHaveProperty('knex');
           });
 
+          it('should add pg-error-enum to dependencies', () => {
+            expect(dependencies).toHaveProperty('pg-error-enum');
+          });
+
           it('shoudl add knex migration scripts', () => {
             expect(Object.keys(scripts)).toEqual(
               expect.arrayContaining([
