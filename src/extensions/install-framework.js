@@ -98,6 +98,7 @@ module.exports = (toolbox) => {
           '@types/express': '^4.17.17',
           '@types/cors': '^2.8.5',
           '@types/compression': '^1.7.2',
+          '@types/bcrypt': '^5.0.0',
           'pino-pretty': '^9.4.0',
           '@types/http-errors': '^2.0.1',
           '@types/statuses': '^2.0.1',

@@ -82,8 +82,8 @@ describe('ts-setup', () => {
           expect(devDependencies).toHaveProperty('@tsconfig/recommended');
         });
 
-        it('should add the tsc-alias package', () => {
-          expect(devDependencies).toHaveProperty('tsc-alias');
+        it('should add the tsconfig-paths package', () => {
+          expect(devDependencies).toHaveProperty('tsconfig-paths');
         });
 
         it('should add the @types/node package', () => {

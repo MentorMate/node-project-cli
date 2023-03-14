@@ -1,4 +1,4 @@
-import { Express } from 'express';
+import express from 'express';
 import { Logger } from 'pino';
 
 import { z } from 'zod';
@@ -12,7 +12,8 @@ import { OpenAPIGenerator } from '@asteasolutions/zod-to-openapi';
 import { writeFileSync } from 'fs';
 import { asyncHandler } from '@common';
 
-export async function init(app: Express, logger: Logger) {
+export async function initApplication(logger: Logger) {
+  const app = express();
   const knex = initializeKnex(logger);
   const dbRepositories = createDbRepos(knex);
 
@@ -42,6 +43,8 @@ export async function init(app: Express, logger: Logger) {
   });
 
   return {
+    app,
+    knex,
     createSwaggerDocument: () => {
       for (const {
         operationId,

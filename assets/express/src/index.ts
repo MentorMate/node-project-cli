@@ -1,14 +1,12 @@
-import express from 'express';
 import pino from 'pino';
 import { createHttpTerminator } from 'http-terminator';
 import { Environment, envSchema } from '@common';
 
-import { init } from './app';
+import { initApplication } from './app';
 import { existsSync } from 'fs';
 
 async function bootstrap() {
   const env: Environment = envSchema.parse(process.env);
-  const app = express();
   const logger = pino({
     name: 'http',
     ...(env.NODE_ENV !== 'production' && {
@@ -19,7 +17,7 @@ async function bootstrap() {
     }),
   });
 
-  const { createSwaggerDocument } = await init(app, logger);
+  const { app, knex, createSwaggerDocument } = await initApplication(logger);
 
   if (!existsSync('../swagger.json')) {
     createSwaggerDocument();

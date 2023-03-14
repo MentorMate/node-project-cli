@@ -8,6 +8,7 @@ import {
 export * from './intefaces';
 export * from './repositories';
 export * from './utils';
+export * from './knex-extensions'
 
 export default function (
   knex: ReturnType<typeof initializeKnex>

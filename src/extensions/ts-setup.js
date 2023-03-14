@@ -39,13 +39,13 @@ module.exports = (toolbox) => {
 
         Object.assign(pkgJson.scripts, {
           clean: 'rimraf dist',
-          build: 'npm run clean && tsc --build && tsc-alias',
+          build: 'npm run clean && tsc --build',
         });
 
         Object.assign(pkgJson.devDependencies, {
           typescript: '^4.9.5',
           '@tsconfig/recommended': '^1.0.2',
-          'tsc-alias': '^1.8.2',
+          'tsconfig-paths': '^4.1.2',
           '@types/node': '^18.14.0',
           rimraf: '^4.1.2',
           'ts-node': '^10.9.1',
