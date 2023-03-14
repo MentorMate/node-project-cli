@@ -43,6 +43,7 @@ module.exports = {
     const initialFeatureChoices = [0, 1, 5];
 
     if (!pip3Installation) {
+      // removes huskyHooks
       featureChoices.splice(1, 1);
       initialFeatureChoices.pop();
     }

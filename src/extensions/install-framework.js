@@ -2,8 +2,10 @@
 
 module.exports = (toolbox) => {
   toolbox.installFramework = async ({
+    projectName,
     projectLanguage,
     framework,
+    features,
     appDir,
     assetsPath,
     pkgJson,
@@ -57,7 +59,15 @@ module.exports = (toolbox) => {
 
     // TypeScript
     if (projectLanguage === 'TS') {
-      await Promise.all([copyAsync(`${assetsPath}/test/`, `${appDir}/test/`)]);
+      Object.assign(pkgJson.scripts, {
+        'start:debug':
+          'tsc --sourceMap -p tsconfig.build.json && tsc-alias && node --inspect -r dotenv/config dist/index',
+      });
+
+      await Promise.all([
+        copyAsync(`${assetsPath}/test/`, `${appDir}/test/`),
+        copyAsync(`${assetsPath}/vscode/`, `${appDir}/.vscode/`),
+      ]);
     }
 
     // Express
@@ -158,6 +168,48 @@ module.exports = (toolbox) => {
           });
         }
       }
+    }
+
+    // README.md
+    const isExampleApp =
+      projectLanguage === 'TS' && framework === 'express' && db === 'pg';
+    if (isExampleApp) {
+      await generate({
+        template: 'README.md.ejs',
+        target: `${appDir}/README.md`,
+        props: {
+          projectName,
+          prerequisites: {
+            pip3:
+              features.includes('huskyHooks') || features.includes('preCommit'),
+            docker: features.includes('dockerizeWorkflow'),
+            dockerCompose: db === 'pg',
+          },
+          setup: {
+            dockerCompose: db === 'pg',
+            migrations:
+              projectLanguage === 'TS' &&
+              framework === 'express' &&
+              db === 'pg',
+            tests: {
+              unit: true,
+              // TODO: update with e2e test setup
+              e2e: false,
+            },
+          },
+          run: {
+            build: projectLanguage === 'TS',
+            debug: projectLanguage === 'TS',
+          },
+          test: {
+            // TODO: update with e2e test setup
+            e2e: false,
+          },
+          debug: {
+            vscode: projectLanguage === 'TS',
+          },
+        },
+      });
     }
 
     success(

@@ -94,10 +94,21 @@ describe('install-framework', () => {
         input.projectLanguage = 'TS';
       });
 
+      it('should add the start:debug script', () => {
+        expect(scripts).toHaveProperty('start:debug');
+      });
+
       it('should copy the example project tests', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/test/`,
           `${input.appDir}/test/`
+        );
+      });
+
+      it('should copy the vscode folder', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/vscode/`,
+          `${input.appDir}/.vscode/`
         );
       });
     });
@@ -247,6 +258,14 @@ describe('install-framework', () => {
                 'db:migrate:reset',
               ])
             );
+          });
+
+          it('should render the README template', () => {
+            expect(toolbox.template.generate).toHaveBeenCalledWith({
+              template: 'README.md.ejs',
+              target: `${input.appDir}/README.md`,
+              props: expect.anything(),
+            });
           });
         });
       });
