@@ -1,50 +1,114 @@
-import express, { Express } from 'express';
-import { Logger } from 'pino'
+import { Express } from 'express';
+import { Logger } from 'pino';
 
-import { dbConnection as mockDB, dbFactory } from '@database';
-import { apiDefinitionFactory, ApiRoutes, ApiRoutesDefinition } from '@api';
-import { initateMiddlewares, validateRequest } from '@middleware';
+import { z } from 'zod';
+import httpStatuses from 'statuses';
+import { initializeKnex } from './database/initilize-knex';
+import createDbRepos from './database';
+import apiDefinitionFactory from '@api';
+import { initializeMiddlewares, validateRequest } from 'src/api/middleware';
+import { registry } from './modules';
+import { OpenAPIGenerator } from '@asteasolutions/zod-to-openapi';
+import { writeFileSync } from 'fs';
+import { asyncHandler } from '@common';
 
 export async function init(app: Express, logger: Logger) {
-  // await db connection
+  const knex = initializeKnex(logger);
+  const dbRepositories = createDbRepos(knex);
 
-  const dbLayers = dbFactory(mockDB); // here we'll pass the real DB connection
+  const apiRoutes = apiDefinitionFactory(dbRepositories);
+  app.use(initializeMiddlewares(logger));
 
-  const apiRoutes = apiDefinitionFactory(dbLayers);
+  for (const {
+    method,
+    path,
+    request,
+    synchronous,
+    middlewares = [],
+    handler,
+  } of apiRoutes) {
+    if (request) {
+      middlewares.push(validateRequest(request));
+    }
 
-  const routesPrefixes: Record<keyof ApiRoutesDefinition, string> = {
-    healthz: '/v1/healthz',
-    users: '/v1/users'
+    const routeHandler = synchronous ? handler : asyncHandler(handler);
+
+    app[method](path, ...middlewares, routeHandler);
   }
-
-  Object.keys(apiRoutes).forEach((apiModuleKey: keyof ApiRoutesDefinition) => {
-    const router = express.Router();
-
-    Object.values(apiRoutes[apiModuleKey]).forEach(
-      ({
-        method,
-        url,
-        requestSchema,
-        middlewares,
-        handler,
-      }: ApiRoutes) => {
-        if (requestSchema) {
-          middlewares.push(validateRequest(requestSchema))
-        }
-
-        router[method](url, ...middlewares, handler);
-      }
-    );
-
-    app.use(routesPrefixes[apiModuleKey], router);
-  });
 
   // Hello world
   app.get('/', (_req, res) => {
-    throw new Error('test')
-    res.send('Hello world')
-  })
+    res.send('Hello world');
+  });
 
-  
-  app.use(initateMiddlewares(logger))
+  return {
+    createSwaggerDocument: () => {
+      for (const {
+        operationId,
+        tags,
+        summary,
+        description,
+        method,
+        path,
+        request,
+        responses,
+      } of apiRoutes) {
+        registry.registerPath({
+          operationId,
+          tags,
+          summary,
+          description,
+          method,
+          path: path.replaceAll(
+            /:[a-zA-Z]+/g,
+            (match) => `{${match.substring(1)}}`
+          ),
+          ...(request && {
+            request: {
+              params: request.params,
+              query: request.query,
+              headers: request.headers,
+              ...(request.body && {
+                body: {
+                  content: {
+                    'application/json': {
+                      schema: request.body,
+                    },
+                  },
+                },
+              }),
+            },
+          }),
+          responses: Object.fromEntries(
+            Object.entries(responses).map(([code, schema]) => [
+              code,
+              schema instanceof z.ZodObject
+                ? {
+                    description:
+                      httpStatuses.message[code as never as number] ??
+                      'Unknown response code',
+                    condent: { 'application/json': { schema } },
+                  }
+                : schema,
+            ])
+          ),
+        });
+
+        const generator = new OpenAPIGenerator(registry.definitions, '3.0.0');
+
+        const document = generator.generateDocument({
+          info: {
+            version: '1.0.0',
+            title: 'My API',
+            description: 'This is the API',
+          },
+          servers: [{ url: '' }],
+        });
+
+        writeFileSync('swagger.json', JSON.stringify(document, null, 2), {
+          encoding: 'utf-8',
+        });
+      }
+    },
+  };
 }

@@ -38,11 +38,19 @@ module.exports = (toolbox) => {
     });
 
     const executable = projectLanguage === 'TS' ? 'npx ts-node' : 'node';
+    const pathAliasRegistration =
+      projectLanguage === 'TS' ? '-r tsconfig-paths/register' : '';
 
     Object.assign(pkgJson.scripts, {
-      start: `${executable} -r dotenv/config src/index`,
+      start: `${executable} -r dotenv/config ${pathAliasRegistration} src/index`,
       'start:dev': 'nodemon',
     });
+
+    if (projectLanguage === 'TS') {
+      Object.assign(pkgJson.scripts, {
+        start: `${executable} -r dotenv/config -r tsconfig-paths/register src/index`,
+      });
+    }
 
     await generate({
       template: 'nodemon/nodemon.json.ejs',
@@ -70,6 +78,7 @@ module.exports = (toolbox) => {
         'http-terminator': '^3.2.0',
         pino: '^8.11.0',
         'http-errors': '^2.0.0',
+        bcrypt: '^5.1.0',
       });
 
       // with TypeScript

@@ -1,8 +1,3 @@
-import { HealthzController } from './interfaces';
-import { healthzControllerFactory } from './v1';
+import defineHealthzRoutes from './routes';
 
-export * from './interfaces'
-
-export function healthzModuleFactory(): HealthzController {
-  return healthzControllerFactory();
-}
+export { defineHealthzRoutes };

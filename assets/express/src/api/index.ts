@@ -1,21 +1,8 @@
-import { DbCollection } from '@database';
-import { HealthzController, healthzModuleFactory } from './healthz';
-import { UserController,  userModuleFactory } from './user';
+import { DbCollection } from 'src/database/intefaces';
+import { defineHealthzRoutes } from './healthz';
+import { RouteDefinition } from './intefaces';
+import defineV1Routes from './v1';
 
-export interface ApiRoutesDefinition extends Record<string, object> {
-  healthz: HealthzController;
-  users: UserController;
-  // todos: TodosController
+export default function (dbCollection: DbCollection): RouteDefinition<any>[] {
+  return [...defineHealthzRoutes(), ...defineV1Routes(dbCollection)];
 }
-
-export type ApiRoutes = UserController[keyof UserController] | HealthzController[keyof HealthzController]
-
-export const apiDefinitionFactory = function (
-  dbCollection: DbCollection,
-): ApiRoutesDefinition {
-  return {
-    healthz: healthzModuleFactory(),
-    users: userModuleFactory(dbCollection),
-    // todos: todosModuleFactory(dbCollection)
-  };
-};

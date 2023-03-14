@@ -1,9 +1,10 @@
 import express from 'express';
-import pino from 'pino'
+import pino from 'pino';
 import { createHttpTerminator } from 'http-terminator';
 import { Environment, envSchema } from '@common';
 
 import { init } from './app';
+import { existsSync } from 'fs';
 
 async function bootstrap() {
   const env: Environment = envSchema.parse(process.env);
@@ -13,12 +14,16 @@ async function bootstrap() {
     ...(env.NODE_ENV !== 'production' && {
       transport: {
         target: 'pino-pretty',
-        colorize: false
+        colorize: false,
       },
     }),
   });
 
-  init(app, logger);
+  const { createSwaggerDocument } = await init(app, logger);
+
+  if (!existsSync('../swagger.json')) {
+    createSwaggerDocument();
+  }
 
   // Start server
   const server = app.listen(env.PORT, () => {
@@ -29,7 +34,7 @@ async function bootstrap() {
   const httpTerminator = createHttpTerminator({ server });
 
   const shutdown = async () => {
-    console.log('Shutting down...')
+    console.log('Shutting down...');
     await httpTerminator.terminate();
   };
 
