@@ -1,7 +1,17 @@
+import pg from 'pg'
 import { Logger } from 'pino';
 import Knex from 'knex';
 
 export * from './knex-extensions';
+
+//
+// PG Initialization
+//
+
+// https://github.com/brianc/node-pg-types/blob/master/lib/builtins.js
+pg.types.setTypeParser(pg.types.builtins.INT8, parseInt);
+pg.types.setTypeParser(pg.types.builtins.NUMERIC, parseFloat);
+pg.types.setTypeParser(pg.types.builtins.DATE, (v) => v); // keep as string for now
 
 export function initializeKnex(logger: Logger) {
   return Knex({
