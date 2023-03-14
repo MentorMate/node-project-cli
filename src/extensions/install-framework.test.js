@@ -152,6 +152,18 @@ describe('install-framework', () => {
           );
         });
 
+        it('should add zod to dependencies', () => {
+          expect(dependencies).toHaveProperty('zod');
+        });
+
+        it('should add @asteasolutions/zod-to-openapi to dependencies', () => {
+          expect(dependencies).toHaveProperty('@asteasolutions/zod-to-openapi');
+        });
+
+        it('should add statuses to dependencies', () => {
+          expect(dependencies).toHaveProperty('statuses');
+        });
+
         it('should add @types/express to devDependencies', () => {
           expect(devDependencies).toHaveProperty('@types/express');
         });
@@ -166,6 +178,44 @@ describe('install-framework', () => {
 
         it('should add pino-pretty to devDependencies', () => {
           expect(devDependencies).toHaveProperty('pino-pretty');
+        });
+
+        it('should add @types/statuses to devDependencies', () => {
+          expect(devDependencies).toHaveProperty('@types/statuses');
+        });
+
+        describe('and the database is PostgreSQL', () => {
+          beforeAll(() => {
+            input.db = 'pg';
+          });
+
+          it('should add Knex to envVars', () => {
+            expect(envVars).toHaveProperty('Knex');
+          });
+
+          it('should add knex to dependencies', () => {
+            expect(dependencies).toHaveProperty('knex');
+          });
+
+          it('should add pg-error-enum to dependencies', () => {
+            expect(dependencies).toHaveProperty('pg-error-enum');
+          });
+
+          it('shoudl add knex migration scripts', () => {
+            expect(Object.keys(scripts)).toEqual(
+              expect.arrayContaining([
+                'db:connection:print',
+                'db:migrate:make',
+                'db:migrate:up',
+                'db:migrate:down',
+                'db:migrate:latest',
+                'db:migrate:rollback',
+                'db:migrate:version',
+                'db:migrate:status',
+                'db:migrate:reset',
+              ])
+            );
+          });
         });
       });
     });

@@ -7,9 +7,8 @@ import {
   User,
   CreateUserInput,
   UpdateUserInput,
-} from 'src/modules';
-import { Pagination, Sort } from 'src/database/utils';
-import { FilterMap, SorterMap, ListQuery } from 'src/database/knex-extensions';
+} from '@modules';
+import { Pagination, Sort, FilterMap, SorterMap, ListQuery } from '@database';
 
 declare module 'knex' {
   namespace Knex {

@@ -5,6 +5,8 @@
     "baseUrl": ".",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "skipLibCheck": false,
+    "lib": ["ES2021"],
     "paths": {
       "@api": [
         "src/api"

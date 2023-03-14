@@ -40,14 +40,19 @@ module.exports = (toolbox) => {
     }
 
     function syncOperations() {
-      (pkgJson.scripts['test'] = 'jest'),
-        Object.assign(pkgJson.devDependencies, {
-          jest: '^29.4.2',
-          ...(projectLanguage === 'TS' && {
-            'ts-jest': '^29.0.5',
-            '@types/jest': '^29.4.0',
-          }),
-        });
+      Object.assign(pkgJson.scripts, {
+        test: 'jest',
+        'test:cov': 'jest --coverage',
+        'test:watch': 'jest --watch',
+      });
+
+      Object.assign(pkgJson.devDependencies, {
+        jest: '^29.4.2',
+        ...(projectLanguage === 'TS' && {
+          'ts-jest': '^29.0.5',
+          '@types/jest': '^29.4.0',
+        }),
+      });
     }
 
     return {

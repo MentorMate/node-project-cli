@@ -36,6 +36,7 @@ async function bootstrap() {
   const shutdown = async () => {
     console.log('Shutting down...');
     await httpTerminator.terminate();
+    await knex.destroy();
   };
 
   const onSignal = (signal: NodeJS.Signals) => {
