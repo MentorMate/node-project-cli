@@ -64,10 +64,7 @@ module.exports = (toolbox) => {
 
     // TypeScript
     if (projectLanguage === 'TS') {
-      await Promise.all([
-        copyAsync(`${assetsPath}/src/`, `${appDir}/src/`),
-        copyAsync(`${assetsPath}/test/`, `${appDir}/test/`),
-      ]);
+      await Promise.all([copyAsync(`${assetsPath}/test/`, `${appDir}/test/`)]);
     }
 
     // Express
