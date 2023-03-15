@@ -1,8 +1,5 @@
 import { z } from 'zod';
-import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 import { Zod } from '@common';
-
-extendZodWithOpenApi(z);
 
 export const userAttrs = {
   Email: (z: Zod) => z.string().openapi({ example: 'john@mail.com' }),

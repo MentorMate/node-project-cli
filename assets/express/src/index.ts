@@ -1,3 +1,6 @@
+import './extensions/zod/register';
+import './extensions/knex/register';
+
 import pino from 'pino';
 import { createHttpTerminator } from 'http-terminator';
 import { Environment, envSchema } from '@common';
