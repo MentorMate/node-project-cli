@@ -1,11 +1,11 @@
-import { DbCollection } from './intefaces';
+import { DbCollection } from './interfaces';
 import { initializeKnex } from './initilize-knex';
 import {
   initializeTodoRepository,
   initializeUserRepository,
 } from './repositories';
 
-export * from './intefaces';
+export * from './interfaces';
 export * from './repositories';
 export * from './utils';
 export * from './knex-extensions'

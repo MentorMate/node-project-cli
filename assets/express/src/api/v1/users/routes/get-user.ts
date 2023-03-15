@@ -1,4 +1,4 @@
-import { bindRouteOptionsWithSchema } from 'src/api/intefaces';
+import { bindRouteOptionsWithSchema } from 'src/api/interfaces';
 import { emailUserDTO } from '../dto';
 import { response } from '@common';
 import { models, UserService } from 'src/modules';

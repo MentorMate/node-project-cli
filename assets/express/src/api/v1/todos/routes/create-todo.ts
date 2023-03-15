@@ -1,5 +1,5 @@
 import { createTodoDTO } from '../dto';
-import { bindRouteOptionsWithSchema } from '../../../intefaces';
+import { bindRouteOptionsWithSchema } from '../../../interfaces';
 import { models, TodoService } from '@modules';
 import { response } from '@common';
 
