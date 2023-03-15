@@ -5,7 +5,7 @@ import {
   GenericRequestHandler,
   RequestSchema,
   RouteDefinition,
-} from 'src/api/intefaces';
+} from 'src/api/interfaces';
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 
 extendZodWithOpenApi(z);

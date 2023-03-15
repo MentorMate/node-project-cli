@@ -1,4 +1,4 @@
-import { RouteOptions } from 'src/api/intefaces';
+import { RouteOptions } from 'src/api/interfaces';
 
 export const healthzLive: ReturnType<RouteOptions> = {
   operationId: 'health-liveness',

@@ -1,4 +1,4 @@
-import { DbCollection } from 'src/database/intefaces';
+import { DbCollection } from 'src/database/interfaces';
 import { defineUserRoutes } from './users';
 import { defineTodoRoutes } from './todos';
 import { initializeUserService, initializeTodoService } from 'src/modules';

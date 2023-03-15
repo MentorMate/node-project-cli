@@ -1,6 +1,6 @@
 import { models, TodoService } from 'src/modules';
 import { response } from '@common';
-import { bindRouteOptionsWithSchema } from 'src/api/intefaces';
+import { bindRouteOptionsWithSchema } from 'src/api/interfaces';
 import { idTodoDTO, updateTodoDTO } from '../dto';
 
 export default bindRouteOptionsWithSchema(

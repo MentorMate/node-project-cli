@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import createError from 'http-errors';
-import { RequestSchema, RequestKey } from '../intefaces';
+import { RequestSchema, RequestKey } from '../interfaces';
 import { RequestHandler } from 'express';
 
 export const validateRequest = function (
