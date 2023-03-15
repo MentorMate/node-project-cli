@@ -1,5 +1,5 @@
 import { attachPrefix } from '@common';
-import { UserService } from 'src/modules';
+import { UserService } from '@modules';
 
 import getUserRouteOptions from './get-user';
 import listUsersRouteOptions from './list-users';

@@ -1,7 +1,7 @@
-import { DbCollection } from 'src/database/interfaces';
+import { DbCollection } from '@database';
 import { defineUserRoutes } from './users';
 import { defineTodoRoutes } from './todos';
-import { initializeUserService, initializeTodoService } from 'src/modules';
+import { initializeUserService, initializeTodoService } from '@modules';
 import { attachPrefix } from '@common';
 
 export default function (dbCollection: DbCollection) {

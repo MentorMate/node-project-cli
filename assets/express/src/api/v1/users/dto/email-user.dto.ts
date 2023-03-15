@@ -1,4 +1,4 @@
-import { userAttrs } from 'src/modules';
+import { userAttrs } from '@modules';
 import { z } from 'zod';
 
 export const emailUserDTO = z.object({

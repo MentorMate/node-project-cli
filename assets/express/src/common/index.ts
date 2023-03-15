@@ -5,7 +5,7 @@ import {
   GenericRequestHandler,
   RequestSchema,
   RouteDefinition,
-} from 'src/api/interfaces';
+} from '../api/interfaces';
 
 export type Zod = typeof z | typeof z.coerce;
 

@@ -1,6 +1,6 @@
-import { models, UserService } from 'src/modules';
-import { bindRouteOptionsWithSchema } from 'src/api/interfaces';
-import { paginated } from 'src/database/utils';
+import { models, UserService } from '@modules';
+import { bindRouteOptionsWithSchema } from '../../../interfaces';
+import { paginated } from '@database';
 import { userQueryDTO } from '../dto';
 
 export default bindRouteOptionsWithSchema(

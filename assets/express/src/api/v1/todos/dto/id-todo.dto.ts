@@ -1,4 +1,4 @@
-import { todoAttrs } from 'src/modules';
+import { todoAttrs } from '@modules';
 import { z } from 'zod';
 
 export const idTodoDTO = z.object({

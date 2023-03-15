@@ -1,4 +1,4 @@
-import { RouteOptions } from 'src/api/interfaces';
+import { RouteOptions } from '../../interfaces';
 
 export const healthzReady: ReturnType<RouteOptions> = {
   operationId: 'health-readiness',
