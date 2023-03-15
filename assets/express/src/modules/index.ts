@@ -56,8 +56,6 @@ export type UserForExternalUse = Omit<User, 'password'>;
 export type CreateUserInput = z.infer<typeof postUserInput>;
 export type UpdateUserInput = z.infer<typeof patchUserInput>;
 
-console.log({ models }, 'main');
-
 export type Services = {
   userService: UserService;
   todoService: TodoService;
