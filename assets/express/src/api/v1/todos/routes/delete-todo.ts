@@ -1,6 +1,6 @@
-import { TodoService } from 'src/modules';
+import { TodoService } from '@modules';
 import { response } from '@common';
-import { bindRouteOptionsWithSchema } from 'src/api/interfaces';
+import { bindRouteOptionsWithSchema } from '../../../interfaces';
 import { idTodoDTO } from '../dto';
 
 export default bindRouteOptionsWithSchema(

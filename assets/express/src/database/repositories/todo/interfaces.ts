@@ -1,5 +1,5 @@
 import { z, ZodEnum } from 'zod';
-import { FilterMap, SorterMap } from 'src/database/knex-extensions';
+import { FilterMap, SorterMap } from '@database';
 import { Knex as KnexType } from 'knex';
 import { Tables } from 'knex/types/tables';
 import { sortOrder, pagination } from '../../utils';

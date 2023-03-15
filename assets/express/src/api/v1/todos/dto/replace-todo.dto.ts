@@ -1,3 +1,3 @@
-import { putTodoInput } from 'src/modules';
+import { putTodoInput } from '@modules';
 
 export const replaceTodoDTO = putTodoInput;

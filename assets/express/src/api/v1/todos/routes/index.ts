@@ -1,5 +1,5 @@
 import { attachPrefix } from '@common';
-import { TodoService } from 'src/modules';
+import { TodoService } from '@modules';
 
 import getTodoRouteOptions from './get-todo';
 import listTodosRouteOptions from './list-todos';

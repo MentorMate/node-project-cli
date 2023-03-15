@@ -1,4 +1,4 @@
-import { DbCollection } from 'src/database/interfaces';
+import { DbCollection } from '@database';
 import { defineHealthzRoutes } from './healthz';
 import { RouteDefinition } from './interfaces';
 import defineV1Routes from './v1';

@@ -6,7 +6,7 @@ import httpStatuses from 'statuses';
 import { initializeKnex } from './database/initilize-knex';
 import createDbRepos from './database';
 import apiDefinitionFactory from '@api';
-import { initializeMiddlewares, validateRequest } from 'src/api/middleware';
+import { initializeMiddlewares, validateRequest } from './api/middleware';
 import { registry } from './modules';
 import { OpenAPIGenerator } from '@asteasolutions/zod-to-openapi';
 import { writeFileSync } from 'fs';

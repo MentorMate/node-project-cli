@@ -1,3 +1,3 @@
-import { postUserInput } from 'src/modules';
+import { postUserInput } from '@modules';
 
 export const createUserDTO = postUserInput;

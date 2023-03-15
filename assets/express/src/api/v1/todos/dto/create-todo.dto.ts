@@ -1,3 +1,3 @@
-import { postTodoInput } from 'src/modules';
+import { postTodoInput } from '@modules';
 
 export const createTodoDTO = postTodoInput;

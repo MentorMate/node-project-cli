@@ -5,7 +5,7 @@ import {
   User,
   CreateUserInput,
   UpdateUserInput,
-} from 'src/modules';
+} from '@modules';
 import { ListTodosQuery, ListUsersQuery } from '../repositories';
 import { Paginated } from '../utils';
 

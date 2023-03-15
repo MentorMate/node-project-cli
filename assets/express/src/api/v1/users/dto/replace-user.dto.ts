@@ -1,3 +1,3 @@
-import { putUserInput } from 'src/modules';
+import { putUserInput } from '@modules';
 
 export const replaceUserDTO = putUserInput;
