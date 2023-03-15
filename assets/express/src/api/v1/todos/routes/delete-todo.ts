@@ -10,7 +10,7 @@ export default bindRouteOptionsWithSchema(
     description: 'Soft delete a To-Do item',
     tags: ['Todo'],
     method: 'delete',
-    path: '/todos/:id',
+    path: '/:id',
     request: {
       params: idTodoDTO,
     },

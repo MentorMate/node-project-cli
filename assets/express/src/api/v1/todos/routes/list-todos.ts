@@ -10,7 +10,7 @@ export default bindRouteOptionsWithSchema(
     description: 'List To-Do items',
     tags: ['Todo'],
     method: 'get',
-    path: '/todos',
+    path: '/',
     request: {
       query: todoQueryDTO,
     },

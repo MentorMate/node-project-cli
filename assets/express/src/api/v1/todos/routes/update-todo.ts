@@ -10,7 +10,7 @@ export default bindRouteOptionsWithSchema(
     description: 'Update a To-Do item',
     tags: ['Todo'],
     method: 'put',
-    path: '/todos/:id',
+    path: '/:id',
     request: {
       params: idTodoDTO,
       body: replaceTodoDTO,

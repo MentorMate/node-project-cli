@@ -10,7 +10,7 @@ export default bindRouteOptionsWithSchema(
     description: 'Partially update a To-Do item',
     tags: ['Todo'],
     method: 'patch',
-    path: '/todos/:id',
+    path: '/:id',
     request: {
       params: idTodoDTO,
       body: updateTodoDTO,

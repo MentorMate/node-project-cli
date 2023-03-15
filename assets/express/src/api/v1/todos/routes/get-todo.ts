@@ -10,7 +10,7 @@ export default bindRouteOptionsWithSchema(
     description: 'Get a To-Do item',
     tags: ['Todo'],
     method: 'get',
-    path: '/todos/:id',
+    path: '/:id',
     request: {
       params: idTodoDTO,
     },
