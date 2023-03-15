@@ -1,4 +1,4 @@
-export  const createUpdateTimestampsFunctionSQL = `
+export const createUpdateTimestampsFunctionSQL = `
 CREATE OR REPLACE FUNCTION update_timestamp() RETURNS TRIGGER
 LANGUAGE plpgsql
 AS
@@ -8,7 +8,7 @@ BEGIN
     RETURN NEW;
 END;
 $$;
-`
+`;
 
 export const createUpdatedAtTriggerSQL = (tableName: string) => `
 CREATE TRIGGER update_timestamp

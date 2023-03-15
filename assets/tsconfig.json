@@ -8,12 +8,21 @@
     "skipLibCheck": false,
     "lib": ["ES2021"],
     "paths": {
-      "@api-v1/*": ["src/api/*"],
-      "@database/*": ["src/database/*"],
-      "@guards/*": ["src/guards/*"],
-      "@helpers/*": ["src/helpers/*"],
-      "@global-test-helpers/*": ["test/*"]
-    }
+      "@api": [
+        "src/api"
+      ],
+      "@modules": [
+        "src/modules"
+      ],
+      "@common": [
+        "src/common"
+      ],
+      "@database": [
+        "src/database"
+      ]
+    }, 
+    "skipLibCheck": false,
+    "lib": ["ES2021"]
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.spec.*", "**/*.test.*"],
@@ -21,3 +30,5 @@
     "files": true
   }
 }
+
+

@@ -94,13 +94,6 @@ describe('install-framework', () => {
         input.projectLanguage = 'TS';
       });
 
-      it('should copy the example project source', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/src/`,
-          `${input.appDir}/src/`
-        );
-      });
-
       it('should copy the example project tests', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/test/`,

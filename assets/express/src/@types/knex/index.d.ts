@@ -1,14 +1,14 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import { Knex as KnexOriginal } from 'knex';
 import {
-  FilterMap,
-  Sort,
-  SorterMap,
-  Pagination,
-  ListQuery,
+  CreateTodoInput,
+  UpdateTodoInput,
   Todo,
-  InsertTodo,
-  UpdateTodo,
-} from '../../index';
+  User,
+  CreateUserInput,
+  UpdateUserInput,
+} from '@modules';
+import { Pagination, Sort, FilterMap, SorterMap, ListQuery } from '@database';
 
 declare module 'knex' {
   namespace Knex {
@@ -16,7 +16,7 @@ declare module 'knex' {
       /**
        * Given a column-to-value map and column-to-filter map, applies the filters to the query builder.
        * Filter map must cover all columns in the column-to-value map.
-       * 
+       *
        * Example:
        * ```
        * queryBuilder.filter(
@@ -33,12 +33,15 @@ declare module 'knex' {
        */
       filter<Filters>(
         filters: Filters | undefined,
-        filterMap: FilterMap<KnexOriginal.QueryBuilder<TRecord, TResult>, Filters>,
+        filterMap: FilterMap<
+          KnexOriginal.QueryBuilder<TRecord, TResult>,
+          Filters
+        >
       ): this;
       /**
        * Given a list of column sortings an a column-to-sorter map, applies the sorters to the query builder.
        * Sorter map must cover all columns in the column sortings list.
-       * 
+       *
        * Example:
        * ```
        * queryBuilder.sort(
@@ -55,11 +58,11 @@ declare module 'knex' {
        */
       sort<SortColumn extends string>(
         sorts: Sort<SortColumn>[] | undefined,
-        sorterMap: SorterMap<QueryBuilder<TRecord, TResult>, SortColumn>,
+        sorterMap: SorterMap<QueryBuilder<TRecord, TResult>, SortColumn>
       ): this;
       /**
        * Offset pagination. This a shorthand for the following:
-       * 
+       *
        * ```
        * queryBuilder
        *   .offset((pagination.page - 1) * pagination.items)
@@ -69,7 +72,7 @@ declare module 'knex' {
       paginate(pagination?: Pagination): this;
       /**
        * Applies filtering, sorting and pagination. This is a shorthand for the following:
-       * 
+       *
        * ```
        * queryBuilder
        *  .filter(query.filters, listMaps.filterMap)
@@ -77,15 +80,12 @@ declare module 'knex' {
        *  .paginate(query.pagination);
        * ```
        */
-      list<
-        Filters,
-        SortKey extends string,
-      >(
+      list<Filters, SortKey extends string>(
         query: ListQuery<Filters, Sort<SortKey>, Pagination>,
         listMaps: {
           filterMap: FilterMap<QueryBuilder<TRecord, TResult>, Filters>;
           sorterMap: SorterMap<QueryBuilder<TRecord, TResult>, SortKey>;
-        },
+        }
       ): this;
     }
   }
@@ -93,6 +93,15 @@ declare module 'knex' {
 
 declare module 'knex/types/tables' {
   interface Tables {
-    todos: KnexOriginal.CompositeTableType<Todo, InsertTodo, UpdateTodo>;
+    todos: KnexOriginal.CompositeTableType<
+      Todo,
+      CreateTodoInput,
+      UpdateTodoInput
+    >;
+    users: KnexOriginal.CompositeTableType<
+      User,
+      CreateUserInput,
+      UpdateUserInput
+    >;
   }
 }

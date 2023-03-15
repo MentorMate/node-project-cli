@@ -39,11 +39,19 @@ module.exports = (toolbox) => {
     });
 
     const executable = projectLanguage === 'TS' ? 'npx ts-node' : 'node';
+    const pathAliasRegistration =
+      projectLanguage === 'TS' ? '-r tsconfig-paths/register' : '';
 
     Object.assign(pkgJson.scripts, {
-      start: `${executable} -r dotenv/config src/index`,
+      start: `${executable} -r dotenv/config ${pathAliasRegistration} src/index`,
       'start:dev': 'nodemon',
     });
+
+    if (projectLanguage === 'TS') {
+      Object.assign(pkgJson.scripts, {
+        start: `${executable} -r dotenv/config -r tsconfig-paths/register src/index`,
+      });
+    }
 
     await generate({
       template: 'nodemon/nodemon.json.ejs',
@@ -56,10 +64,7 @@ module.exports = (toolbox) => {
 
     // TypeScript
     if (projectLanguage === 'TS') {
-      await Promise.all([
-        copyAsync(`${assetsPath}/src/`, `${appDir}/src/`),
-        copyAsync(`${assetsPath}/test/`, `${appDir}/test/`),
-      ]);
+      await Promise.all([copyAsync(`${assetsPath}/test/`, `${appDir}/test/`)]);
     }
 
     // Express
@@ -71,6 +76,7 @@ module.exports = (toolbox) => {
         'http-terminator': '^3.2.0',
         pino: '^8.11.0',
         'http-errors': '^2.0.0',
+        bcrypt: '^5.1.0',
       });
 
       // with TypeScript
@@ -89,6 +95,7 @@ module.exports = (toolbox) => {
           '@types/express': '^4.17.17',
           '@types/cors': '^2.8.5',
           '@types/compression': '^1.7.2',
+          '@types/bcrypt': '^5.0.0',
           'pino-pretty': '^9.4.0',
           '@types/http-errors': '^2.0.1',
           '@types/statuses': '^2.0.1',
