@@ -27,8 +27,10 @@
   "include": ["src/**/*"],
   "exclude": ["**/*.spec.*", "**/*.test.*"],
   "ts-node": {
-    "files": true
+    "files": true,
+    "require": [
+      "tsconfig-paths/register",
+      "dotenv/config"
+    ]
   }
 }
-
-

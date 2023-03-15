@@ -38,20 +38,13 @@ module.exports = (toolbox) => {
       nodemon: '^2.0.20',
     });
 
-    const executable = projectLanguage === 'TS' ? 'npx ts-node' : 'node';
-    const pathAliasRegistration =
-      projectLanguage === 'TS' ? '-r tsconfig-paths/register' : '';
+    const executable =
+      projectLanguage === 'TS' ? 'npx ts-node' : 'node -r dotenv/config';
 
     Object.assign(pkgJson.scripts, {
-      start: `${executable} -r dotenv/config ${pathAliasRegistration} src/index`,
+      start: `${executable} src/index`,
       'start:dev': 'nodemon',
     });
-
-    if (projectLanguage === 'TS') {
-      Object.assign(pkgJson.scripts, {
-        start: `${executable} -r dotenv/config -r tsconfig-paths/register src/index`,
-      });
-    }
 
     await generate({
       template: 'nodemon/nodemon.json.ejs',
@@ -115,22 +108,21 @@ module.exports = (toolbox) => {
           });
 
           Object.assign(pkgJson.scripts, {
-            'db:connection:print':
-              'ts-node -r dotenv/config src/database/print-connection',
+            'db:connection:print': 'ts-node src/database/print-connection',
             'db:migrate:make':
               'knex migrate:make -x ts --migrations-directory ./src/database/migrations',
             'db:migrate:up':
-              'ts-node -r dotenv/config node_modules/.bin/knex migrate:up --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node -r dotenv/config src/database/print-connection)',
+              'ts-node node_modules/.bin/knex migrate:up --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node src/database/print-connection)',
             'db:migrate:down':
-              'ts-node -r dotenv/config node_modules/.bin/knex migrate:down --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node -r dotenv/config src/database/print-connection)',
+              'ts-node node_modules/.bin/knex migrate:down --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node src/database/print-connection)',
             'db:migrate:latest':
-              'ts-node -r dotenv/config node_modules/.bin/knex migrate:latest --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node -r dotenv/config src/database/print-connection)',
+              'ts-node node_modules/.bin/knex migrate:latest --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node src/database/print-connection)',
             'db:migrate:rollback':
-              'ts-node -r dotenv/config node_modules/.bin/knex migrate:rollback --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node -r dotenv/config src/database/print-connection)',
+              'ts-node node_modules/.bin/knex migrate:rollback --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node src/database/print-connection)',
             'db:migrate:version':
-              'ts-node -r dotenv/config node_modules/.bin/knex migrate:currentVersion --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node -r dotenv/config src/database/print-connection)',
+              'ts-node node_modules/.bin/knex migrate:currentVersion --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node src/database/print-connection)',
             'db:migrate:status':
-              'ts-node -r dotenv/config node_modules/.bin/knex migrate:status --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node -r dotenv/config src/database/print-connection)',
+              'ts-node node_modules/.bin/knex migrate:status --migrations-directory ./src/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node src/database/print-connection)',
             'db:migrate:reset':
               'npm run db:migrate:rollback --all && npm run db:migrate:latest',
           });
