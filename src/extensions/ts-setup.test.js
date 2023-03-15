@@ -74,27 +74,31 @@ describe('ts-setup', () => {
           expect(scripts['build']).toBeDefined();
         });
 
-        it('should add the typescript package', () => {
+        it('should add the typescript devDependency', () => {
           expect(devDependencies).toHaveProperty('typescript');
         });
 
-        it('should add the @tsconfig/recommended package', () => {
+        it('should add the @tsconfig/recommended devDependency', () => {
           expect(devDependencies).toHaveProperty('@tsconfig/recommended');
         });
 
-        it('should add the tsconfig-paths package', () => {
+        it('should add the tsconfig-paths devDependency', () => {
           expect(devDependencies).toHaveProperty('tsconfig-paths');
         });
 
-        it('should add the @types/node package', () => {
+        it('should add the tsc-alias devDependency', () => {
+          expect(devDependencies).toHaveProperty('tsc-alias');
+        });
+
+        it('should add the @types/node devDependency', () => {
           expect(devDependencies).toHaveProperty('@types/node');
         });
 
-        it('should add the rimraf package', () => {
+        it('should add the rimraf devDependency', () => {
           expect(devDependencies).toHaveProperty('rimraf');
         });
 
-        it('should add the ts-node package', () => {
+        it('should add the ts-node devDependency', () => {
           expect(devDependencies).toHaveProperty('ts-node');
         });
       });

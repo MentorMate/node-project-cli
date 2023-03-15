@@ -8,24 +8,12 @@
     "skipLibCheck": false,
     "lib": ["ES2021"],
     "paths": {
-      "@api": [
-        "src/api"
-      ],
-      "@modules": [
-        "src/modules"
-      ],
-      "@common": [
-        "src/common"
-      ],
-      "@database": [
-        "src/database"
-      ]
-    }, 
-    "skipLibCheck": false,
-    "lib": ["ES2021"]
+      "@api": ["src/api"],
+      "@modules": ["src/modules"],
+      "@common": ["src/common"],
+      "@database": ["src/database"]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["**/*.spec.*", "**/*.test.*"],
   "ts-node": {
     "files": true,
     "require": [
