@@ -1,6 +1,6 @@
-import { models, TodoService } from 'src/modules';
-import { bindRouteOptionsWithSchema } from 'src/api/interfaces';
-import { paginated } from 'src/database/utils';
+import { models, TodoService } from '@modules';
+import { bindRouteOptionsWithSchema } from '../../../interfaces';
+import { paginated } from '@database';
 import { todoQueryDTO } from '../dto';
 
 export default bindRouteOptionsWithSchema(

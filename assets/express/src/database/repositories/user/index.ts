@@ -4,13 +4,13 @@ import {
   extractPagination,
   handleDbError,
   Paginated,
-} from 'src/database/utils';
+} from '@database';
 import {
   ListUsersQuery,
   listUsersMaps,
   listUsersFilterMap,
 } from './interfaces';
-import { User, CreateUserInput, UpdateUserInput } from 'src/modules';
+import { User, CreateUserInput, UpdateUserInput } from '@modules';
 import { definedOrNotFound, updatedOrNotFound } from '@common';
 import { initializeKnex } from '../../initilize-knex';
 

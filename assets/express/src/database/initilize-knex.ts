@@ -1,4 +1,4 @@
-import pg from 'pg'
+import pg from 'pg';
 import { Logger } from 'pino';
 import Knex from 'knex';
 

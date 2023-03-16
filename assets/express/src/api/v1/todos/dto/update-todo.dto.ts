@@ -1,3 +1,3 @@
-import { patchTodoInput } from 'src/modules';
+import { patchTodoInput } from '@modules';
 
 export const updateTodoDTO = patchTodoInput;

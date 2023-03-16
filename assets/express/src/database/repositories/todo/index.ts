@@ -3,14 +3,14 @@ import {
   parseCount,
   extractPagination,
   Paginated,
-} from 'src/database/utils';
+} from '../../utils';
 import {
   ListTodosQuery,
   listTodosMaps,
   listTodosFilterMap,
 } from './interfaces';
 import { Todo, CreateTodoInput, UpdateTodoInput } from '@modules';
-import { initializeKnex } from 'src/database/initilize-knex';
+import { initializeKnex } from '../../initilize-knex';
 
 export * from './interfaces';
 

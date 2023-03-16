@@ -1,7 +1,7 @@
-import { bindRouteOptionsWithSchema } from 'src/api/interfaces';
+import { bindRouteOptionsWithSchema } from '../../../interfaces';
 import { emailUserDTO, replaceUserDTO } from '../dto';
 import { response } from '@common';
-import { models, UserService } from 'src/modules';
+import { models, UserService } from '@modules';
 
 export default bindRouteOptionsWithSchema(
   ({ userService }: { userService: UserService }) => ({

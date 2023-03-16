@@ -1,7 +1,4 @@
 import { z } from 'zod';
-import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
-
-extendZodWithOpenApi(z);
 
 type Zod = typeof z | typeof z.coerce;
 

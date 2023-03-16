@@ -1,4 +1,4 @@
-import Knex, { Knex as KnexType } from 'knex';
+import { Knex } from 'knex';
 import { Sort, SortOrder, Pagination, extractPagination } from './utils';
 
 /**
@@ -15,7 +15,7 @@ import { Sort, SortOrder, Pagination, extractPagination } from './utils';
  * const filterByName: FilterByName = (qb, name) => qb.where({ name });
  * ```
  */
-type Filter<QueryBuilder extends KnexType.QueryBuilder, Value> = (
+type Filter<QueryBuilder extends Knex.QueryBuilder, Value> = (
   qb: QueryBuilder,
   value: Value
 ) => QueryBuilder;
@@ -36,13 +36,13 @@ type Filter<QueryBuilder extends KnexType.QueryBuilder, Value> = (
  *   name?: string;
  * };
  *
- * const listTodosFilterMap: FilterMap<KnexType.QueryBuilder<Tables['todos']>, ListTodosFilters> = {
+ * const listTodosFilterMap: FilterMap<Knex.QueryBuilder<Tables['todos']>, ListTodosFilters> = {
  *   id: (qb, id) => qb.where({ id }),
  *   name: (qb, name) => qb.whereILike('name', `%${name}%`),
  * };
  * ```
  */
-export type FilterMap<QueryBuilder extends KnexType.QueryBuilder, Filters> = {
+export type FilterMap<QueryBuilder extends Knex.QueryBuilder, Filters> = {
   // Since query params are usually optional,
   // we loop through the query params removing their optionality via `-?`,
   // then map them to a filter of their value excluding undefined.
@@ -63,7 +63,7 @@ export type FilterMap<QueryBuilder extends KnexType.QueryBuilder, Filters> = {
  * const sortByName: SortByName = (qb, order) => qb.orderBy('name', order);
  * ```
  */
-type Sorter<QueryBuilder extends KnexType.QueryBuilder> = (
+type Sorter<QueryBuilder extends Knex.QueryBuilder> = (
   qb: QueryBuilder,
   order?: SortOrder
 ) => QueryBuilder;
@@ -80,14 +80,14 @@ type Sorter<QueryBuilder extends KnexType.QueryBuilder> = (
  *
  * type ListTodoSortColumn = 'name' | 'createdAt';
  *
- * const listTodosSorterMap: SorterMap<KnexType.QueryBuilder<Tables['todos']>, ListTodoSortColumn> = {
+ * const listTodosSorterMap: SorterMap<Knex.QueryBuilder<Tables['todos']>, ListTodoSortColumn> = {
  *   name: (qb, order) => qb.orderBy('name', order),
  *   createdAt: (qb, order) => qb.orderBy('createdAt', order),
  * };
  * ```
  */
 export type SorterMap<
-  QueryBuilder extends KnexType.QueryBuilder,
+  QueryBuilder extends Knex.QueryBuilder,
   SortColumn extends string
 > = Record<SortColumn, Sorter<QueryBuilder>>;
 
@@ -101,7 +101,7 @@ export interface ListQuery<Filters, Sort, Pagination> {
 // Knex extensions
 //
 export const filter = <
-  QB extends KnexType.QueryBuilder,
+  QB extends Knex.QueryBuilder,
   Query extends Record<string, unknown>,
   Filters extends FilterMap<QB, Query>
 >(
@@ -117,7 +117,7 @@ export const filter = <
     );
 
 export const sort = <
-  QB extends KnexType.QueryBuilder,
+  QB extends Knex.QueryBuilder,
   SortColumn extends string
 >(
   qb: QB,
@@ -126,7 +126,7 @@ export const sort = <
 ): QB =>
   sorts.reduce<QB>((qb, sort) => sorterMap[sort.column](qb, sort.order), qb);
 
-export const paginate = <QB extends KnexType.QueryBuilder>(
+export const paginate = <QB extends Knex.QueryBuilder>(
   qb: QB,
   pagination?: Pagination
 ) => {
@@ -136,11 +136,11 @@ export const paginate = <QB extends KnexType.QueryBuilder>(
 };
 
 export const list = <
-  QB extends KnexType.QueryBuilder,
+  QB extends Knex.QueryBuilder,
   Filters,
   SortColumn extends string,
-  FM extends FilterMap<KnexType.QueryBuilder, Filters>,
-  SM extends SorterMap<KnexType.QueryBuilder, SortColumn>
+  FM extends FilterMap<Knex.QueryBuilder, Filters>,
+  SM extends SorterMap<Knex.QueryBuilder, SortColumn>
 >(
   qb: QB,
   query: ListQuery<Filters, Sort<SortColumn>, Pagination>,
@@ -150,35 +150,3 @@ export const list = <
     .filter(query.filters, filterMap)
     .sort(query.sorts, sorterMap)
     .paginate(query.pagination);
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-if (!Knex.filter) {
-  Knex.QueryBuilder.extend('filter', function (filters, filterMap) {
-    return filters ? filter(this, filters, filterMap) : this;
-  });
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-if (!Knex.sort) {
-  Knex.QueryBuilder.extend('sort', function (sorts, sorterMap) {
-    return sorts ? sort(this, sorts || [], sorterMap) : this;
-  });
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-if (!Knex.paginate) {
-  Knex.QueryBuilder.extend('paginate', function (pagination) {
-    return paginate(this, pagination);
-  });
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-if (!Knex.list) {
-  Knex.QueryBuilder.extend('list', function (input, listMaps) {
-    return list(this, input, listMaps);
-  });
-}
