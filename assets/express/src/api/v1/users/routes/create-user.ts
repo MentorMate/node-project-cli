@@ -10,7 +10,7 @@ export default bindRouteOptionsWithSchema(
     description: 'Create a new User item',
     tags: ['User'],
     method: 'post',
-    path: '/',
+    path: '/create',
     request: {
       body: createUserDTO,
     },

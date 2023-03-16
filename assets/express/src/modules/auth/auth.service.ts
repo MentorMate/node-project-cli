@@ -24,7 +24,7 @@ export function initializeAuthService({
               idToken,
             };
           }
-          loggedInOrUnauthorized('Passwords do not match!')(validPassword);
+          loggedInOrUnauthorized('Passwords do not match')(validPassword);
         }
         definedOrNotFound<User>('User not found')(user);
       } catch (err) {

@@ -55,7 +55,7 @@ describe('setup-jwt', () => {
       it('should add the jwt env vars', () => {
         expect(envVars['Jwt']).toEqual({
           JWT_SECRET: 'super-secret',
-          JWT_EXPIRATION: 1000000,
+          JWT_EXPIRATION: 7200,
         });
       });
 

@@ -6,7 +6,7 @@ module.exports = (toolbox) => {
       Object.assign(envVars, {
         Jwt: {
           JWT_SECRET: 'super-secret',
-          JWT_EXPIRATION: 1000000,
+          JWT_EXPIRATION: 7200, // 2h
         },
       });
 

@@ -42,6 +42,7 @@ const expiresIn = process.env.JWT_EXPIRATION ?? DEFAULT_EXPIRATION;
 
 const signToken: SignTokenFunction = function signToken(email: string) {
   return jwt.sign({ email }, secret, {
+    // algorithm (default: HS256)
     expiresIn,
   });
 };

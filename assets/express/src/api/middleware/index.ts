@@ -5,6 +5,7 @@ import compression from 'compression';
 import { Logger } from 'pino';
 import createError from 'http-errors';
 import { serviceToHttpErrorMap } from '@common';
+import { validateAccessToken } from './validateAccessToken';
 
 export * from './validateRequest';
 
@@ -55,5 +56,6 @@ export const initializeMiddlewares = function (logger: Logger) {
     compression(),
     handleServiceError,
     errorHandler(logger),
+    validateAccessToken(),
   ];
 };
