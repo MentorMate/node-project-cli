@@ -12,6 +12,10 @@ module.exports = (toolbox) => {
 
       Object.assign(pkgJson.dependencies, {
         jsonwebtoken: '^9.0.0',
+        // This package provides its own type definitions
+        // @types/express-jwt is depricated
+        // see: https://www.npmjs.com/package/@types/express-jwt
+        'express-jwt': '^8.4.1',
       });
 
       Object.assign(pkgJson.devDependencies, {

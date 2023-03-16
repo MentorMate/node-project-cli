@@ -66,6 +66,10 @@ describe('setup-jwt', () => {
       it('should add the @types/jsonwebtoken dev dependency', () => {
         expect(devDependencies).toHaveProperty('@types/jsonwebtoken');
       });
+
+      it('should add the express-jwt dependency', () => {
+        expect(dependencies).toHaveProperty('express-jwt');
+      });
     });
   });
 });
