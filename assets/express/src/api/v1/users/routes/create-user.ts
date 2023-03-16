@@ -21,9 +21,9 @@ export default bindRouteOptionsWithSchema(
     },
     handler: async (req, res) => {
       const { ...payload } = req.body;
-      const ret = userService.create(payload);
+      const user = await userService.create(payload);
 
-      res.send(ret);
+      res.status(201).send(user);
     },
   })
 );
