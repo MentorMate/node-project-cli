@@ -44,7 +44,7 @@ export type RouteDefinition<T extends RequestSchema = RequestSchema> = {
   operationId: string;
   summary?: string;
   description?: string;
-  tags: string[];
+  tags?: string[];
   responses: Record<number, unknown>;
   method: HttpMethod;
   path: string;
