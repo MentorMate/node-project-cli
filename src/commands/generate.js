@@ -187,6 +187,8 @@ module.exports = {
       stepsOfExecution.push(toolbox.setupPostgreSQL(userInput));
     }
 
+    stepsOfExecution.push(toolbox.setupJwt(userInput));
+
     dir(userInput.workflowsFolder);
 
     stepsOfExecution.forEach((step) => {
