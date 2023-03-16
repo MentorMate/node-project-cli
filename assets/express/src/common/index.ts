@@ -1,11 +1,6 @@
 import { z } from 'zod';
 import { NotFound, Conflict } from 'http-errors';
 import httpStatuses from 'statuses';
-import {
-  GenericRequestHandler,
-  RequestSchema,
-  RouteDefinition,
-} from '../api/interfaces';
 
 export type Zod = typeof z | typeof z.coerce;
 
