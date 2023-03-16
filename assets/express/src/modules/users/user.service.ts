@@ -1,7 +1,8 @@
 import { UserRepository, handleDbError, ListUsersQuery } from '@database';
 import { definedOrNotFound, updatedOrNotFound } from '@common';
 import { User, CreateUserInput, UpdateUserInput } from '..';
-import { hashPassword, mapCreateUser, signToken } from './utils';
+import { mapCreateUser } from './utils';
+import { genSalt, hashPassword, signToken } from '../utils';
 import { UserService } from './interfaces';
 
 export function initializeUserService({
@@ -36,7 +37,8 @@ export function initializeUserService({
       const { email, password, ...attributes } = payload;
 
       try {
-        const hashedPassword = await hashPassword(10, password);
+        const salt = genSalt();
+        const hashedPassword = await hashPassword(salt, password);
         const user = await userRepository.create({
           email,
           password: hashedPassword,

@@ -1,11 +1,14 @@
 import { z } from 'zod';
-import { NotFound, Conflict } from 'http-errors';
-import httpStatuses from 'statuses';
+import { NotFound, Conflict, Unauthorized } from 'http-errors';
+import httpStatuses, { message } from 'statuses';
 import {
   GenericRequestHandler,
   RequestSchema,
   RouteDefinition,
-} from '../api/interfaces';
+} from 'src/api/interfaces';
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+
+extendZodWithOpenApi(z);
 
 export type Zod = typeof z | typeof z.coerce;
 
@@ -45,6 +48,13 @@ export class RecordNotFoundException extends Error {
   }
 }
 
+export class UnauthorizedException extends Error {
+  constructor(message = 'Unauthorized') {
+    super(message);
+    this.name = UnauthorizedException.name;
+  }
+}
+
 const definedOrFail = <T>(errorFactory: () => Error) => {
   return (result: T | undefined): T => {
     if (!result) {
@@ -63,14 +73,26 @@ const updatedOrFail = (errorFactory: () => Error) => {
   };
 };
 
+const loggedInOrFail = (errorFactory: () => Error) => {
+  return (result: boolean): boolean => {
+    if (!result) {
+      throw errorFactory();
+    }
+    return result;
+  };
+};
+
 export const definedOrNotFound = <T>(message?: string) =>
   definedOrFail<T>(() => new RecordNotFoundException(message));
 export const updatedOrNotFound = (message?: string) =>
   updatedOrFail(() => new RecordNotFoundException(message));
+export const loggedInOrUnauthorized = (message?: string) =>
+  loggedInOrFail(() => new UnauthorizedException(message));
 
 export const serviceToHttpErrorMap = {
   [RecordNotFoundException.name]: NotFound,
   [DuplicateRecordException.name]: Conflict,
+  [UnauthorizedException.name]: Unauthorized,
 };
 
 export type IsNullable<T, K> = null extends T ? K : never;
@@ -95,6 +117,7 @@ export const response = {
   Conflict: (message = 'Record already exists') => error(message),
   UnprocessableEntity: (message = 'Invalid input') =>
     error(message).extend({ errors: z.array(zodErrorIssue) }),
+  Unauthorized: (message = 'Unauthorized') => error(message),
 };
 
 // A utility function that does the `.catch(next)` for you.

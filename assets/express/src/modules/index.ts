@@ -3,15 +3,18 @@ import { z } from 'zod';
 
 import { todoSchema, todoFieldsSchema, TodoService } from './todos';
 import { userSchema, userFieldsSchema, UserService } from './users';
+import { authSchema, AuthService } from './auth';
 
 export * from './users';
 export * from './todos';
+export * from './auth';
 
 export const registry = new OpenAPIRegistry();
 
 const schemaNames = {
   User: userSchema,
   Todo: todoSchema,
+  Auth: authSchema,
 } as const;
 
 export const models = Object.fromEntries(
@@ -57,6 +60,15 @@ export const createUserOutput = z.object({
   idToken: z.string().trim(),
 });
 
+export const postAuthInput = z.object({
+  email: models.User.shape.email,
+  password: models.User.shape.password,
+});
+
+export const postAuthToken = z.object({
+  idToken: z.string(),
+});
+
 export const patchUserInput = userFieldsSchema.partial();
 
 export type User = z.infer<typeof userSchema>;
@@ -64,8 +76,11 @@ export type UserForExternalUse = Omit<User, 'password'>;
 export type CreateUserInput = z.infer<typeof postUserInput>;
 export type UpdateUserInput = z.infer<typeof patchUserInput>;
 export type CreateUser = z.infer<typeof createUserOutput>;
+export type AuthInput = z.infer<typeof postAuthInput>;
+export type JWT = z.infer<typeof postAuthToken>;
 
 export type Services = {
   userService: UserService;
   todoService: TodoService;
+  authService: AuthService;
 };
