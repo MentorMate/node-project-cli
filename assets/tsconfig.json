@@ -8,10 +8,13 @@
     "skipLibCheck": false,
     "lib": ["ES2021"],
     "paths": {
+      "@app/*": ["src/*"],
       "@api": ["src/api"],
       "@modules": ["src/modules"],
       "@common": ["src/common"],
-      "@database": ["src/database"]
+      "@common/*": ["src/common/*"],
+      "@database": ["src/database"],
+      "@extensions/*": ["src/extensions/*"]
     }
   },
   "ts-node": {

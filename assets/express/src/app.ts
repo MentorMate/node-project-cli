@@ -1,17 +1,30 @@
 import express from 'express';
-import { Logger } from 'pino';
-
-import { z } from 'zod';
+import pino from 'pino';
+import { ZodObject } from 'zod';
 import httpStatuses from 'statuses';
+import { OpenAPIGenerator } from '@asteasolutions/zod-to-openapi';
+
 import { initializeKnex } from './database/initilize-knex';
-import createDbRepos from './database';
+import createDbRepos from '@database';
 import apiDefinitionFactory from '@api';
 import { initializeMiddlewares, validateRequest } from './api/middleware';
-import { registry } from './modules';
-import { OpenAPIGenerator } from '@asteasolutions/zod-to-openapi';
-import { asyncHandler } from '@common';
+import { registry } from '@modules';
 
-export async function initApplication(logger: Logger) {
+import { asyncHandler } from '@common';
+import { Environment } from '@common/environment';
+
+export function create(env: Environment) {
+  // create a logger
+  const logger = pino({
+    name: 'http',
+    ...(env.NODE_ENV !== 'production' && {
+      transport: {
+        target: 'pino-pretty',
+        colorize: false,
+      },
+    }),
+  });
+
   const app = express();
   const knex = initializeKnex(logger);
   const dbRepositories = createDbRepos(knex);
@@ -41,9 +54,13 @@ export async function initApplication(logger: Logger) {
     res.send('Hello world');
   });
 
+  const destroy = async () => {
+    await knex.destroy();
+  };
+
   return {
     app,
-    knex,
+    destroy,
     createOpenAPIDocument: () => {
       for (const {
         operationId,
@@ -84,7 +101,7 @@ export async function initApplication(logger: Logger) {
           responses: Object.fromEntries(
             Object.entries(responses).map(([code, schema]) => [
               code,
-              schema instanceof z.ZodObject
+              schema instanceof ZodObject
                 ? {
                     description:
                       httpStatuses.message[code as never as number] ??

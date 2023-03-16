@@ -1,39 +1,35 @@
-import './extensions/zod/register';
-import './extensions/knex/register';
+// register extensions as the very first thing in the entry point
+import '@extensions/zod/register';
+import '@extensions/knex/register';
 
-import pino from 'pino';
 import { createHttpTerminator } from 'http-terminator';
-import { envSchema } from '@common';
 
-import { initApplication } from './app';
+import { envSchema } from '@common/environment';
+import { create as createApp } from '@app/app';
 
-async function bootstrap() {
-  const env = envSchema.parse(process.env);
+function bootstrap() {
+  // validate environment and freeze it
+  const env = Object.freeze(envSchema.parse(process.env));
 
-  const logger = pino({
-    name: 'http',
-    ...(env.NODE_ENV !== 'production' && {
-      transport: {
-        target: 'pino-pretty',
-        colorize: false,
-      },
-    }),
-  });
+  // create the application
+  const { app, destroy: destroyApp } = createApp(env);
 
-  const { app, knex } = await initApplication(logger);
-
-  // Start server
+  // start server
   const server = app.listen(env.PORT, () => {
     console.log(`App is running on http://localhost:${env.PORT}`);
   });
 
-  // Graceful Shutdown
+  // setup graceful shutdown
   const httpTerminator = createHttpTerminator({ server });
 
   const shutdown = async () => {
     console.log('Shutting down...');
+
+    // process in-progress requests
     await httpTerminator.terminate();
-    await knex.destroy();
+
+    // then destroy the application
+    await destroyApp();
   };
 
   const onSignal = (signal: NodeJS.Signals) => {
@@ -41,6 +37,7 @@ async function bootstrap() {
     shutdown();
   };
 
+  // attach signal listeners
   process.on('SIGTERM', onSignal);
   process.on('SIGINT', onSignal);
 }

@@ -1,27 +1,18 @@
-import '../src/extensions/zod/register';
-import '../src/extensions/knex/register';
+// register extensions as the very first thing in the entry point
+import '@extensions/zod/register';
+import '@extensions/knex/register';
 
-import pino from 'pino';
-import { envSchema } from '../src/common';
-
-import { initApplication } from '../src/app'
 import { writeFileSync } from 'fs';
 import { resolve } from 'path';
 
+import { envSchema } from '@common/environment';
+import { create as createApp } from '@app/app';
+
+
 const run = async () => {
-  const env = envSchema.parse(process.env);
+  const env = Object.freeze(envSchema.parse(process.env));
 
-  const logger = pino({
-    name: 'http',
-    ...(env.NODE_ENV !== 'production' && {
-      transport: {
-        target: 'pino-pretty',
-        colorize: false,
-      },
-    }),
-  });
-
-  const { createOpenAPIDocument } = await initApplication(logger);
+  const { createOpenAPIDocument } = createApp(env);
 
   const document = createOpenAPIDocument();
   const file = resolve(__dirname, '..', '.openapi', 'openapi.json');
