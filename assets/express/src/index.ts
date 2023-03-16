@@ -3,13 +3,13 @@ import './extensions/knex/register';
 
 import pino from 'pino';
 import { createHttpTerminator } from 'http-terminator';
-import { Environment, envSchema } from '@common';
+import { envSchema } from '@common';
 
 import { initApplication } from './app';
-import { existsSync } from 'fs';
 
 async function bootstrap() {
-  const env: Environment = envSchema.parse(process.env);
+  const env = envSchema.parse(process.env);
+
   const logger = pino({
     name: 'http',
     ...(env.NODE_ENV !== 'production' && {
@@ -20,11 +20,7 @@ async function bootstrap() {
     }),
   });
 
-  const { app, knex, createSwaggerDocument } = await initApplication(logger);
-
-  if (!existsSync('../swagger.json')) {
-    createSwaggerDocument();
-  }
+  const { app, knex } = await initApplication(logger);
 
   // Start server
   const server = app.listen(env.PORT, () => {

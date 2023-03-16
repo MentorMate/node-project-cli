@@ -74,7 +74,7 @@ module.exports = (toolbox) => {
 
       // with TypeScript
       if (projectLanguage === 'TS') {
-        copyAsync(`${assetsPath}/${framework}/src/`, `${appDir}/src/`, {
+        await copyAsync(`${assetsPath}/${framework}/src/`, `${appDir}/src/`, {
           overwrite: true,
         });
 
@@ -94,6 +94,36 @@ module.exports = (toolbox) => {
           '@types/statuses': '^2.0.1',
         });
 
+        // OpenAPI
+        // TODO: Move out
+        Object.assign(envVars, {
+          OpenAPI: {
+            SWAGGER_UI_PORT: 3001,
+          },
+        });
+
+        Object.assign(pkgJson.scripts, {
+          'openapi:g': 'ts-node scripts/generate-openapi',
+          'openapi:ui:run':
+            "docker run --rm -p $(node -r dotenv/config -e 'console.log(process.env.SWAGGER_UI_PORT)'):8080 -v ./.openapi:/openapi -e SWAGGER_JSON=/openapi/openapi.json swaggerapi/swagger-ui",
+          'openapi:ui:open':
+            'node -r dotenv/config -e \'require("open")(`http://localhost:${process.env.SWAGGER_UI_PORT}`)\'',
+          'openapi:serve':
+            'concurrently "npm run openapi:ui:run" "npm run openapi:ui:open"',
+        });
+
+        Object.assign(pkgJson.devDependencies, {
+          concurrently: '^7.6.0',
+          open: '^8.4.2',
+        });
+
+        await copyAsync(`${assetsPath}/express/scripts`, `${appDir}/scripts`, {
+          overwrite: true,
+        });
+
+        await copyAsync(`${assetsPath}/express/.openapi`, `${appDir}/.openapi`);
+
+        // Knex
         // TODO: Move out
         if (db === 'pg') {
           Object.assign(envVars, {

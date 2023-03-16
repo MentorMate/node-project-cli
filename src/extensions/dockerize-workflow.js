@@ -21,7 +21,9 @@ module.exports = (toolbox) => {
       try {
         await Promise.all([
           copyAsync(`${assetsPath}/.project-npmignr`, `${appDir}/.npmignore`),
-          copyAsync(`${assetsPath}/scripts/`, `${appDir}/scripts/`),
+          copyAsync(`${assetsPath}/scripts/`, `${appDir}/scripts/`, {
+            overwrite: true,
+          }),
           copyAsync(`${assetsPath}/Dockerfile`, `${appDir}/Dockerfile`),
           copyAsync(`${assetsPath}/.dockerignore`, `${appDir}/.dockerignore`),
           copyAsync(

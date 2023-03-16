@@ -81,7 +81,8 @@ describe('dockerize-workflow', () => {
       it('should copy scripts', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/scripts/`,
-          `${input.appDir}/scripts/`
+          `${input.appDir}/scripts/`,
+          { overwrite: true }
         );
       });
 
