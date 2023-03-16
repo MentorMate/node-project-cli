@@ -18,6 +18,13 @@ export class RecordNotFoundException extends Error {
   }
 }
 
+export class UnauthorizedException extends Error {
+  constructor(message = 'Unauthorized') {
+    super(message);
+    this.name = UnauthorizedException.name;
+  }
+}
+
 const definedOrFail = <T>(errorFactory: () => Error) => {
   return (result: T | undefined): T => {
     if (!result) {
@@ -36,14 +43,26 @@ const updatedOrFail = (errorFactory: () => Error) => {
   };
 };
 
+const loggedInOrFail = (errorFactory: () => Error) => {
+  return (result: boolean): boolean => {
+    if (!result) {
+      throw errorFactory();
+    }
+    return result;
+  };
+};
+
 export const definedOrNotFound = <T>(message?: string) =>
   definedOrFail<T>(() => new RecordNotFoundException(message));
 export const updatedOrNotFound = (message?: string) =>
   updatedOrFail(() => new RecordNotFoundException(message));
+export const loggedInOrUnauthorized = (message?: string) =>
+  loggedInOrFail(() => new UnauthorizedException(message));
 
 export const serviceToHttpErrorMap = {
   [RecordNotFoundException.name]: NotFound,
   [DuplicateRecordException.name]: Conflict,
+  [UnauthorizedException.name]: Unauthorized,
 };
 
 export type IsNullable<T, K> = null extends T ? K : never;
@@ -68,4 +87,5 @@ export const response = {
   Conflict: (message = 'Record already exists') => error(message),
   UnprocessableEntity: (message = 'Invalid input') =>
     error(message).extend({ errors: z.array(zodErrorIssue) }),
+  Unauthorized: (message = 'Unauthorized') => error(message),
 };

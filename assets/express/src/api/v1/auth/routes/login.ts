@@ -16,12 +16,13 @@ export default bindRouteOptionsWithSchema(
     },
     responses: {
       200: models.Auth,
+      401: response.Unauthorized(),
       404: response.NotFound(),
       422: response.UnprocessableEntity(),
     },
     handler: async (req, res) => {
       const { ...payload } = req.body;
-      const ret = authService.login(payload);
+      const ret = await authService.login(payload);
 
       res.send(ret);
     },

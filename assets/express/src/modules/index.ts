@@ -66,7 +66,7 @@ export const postAuthInput = z.object({
 });
 
 export const postAuthToken = z.object({
-  token: z.string(),
+  idToken: z.string(),
 });
 
 export const patchUserInput = userFieldsSchema.partial();
