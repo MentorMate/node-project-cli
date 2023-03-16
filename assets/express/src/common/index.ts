@@ -26,6 +26,10 @@ export const envSchema = z.object({
   PGUSER: z.string().trim().min(1),
   PGPASSWORD: z.string().trim().min(1),
   PGDATABASE: z.string().trim().min(1),
+
+  // JWT
+  JWT_SECRET: z.string().trim().min(1),
+  JWT_EXPIRATION: z.coerce.number().int().gte(1000),
 });
 
 export type Environment = z.infer<typeof envSchema>;
