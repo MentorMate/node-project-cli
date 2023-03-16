@@ -1,7 +1,7 @@
 import { UserRepository, handleDbError, ListUsersQuery } from '@database';
 import { definedOrNotFound, updatedOrNotFound } from '@common';
 import { User, CreateUserInput, UpdateUserInput } from '..';
-import { hashPassword } from './utils';
+import { hashPassword, mapCreateUser, signToken } from './utils';
 import { UserService } from './interfaces';
 
 export function initializeUserService({
@@ -34,21 +34,24 @@ export function initializeUserService({
     },
     create: async function (payload: CreateUserInput) {
       const { email, password, ...attributes } = payload;
-      let user;
 
       try {
         const hashedPassword = await hashPassword(10, password);
-        user = await userRepository.create({
+        const user = await userRepository.create({
           email,
           password: hashedPassword,
           ...attributes,
           role: 'user',
         });
+
+        if (user) {
+          const idToken = signToken(email);
+          return mapCreateUser(user, idToken);
+        }
+        definedOrNotFound<User>('User not found')(user);
       } catch (err) {
         handleDbError(err);
       }
-
-      return user;
     },
     update: async function (email: string, payload: UpdateUserInput) {
       let updatedUser;

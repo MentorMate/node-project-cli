@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { CreateUser, CreateUserInput } from '@modules';
 
 interface HashPasswordFunction {
   (saltRounds: number, password: string): Promise<string>;
@@ -11,6 +12,10 @@ interface CompareHashFunction {
 
 interface SignTokenFunction {
   (email: string): string;
+}
+
+interface MapCreateUserFunction {
+  (user: CreateUserInput, idToken: string): CreateUser;
 }
 
 const hashPassword: HashPasswordFunction = async function hashPassword(
@@ -34,11 +39,23 @@ const signToken: SignTokenFunction = function signToken(email: string) {
   });
 };
 
+const mapCreateUser: MapCreateUserFunction = (
+  user: CreateUserInput,
+  idToken: string
+) => ({
+  user: {
+    email: user.email,
+    role: user.role,
+  },
+  idToken,
+});
+
 export interface UserModuleHelpersFunctions
   extends Record<string, CallableFunction> {
   hashPassword: HashPasswordFunction;
   compareHash: CompareHashFunction;
   signToken: SignTokenFunction;
+  mapCreateUser: MapCreateUserFunction;
 }
 
-export { hashPassword, compareHash, signToken };
+export { hashPassword, compareHash, signToken, mapCreateUser };
