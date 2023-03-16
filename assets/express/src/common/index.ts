@@ -9,24 +9,6 @@ import {
 
 export type Zod = typeof z | typeof z.coerce;
 
-export const envSchema = z.object({
-  // Node
-  NODE_ENV: z.enum(['development', 'production']),
-
-  // HTTP
-  PORT: z.coerce.number().int().gte(1024).lte(65535),
-
-  // PostgreSQL
-  // TODO: this limits your options, should be revisited
-  PGHOST: z.string().trim().min(1),
-  PGPORT: z.coerce.number().int().gte(1024).lte(65535),
-  PGUSER: z.string().trim().min(1),
-  PGPASSWORD: z.string().trim().min(1),
-  PGDATABASE: z.string().trim().min(1),
-});
-
-export type Environment = z.infer<typeof envSchema>;
-
 export class DuplicateRecordException extends Error {
   constructor(message = 'Record already exists') {
     super(message);
