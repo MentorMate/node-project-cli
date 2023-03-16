@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 interface HashPasswordFunction {
-  (saltRounds: string | number, password: string): Promise<string>;
+  (password: string): Promise<string>;
 }
 
 interface CompareHashFunction {
@@ -27,9 +27,9 @@ const compareHash: CompareHashFunction = async function compareHash(
 };
 
 const hashPassword: HashPasswordFunction = async function hashPassword(
-  saltRounds: string | number,
   password: string
 ): Promise<string> {
+  const saltRounds = genSalt();
   return bcrypt.hash(password, saltRounds);
 };
 
@@ -55,4 +55,4 @@ export interface UserModuleHelpersFunctions
   genSalt: GenSaltFunction;
 }
 
-export { hashPassword, compareHash, genSalt, signToken };
+export { hashPassword, compareHash, signToken };
