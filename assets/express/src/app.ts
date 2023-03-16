@@ -9,7 +9,6 @@ import apiDefinitionFactory from '@api';
 import { initializeMiddlewares, validateRequest } from './api/middleware';
 import { registry } from './modules';
 import { OpenAPIGenerator } from '@asteasolutions/zod-to-openapi';
-import { writeFileSync } from 'fs';
 import { asyncHandler } from '@common';
 
 export async function initApplication(logger: Logger) {
@@ -45,7 +44,7 @@ export async function initApplication(logger: Logger) {
   return {
     app,
     knex,
-    createSwaggerDocument: () => {
+    createOpenAPIDocument: () => {
       for (const {
         operationId,
         tags,
@@ -90,28 +89,26 @@ export async function initApplication(logger: Logger) {
                     description:
                       httpStatuses.message[code as never as number] ??
                       'Unknown response code',
-                    condent: { 'application/json': { schema } },
+                    content: { 'application/json': { schema } },
                   }
                 : schema,
             ])
           ),
         });
-
-        const generator = new OpenAPIGenerator(registry.definitions, '3.0.0');
-
-        const document = generator.generateDocument({
-          info: {
-            version: '1.0.0',
-            title: 'My API',
-            description: 'This is the API',
-          },
-          servers: [{ url: '' }],
-        });
-
-        writeFileSync('swagger.json', JSON.stringify(document, null, 2), {
-          encoding: 'utf-8',
-        });
       }
+
+      const generator = new OpenAPIGenerator(registry.definitions, '3.0.0');
+
+      const document = generator.generateDocument({
+        info: {
+          version: '1.0.0',
+          title: 'My API',
+          description: 'This is the API',
+        },
+        servers: [{ url: '' }],
+      });
+
+      return document;
     },
   };
 }

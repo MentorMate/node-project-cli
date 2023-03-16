@@ -177,6 +177,45 @@ describe('install-framework', () => {
           expect(devDependencies).toHaveProperty('@types/statuses');
         });
 
+        it('should add the OpenAPI env var section', () => {
+          expect(envVars).toHaveProperty('OpenAPI');
+          expect(envVars['OpenAPI']).toHaveProperty('SWAGGER_UI_PORT');
+        });
+
+        it('shoudl add the openapi scripts', () => {
+          expect(Object.keys(scripts)).toEqual(
+            expect.arrayContaining([
+              'openapi:g',
+              'openapi:ui:run',
+              'openapi:ui:open',
+              'openapi:serve',
+            ])
+          );
+        });
+
+        it('should add concurrently to devDependencies', () => {
+          expect(devDependencies).toHaveProperty('concurrently');
+        });
+
+        it('should add open to devDependencies', () => {
+          expect(devDependencies).toHaveProperty('open');
+        });
+
+        it('should copy the openapi-generate script', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/express/scripts`,
+            `${input.appDir}/scripts`,
+            { overwrite: true }
+          );
+        });
+
+        it('should copy the .openapi dir', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/express/.openapi`,
+            `${input.appDir}/.openapi`
+          );
+        });
+
         describe('and the database is PostgreSQL', () => {
           beforeAll(() => {
             input.db = 'pg';
