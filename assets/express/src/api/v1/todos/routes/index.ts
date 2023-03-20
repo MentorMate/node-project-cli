@@ -1,4 +1,4 @@
-import { attachPrefix } from '@common';
+import { prefixRoutes } from '../../../utils';
 import { TodoService } from '@modules';
 
 import getTodoRouteOptions from './get-todo';
@@ -18,5 +18,5 @@ export default function ({ todoService }: { todoService: TodoService }) {
     deleteTodoRouteOptions({ todoService }),
   ];
 
-  return attachPrefix(routes, '/todos');
+  return prefixRoutes('/todos', routes);
 }

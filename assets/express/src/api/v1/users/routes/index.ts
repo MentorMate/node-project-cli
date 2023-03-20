@@ -1,4 +1,4 @@
-import { attachPrefix } from '@common';
+import { prefixRoutes } from '../../../utils';
 import { UserService } from '@modules';
 
 import getUserRouteOptions from './get-user';
@@ -18,5 +18,5 @@ export default function ({ userService }: { userService: UserService }) {
     deleteUserRouteOptions({ userService }),
   ];
 
-  return attachPrefix(routes, '/users');
+  return prefixRoutes('/users', routes);
 }

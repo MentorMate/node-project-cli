@@ -2,7 +2,7 @@ import { DbCollection } from '@database';
 import { defineUserRoutes } from './users';
 import { defineTodoRoutes } from './todos';
 import { initializeUserService, initializeTodoService } from '@modules';
-import { attachPrefix } from '@common';
+import { prefixRoutes } from '../utils';
 
 export default function (dbCollection: DbCollection) {
   const userService = initializeUserService(dbCollection);
@@ -13,5 +13,5 @@ export default function (dbCollection: DbCollection) {
     ...defineTodoRoutes({ todoService }),
   ];
 
-  return attachPrefix(routes, '/v1');
+  return prefixRoutes('/v1', routes);
 }
