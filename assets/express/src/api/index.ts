@@ -1,13 +1,15 @@
 import { DbCollection } from '@database';
-import { defineHealthzRoutes } from './healthz';
-import { defineHelloWorldRoutes } from './hello-world';
+import healtz from './healthz';
+import helloWorld from './hello-world';
 import { RouteDefinition } from './interfaces';
 import defineV1Routes from './v1';
 
+export * from './utils';
+
 export default function (dbCollection: DbCollection): RouteDefinition<any>[] {
   return [
-    ...defineHealthzRoutes(),
-    ...defineHelloWorldRoutes(),
+    ...helloWorld,
+    ...healtz,
     ...defineV1Routes(dbCollection),
   ];
 }

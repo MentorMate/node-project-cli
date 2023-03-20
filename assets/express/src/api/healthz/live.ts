@@ -1,7 +1,9 @@
-import { RouteOptions } from '../../interfaces';
+import { RouteDefinition } from '../interfaces';
 
-export const healthzLive: ReturnType<RouteOptions> = {
+const route: RouteDefinition = {
   operationId: 'health-liveness',
+  summary: 'Liveness endpoint',
+  description: 'Used to check whether the application is alive.',
   tags: ['Healthchecks'],
   method: 'get',
   path: '/live',
@@ -11,7 +13,7 @@ export const healthzLive: ReturnType<RouteOptions> = {
   },
   responses: {
     200: {
-      description: 'Liveness endpoint',
+      description: 'Application is alive',
       content: {
         'text/plain': {
           schema: {
@@ -23,3 +25,5 @@ export const healthzLive: ReturnType<RouteOptions> = {
     },
   },
 };
+
+export default route;

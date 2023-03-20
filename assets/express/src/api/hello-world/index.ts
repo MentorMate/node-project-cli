@@ -1,3 +1,3 @@
-import defineHelloWorldRoutes from './routes';
+import helloWorld from './hello-world';
 
-export { defineHelloWorldRoutes };
+export default [helloWorld];

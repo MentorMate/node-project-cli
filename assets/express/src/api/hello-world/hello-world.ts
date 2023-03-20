@@ -1,9 +1,10 @@
-import { RouteOptions } from '../../interfaces';
+import { RouteDefinition } from '../interfaces';
 
-export const helloWorld: ReturnType<RouteOptions> = {
+const route: RouteDefinition = {
   operationId: 'hello-world',
   summary: 'Hello, World!',
   description: 'Says "Hello, World!"',
+  tags: ['Hello World'],
   method: 'get',
   path: '/',
   synchronous: true,
@@ -24,3 +25,5 @@ export const helloWorld: ReturnType<RouteOptions> = {
     },
   },
 };
+
+export default route;

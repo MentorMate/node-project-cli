@@ -182,7 +182,7 @@ describe('install-framework', () => {
           expect(envVars['OpenAPI']).toHaveProperty('SWAGGER_UI_PORT');
         });
 
-        it('shoudl add the openapi scripts', () => {
+        it('should add the openapi scripts', () => {
           expect(Object.keys(scripts)).toEqual(
             expect.arrayContaining([
               'openapi:g',

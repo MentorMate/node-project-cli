@@ -3,9 +3,8 @@ import pino from 'pino';
 
 import { initializeKnex } from './database/initilize-knex';
 import createDbRepos from '@database';
-import apiDefinitionFactory from '@api';
+import apiDefinitionFactory, { asyncHandler } from '@api';
 import { initializeMiddlewares, validateRequest } from './api/middleware';
-import { asyncHandler } from '@common';
 import { Environment } from '@common/environment';
 
 export function create(env: Environment) {
