@@ -18,7 +18,7 @@ export function initializeAuthService({
 
         if (user) {
           const validPassword = await compareHash(password, user.password);
-          const idToken = signToken({ email });
+          const idToken = signToken({ sub: user.id, email });
 
           if (validPassword) {
             return {
@@ -44,7 +44,7 @@ export function initializeAuthService({
         });
 
         if (user) {
-          const idToken = signToken({ email });
+          const idToken = signToken({ sub: user.id, email });
           return {
             idToken,
           };
