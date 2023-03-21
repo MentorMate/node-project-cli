@@ -16,7 +16,11 @@ const registerRoute = (
   { path, request, responses, ...route }: RouteDefinition<any>
 ) => {
   registry.registerPath({
-    ...route,
+    operationId: route.operationId,
+    summary: route.summary,
+    description: route.description,
+    tags: route.tags,
+    method: route.method,
     path: reformatPathParams(path),
     ...(request && {
       request: {

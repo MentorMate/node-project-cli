@@ -1,27 +1,26 @@
+import { asyncHandler, defineRoute } from '@app/api/utils';
 import { response } from '@common';
-import { models, AuthService } from '@modules';
-import { bindRouteOptionsWithSchema } from '../../../interfaces';
+import { models } from '@modules';
 import { loginDTO } from '../dto';
 
-export default bindRouteOptionsWithSchema(
-  ({ authService }: { authService: AuthService }) => ({
-    operationId: 'login',
-    summary: 'Login a user',
-    description: 'Authenticate a user',
-    tags: ['Auth'],
-    method: 'post',
-    path: '/login',
-    request: {
-      body: loginDTO,
-    },
-    responses: {
-      200: models.Auth,
-      404: response.NotFound(),
-      422: response.Unauthorized(),
-    },
-    handler: async (req, res) => {
-      const tokens = await authService.login(req.body);
-      res.status(200).send(tokens);
-    },
+export default defineRoute({
+  operationId: 'login',
+  summary: 'Login a user',
+  description: 'Authenticate a user',
+  tags: ['Auth'],
+  method: 'post',
+  path: '/login',
+  request: {
+    body: loginDTO,
+  },
+  responses: {
+    200: models.Auth,
+    404: response.NotFound(),
+    422: response.Unauthorized(),
+  },
+}).attachHandler(
+  asyncHandler(async ({ body, services }, res) => {
+    const tokens = await services.authService.login(body);
+    res.status(200).send(tokens);
   })
 );

@@ -8,7 +8,6 @@ const route: RouteDefinition = {
   tags: ['Healthchecks'],
   method: 'get',
   path: '/healthz/ready',
-  synchronous: true,
   handler: function (_req, res) {
     // Add your specific checks
     res.send('OK');

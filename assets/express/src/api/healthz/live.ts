@@ -7,7 +7,6 @@ const route: RouteDefinition = {
   tags: ['Healthchecks'],
   method: 'get',
   path: '/live',
-  synchronous: true,
   handler: function (_req, res) {
     res.send('OK');
   },
