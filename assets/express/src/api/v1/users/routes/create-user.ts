@@ -10,7 +10,7 @@ export default bindRouteOptionsWithSchema(
     description: 'Create a new user',
     tags: ['User'],
     method: 'post',
-    path: '/create',
+    path: '/',
     request: {
       body: createUserDTO,
     },
@@ -20,9 +20,7 @@ export default bindRouteOptionsWithSchema(
       422: response.UnprocessableEntity(),
     },
     handler: async (req, res) => {
-      const { ...payload } = req.body;
-      const user = await userService.create(payload);
-
+      const user = await userService.create(req.body);
       res.status(201).send(user);
     },
   })
