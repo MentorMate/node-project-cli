@@ -44,17 +44,22 @@ export function create(env: Environment) {
   const app = express();
 
   // register global middleware
-  app.use([
+  app.use(
+    // logs the request verb and url
     logRequest(logger),
+    // add security HTTP headers
     helmet(),
-    cors(),
+    // enables CORS
+    cors(/* TODO: configure origins */),
+    // parses the body of application/json requests
     json(),
+    // compresses response bodies
     compression(),
+    // makes the servies available to the route handlers by attachig them to the request
     attachServices(services),
+    // JWT authentication
     validateAccessToken(tokensService),
-    handleServiceError(),
-    errorHandler(logger),
-  ]);
+  );
 
   // register routes
   for (const { method, path, request, middlewares = [], handler } of routes) {
@@ -64,6 +69,10 @@ export function create(env: Environment) {
 
     app[method](path, ...middlewares, handler);
   }
+
+  // register error handlers
+  app.use(handleServiceError());
+  app.use(errorHandler(logger));
 
   // define an app tear down function
   const destroy = async () => {
