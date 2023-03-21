@@ -52,20 +52,13 @@ export const putUserInput = z.object({
   role: models.User.shape.role.default('user'),
 });
 
-export const createUserOutput = z.object({
-  user: z.object({
-    email: models.User.shape.email,
-    role: models.User.shape.role.default('user'),
-  }),
-  idToken: z.string().trim(),
-});
-
 export const login = z.object({
   email: models.User.shape.email,
   password: models.User.shape.password,
 });
 
 export const claims = z.object({
+  sub: models.User.shape.id.optional(),
   email: models.User.shape.email.optional(),
 });
 
@@ -82,9 +75,8 @@ export const patchUserInput = userFieldsSchema.partial();
 
 export type User = z.infer<typeof userSchema>;
 export type UserForExternalUse = Omit<User, 'password'>;
-export type CreateUserInput = z.infer<typeof postUserInput>; // remove it
+export type CreateUserInput = z.infer<typeof postUserInput>;
 export type UpdateUserInput = z.infer<typeof patchUserInput>;
-export type CreateUser = z.infer<typeof createUserOutput>; // remove it
 export type Login = z.infer<typeof login>;
 export type Claims = z.infer<typeof claims>;
 export type Tokens = z.infer<typeof tokens>;
