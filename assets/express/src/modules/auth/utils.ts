@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { Claims } from '@modules';
-import { config } from '@common';
+import { Claims, JwtConfig } from '@modules';
 
 const compareHash = async function compareHash(
   password: string,
@@ -21,10 +20,10 @@ const genSalt = async function genSalt(rounds?: number): Promise<string> {
   return bcrypt.genSalt(rounds);
 };
 
-const signToken = function signToken(claims: Claims) {
-  return jwt.sign(claims, config.jwt.secret, {
+const signToken = function signToken(claims: Claims, config: JwtConfig) {
+  return jwt.sign(claims, config.secret, {
     // algorithm (default: HS256)
-    expiresIn: config.jwt.expiresIn,
+    expiresIn: config.expiresIn,
   });
 };
 
