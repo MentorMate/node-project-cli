@@ -21,7 +21,7 @@ export default bindRouteOptionsWithSchema(
     },
     handler: async (req, res) => {
       const tokens = await authService.login(req.body);
-      res.send(tokens);
+      res.status(200).send(tokens);
     },
   })
 );
