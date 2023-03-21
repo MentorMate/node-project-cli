@@ -1,78 +1,34 @@
-import { UserRepository, handleDbError, ListUsersQuery } from '@database';
+import { UserRepository } from '@database';
 import { definedOrNotFound, updatedOrNotFound } from '@common';
-import { User, CreateUserInput, UpdateUserInput } from '..';
 import { hashPassword } from '../auth/utils';
 import { UserService } from './interfaces';
 
-export function initializeUserService({
-  userRepository,
-}: {
-  userRepository: UserRepository;
-}): UserService {
-  return {
-    find: async function (email: string) {
-      let user;
+export const createUserService = (users: UserRepository): UserService => ({
+  find(email) {
+    return users.find(email).then(definedOrNotFound('User not found'));
+  },
+  list(query) {
+    return users.list(query);
+  },
+  async create(payload) {
+    const { email, password, ...attributes } = payload;
+    const hashedPassword = await hashPassword(password);
 
-      try {
-        user = await userRepository.find(email);
-      } catch (err) {
-        handleDbError(err);
-      }
+    const user = await users.create({
+      email,
+      password: hashedPassword,
+      ...attributes,
+      role: 'user',
+    });
 
-      return definedOrNotFound<User>('User not found')(user);
-    },
-    list: async function (query: ListUsersQuery) {
-      let users;
-
-      try {
-        users = await userRepository.list(query);
-      } catch (err) {
-        handleDbError(err);
-      }
-
-      return users;
-    },
-    create: async function (payload: CreateUserInput) {
-      const { email, password, ...attributes } = payload;
-
-      try {
-        const hashedPassword = await hashPassword(password);
-        const user = await userRepository.create({
-          email,
-          password: hashedPassword,
-          ...attributes,
-          role: 'user',
-        });
-
-        if (user) {
-          return user;
-        }
-        definedOrNotFound<User>('User not found')(user);
-      } catch (err) {
-        handleDbError(err);
-      }
-    },
-    update: async function (email: string, payload: UpdateUserInput) {
-      let updatedUser;
-
-      try {
-        updatedUser = await userRepository.update(email, payload);
-      } catch (err) {
-        handleDbError(err);
-      }
-
-      return definedOrNotFound<User>('User not found')(updatedUser);
-    },
-    delete: async function (email: string) {
-      let deletedEntries = 0;
-
-      try {
-        deletedEntries = await userRepository.delete(email);
-      } catch (err) {
-        handleDbError(err);
-      }
-
-      return updatedOrNotFound('User not found')(deletedEntries);
-    },
-  };
-}
+    return user;
+  },
+  update(email, payload) {
+    return users
+      .update(email, payload)
+      .then(definedOrNotFound('User not found'));
+  },
+  delete(email) {
+    return users.delete(email).then(updatedOrNotFound('User not found'));
+  },
+});

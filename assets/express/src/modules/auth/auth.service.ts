@@ -4,22 +4,15 @@ import { TokensService, User } from '@modules';
 import { compareHash, hashPassword, signToken } from './utils';
 import { AuthService } from './interfaces';
 
-export function createAuthService(
-  {
-    userRepository,
-  }: {
-    userRepository: UserRepository;
-  },
-  tokensService: TokensService
-): AuthService {
-  const jwtConfig = tokensService.getJwtConfig();
+export const createAuthService = (users: UserRepository, tokens: TokensService): AuthService => {
+  const jwtConfig = tokens.getJwtConfig();
 
   return {
     login: async function (payload) {
       const { email, password } = payload;
 
       try {
-        const user = await userRepository.find(email);
+        const user = await users.find(email);
 
         if (user) {
           const validPassword = await compareHash(password, user.password);
@@ -42,7 +35,7 @@ export function createAuthService(
 
       try {
         const hashedPassword = await hashPassword(password);
-        const user = await userRepository.create({
+        const user = await users.create({
           email,
           password: hashedPassword,
           role: 'user',
