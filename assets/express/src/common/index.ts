@@ -10,6 +10,7 @@ import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 
 extendZodWithOpenApi(z);
 
+export { config } from './config';
 export type Zod = typeof z | typeof z.coerce;
 
 export const envSchema = z.object({
@@ -29,7 +30,7 @@ export const envSchema = z.object({
 
   // JWT
   JWT_SECRET: z.string().trim().min(1),
-  JWT_EXPIRATION: z.coerce.number().int().gte(1000),
+  JWT_EXPIRATION: z.coerce.number().int().gte(1000).or(z.string()),
 });
 
 export type Environment = z.infer<typeof envSchema>;
@@ -82,12 +83,23 @@ const loggedInOrFail = (errorFactory: () => Error) => {
   };
 };
 
+const registeredOrFail = (errorFactory: () => Error) => {
+  return (result: boolean): boolean => {
+    if (!result) {
+      throw errorFactory();
+    }
+    return result;
+  };
+};
+
 export const definedOrNotFound = <T>(message?: string) =>
   definedOrFail<T>(() => new RecordNotFoundException(message));
 export const updatedOrNotFound = (message?: string) =>
   updatedOrFail(() => new RecordNotFoundException(message));
 export const loggedInOrUnauthorized = (message?: string) =>
   loggedInOrFail(() => new UnauthorizedException(message));
+export const registeredOrConflict = (message?: string) =>
+  registeredOrFail(() => new DuplicateRecordException(message));
 
 export const serviceToHttpErrorMap = {
   [RecordNotFoundException.name]: NotFound,

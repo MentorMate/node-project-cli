@@ -1,5 +1,6 @@
-import { AuthInput, JWT } from '..';
+import { CreateUserInput, Login, Tokens } from '..';
 
 export interface AuthService {
-  login: (payload: AuthInput) => Promise<JWT | undefined>;
+  login: (payload: Login) => Promise<Tokens | undefined>;
+  register: (payload: CreateUserInput) => Promise<Tokens | undefined>;
 }

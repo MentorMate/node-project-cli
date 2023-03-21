@@ -1,3 +1,3 @@
-import { postAuthInput } from '@modules';
+import { login } from '@modules';
 
-export const loginDTO = postAuthInput;
+export const loginDTO = login;

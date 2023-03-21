@@ -1,13 +1,13 @@
-import { models, UserService } from '@modules';
+import { models, UserService } from 'src/modules';
 import { response } from '@common';
-import { bindRouteOptionsWithSchema } from '../../../interfaces';
+import { bindRouteOptionsWithSchema } from 'src/api/interfaces';
 import { createUserDTO } from '../dto';
 
 export default bindRouteOptionsWithSchema(
   ({ userService }: { userService: UserService }) => ({
     operationId: 'user-create',
-    summary: 'Create an User',
-    description: 'Create a new User item',
+    summary: 'Create a user',
+    description: 'Create a new user',
     tags: ['User'],
     method: 'post',
     path: '/create',

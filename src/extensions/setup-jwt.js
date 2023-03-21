@@ -4,7 +4,7 @@ module.exports = (toolbox) => {
   toolbox.setupJwt = ({ envVars, pkgJson }) => {
     const syncOperations = () => {
       Object.assign(envVars, {
-        Jwt: {
+        JWT: {
           JWT_SECRET: 'super-secret',
           JWT_EXPIRATION: 7200, // 2h
         },
