@@ -10,7 +10,6 @@ import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 
 extendZodWithOpenApi(z);
 
-export { config } from './config';
 export type Zod = typeof z | typeof z.coerce;
 
 export const envSchema = z.object({

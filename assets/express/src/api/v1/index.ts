@@ -5,14 +5,13 @@ import { defineAuthRoutes } from './auth';
 import {
   initializeUserService,
   initializeTodoService,
-  initializeAuthService,
+  AuthService,
 } from '@modules';
 import { attachPrefix } from '@common';
 
-export default function (dbCollection: DbCollection) {
+export default function (dbCollection: DbCollection, authService: AuthService) {
   const userService = initializeUserService(dbCollection);
   const todoService = initializeTodoService(dbCollection);
-  const authService = initializeAuthService(dbCollection);
 
   const routes = [
     ...defineUserRoutes({ userService }),

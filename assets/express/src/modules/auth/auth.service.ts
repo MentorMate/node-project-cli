@@ -1,14 +1,19 @@
 import { handleDbError, UserRepository } from '@database';
 import { definedOrNotFound, loggedInOrUnauthorized } from '@common';
-import { User } from '@modules';
+import { TokensService, User } from '@modules';
 import { compareHash, hashPassword, signToken } from './utils';
 import { AuthService } from './interfaces';
 
-export function initializeAuthService({
-  userRepository,
-}: {
-  userRepository: UserRepository;
-}): AuthService {
+export function createAuthService(
+  {
+    userRepository,
+  }: {
+    userRepository: UserRepository;
+  },
+  tokensService: TokensService
+): AuthService {
+  const jwtConfig = tokensService.getJwtConfig();
+
   return {
     login: async function (payload) {
       const { email, password } = payload;
@@ -18,7 +23,7 @@ export function initializeAuthService({
 
         if (user) {
           const validPassword = await compareHash(password, user.password);
-          const idToken = signToken({ sub: user.id, email });
+          const idToken = signToken({ email }, jwtConfig);
 
           if (validPassword) {
             return {
@@ -44,7 +49,7 @@ export function initializeAuthService({
         });
 
         if (user) {
-          const idToken = signToken({ sub: user.id, email });
+          const idToken = signToken({ sub: user.id, email }, jwtConfig);
           return {
             idToken,
           };

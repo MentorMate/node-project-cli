@@ -8,6 +8,7 @@ import { authSchema, AuthService } from './auth';
 export * from './users';
 export * from './todos';
 export * from './auth';
+export * from './tokens';
 
 export const registry = new OpenAPIRegistry();
 
@@ -62,6 +63,11 @@ export const claims = z.object({
   email: models.User.shape.email.optional(),
 });
 
+export const jwtConfig = z.object({
+  secret: z.string().trim().min(1),
+  expiresIn: z.coerce.number().int().gte(1000).or(z.string()),
+});
+
 /**
  * Possible tokens
  * id_token, access_token, refresh_token
@@ -80,6 +86,7 @@ export type UpdateUserInput = z.infer<typeof patchUserInput>;
 export type Login = z.infer<typeof login>;
 export type Claims = z.infer<typeof claims>;
 export type Tokens = z.infer<typeof tokens>;
+export type JwtConfig = z.infer<typeof jwtConfig>;
 
 export type Services = {
   userService: UserService;
