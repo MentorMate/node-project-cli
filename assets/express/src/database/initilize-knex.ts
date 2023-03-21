@@ -13,8 +13,8 @@ pg.types.setTypeParser(pg.types.builtins.INT8, parseInt);
 pg.types.setTypeParser(pg.types.builtins.NUMERIC, parseFloat);
 pg.types.setTypeParser(pg.types.builtins.DATE, (v) => v); // keep as string for now
 
-export function initializeKnex(logger: Logger) {
-  return Knex({
+export const createClient = (logger: Logger) =>
+  Knex({
     client: 'pg',
     // We don't need to specify the connection options as we're using the default env var names
     // see https://node-postgres.com/features/connecting#environment-variables
@@ -32,4 +32,3 @@ export function initializeKnex(logger: Logger) {
       deprecate: logger.warn.bind(logger),
     },
   });
-}

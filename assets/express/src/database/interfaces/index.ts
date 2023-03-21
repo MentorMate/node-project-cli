@@ -24,8 +24,3 @@ export type UserRepository = {
   find: (email: string) => Promise<User | undefined>;
   list: (query: ListUsersQuery) => Promise<Paginated<User>>;
 };
-
-export type DbCollection = {
-  userRepository: UserRepository;
-  todoRepository: TodoRepository;
-};

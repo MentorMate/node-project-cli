@@ -4,20 +4,20 @@ import cors from 'cors';
 import compression from 'compression';
 import pino from 'pino';
 
-import { initializeKnex } from './database/initilize-knex';
-import createDbRepos from '@database';
+import { createClient } from './database/initilize-knex';
+import { createTodoRepository, createUserRepository } from '@database';
 import {
   routes,
-  attachServices,
   errorHandler,
   handleServiceError,
   logRequest,
   validateRequest,
+  attachServices,
   validateAccessToken,
 } from '@api';
 import { Environment } from '@common/environment';
-import { createTokensService, createAuthService } from './modules';
-import { initializeTodoService, initializeUserService } from './modules';
+import { createTokensService, createAuthService, Services } from './modules';
+import { createTodoService, createUserService } from './modules';
 
 export function create(env: Environment) {
   // create a logger
@@ -32,13 +32,14 @@ export function create(env: Environment) {
   });
 
   // create services
-  const knex = initializeKnex(logger);
-  const dbRepositories = createDbRepos(knex);
+  const knex = createClient(logger);
+  const todoRepository = createTodoRepository(knex);
+  const userRepository = createUserRepository(knex);
   const tokensService = createTokensService(env);
-  const authService = createAuthService(dbRepositories, tokensService);
-  const userService = initializeUserService(dbRepositories);
-  const todoService = initializeTodoService(dbRepositories);
-  const services = { userService, todoService, authService };
+  const authService = createAuthService(userRepository, tokensService);
+  const todoService = createTodoService(todoRepository);
+  const userService = createUserService(userRepository);
+  const services: Services = { userService, todoService, authService };
 
   // create the app
   const app = express();
@@ -55,7 +56,7 @@ export function create(env: Environment) {
     json(),
     // compresses response bodies
     compression(),
-    // makes the servies available to the route handlers by attachig them to the request
+    // makes the services available to the route handlers by attaching them to the request
     attachServices(services),
     // JWT authentication
     validateAccessToken(tokensService),

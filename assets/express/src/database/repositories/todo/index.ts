@@ -1,66 +1,60 @@
+import { Knex } from 'knex';
 import {
   first,
   parseCount,
   extractPagination,
-  Paginated,
+  handleDbError,
 } from '../../utils';
-import {
-  ListTodosQuery,
-  listTodosMaps,
-  listTodosFilterMap,
-} from './interfaces';
-import { Todo, CreateTodoInput, UpdateTodoInput } from '@modules';
-import { initializeKnex } from '../../initilize-knex';
+import { TodoRepository } from '../../interfaces';
+import { listTodosMaps, listTodosFilterMap } from './interfaces';
 
 export * from './interfaces';
 
-export function initializeTodoRepository(
-  knex: ReturnType<typeof initializeKnex>
-) {
-  return {
-    create: async function (input: CreateTodoInput): Promise<Todo> {
-      return await knex('todos').insert(input).returning('*').then(first);
-    },
-    // TODO: Handle the empty object in request body:
-    // Empty .update() call detected! Update data does not contain any values to update. This will result in a faulty query
-    update: async function (
-      id: number,
-      input: UpdateTodoInput
-    ): Promise<Todo | undefined> {
-      return await knex('todos')
-        .where({ id })
-        .whereNull('deletedAt')
-        .update(input)
-        .returning('*')
-        .then(first);
-    },
-    delete: async function (id: number): Promise<number> {
-      return await knex('todos')
-        .where({ id })
-        .whereNull('deletedAt')
-        .update('deletedAt', new Date());
-    },
-    find: async function (id: number): Promise<Todo | undefined> {
-      return await knex('todos').where({ id }).whereNull('deletedAt').first();
-    },
-    list: async function (query: ListTodosQuery): Promise<Paginated<Todo>> {
-      const qb = knex('todos').whereNull('deletedAt');
+export const createTodoRepository = (knex: Knex): TodoRepository => ({
+  async create(input) {
+    return await knex('todos')
+      .insert(input)
+      .returning('*')
+      .then(first)
+      .catch(handleDbError);
+  },
+  // TODO: Handle the empty object in request body:
+  // Empty .update() call detected! Update data does not contain any values to update. This will result in a faulty query
+  async update(id, input) {
+    return await knex('todos')
+      .where({ id })
+      .whereNull('deletedAt')
+      .update(input)
+      .returning('*')
+      .then(first)
+      .catch(handleDbError);
+  },
+  async delete(id) {
+    return await knex('todos')
+      .where({ id })
+      .whereNull('deletedAt')
+      .update('deletedAt', new Date());
+  },
+  async find(id) {
+    return await knex('todos').where({ id }).whereNull('deletedAt').first();
+  },
+  async list(query) {
+    const qb = knex('todos').whereNull('deletedAt');
 
-      const data = await qb.clone().list(query, listTodosMaps);
+    const data = await qb.clone().list(query, listTodosMaps);
 
-      const total = await qb
-        .clone()
-        .filter(query.filters, listTodosFilterMap)
-        .count()
-        .then(parseCount);
+    const total = await qb
+      .clone()
+      .filter(query.filters, listTodosFilterMap)
+      .count()
+      .then(parseCount);
 
-      return {
-        data: data,
-        meta: {
-          ...extractPagination(query.pagination),
-          total,
-        },
-      };
-    },
-  };
-}
+    return {
+      data: data,
+      meta: {
+        ...extractPagination(query.pagination),
+        total,
+      },
+    };
+  },
+});
