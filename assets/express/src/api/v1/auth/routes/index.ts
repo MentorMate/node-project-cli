@@ -1,5 +1,5 @@
 import { AuthService } from '@modules';
-import { prefixRoutes } from '@api/utils';
+import { prefixRoutes } from '../../../utils';
 
 import loginRouteOptions from './login';
 import registerRouteOptions from './register';
