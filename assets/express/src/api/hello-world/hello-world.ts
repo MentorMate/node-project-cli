@@ -7,7 +7,6 @@ const route: RouteDefinition = {
   tags: ['Hello World'],
   method: 'get',
   path: '/',
-  synchronous: true,
   handler: function (_req, res) {
     res.send('Hello, World!');
   },

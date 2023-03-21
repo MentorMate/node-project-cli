@@ -48,7 +48,6 @@ export type RouteDefinition<T extends RequestSchema = RequestSchema> = {
   responses: Record<number, unknown>;
   method: HttpMethod;
   path: string;
-  synchronous?: boolean;
   request?: T;
   middlewares?: (
     | ExpressRequestHandler
@@ -60,10 +59,4 @@ export type RouteDefinition<T extends RequestSchema = RequestSchema> = {
 
 export interface RouteOptions<T extends RequestSchema = RequestSchema> {
   (service: any): RouteDefinition<T>;
-}
-
-export function bindRouteOptionsWithSchema<SchemaType extends RequestSchema>(
-  routeOptions: RouteOptions<SchemaType>
-): RouteOptions<SchemaType> {
-  return routeOptions;
 }

@@ -1,12 +1,23 @@
-import express from 'express';
+import express, { json } from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import compression from 'compression';
 import pino from 'pino';
 
 import { initializeKnex } from './database/initilize-knex';
 import createDbRepos from '@database';
-import apiDefinitionFactory, { asyncHandler } from '@api';
-import { initializeMiddlewares, validateRequest } from './api/middleware';
+import {
+  routes,
+  attachServices,
+  errorHandler,
+  handleServiceError,
+  logRequest,
+  validateRequest,
+  validateAccessToken,
+} from '@api';
 import { Environment } from '@common/environment';
 import { createTokensService, createAuthService } from './modules';
+import { initializeTodoService, initializeUserService } from './modules';
 
 export function create(env: Environment) {
   // create a logger
@@ -20,32 +31,41 @@ export function create(env: Environment) {
     }),
   });
 
+  // create services
   const knex = initializeKnex(logger);
   const dbRepositories = createDbRepos(knex);
   const tokensService = createTokensService(env);
   const authService = createAuthService(dbRepositories, tokensService);
-  const apiRoutes = apiDefinitionFactory(dbRepositories, authService);
+  const userService = initializeUserService(dbRepositories);
+  const todoService = initializeTodoService(dbRepositories);
+  const services = { userService, todoService, authService };
 
+  // create the app
   const app = express();
-  app.use(initializeMiddlewares(logger, tokensService));
 
-  for (const {
-    method,
-    path,
-    request,
-    synchronous,
-    middlewares = [],
-    handler,
-  } of apiRoutes) {
+  // register global middleware
+  app.use([
+    logRequest(logger),
+    helmet(),
+    cors(),
+    json(),
+    compression(),
+    attachServices(services),
+    validateAccessToken(tokensService),
+    handleServiceError(),
+    errorHandler(logger),
+  ]);
+
+  // register routes
+  for (const { method, path, request, middlewares = [], handler } of routes) {
     if (request) {
       middlewares.push(validateRequest(request));
     }
 
-    const routeHandler = synchronous ? handler : asyncHandler(handler);
-
-    app[method](path, ...middlewares, routeHandler);
+    app[method](path, ...middlewares, handler);
   }
 
+  // define an app tear down function
   const destroy = async () => {
     await knex.destroy();
   };

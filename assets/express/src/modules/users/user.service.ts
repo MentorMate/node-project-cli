@@ -1,8 +1,7 @@
 import { UserRepository, handleDbError, ListUsersQuery } from '@database';
 import { definedOrNotFound, updatedOrNotFound } from '@common';
 import { User, CreateUserInput, UpdateUserInput } from '..';
-import { mapCreateUser } from './utils';
-import { hashPassword, signToken } from '../auth/utils';
+import { hashPassword } from '../auth/utils';
 import { UserService } from './interfaces';
 
 export function initializeUserService({
