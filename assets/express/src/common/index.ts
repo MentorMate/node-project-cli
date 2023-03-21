@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { NotFound, Conflict } from 'http-errors';
 import httpStatuses from 'statuses';
 
-export { config } from './config';
 export type Zod = typeof z | typeof z.coerce;
 
 export class DuplicateRecordException extends Error {
