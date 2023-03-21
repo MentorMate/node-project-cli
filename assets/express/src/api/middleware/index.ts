@@ -5,6 +5,8 @@ import compression from 'compression';
 import { Logger } from 'pino';
 import createError from 'http-errors';
 import { serviceToHttpErrorMap } from '@common';
+import { validateAccessToken } from './validateAccessToken';
+import { TokensService } from '@modules';
 
 export * from './validateRequest';
 
@@ -46,7 +48,10 @@ const errorHandler = function (logger: Logger): ErrorRequestHandler {
   };
 };
 
-export const initializeMiddlewares = function (logger: Logger) {
+export const initializeMiddlewares = function (
+  logger: Logger,
+  tokensService: TokensService
+) {
   return [
     logRequest(logger),
     helmet(),
@@ -55,5 +60,6 @@ export const initializeMiddlewares = function (logger: Logger) {
     compression(),
     handleServiceError,
     errorHandler(logger),
+    validateAccessToken(tokensService),
   ];
 };

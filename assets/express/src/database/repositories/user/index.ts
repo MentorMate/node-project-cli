@@ -49,7 +49,7 @@ export const initializeUserRepository = (
       .then(updatedOrNotFound('User not found'));
   };
   const find = async function (email: string): Promise<User | undefined> {
-    return await knex('user')
+    return await knex('users')
       .where({ email })
       .whereNull('deletedAt')
       .first()

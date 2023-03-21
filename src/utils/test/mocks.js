@@ -97,6 +97,10 @@ const createToolboxMock = () => ({
     syncOperations: () => {},
     asyncOperations: async () => {},
   }),
+  setupJwt: () => ({
+    syncOperations: () => {},
+    asyncOperations: async () => {},
+  }),
 });
 
 const createExtensionInput = () => ({

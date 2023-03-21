@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 const string = z.string().trim();
 const port = z.coerce.number().int().gte(1024).lte(65535);
+const expiration = z.coerce.number().int().gte(1000).or(z.string());
 
 export const envSchema = z.object({
   // Node
@@ -17,6 +18,10 @@ export const envSchema = z.object({
   PGUSER: string,
   PGPASSWORD: string,
   PGDATABASE: string,
+
+  // JWT
+  JWT_SECRET: string,
+  JWT_EXPIRATION: expiration,
 });
 
 export type Environment = Readonly<z.infer<typeof envSchema>>;

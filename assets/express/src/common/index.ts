@@ -1,11 +1,6 @@
 import { z } from 'zod';
-import { NotFound, Conflict } from 'http-errors';
+import { NotFound, Conflict, Unauthorized } from 'http-errors';
 import httpStatuses from 'statuses';
-import {
-  GenericRequestHandler,
-  RequestSchema,
-  RouteDefinition,
-} from '../api/interfaces';
 
 export type Zod = typeof z | typeof z.coerce;
 
@@ -20,6 +15,13 @@ export class RecordNotFoundException extends Error {
   constructor(message = 'Record not found') {
     super(message);
     this.name = RecordNotFoundException.name;
+  }
+}
+
+export class UnauthorizedException extends Error {
+  constructor(message = 'Unauthorized') {
+    super(message);
+    this.name = UnauthorizedException.name;
   }
 }
 
@@ -41,14 +43,37 @@ const updatedOrFail = (errorFactory: () => Error) => {
   };
 };
 
+const loggedInOrFail = (errorFactory: () => Error) => {
+  return (result: boolean): boolean => {
+    if (!result) {
+      throw errorFactory();
+    }
+    return result;
+  };
+};
+
+const registeredOrFail = (errorFactory: () => Error) => {
+  return (result: boolean): boolean => {
+    if (!result) {
+      throw errorFactory();
+    }
+    return result;
+  };
+};
+
 export const definedOrNotFound = <T>(message?: string) =>
   definedOrFail<T>(() => new RecordNotFoundException(message));
 export const updatedOrNotFound = (message?: string) =>
   updatedOrFail(() => new RecordNotFoundException(message));
+export const loggedInOrUnauthorized = (message?: string) =>
+  loggedInOrFail(() => new UnauthorizedException(message));
+export const registeredOrConflict = (message?: string) =>
+  registeredOrFail(() => new DuplicateRecordException(message));
 
 export const serviceToHttpErrorMap = {
   [RecordNotFoundException.name]: NotFound,
   [DuplicateRecordException.name]: Conflict,
+  [UnauthorizedException.name]: Unauthorized,
 };
 
 export type IsNullable<T, K> = null extends T ? K : never;
@@ -73,4 +98,5 @@ export const response = {
   Conflict: (message = 'Record already exists') => error(message),
   UnprocessableEntity: (message = 'Invalid input') =>
     error(message).extend({ errors: z.array(zodErrorIssue) }),
+  Unauthorized: (message = 'Unauthorized') => error(message),
 };
