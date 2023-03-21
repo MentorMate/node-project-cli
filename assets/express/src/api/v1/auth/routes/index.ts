@@ -1,5 +1,5 @@
-import { attachPrefix } from '@common';
 import { AuthService } from '@modules';
+import { prefixRoutes } from '@api/utils';
 
 import loginRouteOptions from './login';
 import registerRouteOptions from './register';
@@ -10,5 +10,5 @@ export default function ({ authService }: { authService: AuthService }) {
     registerRouteOptions({ authService }),
   ];
 
-  return attachPrefix(routes, '/auth');
+  return prefixRoutes('/auth', routes);
 }

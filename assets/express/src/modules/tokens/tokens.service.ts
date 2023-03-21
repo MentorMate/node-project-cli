@@ -1,4 +1,4 @@
-import { Environment } from '@common';
+import { Environment } from '@common/environment';
 import { TokensService } from './interfaces';
 
 export function createTokensService(env: Environment): TokensService {

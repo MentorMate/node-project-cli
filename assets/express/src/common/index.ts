@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { NotFound, Conflict } from 'http-errors';
+import { NotFound, Conflict, Unauthorized } from 'http-errors';
 import httpStatuses from 'statuses';
 
 export type Zod = typeof z | typeof z.coerce;
