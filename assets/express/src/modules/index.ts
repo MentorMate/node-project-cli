@@ -60,12 +60,21 @@ export const createUserOutput = z.object({
   idToken: z.string().trim(),
 });
 
-export const postAuthInput = z.object({
+export const login = z.object({
   email: models.User.shape.email,
   password: models.User.shape.password,
 });
 
-export const postAuthToken = z.object({
+export const claims = z.object({
+  email: models.User.shape.email.optional(),
+});
+
+/**
+ * Possible tokens
+ * id_token, access_token, refresh_token
+ * see: https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+ */
+export const tokens = z.object({
   idToken: z.string(),
 });
 
@@ -73,11 +82,12 @@ export const patchUserInput = userFieldsSchema.partial();
 
 export type User = z.infer<typeof userSchema>;
 export type UserForExternalUse = Omit<User, 'password'>;
-export type CreateUserInput = z.infer<typeof postUserInput>;
+export type CreateUserInput = z.infer<typeof postUserInput>; // remove it
 export type UpdateUserInput = z.infer<typeof patchUserInput>;
-export type CreateUser = z.infer<typeof createUserOutput>;
-export type AuthInput = z.infer<typeof postAuthInput>;
-export type JWT = z.infer<typeof postAuthToken>;
+export type CreateUser = z.infer<typeof createUserOutput>; // remove it
+export type Login = z.infer<typeof login>;
+export type Claims = z.infer<typeof claims>;
+export type Tokens = z.infer<typeof tokens>;
 
 export type Services = {
   userService: UserService;

@@ -2,7 +2,7 @@ import { UserRepository, handleDbError, ListUsersQuery } from '@database';
 import { definedOrNotFound, updatedOrNotFound } from '@common';
 import { User, CreateUserInput, UpdateUserInput } from '..';
 import { mapCreateUser } from './utils';
-import { hashPassword, signToken } from '../utils';
+import { hashPassword, signToken } from '../auth/utils';
 import { UserService } from './interfaces';
 
 export function initializeUserService({
@@ -46,8 +46,7 @@ export function initializeUserService({
         });
 
         if (user) {
-          const idToken = signToken(email);
-          return mapCreateUser(user, idToken);
+          return user;
         }
         definedOrNotFound<User>('User not found')(user);
       } catch (err) {
