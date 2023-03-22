@@ -52,6 +52,15 @@ export const handleServiceError =
     next(error);
   };
 
+export const handleUnauthorizedError =
+  (): ErrorRequestHandler => (err, _req, res, next) => {
+    if (err.name === 'UnauthorizedError') {
+      res.status(401).send('Invalid token');
+    } else {
+      next(err);
+    }
+  };
+
 export const errorHandler = function (logger: Logger): ErrorRequestHandler {
   return function (err, _req, res, next) {
     // https://expressjs.com/en/guide/error-handling.html

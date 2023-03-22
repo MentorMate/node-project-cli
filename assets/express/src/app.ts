@@ -14,6 +14,7 @@ import {
   validateRequest,
   attachServices,
   validateAccessToken,
+  handleUnauthorizedError,
 } from '@api';
 import { Environment } from '@common/environment';
 import { createTokensService, createAuthService, Services } from './modules';
@@ -59,7 +60,7 @@ export function create(env: Environment) {
     // makes the services available to the route handlers by attaching them to the request
     attachServices(services),
     // JWT authentication
-    validateAccessToken(tokensService),
+    validateAccessToken(tokensService)
   );
 
   // register routes
@@ -73,6 +74,7 @@ export function create(env: Environment) {
 
   // register error handlers
   app.use(handleServiceError());
+  app.use(handleUnauthorizedError());
   app.use(errorHandler(logger));
 
   // define an app tear down function
