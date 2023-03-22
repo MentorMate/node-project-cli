@@ -86,8 +86,6 @@ export const errorHandler = function (logger: Logger): ErrorRequestHandler {
   };
 };
 
-const exceptionPaths: string[] = ['/', '/v1/auth/login', '/v1/auth/register'];
-
 export const validateAccessToken = function (tokensService: TokensService) {
   const jwtConfig = tokensService.getJwtConfig();
 
