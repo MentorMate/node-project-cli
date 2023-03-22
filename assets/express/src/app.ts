@@ -58,15 +58,24 @@ export function create(env: Environment) {
     // compresses response bodies
     compression(),
     // makes the services available to the route handlers by attaching them to the request
-    attachServices(services),
-    // JWT authentication
-    validateAccessToken(tokensService)
+    attachServices(services)
   );
 
   // register routes
-  for (const { method, path, request, middlewares = [], handler } of routes) {
+  for (const {
+    method,
+    path,
+    request,
+    middlewares = [],
+    handler,
+    authenticate = false,
+  } of routes) {
     if (request) {
       middlewares.push(validateRequest(request));
+    }
+
+    if (authenticate) {
+      middlewares.push(validateAccessToken(tokensService));
     }
 
     app[method](path, ...middlewares, handler);

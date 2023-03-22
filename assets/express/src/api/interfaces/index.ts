@@ -54,6 +54,7 @@ export type RouteDefinition<T extends RequestSchema = RequestSchema> = {
     | GenericErrorHandler<T>
   )[];
   handler: GenericRequestHandler<T>;
+  authenticate?: boolean;
 };
 
 export interface RouteOptions<T extends RequestSchema = RequestSchema> {
