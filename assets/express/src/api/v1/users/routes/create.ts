@@ -10,6 +10,7 @@ export default defineRoute({
   tags: ['User'],
   method: 'post',
   path: '/',
+  authenticate: true,
   request: {
     body: createUserDTO,
   },

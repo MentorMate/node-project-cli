@@ -10,6 +10,7 @@ export default defineRoute({
   tags: ['Todo'],
   method: 'post',
   path: '/',
+  authenticate: true,
   request: {
     body: createTodoDTO,
   },

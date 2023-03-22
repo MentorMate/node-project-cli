@@ -10,6 +10,7 @@ export default defineRoute({
   tags: ['Todo'],
   method: 'patch',
   path: '/:id',
+  authenticate: true,
   request: {
     params: idTodoDTO,
     body: updateTodoDTO,

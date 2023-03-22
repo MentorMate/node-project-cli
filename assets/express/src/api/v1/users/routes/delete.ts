@@ -9,6 +9,7 @@ export default defineRoute({
   tags: ['User'],
   method: 'delete',
   path: '/:email',
+  authenticate: true,
   request: {
     params: emailUserDTO,
   },

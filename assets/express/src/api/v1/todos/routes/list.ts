@@ -10,6 +10,7 @@ export default defineRoute({
   tags: ['Todo'],
   method: 'get',
   path: '/',
+  authenticate: true,
   request: {
     query: todoQueryDTO,
   },

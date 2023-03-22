@@ -10,6 +10,7 @@ export default defineRoute({
   tags: ['User'],
   method: 'get',
   path: '/:email',
+  authenticate: true,
   request: {
     params: emailUserDTO,
   },
