@@ -52,6 +52,16 @@ export const handleServiceError =
     next(error);
   };
 
+export const handleUnauthorizedError =
+  (): ErrorRequestHandler => (err, _req, res, next) => {
+    if (err.name === 'UnauthorizedError') {
+      const error = createError.Unauthorized('Invalid token');
+      return next(error);
+    } else {
+      next(err);
+    }
+  };
+
 export const errorHandler = function (logger: Logger): ErrorRequestHandler {
   return function (err, _req, res, next) {
     // https://expressjs.com/en/guide/error-handling.html
@@ -76,12 +86,8 @@ export const errorHandler = function (logger: Logger): ErrorRequestHandler {
   };
 };
 
-const exceptionPaths: string[] = ['/', '/v1/auth/login', '/v1/auth/register'];
-
 export const validateAccessToken = function (tokensService: TokensService) {
   const jwtConfig = tokensService.getJwtConfig();
 
-  return jwt({ secret: jwtConfig.secret, algorithms: ['HS256'] }).unless({
-    path: exceptionPaths,
-  });
+  return jwt({ secret: jwtConfig.secret, algorithms: ['HS256'] });
 };

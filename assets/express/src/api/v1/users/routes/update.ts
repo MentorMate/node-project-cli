@@ -10,6 +10,7 @@ export default defineRoute({
   tags: ['User'],
   method: 'put',
   path: '/:email',
+  authenticate: true,
   request: {
     params: emailUserDTO,
     body: replaceUserDTO,

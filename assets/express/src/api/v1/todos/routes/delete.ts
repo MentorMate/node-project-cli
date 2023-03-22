@@ -9,6 +9,7 @@ export default defineRoute({
   tags: ['Todo'],
   method: 'delete',
   path: '/:id',
+  authenticate: true,
   request: {
     params: idTodoDTO,
   },

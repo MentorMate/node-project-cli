@@ -44,13 +44,11 @@ export type UpdateTodoInput = z.infer<typeof patchTodoInput>;
 export const postUserInput = z.object({
   email: models.User.shape.email,
   password: models.User.shape.password,
-  role: models.User.shape.role.default('user'),
 });
 
 export const putUserInput = z.object({
   email: models.User.shape.email,
   password: models.User.shape.password,
-  role: models.User.shape.role.default('user'),
 });
 
 export const login = z.object({

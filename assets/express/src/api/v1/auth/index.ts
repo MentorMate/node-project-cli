@@ -1,3 +1,6 @@
-import defineAuthRoutes from './routes';
+import { prefixRoutes } from '../../utils';
 
-export { defineAuthRoutes };
+import login from './routes/login';
+import register from './routes/register';
+
+export default prefixRoutes('/auth', [login, register]);
