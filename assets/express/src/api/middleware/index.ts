@@ -55,7 +55,8 @@ export const handleServiceError =
 export const handleUnauthorizedError =
   (): ErrorRequestHandler => (err, _req, res, next) => {
     if (err.name === 'UnauthorizedError') {
-      res.status(401).send('Invalid token');
+      const error = createError.Unauthorized('Invalid token');
+      return next(error);
     } else {
       next(err);
     }
