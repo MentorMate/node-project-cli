@@ -9,7 +9,6 @@ declare module 'express-serve-static-core' {
   interface Request {
     decodedUser?: {
       email: string;
-      role: string;
     };
   }
 }

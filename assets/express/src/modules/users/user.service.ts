@@ -18,7 +18,6 @@ export const createUserService = (users: UserRepository): UserService => ({
       email,
       password: hashedPassword,
       ...attributes,
-      role: 'user',
     });
 
     return user;

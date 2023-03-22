@@ -36,7 +36,7 @@ export const createUserRepository = (knex: Knex): UserRepository => ({
       .update('deletedAt', new Date());
   },
   async find(email) {
-    return await knex('user').where({ email }).whereNull('deletedAt').first();
+    return await knex('users').where({ email }).whereNull('deletedAt').first();
   },
   async list(query) {
     const qb = knex('users').whereNull('deletedAt');

@@ -9,7 +9,6 @@ import { sortOrder, pagination } from '../../utils';
 //
 const listUsersFilters = z.object({
   email: z.coerce.string().optional(),
-  role: z.string().optional(),
 });
 
 type ListUsersFilters = z.infer<typeof listUsersFilters>;
@@ -19,7 +18,6 @@ export const listUsersFilterMap: FilterMap<
   ListUsersFilters
 > = {
   email: (qb, email) => qb.where({ email }),
-  role: (qb, role) => qb.whereILike('role', `%${role}%`),
 };
 
 const listUsersSortColumn = z.enum(['email', 'createdAt']);
