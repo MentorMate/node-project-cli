@@ -8,7 +8,8 @@ import { authSchema, AuthService } from './auth';
 export * from './users';
 export * from './todos';
 export * from './auth';
-export * from './tokens';
+export * from './jwt';
+export * from './password';
 
 export const registry = new OpenAPIRegistry();
 

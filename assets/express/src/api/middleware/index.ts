@@ -4,7 +4,6 @@ import { Logger } from 'pino';
 import createError from 'http-errors';
 import { z } from 'zod';
 import { serviceToHttpErrorMap } from '@common';
-import { TokensService } from '@modules';
 import { RequestSchema, RequestKey } from '../interfaces';
 import { Services } from '@app/modules';
 
@@ -86,8 +85,8 @@ export const errorHandler = function (logger: Logger): ErrorRequestHandler {
   };
 };
 
-export const validateAccessToken = function (tokensService: TokensService) {
-  const jwtConfig = tokensService.getJwtConfig();
-
-  return jwt({ secret: jwtConfig.secret, algorithms: ['HS256'] });
-};
+export const validateAccessToken = (secret: string) =>
+  jwt({
+    secret,
+    algorithms: ['HS256'],
+  });

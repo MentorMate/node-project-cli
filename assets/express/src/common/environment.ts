@@ -3,6 +3,7 @@ import { z } from 'zod';
 const string = z.string().trim();
 const port = z.coerce.number().int().gte(1024).lte(65535);
 const expiration = z.coerce.number().int().gte(1000).or(z.string());
+const secret = z.string().trim().min(10);
 
 export const envSchema = z.object({
   // Node
@@ -20,7 +21,7 @@ export const envSchema = z.object({
   PGDATABASE: string,
 
   // JWT
-  JWT_SECRET: string,
+  JWT_SECRET: secret,
   JWT_EXPIRATION: expiration,
 });
 
