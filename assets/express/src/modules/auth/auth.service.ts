@@ -1,14 +1,14 @@
 import { UserRepository } from '@database';
 import { definedOrNotFound, loggedInOrUnauthorized } from '@common';
-import { TokensService } from '@modules';
-import { compareHash, hashPassword, signToken } from './utils';
+import { JwtService } from '@modules';
+import { compareHash, hashPassword } from './utils';
 import { AuthService } from './interfaces';
 
 export const createAuthService = (
   users: UserRepository,
-  tokens: TokensService
+  jwtService: JwtService
 ): AuthService => {
-  const jwtConfig = tokens.getJwtConfig();
+  const jwtConfig = jwtService.getConfig();
 
   return {
     async login({ email, password }) {
@@ -16,7 +16,7 @@ export const createAuthService = (
 
       if (user) {
         const validPassword = await compareHash(password, user.password);
-        const idToken = signToken({ email }, jwtConfig);
+        const idToken = jwtService.sign({ email }, jwtConfig);
 
         if (validPassword) {
           return {
@@ -36,7 +36,7 @@ export const createAuthService = (
       });
 
       if (user) {
-        const idToken = signToken({ sub: user.id, email }, jwtConfig);
+        const idToken = jwtService.sign({ sub: user.id, email }, jwtConfig);
         return {
           idToken,
         };

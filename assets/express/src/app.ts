@@ -17,7 +17,7 @@ import {
   handleUnauthorizedError,
 } from '@api';
 import { Environment } from '@common/environment';
-import { createTokensService, createAuthService, Services } from './modules';
+import { createJwtService, createAuthService, Services } from './modules';
 import { createTodoService, createUserService } from './modules';
 
 export function create(env: Environment) {
@@ -36,8 +36,8 @@ export function create(env: Environment) {
   const knex = createClient(logger);
   const todoRepository = createTodoRepository(knex);
   const userRepository = createUserRepository(knex);
-  const tokensService = createTokensService(env);
-  const authService = createAuthService(userRepository, tokensService);
+  const jwtService = createJwtService(env);
+  const authService = createAuthService(userRepository, jwtService);
   const todoService = createTodoService(todoRepository);
   const userService = createUserService(userRepository);
   const services: Services = { userService, todoService, authService };
@@ -66,16 +66,16 @@ export function create(env: Environment) {
     method,
     path,
     request,
+    authenticate = false,
     middlewares = [],
     handler,
-    authenticate = false,
   } of routes) {
     if (request) {
       middlewares.push(validateRequest(request));
     }
 
     if (authenticate) {
-      middlewares.push(validateAccessToken(tokensService));
+      middlewares.push(validateAccessToken(jwtService));
     }
 
     app[method](path, ...middlewares, handler);
