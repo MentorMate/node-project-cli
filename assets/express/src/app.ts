@@ -27,7 +27,6 @@ import {
   createAuthService,
   Services,
   createPasswordService,
-  createUserService,
   createTodoService,
 } from '@modules';
 
@@ -58,8 +57,7 @@ export function create(env: Environment) {
     passwordService
   );
   const todoService = createTodoService(todosRepository);
-  const userService = createUserService(usersRepository, passwordService);
-  const services: Services = { userService, todoService, authService };
+  const services: Services = { todoService, authService };
 
   // create the app
   const app = express();

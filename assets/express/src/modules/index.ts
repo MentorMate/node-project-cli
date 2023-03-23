@@ -2,7 +2,7 @@ import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 import { z } from 'zod';
 
 import { todoSchema, todoFieldsSchema, TodoService } from './todos';
-import { userSchema, userFieldsSchema, UserService } from './users';
+import { userSchema, userFieldsSchema } from './users';
 import { authSchema, AuthService } from './auth';
 
 export * from './users';
@@ -88,7 +88,6 @@ export type Tokens = z.infer<typeof tokens>;
 export type JwtConfig = z.infer<typeof jwtConfig>;
 
 export type Services = {
-  userService: UserService;
   todoService: TodoService;
   authService: AuthService;
 };
