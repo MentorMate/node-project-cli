@@ -1,4 +1,4 @@
-import { prefixRoutes } from '../../utils';
+import { prefixRoutes } from '../utils';
 
 import login from './routes/login';
 import register from './routes/register';

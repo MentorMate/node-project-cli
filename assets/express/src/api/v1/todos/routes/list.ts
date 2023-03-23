@@ -7,7 +7,7 @@ export default defineRoute({
   operationId: 'todo-list',
   summary: 'List To-Dos',
   description: 'List To-Do items',
-  tags: ['Todo'],
+  tags: ['v1', 'Todo'],
   method: 'get',
   path: '/',
   authenticate: true,
@@ -19,7 +19,7 @@ export default defineRoute({
   },
 }).attachHandler(
   asyncHandler(async ({ query, services }, res) => {
-    const todos = await services.todoService.list(query);
+    const todos = await services.todosService.list(query);
 
     res.send(todos);
   })

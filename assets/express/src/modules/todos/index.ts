@@ -1,3 +1,2 @@
-export * from './todo.entity';
-export * from './interfaces';
+export * from './todos.service.interface';
 export * from './todos.service';

@@ -4,12 +4,12 @@ import { DuplicateRecordException, RecordNotFoundException } from '@common';
 
 // These aliases are just for readability
 type DatabaseErrorCode = Exclude<DatabaseError['code'], undefined>;
-type DatabaseConstaintname = string;
+type DatabaseConstraintName = string;
 type ErrorConstructor = () => Error;
 
 const dbToServiceErrorMap: Record<
   DatabaseErrorCode,
-  Record<DatabaseConstaintname, ErrorConstructor>
+  Record<DatabaseConstraintName, ErrorConstructor>
 > = {
   [PostgresError.UNIQUE_VIOLATION]: {
     unq_todos_name: () =>

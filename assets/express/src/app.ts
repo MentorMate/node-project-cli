@@ -23,11 +23,11 @@ import {
 } from '@api';
 import { Environment } from '@common/environment';
 import {
-  createJwtService,
-  createAuthService,
+  JwtService,
+  PasswordService,
+  AuthService,
+  TodosService,
   Services,
-  createPasswordService,
-  createTodoService,
 } from '@modules';
 
 export function create(env: Environment) {
@@ -49,15 +49,15 @@ export function create(env: Environment) {
   const dbClient = createDbClient();
   const usersRepository = new UsersRepository(dbClient);
   const todosRepository = new TodosRepository(dbClient);
-  const jwtService = createJwtService(env);
-  const passwordService = createPasswordService();
-  const authService = createAuthService(
+  const jwtService = new JwtService(env);
+  const passwordService = new PasswordService();
+  const authService = new AuthService(
     usersRepository,
     jwtService,
     passwordService
   );
-  const todoService = createTodoService(todosRepository);
-  const services: Services = { todoService, authService };
+  const todosService = new TodosService(todosRepository);
+  const services: Services = { todosService, authService };
 
   // create the app
   const app = express();

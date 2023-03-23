@@ -7,7 +7,7 @@ export default defineRoute({
   operationId: 'todo-replace',
   summary: 'Update a To-Do',
   description: 'Update a To-Do item',
-  tags: ['Todo'],
+  tags: ['v1', 'Todo'],
   method: 'put',
   path: '/:id',
   authenticate: true,
@@ -23,7 +23,7 @@ export default defineRoute({
   },
 }).attachHandler(
   asyncHandler(async ({ body, params, services }, res) => {
-    const todo = await services.todoService.update(params.id, body);
+    const todo = await services.todosService.update(params.id, body);
 
     res.send(todo);
   })

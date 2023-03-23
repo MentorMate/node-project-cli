@@ -43,43 +43,16 @@ const updatedOrFail = (errorFactory: () => Error) => {
   };
 };
 
-const loggedInOrFail = (errorFactory: () => Error) => {
-  return (result: boolean): boolean => {
-    if (!result) {
-      throw errorFactory();
-    }
-    return result;
-  };
-};
-
-const registeredOrFail = (errorFactory: () => Error) => {
-  return (result: boolean): boolean => {
-    if (!result) {
-      throw errorFactory();
-    }
-    return result;
-  };
-};
-
 export const definedOrNotFound = <T>(message?: string) =>
   definedOrFail<T>(() => new RecordNotFoundException(message));
 export const updatedOrNotFound = (message?: string) =>
   updatedOrFail(() => new RecordNotFoundException(message));
-export const loggedInOrUnauthorized = (message?: string) =>
-  loggedInOrFail(() => new UnauthorizedException(message));
-export const registeredOrConflict = (message?: string) =>
-  registeredOrFail(() => new DuplicateRecordException(message));
 
 export const serviceToHttpErrorMap = {
   [RecordNotFoundException.name]: NotFound,
   [DuplicateRecordException.name]: Conflict,
   [UnauthorizedException.name]: Unauthorized,
 };
-
-export type IsNullable<T, K> = null extends T ? K : never;
-export type NullableKeys<T> = { [K in keyof T]: IsNullable<T[K], K> }[keyof T];
-export type NullableKeysPartial<T> = Omit<T, NullableKeys<T>> &
-  Partial<Pick<T, NullableKeys<T>>>;
 
 const error = (message: string) =>
   z.object({ message: z.string().openapi({ example: message }) });

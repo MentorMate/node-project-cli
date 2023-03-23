@@ -1,22 +1,28 @@
+import z from 'zod';
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
-import { z } from 'zod';
 
-import { todoSchema, todoFieldsSchema, TodoService } from './todos';
-import { userSchema, userFieldsSchema } from './users';
-import { authSchema, AuthService } from './auth';
+import {
+  todo as todoSchema,
+  todoAttributes as todoFieldsSchema,
+  user as userSchema,
+  userAttributes as userFieldsSchema,
+} from '@common/data/models';
+import { AuthService, AuthServiceInterface } from './auth';
+import { TodosServiceInterface } from './todos';
 
-export * from './users';
 export * from './todos';
 export * from './auth';
-export * from './jwt';
-export * from './password';
 
 export const registry = new OpenAPIRegistry();
+
+const authSchema = z.object({
+  idToken: z.string(),
+});
 
 const schemaNames = {
   User: userSchema,
   Todo: todoSchema,
-  Auth: authSchema,
+  JwtTokens: authSchema,
 } as const;
 
 export const models = Object.fromEntries(
@@ -54,12 +60,12 @@ export const putUserInput = z.object({
 
 export const login = z.object({
   email: models.User.shape.email,
-  password: models.User.shape.password,
+  password: z.string(),
 });
 
 export const claims = z.object({
-  sub: models.User.shape.id.optional(),
-  email: models.User.shape.email.optional(),
+  sub: z.string(),
+  email: models.User.shape.email,
 });
 
 export const jwtConfig = z.object({
@@ -80,7 +86,7 @@ export const patchUserInput = userFieldsSchema.partial();
 
 export type User = z.infer<typeof userSchema>;
 export type UserForExternalUse = Omit<User, 'password'>;
-export type CreateUserInput = z.infer<typeof postUserInput>;
+export type Register = z.infer<typeof postUserInput>;
 export type UpdateUserInput = z.infer<typeof patchUserInput>;
 export type Login = z.infer<typeof login>;
 export type Claims = z.infer<typeof claims>;
@@ -88,6 +94,6 @@ export type Tokens = z.infer<typeof tokens>;
 export type JwtConfig = z.infer<typeof jwtConfig>;
 
 export type Services = {
-  todoService: TodoService;
-  authService: AuthService;
+  authService: AuthServiceInterface;
+  todosService: TodosServiceInterface;
 };

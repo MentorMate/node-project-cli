@@ -6,7 +6,7 @@ export default defineRoute({
   operationId: 'todo-delete',
   summary: 'Delete a To-Do',
   description: 'Soft delete a To-Do item',
-  tags: ['Todo'],
+  tags: ['v1', 'Todo'],
   method: 'delete',
   path: '/:id',
   authenticate: true,
@@ -20,7 +20,7 @@ export default defineRoute({
   },
 }).attachHandler(
   asyncHandler(async ({ params, services }, res) => {
-    await services.todoService.delete(params.id);
+    await services.todosService.delete(params.id);
 
     res.status(204).send();
   })

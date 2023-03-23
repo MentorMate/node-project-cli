@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { Sort, SortOrder, Pagination  } from '@common/query';
+import { Sort, SortOrder, Pagination } from '@common/query';
 import { extractPagination } from './utils';
 
 // TODO: these type definitions seem unnecessarily complicated

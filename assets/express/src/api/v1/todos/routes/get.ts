@@ -7,7 +7,7 @@ export default defineRoute({
   operationId: 'todo-get',
   summary: 'Get a To-Do',
   description: 'Get a To-Do item',
-  tags: ['Todo'],
+  tags: ['v1', 'Todo'],
   method: 'get',
   path: '/:id',
   authenticate: true,
@@ -21,7 +21,7 @@ export default defineRoute({
   },
 }).attachHandler(
   asyncHandler(async ({ services, params }, res) => {
-    const todo = await services.todoService.find(params.id);
+    const todo = await services.todosService.find(params.id);
 
     res.send(todo);
   })

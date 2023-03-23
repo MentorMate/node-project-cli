@@ -1,25 +1,36 @@
 import { definedOrNotFound, updatedOrNotFound } from '@common';
-import { TodosRepositoryInterface } from '@modules/database';
-import { TodoService } from './interfaces';
+import { Paginated } from '@common/query';
+import {
+  InsertTodo,
+  ListTodosQuery,
+  Todo,
+  TodosRepositoryInterface,
+  UpdateTodo,
+} from '@modules/database';
+import { TodosServiceInterface } from './todos.service.interface';
 
-export const createTodoService = (
-  todos: TodosRepositoryInterface
-): TodoService => ({
-  find(id) {
-    return todos.findById(id).then(definedOrNotFound('To-Do not found'));
-  },
-  list(query) {
-    return todos.list(query);
-  },
-  create(payload) {
-    return todos.insertOne(payload);
-  },
-  update(id, payload) {
-    return todos
-      .updateById(id, payload)
+export class TodosService implements TodosServiceInterface {
+  constructor(private readonly todos: TodosRepositoryInterface) {}
+
+  create(input: InsertTodo): Promise<Todo> {
+    return this.todos.insertOne(input);
+  }
+
+  find(id: Todo['id']): Promise<Todo | undefined> {
+    return this.todos.findById(id).then(definedOrNotFound('To-Do not found'));
+  }
+
+  update(id: Todo['id'], input: UpdateTodo): Promise<Todo | undefined> {
+    return this.todos
+      .updateById(id, input)
       .then(definedOrNotFound('To-Do not found'));
-  },
-  delete(id) {
-    return todos.deleteById(id).then(updatedOrNotFound('To-Do not found'));
-  },
-});
+  }
+
+  delete(id: Todo['id']): Promise<number> {
+    return this.todos.deleteById(id).then(updatedOrNotFound('To-Do not found'));
+  }
+
+  list(query: ListTodosQuery): Promise<Paginated<Todo>> {
+    return this.todos.list(query);
+  }
+}

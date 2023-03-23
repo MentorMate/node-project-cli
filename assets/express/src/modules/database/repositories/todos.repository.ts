@@ -2,12 +2,7 @@ import { Paginated } from '@common/query';
 import { Knex } from 'knex';
 import { InsertTodo, Todo, UpdateTodo } from '../models';
 import { listTodosFilterMap, listTodosMaps, ListTodosQuery } from '../queries';
-import {
-  first,
-  parseCount,
-  extractPagination,
-  handleDbError,
-} from '../utils';
+import { first, parseCount, extractPagination, handleDbError } from '../utils';
 import { TodosRepositoryInterface } from './todos.repository.interface';
 
 export class TodosRepository implements TodosRepositoryInterface {

@@ -6,12 +6,7 @@ import {
   listUsersMaps,
   ListUsersQuery,
 } from '../queries/list-users.query';
-import {
-  first,
-  parseCount,
-  extractPagination,
-  handleDbError,
-} from '../utils';
+import { first, parseCount, extractPagination, handleDbError } from '../utils';
 import { UsersRepositoryInterface } from './users.repository.interface';
 
 export class UsersRepository implements UsersRepositoryInterface {

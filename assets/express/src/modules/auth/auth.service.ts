@@ -1,48 +1,49 @@
 import { UsersRepositoryInterface } from '@modules/database';
-import { definedOrNotFound, loggedInOrUnauthorized } from '@common';
-import { JwtService, PasswordService } from '@modules';
-import { AuthService } from './interfaces';
+import {
+  JwtServiceInterface,
+  Login,
+  PasswordService,
+  Register,
+  Tokens,
+} from '@modules';
+import { AuthServiceInterface } from './auth.service.interface';
 
-export const createAuthService = (
-  users: UsersRepositoryInterface,
-  jwtService: JwtService,
-  passwordService: PasswordService
-): AuthService => {
-  return {
-    async login({ email, password }) {
-      const user = await users.findByEmail(email);
+export class AuthService implements AuthServiceInterface {
+  constructor(
+    private readonly users: UsersRepositoryInterface,
+    private readonly jwt: JwtServiceInterface,
+    private readonly password: PasswordService
+  ) {}
 
-      if (user) {
-        const validPassword = await passwordService.compareHash(
-          password,
-          user.password
-        );
-        const idToken = jwtService.sign({ email });
+  async register({ email, password }: Register): Promise<Tokens> {
+    const user = await this.users.insertOne({
+      email,
+      password: await this.password.hash(password),
+    });
 
-        if (validPassword) {
-          return {
-            idToken,
-          };
-        }
-        loggedInOrUnauthorized('Invalid email or password');
-      }
-      definedOrNotFound('User not found');
-    },
-    async register({ email, password }) {
-      const hashedPassword = await passwordService.hashPassword(password);
+    return {
+      idToken: this.jwt.sign({ sub: user.id.toString(), email }),
+    };
+  }
 
-      const user = await users.insertOne({
-        email,
-        password: hashedPassword,
-      });
+  async login({ email, password }: Login): Promise<Tokens | undefined> {
+    const user = await this.users.findByEmail(email);
 
-      if (user) {
-        const idToken = jwtService.sign({ sub: user.id, email });
-        return {
-          idToken,
-        };
-      }
-      definedOrNotFound('User not found');
-    },
-  };
-};
+    if (!user) {
+      return;
+    }
+
+    const passwordMatches = await this.password.compare(
+      password,
+      user.password
+    );
+
+    if (!passwordMatches) {
+      return;
+    }
+
+    return {
+      idToken: this.jwt.sign({ sub: user.id.toString(), email }),
+    };
+  }
+}

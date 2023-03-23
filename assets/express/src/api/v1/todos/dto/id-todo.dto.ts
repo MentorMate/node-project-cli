@@ -1,6 +1,5 @@
-import { todoAttrs } from '@modules';
 import { z } from 'zod';
 
 export const idTodoDTO = z.object({
-  id: todoAttrs.ID(z.coerce),
+  id: z.coerce.number().int().positive().openapi({ example: 1 }),
 });
