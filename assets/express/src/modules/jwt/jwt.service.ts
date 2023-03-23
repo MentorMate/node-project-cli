@@ -3,7 +3,7 @@ import { Environment } from '@common/environment';
 import { JwtService } from './interfaces';
 import { Claims } from '@modules';
 
-export function createJwtService(env: Environment): JwtService {
+export const createJwtService = (env: Environment): JwtService => {
   const expiration = env.JWT_EXPIRATION ?? '';
   const expiresIn =
     typeof Number(expiration) === 'number' ? Number(expiration) : expiration;
@@ -25,4 +25,4 @@ export function createJwtService(env: Environment): JwtService {
       });
     },
   };
-}
+};

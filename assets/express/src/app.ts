@@ -17,7 +17,12 @@ import {
   handleUnauthorizedError,
 } from '@api';
 import { Environment } from '@common/environment';
-import { createJwtService, createAuthService, Services } from './modules';
+import {
+  createJwtService,
+  createAuthService,
+  Services,
+  createPasswordService,
+} from './modules';
 import { createTodoService, createUserService } from './modules';
 
 export function create(env: Environment) {
@@ -37,9 +42,14 @@ export function create(env: Environment) {
   const todoRepository = createTodoRepository(knex);
   const userRepository = createUserRepository(knex);
   const jwtService = createJwtService(env);
-  const authService = createAuthService(userRepository, jwtService);
+  const passwordService = createPasswordService();
+  const authService = createAuthService(
+    userRepository,
+    jwtService,
+    passwordService
+  );
   const todoService = createTodoService(todoRepository);
-  const userService = createUserService(userRepository);
+  const userService = createUserService(userRepository, passwordService);
   const services: Services = { userService, todoService, authService };
 
   // create the app

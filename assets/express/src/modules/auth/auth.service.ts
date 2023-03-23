@@ -1,12 +1,12 @@
 import { UserRepository } from '@database';
 import { definedOrNotFound, loggedInOrUnauthorized } from '@common';
-import { JwtService } from '@modules';
-import { compareHash, hashPassword } from './utils';
+import { JwtService, PasswordService } from '@modules';
 import { AuthService } from './interfaces';
 
 export const createAuthService = (
   users: UserRepository,
-  jwtService: JwtService
+  jwtService: JwtService,
+  passwordService: PasswordService
 ): AuthService => {
   const jwtConfig = jwtService.getConfig();
 
@@ -15,7 +15,10 @@ export const createAuthService = (
       const user = await users.find(email);
 
       if (user) {
-        const validPassword = await compareHash(password, user.password);
+        const validPassword = await passwordService.compareHash(
+          password,
+          user.password
+        );
         const idToken = jwtService.sign({ email }, jwtConfig);
 
         if (validPassword) {
@@ -28,7 +31,7 @@ export const createAuthService = (
       definedOrNotFound('User not found');
     },
     async register({ email, password }) {
-      const hashedPassword = await hashPassword(password);
+      const hashedPassword = await passwordService.hashPassword(password);
 
       const user = await users.create({
         email,
