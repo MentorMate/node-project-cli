@@ -85,7 +85,7 @@ export const errorHandler = function (logger: Logger): ErrorRequestHandler {
   };
 };
 
-export const validateAccessToken = (secret = '') =>
+export const validateAccessToken = (secret: string) =>
   jwt({
     secret,
     algorithms: ['HS256'],
