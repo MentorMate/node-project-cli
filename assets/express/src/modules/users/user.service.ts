@@ -1,36 +1,34 @@
-import { UserRepository } from '@database';
+import { UsersRepository } from '@database';
 import { definedOrNotFound, updatedOrNotFound } from '@common';
 import { UserService } from './interfaces';
 import { PasswordService } from '../password';
 
 export const createUserService = (
-  users: UserRepository,
+  users: UsersRepository,
   passwordService: PasswordService
 ): UserService => ({
   find(email) {
-    return users.find(email).then(definedOrNotFound('User not found'));
+    return users.findByEmail(email).then(definedOrNotFound('User not found'));
   },
   list(query) {
     return users.list(query);
   },
-  async create(payload) {
-    const { email, password, ...attributes } = payload;
+  async create({ email, password }) {
     const hashedPassword = await passwordService.hashPassword(password);
 
-    const user = await users.create({
+    const user = await users.insertOne({
       email,
       password: hashedPassword,
-      ...attributes,
     });
 
     return user;
   },
   update(email, payload) {
     return users
-      .update(email, payload)
+      .updateByEmail(email, payload)
       .then(definedOrNotFound('User not found'));
   },
   delete(email) {
-    return users.delete(email).then(updatedOrNotFound('User not found'));
+    return users.deleteByEmail(email).then(updatedOrNotFound('User not found'));
   },
 });

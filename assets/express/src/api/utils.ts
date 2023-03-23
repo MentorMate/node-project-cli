@@ -47,7 +47,9 @@ export const prefixRoutes = (prefix: string, routes: RouteDefinition<any>[]) =>
 export const defineRoute = <T extends RequestSchema>(
   route: Omit<RouteDefinition<T>, 'handler'>
 ) => ({
-  attachHandler: (handler: RouteDefinition<T>['handler']): RouteDefinition<T> => ({
+  attachHandler: (
+    handler: RouteDefinition<T>['handler']
+  ): RouteDefinition<T> => ({
     ...route,
     handler,
   }),

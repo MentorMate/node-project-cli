@@ -1,4 +1,8 @@
-export * from './interfaces';
+export * from './models';
+export * from './queries';
 export * from './repositories';
-export * from './utils';
+
+// TODO: refactor below
+export * from './initilize-knex';
 export * from './knex-extensions';
+export * from './utils';

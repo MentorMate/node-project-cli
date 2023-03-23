@@ -4,8 +4,8 @@ import cors from 'cors';
 import compression from 'compression';
 import pino from 'pino';
 
-import { createClient } from './database/initilize-knex';
-import { createTodoRepository, createUserRepository } from '@database';
+import { Environment } from '@common/environment';
+import { createClient, TodosRepository, UsersRepository } from '@database';
 import {
   routes,
   errorHandler,
@@ -16,14 +16,14 @@ import {
   validateAccessToken,
   handleUnauthorizedError,
 } from '@api';
-import { Environment } from '@common/environment';
 import {
   createJwtService,
   createAuthService,
   Services,
   createPasswordService,
-} from './modules';
-import { createTodoService, createUserService } from './modules';
+  createUserService,
+  createTodoService,
+} from '@modules';
 
 export function create(env: Environment) {
   // create a logger
@@ -39,17 +39,17 @@ export function create(env: Environment) {
 
   // create services
   const knex = createClient(logger);
-  const todoRepository = createTodoRepository(knex);
-  const userRepository = createUserRepository(knex);
+  const usersRepository = new UsersRepository(knex);
+  const todosRepository = new TodosRepository(knex);
   const jwtService = createJwtService(env);
   const passwordService = createPasswordService();
   const authService = createAuthService(
-    userRepository,
+    usersRepository,
     jwtService,
     passwordService
   );
-  const todoService = createTodoService(todoRepository);
-  const userService = createUserService(userRepository, passwordService);
+  const todoService = createTodoService(todosRepository);
+  const userService = createUserService(usersRepository, passwordService);
   const services: Services = { userService, todoService, authService };
 
   // create the app

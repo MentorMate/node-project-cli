@@ -116,10 +116,7 @@ export const filter = <
       qb
     );
 
-export const sort = <
-  QB extends Knex.QueryBuilder,
-  SortColumn extends string
->(
+export const sort = <QB extends Knex.QueryBuilder, SortColumn extends string>(
   qb: QB,
   sorts: Sort<SortColumn>[],
   sorterMap: SorterMap<QB, SortColumn>
