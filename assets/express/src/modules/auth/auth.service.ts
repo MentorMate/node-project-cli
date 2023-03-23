@@ -1,4 +1,4 @@
-import { UsersRepositoryInterface } from '@database';
+import { UsersRepositoryInterface } from '@modules/database';
 import { definedOrNotFound, loggedInOrUnauthorized } from '@common';
 import { JwtService, PasswordService } from '@modules';
 import { AuthService } from './interfaces';

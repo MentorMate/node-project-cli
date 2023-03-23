@@ -6,7 +6,7 @@ import {
   User,
   InsertUser,
   UpdateUser,
-} from '@database';
+} from '@modules/database';
 
 declare module 'knex/types/tables' {
   interface Tables {

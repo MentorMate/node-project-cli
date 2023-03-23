@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import Knex, { Knex as KnexOriginal } from 'knex';
 import {
-  Pagination,
-  Sort,
   FilterMap,
   SorterMap,
   ListQuery,
@@ -10,7 +8,8 @@ import {
   sort,
   paginate,
   list,
-} from '@database';
+} from '@modules/database';
+import { Pagination, Sort } from '@common/query';
 
 declare module 'knex' {
   namespace Knex {

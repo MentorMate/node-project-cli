@@ -1,4 +1,5 @@
-import { ListTodosQuery, Paginated } from '@database';
+import { Paginated } from '@common/query';
+import { ListTodosQuery } from '@modules/database';
 import { Todo, CreateTodoInput, UpdateTodoInput } from '..';
 
 export interface TodoService {

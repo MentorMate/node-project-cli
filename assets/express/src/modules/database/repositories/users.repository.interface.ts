@@ -1,6 +1,6 @@
 import { InsertUser, UpdateUser, User } from '../models';
 import { ListUsersQuery } from '../queries';
-import { Paginated } from '../utils';
+import { Paginated } from '@common/query';
 
 export type UsersRepositoryInterface = {
   insertOne: (input: InsertUser) => Promise<User>;

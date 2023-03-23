@@ -1,7 +1,7 @@
-import { TodoAttributes } from '@common/data/entities';
+import { TodoAttributes } from '@common/data/models';
 import { Insert, Update } from './utils/operations';
 
-export { Todo } from '@common/data/entities';
+export { Todo } from '@common/data/models';
 
 export type TodoColumns = TodoAttributes;
 

@@ -1,8 +1,5 @@
 import { Knex } from 'knex';
-import {
-  createUpdatedAtTriggerSQL,
-  dropUpdatedAtTriggerSQL,
-} from '../migration-utils';
+import { createUpdatedAtTriggerSQL, dropUpdatedAtTriggerSQL } from './utils';
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('users', (table) => {

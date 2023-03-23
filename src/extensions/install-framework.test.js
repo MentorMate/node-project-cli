@@ -260,14 +260,22 @@ describe('install-framework', () => {
             );
           });
 
-          it('should render the README template', () => {
-            expect(toolbox.template.generate).toHaveBeenCalledWith({
-              template: 'README.md.ejs',
-              target: `${input.appDir}/README.md`,
-              props: expect.anything(),
-            });
+          it('should copy the pg scripts', () => {
+            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+              `${input.assetsPath}/db/pg/scripts`,
+              `${input.appDir}/scripts`,
+              { overwrite: true }
+            );
           });
         });
+      });
+    });
+
+    it('should render the README template', () => {
+      expect(toolbox.template.generate).toHaveBeenCalledWith({
+        template: 'README.md.ejs',
+        target: `${input.appDir}/README.md`,
+        props: expect.anything(),
       });
     });
   });

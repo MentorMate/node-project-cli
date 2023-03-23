@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { createUpdateTimestampsFunctionSQL } from '../migration-utils';
+import { createUpdateTimestampsFunctionSQL } from './utils';
 
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(createUpdateTimestampsFunctionSQL);

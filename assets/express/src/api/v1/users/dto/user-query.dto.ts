@@ -1,3 +1,3 @@
-import { listUsersQuery } from '@database';
+import { listUsersQuery } from '@modules/database';
 
 export const userQueryDTO = listUsersQuery;
