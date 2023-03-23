@@ -13,7 +13,7 @@ import {
 } from '@modules/database';
 import {
   routes,
-  errorHandler,
+  handleError,
   handleServiceError,
   logRequest,
   validateRequest,
@@ -37,7 +37,7 @@ export function create(env: Environment) {
   // create a logger
   const logger = pino({
     name: 'http',
-    ...(env.NODE_ENV !== 'production' && {
+    ...(env.NODE_ENV === 'development' && {
       transport: {
         target: 'pino-pretty',
         colorize: false,
@@ -104,7 +104,7 @@ export function create(env: Environment) {
   // register error handlers
   app.use(handleServiceError());
   app.use(handleUnauthorizedError());
-  app.use(errorHandler(logger));
+  app.use(handleError(logger));
 
   // define an app tear down function
   const destroy = async () => {

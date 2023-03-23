@@ -7,7 +7,7 @@ import {
   user as userSchema,
   userAttributes as userFieldsSchema,
 } from '@common/data/models';
-import { AuthService, AuthServiceInterface } from './auth';
+import { AuthServiceInterface } from './auth';
 import { TodosServiceInterface } from './todos';
 
 export * from './todos';
