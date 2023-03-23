@@ -7,7 +7,7 @@ export default defineRoute({
   operationId: 'todo-update',
   summary: 'Partially update a To-Do',
   description: 'Partially update a To-Do item',
-  tags: ['Todo'],
+  tags: ['v1', 'Todo'],
   method: 'patch',
   path: '/:id',
   authenticate: true,
@@ -23,7 +23,7 @@ export default defineRoute({
   },
 }).attachHandler(
   asyncHandler(async ({ body, params, services }, res) => {
-    const todo = await services.todoService.update(params.id, body);
+    const todo = await services.todosService.update(params.id, body);
 
     res.send(todo);
   })

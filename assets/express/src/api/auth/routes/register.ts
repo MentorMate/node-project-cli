@@ -14,7 +14,7 @@ export default defineRoute({
     body: registerDTO,
   },
   responses: {
-    200: models.Auth,
+    200: models.JwtTokens,
     409: response.Conflict(),
     422: response.UnprocessableEntity(),
   },

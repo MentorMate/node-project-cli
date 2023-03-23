@@ -21,7 +21,7 @@ export default defineRoute({
   },
 }).attachHandler(
   asyncHandler(async ({ body, services }, res) => {
-    const todo = await services.todoService.create(body);
+    const todo = await services.todosService.create(body);
 
     res.status(201).send(todo);
   })

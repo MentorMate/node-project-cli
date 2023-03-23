@@ -24,4 +24,3 @@ export const paginated = <S extends ZodType<unknown>>(schema: S) =>
     data: z.array(schema),
     meta: paginationMeta,
   });
-
