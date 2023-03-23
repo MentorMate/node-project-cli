@@ -1,5 +1,5 @@
 import { definedOrNotFound, updatedOrNotFound } from '@common';
-import { TodosRepositoryInterface } from '@database';
+import { TodosRepositoryInterface } from '@modules/database';
 import { TodoService } from './interfaces';
 
 export const createTodoService = (

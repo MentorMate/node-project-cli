@@ -1,3 +1,4 @@
+import { Paginated } from '@common/query';
 import { Knex } from 'knex';
 import { InsertUser, UpdateUser, User } from '../models';
 import {
@@ -10,7 +11,6 @@ import {
   parseCount,
   extractPagination,
   handleDbError,
-  Paginated,
 } from '../utils';
 import { UsersRepositoryInterface } from './users.repository.interface';
 

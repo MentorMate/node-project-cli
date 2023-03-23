@@ -5,7 +5,7 @@ import createError from 'http-errors';
 import { z } from 'zod';
 import { serviceToHttpErrorMap } from '@common';
 import { RequestSchema, RequestKey } from '../interfaces';
-import { Services } from '@app/modules';
+import { Services } from '@modules';
 
 export const attachServices =
   (services: Services): RequestHandler =>

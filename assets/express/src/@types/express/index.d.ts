@@ -1,4 +1,4 @@
-import { Services } from '@app/modules';
+import { Services } from '@modules';
 
 declare global {
   namespace Express {

@@ -8,9 +8,10 @@
     "skipLibCheck": false,
     "lib": ["ES2021"],
     "paths": {
-      "@app/*": ["src/*"],
       "@api": ["src/api"],
+      "@api/*": ["src/api/*"],
       "@modules": ["src/modules"],
+      "@modules/*": ["src/modules/*"],
       "@common": ["src/common"],
       "@common/*": ["src/common/*"],
       "@database": ["src/database"],

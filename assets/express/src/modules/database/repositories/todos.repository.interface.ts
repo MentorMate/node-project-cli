@@ -1,6 +1,6 @@
 import { InsertTodo, Todo, UpdateTodo } from '../models';
 import { ListTodosQuery } from '../queries';
-import { Paginated } from '../utils';
+import { Paginated } from '@common/query';
 
 export type TodosRepositoryInterface = {
   insertOne: (input: InsertTodo) => Promise<Todo>;

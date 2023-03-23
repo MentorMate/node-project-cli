@@ -1,4 +1,4 @@
-import { asyncHandler, defineRoute } from '@app/api/utils';
+import { asyncHandler, defineRoute } from '@api/utils';
 import { response } from '@common';
 import { models } from '@modules';
 import { loginDTO } from '../dto';

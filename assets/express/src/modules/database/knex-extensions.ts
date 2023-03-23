@@ -1,5 +1,8 @@
 import { Knex } from 'knex';
-import { Sort, SortOrder, Pagination, extractPagination } from './utils';
+import { Sort, SortOrder, Pagination  } from '@common/query';
+import { extractPagination } from './utils';
+
+// TODO: these type definitions seem unnecessarily complicated
 
 /**
  * A Filter is a function that accepts a QueryBuilder for a given entity and a value,

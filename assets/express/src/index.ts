@@ -5,7 +5,7 @@ import '@extensions/knex/register';
 import { createHttpTerminator } from 'http-terminator';
 
 import { envSchema } from '@common/environment';
-import { create as createApp } from '@app/app';
+import { create as createApp } from './app';
 
 function bootstrap() {
   // validate environment and freeze it

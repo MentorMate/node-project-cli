@@ -3,7 +3,7 @@ import { Knex as KnexType } from 'knex';
 
 import { Tables } from 'knex/types/tables';
 import { FilterMap, SorterMap } from '../knex-extensions';
-import { sortOrder, pagination } from '../utils';
+import { sortOrder, pagination } from '@common/query';
 
 // TODO: cleanup the whole file
 

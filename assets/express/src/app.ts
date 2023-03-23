@@ -4,8 +4,13 @@ import cors from 'cors';
 import compression from 'compression';
 import pino from 'pino';
 
-import { Environment } from '@common/environment';
-import { createClient, TodosRepository, UsersRepository } from '@database';
+import {
+  onInit as initDatabase,
+  create as createDbClient,
+  destroy as destroyDbClient,
+  TodosRepository,
+  UsersRepository,
+} from '@modules/database';
 import {
   routes,
   errorHandler,
@@ -16,6 +21,7 @@ import {
   validateAccessToken,
   handleUnauthorizedError,
 } from '@api';
+import { Environment } from '@common/environment';
 import {
   createJwtService,
   createAuthService,
@@ -26,6 +32,9 @@ import {
 } from '@modules';
 
 export function create(env: Environment) {
+  // init modules
+  initDatabase();
+
   // create a logger
   const logger = pino({
     name: 'http',
@@ -38,9 +47,9 @@ export function create(env: Environment) {
   });
 
   // create services
-  const knex = createClient(logger);
-  const usersRepository = new UsersRepository(knex);
-  const todosRepository = new TodosRepository(knex);
+  const dbClient = createDbClient();
+  const usersRepository = new UsersRepository(dbClient);
+  const todosRepository = new TodosRepository(dbClient);
   const jwtService = createJwtService(env);
   const passwordService = createPasswordService();
   const authService = createAuthService(
@@ -56,9 +65,12 @@ export function create(env: Environment) {
   const app = express();
 
   // register global middleware
-  app.use(
+  if (env.NODE_ENV === 'development') {
     // logs the request verb and url
-    logRequest(logger),
+    app.use(logRequest(logger));
+  }
+
+  app.use(
     // add security HTTP headers
     helmet(),
     // enables CORS
@@ -98,7 +110,7 @@ export function create(env: Environment) {
 
   // define an app tear down function
   const destroy = async () => {
-    await knex.destroy();
+    await destroyDbClient(dbClient);
   };
 
   return { app, destroy };

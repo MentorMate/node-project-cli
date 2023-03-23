@@ -1,5 +1,6 @@
 import { User, CreateUserInput, UpdateUserInput } from '..';
-import { ListUsersQuery, Paginated } from '@database';
+import { ListUsersQuery } from '@modules/database';
+import { Paginated } from '@common/query';
 
 export interface UserService {
   create: (payload: CreateUserInput) => Promise<User>;

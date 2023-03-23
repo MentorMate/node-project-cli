@@ -1,7 +1,7 @@
-import { UserAttributes } from '@common/data/entities';
+import { UserAttributes } from '@common/data/models';
 import { Insert, Update } from './utils/operations';
 
-export { User } from '@common/data/entities';
+export { User } from '@common/data/models';
 
 export type UserColumns = UserAttributes;
 

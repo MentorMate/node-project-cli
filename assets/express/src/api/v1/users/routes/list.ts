@@ -1,5 +1,5 @@
 import { models } from '@modules';
-import { paginated } from '@database';
+import { paginated } from '@common/query';
 import { userQueryDTO } from '../dto';
 import { asyncHandler, defineRoute } from '../../../utils';
 

@@ -6,6 +6,7 @@ export const userAttrs = {
   Email: (z: Zod) => z.string().openapi({ example: 'john@mail.com' }),
   Password: (z: Zod) =>
     z.string().min(6).max(50).openapi({ example: 'MyS3cr37Pass' }),
+
   Timestamp: (z: Zod) =>
     z.string().datetime().openapi({ example: '2023-02-28T14:39:24.086Z' }),
 };

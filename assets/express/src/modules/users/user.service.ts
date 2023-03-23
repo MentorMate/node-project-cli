@@ -1,4 +1,4 @@
-import { UsersRepository } from '@database';
+import { UsersRepository } from '@modules/database';
 import { definedOrNotFound, updatedOrNotFound } from '@common';
 import { UserService } from './interfaces';
 import { PasswordService } from '../password';
