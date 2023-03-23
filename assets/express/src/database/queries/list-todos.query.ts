@@ -1,14 +1,13 @@
 import { z, ZodEnum } from 'zod';
-import { FilterMap, SorterMap } from '@database';
 import { Knex as KnexType } from 'knex';
-import { Tables } from 'knex/types/tables';
-import { sortOrder, pagination } from '../../utils';
 
-//
-// List To-Dos inputs
-//
+import { Tables } from 'knex/types/tables';
+import { FilterMap, SorterMap } from '../knex-extensions';
+import { sortOrder, pagination } from '../utils';
+
+// TODO: cleanup the whole file
+
 const listTodosFilters = z.object({
-  id: z.coerce.number().optional(),
   name: z.string().optional(),
 });
 
@@ -18,11 +17,11 @@ export const listTodosFilterMap: FilterMap<
   KnexType.QueryBuilder<Tables['todos']>,
   ListTodosFilters
 > = {
-  id: (qb, id) => qb.where({ id }),
   name: (qb, name) => qb.whereILike('name', `%${name}%`),
 };
 
 const listTodosSortColumn = z.enum(['name', 'createdAt']);
+
 const sorts = <S extends ZodEnum<[string, ...string[]]>>(schema: S) =>
   z.array(
     z.object({

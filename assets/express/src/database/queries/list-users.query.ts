@@ -1,12 +1,12 @@
 import { z, ZodEnum } from 'zod';
-import { FilterMap, SorterMap } from '@database';
 import { Knex as KnexType } from 'knex';
-import { Tables } from 'knex/types/tables';
-import { sortOrder, pagination } from '../../utils';
 
-//
-// List To-Dos inputs
-//
+import { Tables } from 'knex/types/tables';
+import { FilterMap, SorterMap } from '../knex-extensions';
+import { sortOrder, pagination } from '../utils';
+
+// TODO: cleanup the whole file
+
 const listUsersFilters = z.object({
   email: z.coerce.string().optional(),
 });

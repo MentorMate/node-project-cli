@@ -1,16 +1,16 @@
-import { UserRepository } from '@database';
+import { UsersRepositoryInterface } from '@database';
 import { definedOrNotFound, loggedInOrUnauthorized } from '@common';
 import { JwtService, PasswordService } from '@modules';
 import { AuthService } from './interfaces';
 
 export const createAuthService = (
-  users: UserRepository,
+  users: UsersRepositoryInterface,
   jwtService: JwtService,
   passwordService: PasswordService
 ): AuthService => {
   return {
     async login({ email, password }) {
-      const user = await users.find(email);
+      const user = await users.findByEmail(email);
 
       if (user) {
         const validPassword = await passwordService.compareHash(
@@ -31,7 +31,7 @@ export const createAuthService = (
     async register({ email, password }) {
       const hashedPassword = await passwordService.hashPassword(password);
 
-      const user = await users.create({
+      const user = await users.insertOne({
         email,
         password: hashedPassword,
       });

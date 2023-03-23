@@ -1,17 +1,16 @@
-/* eslint-disable @typescript-eslint/no-namespace */
 import { Knex } from 'knex';
 import {
-  CreateTodoInput,
-  UpdateTodoInput,
   Todo,
+  InsertTodo,
+  UpdateTodo,
   User,
-  CreateUserInput,
-  UpdateUserInput,
-} from '@modules';
+  InsertUser,
+  UpdateUser,
+} from '@database';
 
 declare module 'knex/types/tables' {
   interface Tables {
-    todos: Knex.CompositeTableType<Todo, CreateTodoInput, UpdateTodoInput>;
-    users: Knex.CompositeTableType<User, CreateUserInput, UpdateUserInput>;
+    todos: Knex.CompositeTableType<Todo, InsertTodo, UpdateTodo>;
+    users: Knex.CompositeTableType<User, InsertUser, UpdateUser>;
   }
 }
