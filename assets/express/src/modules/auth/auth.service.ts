@@ -8,8 +8,6 @@ export const createAuthService = (
   jwtService: JwtService,
   passwordService: PasswordService
 ): AuthService => {
-  const jwtConfig = jwtService.getConfig();
-
   return {
     async login({ email, password }) {
       const user = await users.find(email);
@@ -19,7 +17,7 @@ export const createAuthService = (
           password,
           user.password
         );
-        const idToken = jwtService.sign({ email }, jwtConfig);
+        const idToken = jwtService.sign({ email });
 
         if (validPassword) {
           return {
@@ -39,7 +37,7 @@ export const createAuthService = (
       });
 
       if (user) {
-        const idToken = jwtService.sign({ sub: user.id, email }, jwtConfig);
+        const idToken = jwtService.sign({ sub: user.id, email });
         return {
           idToken,
         };

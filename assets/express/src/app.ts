@@ -85,7 +85,7 @@ export function create(env: Environment) {
     }
 
     if (authenticate) {
-      middlewares.push(validateAccessToken(jwtService));
+      middlewares.push(validateAccessToken(env.JWT_SECRET));
     }
 
     app[method](path, ...middlewares, handler);
