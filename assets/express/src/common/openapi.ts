@@ -22,6 +22,11 @@ const registerRoute = (
     tags: route.tags,
     method: route.method,
     path: reformatPathParams(path),
+    ...(route.authenticate && {
+      security: [{
+        bearerAuth: []
+      }]
+    }),
     ...(request && {
       request: {
         params: request.params,
@@ -112,6 +117,12 @@ export const generateDocument = (
   routes: RouteDefinition[]
 ) => {
   const registry = new OpenAPIRegistry();
+
+  registry.registerComponent('securitySchemes', 'bearerAuth', {
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'JWT'
+  });
 
   registerRoutes(registry, routes);
 
