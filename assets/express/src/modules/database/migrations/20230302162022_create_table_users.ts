@@ -10,7 +10,6 @@ export async function up(knex: Knex): Promise<void> {
       .unique({ indexName: 'unq_users_email' });
     table.string('password').notNullable();
     table.timestamps(false, true, true);
-    table.timestamp('deletedAt');
   });
 
   await knex.raw(createUpdatedAtTriggerSQL('users'));
