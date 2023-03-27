@@ -1,3 +1,3 @@
-import { putTodoInput } from '@modules';
+import { todoAttributes } from '@common/data/models';
 
-export const replaceTodoDTO = putTodoInput;
+export const replaceTodoDTO = todoAttributes;

@@ -1,3 +1,3 @@
-import { patchTodoInput } from '@modules';
+import { todoAttributes } from '@common/data/models';
 
-export const updateTodoDTO = patchTodoInput;
+export const updateTodoDTO = todoAttributes.partial();

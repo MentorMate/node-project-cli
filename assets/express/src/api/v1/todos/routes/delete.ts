@@ -1,6 +1,5 @@
-import { response } from '@common';
-import { idTodoDTO } from '../dto';
-import { asyncHandler, defineRoute } from '../../../utils';
+import { asyncHandler, defineRoute, response } from '../../../utils';
+import { todoIdDTO } from '../dto';
 
 export default defineRoute({
   operationId: 'todo-delete',
@@ -11,7 +10,7 @@ export default defineRoute({
   path: '/:id',
   authenticate: true,
   request: {
-    params: idTodoDTO,
+    params: todoIdDTO,
   },
   responses: {
     204: response.NoContent(),

@@ -1,7 +1,7 @@
 import { ErrorRequestHandler } from 'express';
 import { Logger } from 'pino';
 import createError from 'http-errors';
-import { serviceToHttpErrorMap } from '@common';
+import { serviceToHttpErrorMap } from '@common/error';
 
 export const handleServiceError =
   (): ErrorRequestHandler => (err, _req, _res, next) => {

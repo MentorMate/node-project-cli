@@ -1,7 +1,5 @@
-import { models } from '@modules';
-import { response } from '@common';
-import { idTodoDTO, updateTodoDTO } from '../dto';
-import { asyncHandler, defineRoute } from '../../../utils';
+import { asyncHandler, defineRoute, response } from '../../../utils';
+import { todoIdDTO, todoDTO, updateTodoDTO } from '../dto';
 
 export default defineRoute({
   operationId: 'todo-update',
@@ -12,11 +10,11 @@ export default defineRoute({
   path: '/:id',
   authenticate: true,
   request: {
-    params: idTodoDTO,
+    params: todoIdDTO,
     body: updateTodoDTO,
   },
   responses: {
-    200: models.Todo,
+    200: todoDTO,
     404: response.NotFound(),
     409: response.Conflict(),
     422: response.UnprocessableEntity(),

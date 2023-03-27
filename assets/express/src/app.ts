@@ -22,13 +22,9 @@ import {
   handleUnauthorizedError,
 } from '@api';
 import { Environment } from '@common/environment';
-import {
-  JwtService,
-  PasswordService,
-  AuthService,
-  TodosService,
-  Services,
-} from '@modules';
+import { JwtService, PasswordService, AuthService } from '@modules/auth';
+import { TodosService } from '@modules/todos';
+import { Services } from '@modules';
 
 export function create(env: Environment) {
   // init modules

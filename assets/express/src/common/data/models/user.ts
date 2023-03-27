@@ -9,10 +9,6 @@ export const userAttributes = z.object({
 
 export type UserAttributes = z.infer<typeof userAttributes>;
 
-export const user = userAttributes
-  .merge(id)
-  .merge(timestamps)
-  .merge(deletedAt)
-  .openapi({ schemaName: 'User' });
+export const user = userAttributes.merge(id).merge(timestamps).merge(deletedAt);
 
 export type User = z.infer<typeof user>;

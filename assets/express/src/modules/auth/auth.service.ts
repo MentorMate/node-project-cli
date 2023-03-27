@@ -1,21 +1,17 @@
 import { UsersRepositoryInterface } from '@modules/database';
-import {
-  JwtServiceInterface,
-  Login,
-  PasswordService,
-  Register,
-  Tokens,
-} from '@modules';
+import { JwtServiceInterface } from './jwt.service.interface';
+import { PasswordServiceInterface } from './password.service.interface';
 import { AuthServiceInterface } from './auth.service.interface';
+import { JwtTokens, Login, Register } from '@common/data/auth';
 
 export class AuthService implements AuthServiceInterface {
   constructor(
     private readonly users: UsersRepositoryInterface,
     private readonly jwt: JwtServiceInterface,
-    private readonly password: PasswordService
+    private readonly password: PasswordServiceInterface
   ) {}
 
-  async register({ email, password }: Register): Promise<Tokens> {
+  async register({ email, password }: Register): Promise<JwtTokens> {
     const user = await this.users.insertOne({
       email,
       password: await this.password.hash(password),
@@ -26,7 +22,7 @@ export class AuthService implements AuthServiceInterface {
     };
   }
 
-  async login({ email, password }: Login): Promise<Tokens | undefined> {
+  async login({ email, password }: Login): Promise<JwtTokens | undefined> {
     const user = await this.users.findByEmail(email);
 
     if (!user) {

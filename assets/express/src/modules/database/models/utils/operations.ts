@@ -1,4 +1,4 @@
-import { NullableKeysPartial } from '@common/types';
+import { NullableKeysPartial } from '@common/utils';
 
 export type Insert<T> = NullableKeysPartial<T>;
 

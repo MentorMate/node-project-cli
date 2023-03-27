@@ -1,7 +1,5 @@
-import { asyncHandler, defineRoute } from '@api/utils';
-import { response } from '@common';
-import { models } from '@modules';
-import { registerDTO } from '../dto';
+import { asyncHandler, defineRoute, response } from '../../utils';
+import { jwtTokensDTO, registerDTO } from '../dto';
 
 export default defineRoute({
   operationId: 'register',
@@ -14,7 +12,7 @@ export default defineRoute({
     body: registerDTO,
   },
   responses: {
-    200: models.JwtTokens,
+    200: jwtTokensDTO,
     409: response.Conflict(),
     422: response.UnprocessableEntity(),
   },

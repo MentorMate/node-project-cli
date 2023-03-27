@@ -1,7 +1,5 @@
-import { createTodoDTO } from '../dto';
-import { asyncHandler, defineRoute } from '../../../utils';
-import { models } from '@modules';
-import { response } from '@common';
+import { createTodoDTO, todoDTO } from '../dto';
+import { asyncHandler, defineRoute, response } from '../../../utils';
 
 export default defineRoute({
   operationId: 'todo-create',
@@ -15,7 +13,7 @@ export default defineRoute({
     body: createTodoDTO,
   },
   responses: {
-    201: models.Todo,
+    201: todoDTO,
     409: response.Conflict(),
     422: response.UnprocessableEntity(),
   },
