@@ -10,7 +10,7 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamps(false, true, true);
     table.integer('userId');
     table
-      .foreign('userId')
+      .foreign('userId', 'fk_todos_user_id')
       .references('id')
       .inTable('users')
       .onDelete('CASCADE');
