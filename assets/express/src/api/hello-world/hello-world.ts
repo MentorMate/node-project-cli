@@ -1,4 +1,4 @@
-import { RouteDefinition } from '../interfaces';
+import { RouteDefinition } from '../utils';
 
 const route: RouteDefinition = {
   operationId: 'hello-world',

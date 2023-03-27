@@ -1,4 +1,4 @@
-import express, { json } from 'express';
+import express, { json, RequestHandler } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
@@ -87,18 +87,22 @@ export function create(env: Environment) {
     path,
     request,
     authenticate = false,
-    middlewares = [],
+    middleware = [],
     handler,
   } of routes) {
     if (request) {
-      middlewares.push(validateRequest(request));
+      middleware.push(validateRequest(request));
     }
 
     if (authenticate) {
-      middlewares.push(validateAccessToken(env.JWT_SECRET));
+      middleware.push(validateAccessToken(env.JWT_SECRET));
     }
 
-    app[method](path, ...middlewares, handler);
+    app[method](
+      path,
+      ...(middleware as RequestHandler[]),
+      handler as RequestHandler
+    );
   }
 
   // register error handlers
