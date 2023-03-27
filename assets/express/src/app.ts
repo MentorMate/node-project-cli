@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import pino from 'pino';
+import queryType from 'query-types';
 
 import {
   onInit as initDatabase,
@@ -74,7 +75,9 @@ export function create(env: Environment) {
     // compresses response bodies
     compression(),
     // makes the services available to the route handlers by attaching them to the request
-    attachServices(services)
+    attachServices(services),
+    // body parser
+    queryType.middleware()
   );
 
   // register routes
