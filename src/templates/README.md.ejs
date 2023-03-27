@@ -71,11 +71,12 @@ cp .env.example .env
 <% if (props.setup.tests?.e2e) { %>
 ### Setup environment variables for e2e tests
 
-Copy the `.env.example` file to `.env`. Update environment variables as needed.
+Copy the `.env` file to `.env.test`. Update environment variables as needed.
 
 ```bash
-cp .env.example .env
+cp .env .env.test
 ```
+Update `NODE_ENV` to `test`.
 
 Make sure to provide a different `PGDATABASE` from what you have in `.env`
 as e2e tests wipe the database clean before they run.
@@ -157,7 +158,7 @@ npm run test:cov
 <% if (props.test.e2e) { %>
 **End-to-end Tests**
 
-```
+```bash
 # e2e tests
 npm run test:e2e
 

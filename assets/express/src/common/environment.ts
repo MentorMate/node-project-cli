@@ -7,7 +7,7 @@ const secret = z.string().trim().min(10);
 
 export const envSchema = z.object({
   // Node
-  NODE_ENV: z.enum(['development', 'production']),
+  NODE_ENV: z.enum(['development', 'test', 'production']),
 
   // HTTP
   PORT: port,

@@ -98,13 +98,6 @@ describe('install-framework', () => {
         expect(scripts).toHaveProperty('start:debug');
       });
 
-      it('should copy the example project tests', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/test/`,
-          `${input.appDir}/test/`
-        );
-      });
-
       it('should copy the vscode folder', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/vscode/`,

@@ -8,6 +8,7 @@ module.exports = (toolbox) => {
     pkgJson,
     assetsPath,
     framework,
+    db,
   }) => {
     const {
       print: { success, muted },
@@ -27,6 +28,10 @@ module.exports = (toolbox) => {
               ? `${assetsPath}/jest.config.ts.js`
               : `${assetsPath}/jest.config.vanilla.js`;
           await copyAsync(jestConfigFile, `${appDir}/jest.config.js`);
+        }
+
+        if (projectLanguage === 'TS' && framework !== 'nest' && db === 'pg') {
+          await copyAsync(`${assetsPath}/test/`, `${appDir}/test/`);
         }
       } catch (err) {
         throw new Error(
@@ -53,6 +58,22 @@ module.exports = (toolbox) => {
           '@types/jest': '^29.4.0',
         }),
       });
+
+      if (projectLanguage === 'TS' && framework !== 'nest' && db === 'pg') {
+        Object.assign(pkgJson.devDependencies, {
+          pgtools: '^1.0.0',
+          supertest: '^6.3.3',
+          '@types/supertest': '^2.0.12',
+        });
+
+        Object.assign(pkgJson.scripts, {
+          'test:e2e':
+            'DOTENV_CONFIG_PATH=.env.test npm run test:e2e:db:recreate && DOTENV_CONFIG_PATH=.env.test npm run db:migrate:latest && DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.config.js',
+          'test:e2e:cov': 'npm run test:e2e -- --coverage',
+          'test:e2e:db:recreate':
+            'DOTENV_CONFIG_PATH=.env.test ts-node -r dotenv/config ./test/utils/recreate-db',
+        });
+      }
     }
 
     return {
