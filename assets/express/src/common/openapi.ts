@@ -4,7 +4,7 @@ import {
   OpenAPIRegistry,
 } from '@asteasolutions/zod-to-openapi';
 import { OpenApiVersion } from '@asteasolutions/zod-to-openapi/dist/openapi-generator';
-import { RouteDefinition } from '../api/interfaces';
+import { RouteDefinition } from '@api';
 import httpStatuses from 'statuses';
 
 // Changes the path param placeholder syntax from `:param` to `{param}`
@@ -13,7 +13,7 @@ const reformatPathParams = (path: string) =>
 
 const registerRoute = (
   registry: OpenAPIRegistry,
-  { path, request, responses, ...route }: RouteDefinition<any>
+  { path, request, responses, ...route }: RouteDefinition
 ) => {
   registry.registerPath({
     operationId: route.operationId,
@@ -56,7 +56,7 @@ const registerRoute = (
 
 const registerRoutes = (
   registry: OpenAPIRegistry,
-  routes: RouteDefinition<any>[]
+  routes: RouteDefinition[]
 ) => {
   for (const route of routes) {
     registerRoute(registry, route);
@@ -67,7 +67,7 @@ export const generateDocument = (
   registry: OpenAPIRegistry,
   // 3.1.0 is not yet supported by our version of swagger-ui
   version: Exclude<OpenApiVersion, '3.1.0'>,
-  routes: RouteDefinition<any>[]
+  routes: RouteDefinition[]
 ) => {
   registerRoutes(registry, routes);
 
