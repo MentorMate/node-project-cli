@@ -17,10 +17,7 @@ export class TodosRepository implements TodosRepositoryInterface {
   }
 
   async findById(id: Todo['id']): Promise<Todo | undefined> {
-    return await this.knex('todos')
-      .where({ id })
-      .whereNull('deletedAt')
-      .first();
+    return await this.knex('todos').where({ id }).first();
   }
 
   async updateById(
@@ -33,7 +30,6 @@ export class TodosRepository implements TodosRepositoryInterface {
 
     return await this.knex('todos')
       .where({ id })
-      .whereNull('deletedAt')
       .update(input)
       .returning('*')
       .then(first)
@@ -41,14 +37,11 @@ export class TodosRepository implements TodosRepositoryInterface {
   }
 
   async deleteById(id: Todo['id']): Promise<number> {
-    return await this.knex('todos')
-      .where({ id })
-      .whereNull('deletedAt')
-      .update('deletedAt', new Date());
+    return await this.knex('todos').where({ id }).del();
   }
 
   async list(query: ListTodosQuery): Promise<Paginated<Todo>> {
-    const qb = this.knex('todos').whereNull('deletedAt');
+    const qb = this.knex('todos');
 
     const data = await qb.clone().list(query, listTodosMaps);
 

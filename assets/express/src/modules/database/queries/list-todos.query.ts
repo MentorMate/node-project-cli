@@ -9,6 +9,7 @@ import { sortOrder, pagination } from '@common/query';
 
 const listTodosFilters = z.object({
   name: z.string().optional(),
+  completed: z.boolean().optional(),
 });
 
 type ListTodosFilters = z.infer<typeof listTodosFilters>;
@@ -18,6 +19,7 @@ export const listTodosFilterMap: FilterMap<
   ListTodosFilters
 > = {
   name: (qb, name) => qb.whereILike('name', `%${name}%`),
+  completed: (qb, completed) => qb.where('completed', completed),
 };
 
 const listTodosSortColumn = z.enum(['name', 'createdAt']);

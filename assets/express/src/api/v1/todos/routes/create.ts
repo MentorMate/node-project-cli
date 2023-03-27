@@ -18,8 +18,11 @@ export default defineRoute({
     422: response.UnprocessableEntity(),
   },
 }).attachHandler(
-  asyncHandler(async ({ body, services }, res) => {
-    const todo = await services.todosService.create(body);
+  asyncHandler(async ({ body, services, auth: { sub } }, res) => {
+    const todo = await services.todosService.create({
+      ...body,
+      userId: Number(sub),
+    });
 
     res.status(201).send(todo);
   })

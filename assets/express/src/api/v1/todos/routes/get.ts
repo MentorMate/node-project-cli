@@ -21,6 +21,6 @@ export default defineRoute({
   asyncHandler(async ({ services, params }, res) => {
     const todo = await services.todosService.find(params.id);
 
-    res.send(todo);
+    res.status(200).send(todo);
   })
 );

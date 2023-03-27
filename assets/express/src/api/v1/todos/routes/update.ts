@@ -1,5 +1,5 @@
 import { asyncHandler, defineRoute, response } from '../../../utils';
-import { todoIdDTO, replaceTodoDTO, todoDTO } from '../dto';
+import { todoIdDTO, updateTodoDTO, todoDTO } from '../dto';
 
 export default defineRoute({
   operationId: 'todo-replace',
@@ -11,7 +11,7 @@ export default defineRoute({
   authenticate: true,
   request: {
     params: todoIdDTO,
-    body: replaceTodoDTO,
+    body: updateTodoDTO,
   },
   responses: {
     200: todoDTO,
