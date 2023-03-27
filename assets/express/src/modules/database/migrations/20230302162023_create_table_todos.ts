@@ -4,7 +4,7 @@ import { createUpdatedAtTriggerSQL, dropUpdatedAtTriggerSQL } from './utils';
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('todos', (table) => {
     table.bigIncrements('id');
-    table.string('name');
+    table.string('name').notNullable();
     table.text('note');
     table.boolean('completed').notNullable().defaultTo(false);
     table.timestamps(false, true, true);

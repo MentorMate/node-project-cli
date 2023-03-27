@@ -19,7 +19,6 @@ const dbToServiceErrorMap: Record<
       new DuplicateRecordException('User email already taken'),
   },
 
-  // To-Dos don't hold a `userId`, this is just an example
   [PostgresError.FOREIGN_KEY_VIOLATION]: {
     fk_todos_user_id: () => new RecordNotFoundException('User not found'),
   },

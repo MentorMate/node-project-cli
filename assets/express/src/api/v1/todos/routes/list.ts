@@ -20,6 +20,6 @@ export default defineRoute({
   asyncHandler(async ({ query, services }, res) => {
     const todos = await services.todosService.list(query);
 
-    res.status(200).send(todos);
+    res.send(todos);
   })
 );
