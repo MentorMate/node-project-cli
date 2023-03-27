@@ -21,10 +21,7 @@ export class UsersRepository implements UsersRepositoryInterface {
   }
 
   async findByEmail(email: User['email']): Promise<User | undefined> {
-    return await this.knex('users')
-      .where({ email })
-      .whereNull('deletedAt')
-      .first();
+    return await this.knex('users').where({ email }).first();
   }
 
   async updateByEmail(
@@ -37,7 +34,6 @@ export class UsersRepository implements UsersRepositoryInterface {
 
     return await this.knex('users')
       .where({ email })
-      .whereNull('deletedAt')
       .update(input)
       .returning('*')
       .then(first)
@@ -45,14 +41,11 @@ export class UsersRepository implements UsersRepositoryInterface {
   }
 
   async deleteByEmail(email: User['email']): Promise<number> {
-    return await this.knex('users')
-      .where({ email })
-      .whereNull('deletedAt')
-      .update('deletedAt', new Date());
+    return await this.knex('users').where({ email }).del();
   }
 
   async list(query: ListUsersQuery): Promise<Paginated<User>> {
-    const qb = this.knex('users').whereNull('deletedAt');
+    const qb = this.knex('users');
 
     const data = await qb.clone().list(query, listUsersMaps);
 
