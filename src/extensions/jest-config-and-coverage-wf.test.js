@@ -59,7 +59,7 @@ describe('jest-config-and-coverage-wf', () => {
         expect(scripts).toHaveProperty('test:watch');
       });
 
-      it('should add the jest package', () => {
+      it('should add the jest devDependency', () => {
         expect(devDependencies).toHaveProperty('jest');
       });
 
@@ -68,12 +68,48 @@ describe('jest-config-and-coverage-wf', () => {
           input.projectLanguage = 'TS';
         });
 
-        it('should add the ts-jest package', () => {
+        it('should add the ts-jest devDependency', () => {
           expect(devDependencies).toHaveProperty('ts-jest');
         });
 
-        it('should add the @types/jest package', () => {
+        it('should add the @types/jest devDependency', () => {
           expect(devDependencies).toHaveProperty('@types/jest');
+        });
+
+        describe('and the framework is not nest', () => {
+          beforeAll(() => {
+            input.framework = 'express';
+          });
+
+          describe('and the database it pg', () => {
+            beforeAll(() => {
+              input.db = 'pg';
+            });
+
+            it('should add the pgtools devDependency', () => {
+              expect(devDependencies).toHaveProperty('pgtools');
+            });
+
+            it('should add the @types/supertest devDependency', () => {
+              expect(devDependencies).toHaveProperty('@types/supertest');
+            });
+
+            it('should add the supertest devDependency', () => {
+              expect(devDependencies).toHaveProperty('supertest');
+            });
+
+            it('should add the test:e2e script', () => {
+              expect(scripts).toHaveProperty('test:e2e');
+            });
+
+            it('should add the test:e2e:cov script', () => {
+              expect(scripts).toHaveProperty('test:e2e:cov');
+            });
+
+            it('should add the test:e2e:db:recreate script', () => {
+              expect(scripts).toHaveProperty('test:e2e:db:recreate');
+            });
+          });
         });
       });
     });
@@ -119,6 +155,19 @@ describe('jest-config-and-coverage-wf', () => {
               `${input.assetsPath}/jest.config.ts.js`,
               `${input.appDir}/jest.config.js`
             );
+          });
+
+          describe('and the database is pg', () => {
+            beforeAll(() => {
+              input.db = 'pg';
+            });
+
+            it('should copy the example project tests', () => {
+              expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+                `${input.assetsPath}/test/`,
+                `${input.appDir}/test/`
+              );
+            });
           });
         });
 

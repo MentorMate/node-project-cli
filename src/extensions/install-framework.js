@@ -65,7 +65,6 @@ module.exports = (toolbox) => {
       });
 
       await Promise.all([
-        copyAsync(`${assetsPath}/test/`, `${appDir}/test/`),
         copyAsync(`${assetsPath}/vscode/`, `${appDir}/.vscode/`),
       ]);
     }
@@ -178,6 +177,7 @@ module.exports = (toolbox) => {
     // README.md
     const isExampleApp =
       projectLanguage === 'TS' && framework === 'express' && db === 'pg';
+
     if (isExampleApp) {
       await generate({
         template: 'README.md.ejs',
@@ -198,8 +198,7 @@ module.exports = (toolbox) => {
               db === 'pg',
             tests: {
               unit: true,
-              // TODO: update with e2e test setup
-              e2e: false,
+              e2e: isExampleApp,
             },
           },
           run: {
@@ -207,8 +206,7 @@ module.exports = (toolbox) => {
             debug: projectLanguage === 'TS',
           },
           test: {
-            // TODO: update with e2e test setup
-            e2e: false,
+            e2e: isExampleApp,
           },
           debug: {
             vscode: projectLanguage === 'TS',
