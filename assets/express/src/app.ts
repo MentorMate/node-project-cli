@@ -76,7 +76,7 @@ export function create(env: Environment) {
     compression(),
     // makes the services available to the route handlers by attaching them to the request
     attachServices(services),
-    // body parser
+    // handles numeric and boolean values for Express req.query object
     queryType.middleware()
   );
 
