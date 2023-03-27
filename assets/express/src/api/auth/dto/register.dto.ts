@@ -1,3 +1,3 @@
-import { postUserInput } from '@modules';
+import { register } from '@common/data/auth';
 
-export const registerDTO = postUserInput;
+export const registerDTO = register;

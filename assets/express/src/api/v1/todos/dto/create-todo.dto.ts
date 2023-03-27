@@ -1,3 +1,7 @@
-import { postTodoInput } from '@modules';
+import { z } from 'zod';
+import { todo } from '@common/data/models';
 
-export const createTodoDTO = postTodoInput;
+export const createTodoDTO = z.object({
+  name: todo.shape.name,
+  note: todo.shape.note.optional(),
+});

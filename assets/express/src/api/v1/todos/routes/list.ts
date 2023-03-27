@@ -1,6 +1,5 @@
-import { models } from '@modules';
 import { paginated } from '@common/query';
-import { todoQueryDTO } from '../dto';
+import { todoDTO, todoQueryDTO } from '../dto';
 import { asyncHandler, defineRoute } from '../../../utils';
 
 export default defineRoute({
@@ -15,7 +14,7 @@ export default defineRoute({
     query: todoQueryDTO,
   },
   responses: {
-    200: paginated(models.Todo),
+    200: paginated(todoDTO),
   },
 }).attachHandler(
   asyncHandler(async ({ query, services }, res) => {

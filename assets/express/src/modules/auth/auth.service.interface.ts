@@ -1,6 +1,6 @@
-import { Register, Login, Tokens } from '..';
+import { JwtTokens, Login, Register } from '@common/data/auth';
 
 export interface AuthServiceInterface {
-  register: (payload: Register) => Promise<Tokens>;
-  login: (payload: Login) => Promise<Tokens | undefined>;
+  register: (payload: Register) => Promise<JwtTokens>;
+  login: (payload: Login) => Promise<JwtTokens | undefined>;
 }

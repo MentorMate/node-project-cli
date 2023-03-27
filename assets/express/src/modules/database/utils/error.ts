@@ -1,6 +1,6 @@
 import { DatabaseError } from 'pg';
 import { PostgresError } from 'pg-error-enum';
-import { DuplicateRecordException, RecordNotFoundException } from '@common';
+import { DuplicateRecordException, RecordNotFoundException } from '@common/error';
 
 // These aliases are just for readability
 type DatabaseErrorCode = Exclude<DatabaseError['code'], undefined>;

@@ -1,4 +1,4 @@
-import z from 'zod';
+import { AnyZodObject, ZodObject } from 'zod';
 import {
   OpenAPIGenerator,
   OpenAPIRegistry,
@@ -41,12 +41,12 @@ const registerRoute = (
     responses: Object.fromEntries(
       Object.entries(responses).map(([code, schema]) => [
         code,
-        schema instanceof z.ZodObject
+        schema instanceof ZodObject
           ? {
               description:
                 httpStatuses.message[code as never as number] ??
                 'Unknown response code',
-              condent: { 'application/json': { schema } },
+              content: { 'application/json': { schema } },
             }
           : schema,
       ])
@@ -54,21 +54,65 @@ const registerRoute = (
   });
 };
 
+const schemaName = (schema: AnyZodObject) =>
+  schema._def.openapi?.metadata?.schemaName;
+
+const registerSchema = (registry: OpenAPIRegistry, schema: AnyZodObject) => {
+  const name = schemaName(schema);
+
+  if (!name) {
+    return;
+  }
+
+  const registered = !!registry.definitions.find(
+    (d) => d.type === 'schema' && name === schemaName(d.schema as never)
+  );
+
+  if (registered) {
+    return;
+  }
+
+  registry.register(name, schema);
+};
+
 const registerRoutes = (
   registry: OpenAPIRegistry,
   routes: RouteDefinition[]
 ) => {
   for (const route of routes) {
+    if (route.request?.body) {
+      registerSchema(registry, route.request.body);
+    }
+
+    if (route.request?.query) {
+      registerSchema(registry, route.request.query);
+    }
+
+    if (route.request?.params) {
+      registerSchema(registry, route.request.params);
+    }
+
+    if (route.request?.headers) {
+      registerSchema(registry, route.request.headers);
+    }
+
+    for (const response of Object.values(route.responses)) {
+      if (response instanceof ZodObject) {
+        registerSchema(registry, response);
+      }
+    }
+
     registerRoute(registry, route);
   }
 };
 
 export const generateDocument = (
-  registry: OpenAPIRegistry,
   // 3.1.0 is not yet supported by our version of swagger-ui
   version: Exclude<OpenApiVersion, '3.1.0'>,
   routes: RouteDefinition[]
 ) => {
+  const registry = new OpenAPIRegistry();
+
   registerRoutes(registry, routes);
 
   const generator = new OpenAPIGenerator(registry.definitions, version);

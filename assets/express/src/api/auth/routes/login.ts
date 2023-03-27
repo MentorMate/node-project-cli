@@ -1,8 +1,6 @@
-import { asyncHandler, defineRoute } from '@api/utils';
-import { response } from '@common';
-import { models } from '@modules';
 import createHttpError from 'http-errors';
-import { loginDTO } from '../dto';
+import { asyncHandler, defineRoute, response } from '../../utils';
+import { jwtTokensDTO, loginDTO } from '../dto';
 
 export default defineRoute({
   operationId: 'login',
@@ -15,7 +13,7 @@ export default defineRoute({
     body: loginDTO,
   },
   responses: {
-    200: models.JwtTokens,
+    200: jwtTokensDTO,
     404: response.NotFound(),
     422: response.UnprocessableEntity('Invalid email or password'),
   },

@@ -1,5 +1,5 @@
-import { Claims } from '..';
+import { JwtClaims } from '@common/data/auth';
 
 export interface JwtServiceInterface {
-  sign: (claims: Claims) => string;
+  sign: (claims: JwtClaims) => string;
 }

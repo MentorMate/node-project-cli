@@ -6,6 +6,8 @@ export type ID = z.infer<typeof id>;
 
 export const email = z
   .string()
+  .trim()
+  .toLowerCase()
   .max(255)
   .email()
   .openapi({ example: 'john@mail.com' });

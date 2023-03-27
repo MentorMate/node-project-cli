@@ -1,4 +1,4 @@
-import { definedOrNotFound, updatedOrNotFound } from '@common';
+import { definedOrNotFound, updatedOrNotFound } from '@common/error';
 import { Paginated } from '@common/query';
 import {
   InsertTodo,
