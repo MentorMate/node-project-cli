@@ -13,9 +13,3 @@ export const timestamps = z.object({
 });
 
 export type Timestamps = z.infer<typeof timestamps>;
-
-export const deletedAt = z.object({
-  deletedAt: timestamp.nullable(),
-});
-
-export type DeletedAt = z.infer<typeof deletedAt>;

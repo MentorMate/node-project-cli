@@ -160,6 +160,10 @@ describe('install-framework', () => {
           expect(dependencies).toHaveProperty('zod');
         });
 
+        it('should add query types to dependencies', () => {
+          expect(dependencies).toHaveProperty('query-types');
+        });
+
         it('should add @asteasolutions/zod-to-openapi to dependencies', () => {
           expect(dependencies).toHaveProperty('@asteasolutions/zod-to-openapi');
         });

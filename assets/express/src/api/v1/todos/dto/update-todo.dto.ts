@@ -1,3 +1,3 @@
-import { todoAttributes } from '@common/data/models';
+import { baseTodoAttributes } from '@common/data/models';
 
-export const updateTodoDTO = todoAttributes.partial();
+export const updateTodoDTO = baseTodoAttributes.partial();

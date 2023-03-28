@@ -1,6 +1,9 @@
 import { DatabaseError } from 'pg';
 import { PostgresError } from 'pg-error-enum';
-import { DuplicateRecordException, RecordNotFoundException } from '@common/error';
+import {
+  DuplicateRecordException,
+  RecordNotFoundException,
+} from '@common/error';
 
 // These aliases are just for readability
 type DatabaseErrorCode = Exclude<DatabaseError['code'], undefined>;
@@ -12,13 +15,10 @@ const dbToServiceErrorMap: Record<
   Record<DatabaseConstraintName, ErrorConstructor>
 > = {
   [PostgresError.UNIQUE_VIOLATION]: {
-    unq_todos_name: () =>
-      new DuplicateRecordException('To-Do name already taken'),
     unq_users_email: () =>
       new DuplicateRecordException('User email already taken'),
   },
 
-  // To-Dos don't hold a `userId`, this is just an example
   [PostgresError.FOREIGN_KEY_VIOLATION]: {
     fk_todos_user_id: () => new RecordNotFoundException('User not found'),
   },

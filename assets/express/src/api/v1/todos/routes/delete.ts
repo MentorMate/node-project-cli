@@ -4,7 +4,7 @@ import { todoIdDTO } from '../dto';
 export default defineRoute({
   operationId: 'todo-delete',
   summary: 'Delete a To-Do',
-  description: 'Soft delete a To-Do item',
+  description: 'Delete a To-Do item',
   tags: ['v1', 'Todo'],
   method: 'delete',
   path: '/:id',
@@ -18,8 +18,8 @@ export default defineRoute({
     422: response.UnprocessableEntity(),
   },
 }).attachHandler(
-  asyncHandler(async ({ params, services }, res) => {
-    await services.todosService.delete(params.id);
+  asyncHandler(async ({ params, services, auth: { sub } }, res) => {
+    await services.todosService.delete(params.id, Number(sub));
 
     res.status(204).send();
   })

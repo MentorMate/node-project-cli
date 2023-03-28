@@ -80,6 +80,7 @@ module.exports = (toolbox) => {
         pino: '^8.11.0',
         'http-errors': '^2.0.0',
         bcrypt: '^5.1.0',
+        'query-types': '^0.1.4',
       });
 
       // with TypeScript
