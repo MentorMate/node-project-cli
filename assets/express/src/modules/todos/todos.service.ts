@@ -16,7 +16,7 @@ export class TodosService implements TodosServiceInterface {
     return this.todos.insertOne(input);
   }
 
-  find(id: Todo['id'], userId: Todo['userId']): Promise<Todo | undefined> {
+  find(id: Todo['id'], userId: Todo['userId']): Promise<Todo> {
     return this.todos
       .findById(id, userId)
       .then(definedOrNotFound('To-Do not found'));
@@ -26,7 +26,7 @@ export class TodosService implements TodosServiceInterface {
     id: Todo['id'],
     userId: Todo['userId'],
     input: UpdateTodo
-  ): Promise<Todo | undefined> {
+  ): Promise<Todo> {
     return this.todos
       .updateById(id, userId, input)
       .then(definedOrNotFound('To-Do not found'));

@@ -8,12 +8,12 @@ import {
 
 export interface TodosServiceInterface {
   create: (input: InsertTodo) => Promise<Todo>;
-  find: (id: Todo['id'], userId: Todo['userId']) => Promise<Todo | undefined>;
+  find: (id: Todo['id'], userId: Todo['userId']) => Promise<Todo>;
   update: (
     id: Todo['id'],
     userId: Todo['userId'],
     input: UpdateTodo
-  ) => Promise<Todo | undefined>;
+  ) => Promise<Todo>;
   delete: (id: Todo['id'], userId: Todo['userId']) => Promise<number>;
   list: (
     userId: Todo['userId'],

@@ -6,7 +6,7 @@ export default defineRoute({
   summary: 'Update a To-Do',
   description: 'Update a To-Do item',
   tags: ['v1', 'Todo'],
-  method: 'put',
+  method: 'patch',
   path: '/:id',
   authenticate: true,
   request: {
