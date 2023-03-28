@@ -1,5 +1,6 @@
-import { z } from 'zod';
+import z from 'zod';
+import { todo } from '@common/data/models';
 
 export const todoIdDTO = z.object({
-  id: z.coerce.number().int().positive().openapi({ example: 1 }),
+  id: todo.shape.id.coerce(),
 });
