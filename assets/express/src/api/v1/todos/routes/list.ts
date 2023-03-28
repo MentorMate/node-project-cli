@@ -1,6 +1,6 @@
 import { paginated } from '@common/query';
 import { todoDTO, todoQueryDTO } from '../dto';
-import { asyncHandler, defineRoute } from '../../../utils';
+import { asyncHandler, defineRoute, response } from '../../../utils';
 
 export default defineRoute({
   operationId: 'todo-list',
@@ -14,6 +14,7 @@ export default defineRoute({
     query: todoQueryDTO,
   },
   responses: {
+    401: response.Unauthorized(),
     200: paginated(todoDTO),
   },
 }).attachHandler(

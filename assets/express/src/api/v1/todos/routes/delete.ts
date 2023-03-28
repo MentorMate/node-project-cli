@@ -14,6 +14,7 @@ export default defineRoute({
   },
   responses: {
     204: response.NoContent(),
+    401: response.Unauthorized(),
     404: response.NotFound(),
     422: response.UnprocessableEntity(),
   },
