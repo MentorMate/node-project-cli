@@ -5,7 +5,7 @@ export default defineRoute({
   operationId: 'todo-create',
   summary: 'Create a To-Do',
   description: 'Create a new To-Do item',
-  tags: ['Todo'],
+  tags: ['v1', 'Todo'],
   method: 'post',
   path: '/',
   authenticate: true,
