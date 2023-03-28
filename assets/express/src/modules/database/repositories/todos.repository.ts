@@ -26,15 +26,15 @@ export class TodosRepository implements TodosRepositoryInterface {
   async updateById(
     id: Todo['id'],
     userId: Todo['userId'],
-    payload: UpdateTodo
+    input: UpdateTodo
   ): Promise<Todo | undefined> {
-    if (Object.keys(payload).length === 0) {
+    if (Object.keys(input).length === 0) {
       return this.findById(id, userId);
     }
 
     return await this.knex('todos')
       .where({ id, userId })
-      .update(payload)
+      .update(input)
       .returning('*')
       .then(first)
       .catch(handleDbError);

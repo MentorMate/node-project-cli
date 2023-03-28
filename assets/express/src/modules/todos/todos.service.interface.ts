@@ -12,7 +12,7 @@ export interface TodosServiceInterface {
   update: (
     id: Todo['id'],
     userId: Todo['userId'],
-    payload: UpdateTodo
+    input: UpdateTodo
   ) => Promise<Todo | undefined>;
   delete: (id: Todo['id'], userId: Todo['userId']) => Promise<number>;
   list: (
