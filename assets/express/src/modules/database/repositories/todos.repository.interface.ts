@@ -4,8 +4,18 @@ import { Paginated } from '@common/query';
 
 export type TodosRepositoryInterface = {
   insertOne: (input: InsertTodo) => Promise<Todo>;
-  findById: (id: Todo['id']) => Promise<Todo | undefined>;
-  updateById: (id: Todo['id'], input: UpdateTodo) => Promise<Todo | undefined>;
-  deleteById: (id: Todo['id']) => Promise<number>;
-  list: (query: ListTodosQuery) => Promise<Paginated<Todo>>;
+  findById: (
+    id: Todo['id'],
+    userId: Todo['userId']
+  ) => Promise<Todo | undefined>;
+  updateById: (
+    id: Todo['id'],
+    userId: Todo['userId'],
+    input: UpdateTodo
+  ) => Promise<Todo | undefined>;
+  deleteById: (id: Todo['id'], userId: Todo['userId']) => Promise<number>;
+  list: (
+    userId: Todo['userId'],
+    query: ListTodosQuery
+  ) => Promise<Paginated<Todo>>;
 };

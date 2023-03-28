@@ -17,8 +17,8 @@ export default defineRoute({
     200: paginated(todoDTO),
   },
 }).attachHandler(
-  asyncHandler(async ({ query, services }, res) => {
-    const todos = await services.todosService.list(query);
+  asyncHandler(async ({ query, services, auth: { sub } }, res) => {
+    const todos = await services.todosService.list(Number(sub), query);
 
     res.send(todos);
   })

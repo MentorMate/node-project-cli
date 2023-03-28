@@ -2,7 +2,7 @@ import { asyncHandler, defineRoute, response } from '../../../utils';
 import { todoIdDTO, updateTodoDTO, todoDTO } from '../dto';
 
 export default defineRoute({
-  operationId: 'todo-replace',
+  operationId: 'todo-update',
   summary: 'Update a To-Do',
   description: 'Update a To-Do item',
   tags: ['v1', 'Todo'],
@@ -20,8 +20,12 @@ export default defineRoute({
     422: response.UnprocessableEntity(),
   },
 }).attachHandler(
-  asyncHandler(async ({ body, params, services }, res) => {
-    const todo = await services.todosService.update(params.id, body);
+  asyncHandler(async ({ body, params, services, auth: { sub } }, res) => {
+    const todo = await services.todosService.update(
+      params.id,
+      Number(sub),
+      body
+    );
 
     res.send(todo);
   })

@@ -16,32 +16,39 @@ export class TodosRepository implements TodosRepositoryInterface {
       .catch(handleDbError);
   }
 
-  async findById(id: Todo['id']): Promise<Todo | undefined> {
-    return await this.knex('todos').where({ id }).first();
+  async findById(
+    id: Todo['id'],
+    userId: Todo['userId']
+  ): Promise<Todo | undefined> {
+    return await this.knex('todos').where({ id, userId }).first();
   }
 
   async updateById(
     id: Todo['id'],
-    input: UpdateTodo
+    userId: Todo['userId'],
+    payload: UpdateTodo
   ): Promise<Todo | undefined> {
-    if (Object.keys(input).length === 0) {
-      return this.findById(id);
+    if (Object.keys(payload).length === 0) {
+      return this.findById(id, userId);
     }
 
     return await this.knex('todos')
-      .where({ id })
-      .update(input)
+      .where({ id, userId })
+      .update(payload)
       .returning('*')
       .then(first)
       .catch(handleDbError);
   }
 
-  async deleteById(id: Todo['id']): Promise<number> {
-    return await this.knex('todos').where({ id }).del();
+  async deleteById(id: Todo['id'], userId: Todo['userId']): Promise<number> {
+    return await this.knex('todos').where({ id, userId }).del();
   }
 
-  async list(query: ListTodosQuery): Promise<Paginated<Todo>> {
-    const qb = this.knex('todos');
+  async list(
+    userId: Todo['userId'],
+    query: ListTodosQuery
+  ): Promise<Paginated<Todo>> {
+    const qb = this.knex('todos').where({ userId });
 
     const data = await qb.clone().list(query, listTodosMaps);
 

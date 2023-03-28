@@ -8,8 +8,15 @@ import {
 
 export interface TodosServiceInterface {
   create: (input: InsertTodo) => Promise<Todo>;
-  find: (id: Todo['id']) => Promise<Todo | undefined>;
-  update: (id: Todo['id'], payload: UpdateTodo) => Promise<Todo | undefined>;
-  delete: (id: Todo['id']) => Promise<number>;
-  list: (query: ListTodosQuery) => Promise<Paginated<Todo>>;
+  find: (id: Todo['id'], userId: Todo['userId']) => Promise<Todo | undefined>;
+  update: (
+    id: Todo['id'],
+    userId: Todo['userId'],
+    payload: UpdateTodo
+  ) => Promise<Todo | undefined>;
+  delete: (id: Todo['id'], userId: Todo['userId']) => Promise<number>;
+  list: (
+    userId: Todo['userId'],
+    query: ListTodosQuery
+  ) => Promise<Paginated<Todo>>;
 }
