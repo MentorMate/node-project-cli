@@ -1,24 +1,16 @@
 import { ErrorRequestHandler } from 'express';
 import { Logger } from 'pino';
 import createError from 'http-errors';
-import { serviceToHttpErrorMap } from '@common/error';
 
-export const handleServiceError =
-  (): ErrorRequestHandler => (err, _req, _res, next) => {
-    const klass = serviceToHttpErrorMap[err.name];
-    const error = klass ? new klass(err.message) : err;
+export const mapErrors = function (
+  map: Record<string, { new (message: string): Error }>
+): ErrorRequestHandler {
+  return function (err, _req, _res, next) {
+    const errorClass = map[err.name];
+    const error = errorClass ? new errorClass(err.message) : err;
     next(error);
   };
-
-export const handleUnauthorizedError =
-  (): ErrorRequestHandler => (err, _req, res, next) => {
-    if (err.name === 'UnauthorizedError') {
-      const error = createError.Unauthorized('Invalid token');
-      return next(error);
-    } else {
-      next(err);
-    }
-  };
+};
 
 export const handleError = function (logger: Logger): ErrorRequestHandler {
   return function (err, _req, res, next) {

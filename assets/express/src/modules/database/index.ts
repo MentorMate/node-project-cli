@@ -1,12 +1,12 @@
 import pg from 'pg';
 
-export * from './client';
+export * from './errors';
 export * from './models';
 export * from './queries';
 export * from './repositories';
-
-export * from './knex-extensions';
 export * from './utils';
+export * from './client';
+export * from './knex-extensions';
 
 export const onInit = () => {
   // https://github.com/brianc/node-pg-types/blob/master/lib/builtins.js

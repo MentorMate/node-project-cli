@@ -23,9 +23,11 @@ const registerRoute = (
     method: route.method,
     path: reformatPathParams(path),
     ...(route.authenticate && {
-      security: [{
-        bearerAuth: []
-      }]
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
     }),
     ...(request && {
       request: {
@@ -121,7 +123,7 @@ export const generateDocument = (
   registry.registerComponent('securitySchemes', 'bearerAuth', {
     type: 'http',
     scheme: 'bearer',
-    bearerFormat: 'JWT'
+    bearerFormat: 'JWT',
   });
 
   registerRoutes(registry, routes);

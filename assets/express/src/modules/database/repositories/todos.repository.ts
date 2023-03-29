@@ -1,8 +1,10 @@
 import { Paginated } from '@common/query';
+import { mapErrors } from '@common/utils';
 import { Knex } from 'knex';
 import { InsertTodo, Todo, UpdateTodo } from '../models';
 import { listTodosFilterMap, listTodosMaps, ListTodosQuery } from '../queries';
-import { first, parseCount, extractPagination, handleDbError } from '../utils';
+import { first, parseCount, extractPagination } from '../utils';
+import { TodoUserNotFound } from './todos.error-mappings';
 import { TodosRepositoryInterface } from './todos.repository.interface';
 
 export class TodosRepository implements TodosRepositoryInterface {
@@ -13,7 +15,7 @@ export class TodosRepository implements TodosRepositoryInterface {
       .insert(input)
       .returning('*')
       .then(first)
-      .catch(handleDbError);
+      .catch(mapErrors(TodoUserNotFound));
   }
 
   async findById(
@@ -37,7 +39,7 @@ export class TodosRepository implements TodosRepositoryInterface {
       .update(input)
       .returning('*')
       .then(first)
-      .catch(handleDbError);
+      .catch(mapErrors(TodoUserNotFound));
   }
 
   async deleteById(id: Todo['id'], userId: Todo['userId']): Promise<number> {
