@@ -1,4 +1,4 @@
-import { definedOrNotFound, updatedOrNotFound } from '@common/error';
+import { definedOrNotFound, updatedOrNotFound } from '@modules/database';
 import { Paginated } from '@common/query';
 import {
   InsertTodo,

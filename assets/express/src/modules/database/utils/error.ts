@@ -1,43 +1,59 @@
+import { ErrorMapping } from '@common/utils';
 import { DatabaseError } from 'pg';
 import { PostgresError } from 'pg-error-enum';
-import {
-  DuplicateRecordException,
-  RecordNotFoundException,
-} from '@common/error';
+import { DuplicateRecord, RecordNotFound } from '../errors';
 
-// These aliases are just for readability
-type DatabaseErrorCode = Exclude<DatabaseError['code'], undefined>;
-type DatabaseConstraintName = string;
-type ErrorConstructor = () => Error;
-
-const dbToServiceErrorMap: Record<
-  DatabaseErrorCode,
-  Record<DatabaseConstraintName, ErrorConstructor>
-> = {
-  [PostgresError.UNIQUE_VIOLATION]: {
-    unq_users_email: () =>
-      new DuplicateRecordException('User email already taken'),
-  },
-
-  [PostgresError.FOREIGN_KEY_VIOLATION]: {
-    fk_todos_user_id: () => new RecordNotFoundException('User not found'),
-  },
+const definedOrThrow = <T>(errorFactory: () => Error) => {
+  return (result: T | undefined): T => {
+    if (!result) {
+      throw errorFactory();
+    }
+    return result;
+  };
 };
 
-export const handleDbError = (e: unknown) => {
-  if (
-    !(e instanceof DatabaseError) ||
-    e.code === undefined ||
-    e.constraint === undefined
-  ) {
-    throw e;
-  }
-
-  const constructor = dbToServiceErrorMap[e.code]?.[e.constraint];
-
-  if (constructor) {
-    throw constructor();
-  }
-
-  throw e;
+const updatedOrThrow = (errorFactory: () => Error) => {
+  return (result: number): number => {
+    if (result === 0) {
+      throw errorFactory();
+    }
+    return result;
+  };
 };
+
+export const definedOrNotFound = <T>(message?: string) =>
+  definedOrThrow<T>(() => new RecordNotFound(message));
+
+export const updatedOrNotFound = (message?: string) =>
+  updatedOrThrow(() => new RecordNotFound(message));
+
+const isDatabaseError = (e: unknown): e is DatabaseError =>
+  e instanceof DatabaseError &&
+  e.code !== undefined &&
+  e.constraint !== undefined;
+
+const isUniqueViolation = (constraint: string) => (e: unknown) =>
+  isDatabaseError(e) &&
+  e.code === PostgresError.UNIQUE_VIOLATION &&
+  e.constraint === constraint;
+
+const isForeignKeyViolation = (constraint: string) => (e: unknown) =>
+  isDatabaseError(e) &&
+  e.code === PostgresError.FOREIGN_KEY_VIOLATION &&
+  e.constraint === constraint;
+
+export const uniqueViolation = (
+  constraint: string,
+  message: string
+): ErrorMapping => ({
+  isError: isUniqueViolation(constraint),
+  newError: () => new DuplicateRecord(message),
+});
+
+export const foreignKeyViolation = (
+  constraint: string,
+  message: string
+): ErrorMapping => ({
+  isError: isForeignKeyViolation(constraint),
+  newError: () => new RecordNotFound(message),
+});

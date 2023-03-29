@@ -1,6 +1,8 @@
+import { mapErrors } from '@common/utils';
 import { Knex } from 'knex';
 import { InsertUser, User } from '../models';
-import { first, handleDbError } from '../utils';
+import { first } from '../utils';
+import { UserEmailTaken } from './users.error-mappings';
 import { UsersRepositoryInterface } from './users.repository.interface';
 
 export class UsersRepository implements UsersRepositoryInterface {
@@ -11,7 +13,7 @@ export class UsersRepository implements UsersRepositoryInterface {
       .insert(input)
       .returning('*')
       .then(first)
-      .catch(handleDbError);
+      .catch(mapErrors(UserEmailTaken));
   }
 
   async findByEmail(email: User['email']): Promise<User | undefined> {

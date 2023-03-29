@@ -4,6 +4,8 @@ import cors from 'cors';
 import compression from 'compression';
 import pino from 'pino';
 import queryType from 'query-types';
+import { NotFound, Conflict, Unauthorized } from 'http-errors';
+import { UnauthorizedError } from 'express-jwt';
 
 import {
   onInit as initDatabase,
@@ -11,16 +13,17 @@ import {
   destroy as destroyDbClient,
   TodosRepository,
   UsersRepository,
+  RecordNotFound,
+  DuplicateRecord,
 } from '@modules/database';
 import {
   routes,
   handleError,
-  handleServiceError,
+  mapErrors,
   logRequest,
   validateRequest,
   attachServices,
   validateAccessToken,
-  handleUnauthorizedError,
 } from '@api';
 import { Environment } from '@common/environment';
 import { JwtService, PasswordService, AuthService } from '@modules/auth';
@@ -105,8 +108,14 @@ export function create(env: Environment) {
   }
 
   // register error handlers
-  app.use(handleServiceError());
-  app.use(handleUnauthorizedError());
+  app.use(
+    mapErrors({
+      [RecordNotFound.name]: NotFound,
+      [DuplicateRecord.name]: Conflict,
+      [UnauthorizedError.name]: Unauthorized,
+    })
+  );
+
   app.use(handleError(logger));
 
   // define an app tear down function
