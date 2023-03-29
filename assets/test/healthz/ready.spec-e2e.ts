@@ -2,9 +2,9 @@ import '@extensions/zod/register';
 import '@extensions/knex/register';
 
 import request from 'supertest';
-import { create as createApp } from './utils/app';
+import { create as createApp } from '../utils/app';
 
-describe('GET /hello-world', () => {
+describe('GET /healthz/ready', () => {
   let app: Express.Application;
   let destroy: () => Promise<void>;
 
@@ -18,7 +18,7 @@ describe('GET /hello-world', () => {
     await destroy();
   });
 
-  it('should return 200 with a message', async () => {
-    await request(app).get('/').expect(200, 'Hello, World!');
+  it('should return 200', async () => {
+    await request(app).get('/healthz/ready').expect(200);
   });
 });
