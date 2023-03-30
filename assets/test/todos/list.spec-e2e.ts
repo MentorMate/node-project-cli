@@ -7,6 +7,7 @@ import {
   createTodo,
   getTodoPayload,
   registerUser,
+  sortByField,
 } from '../utils';
 import { JwtTokens } from '@common/data/auth';
 
@@ -103,6 +104,90 @@ describe('GET /v1/todos', () => {
         expect(res.body.meta.total).toEqual(3);
       });
     });
+
+    describe('when sort by name desc', () => {
+      it('should return desc ordered todo list', async () => {
+        const res = await request(app)
+          .get('/v1/todos')
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json');
+
+        const sortedRes = await request(app)
+          .get('/v1/todos?sorts[0][column]=name&sorts[0][order]=desc')
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json');
+
+        expect(sortedRes.headers['content-type']).toMatch(/json/);
+        expect(sortedRes.status).toEqual(200);
+        expect(sortedRes.body.meta.total).toEqual(res.body.meta.total);
+        expect(sortedRes.body.data).toStrictEqual(
+          sortByField(res.body.data, 'name', 'desc')
+        );
+      });
+    });
+
+    describe('when sort by name asc', () => {
+      it('should return asc ordered todo list', async () => {
+        const res = await request(app)
+          .get('/v1/todos')
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json');
+
+        const sortedRes = await request(app)
+          .get('/v1/todos?sorts[0][column]=name&sorts[0][order]=asc')
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json');
+
+        expect(sortedRes.headers['content-type']).toMatch(/json/);
+        expect(sortedRes.status).toEqual(200);
+        expect(sortedRes.body.meta.total).toEqual(res.body.meta.total);
+        expect(sortedRes.body.data).toStrictEqual(
+          sortByField(res.body.data, 'name', 'asc')
+        );
+      });
+    });
+
+    describe('when sort by createdAt desc', () => {
+      it('should return desc ordered todo list', async () => {
+        const res = await request(app)
+          .get('/v1/todos')
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json');
+
+        const sortedRes = await request(app)
+          .get('/v1/todos?sorts[1][column]=createdAt&sorts[1][order]=desc')
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json');
+
+        expect(sortedRes.headers['content-type']).toMatch(/json/);
+        expect(sortedRes.status).toEqual(200);
+        expect(sortedRes.body.meta.total).toEqual(res.body.meta.total);
+        expect(sortedRes.body.data).toStrictEqual(
+          sortByField(res.body.data, 'createdAt', 'desc')
+        );
+      });
+    });
+
+    describe('when sort by createdAt asc', () => {
+      it('should return asc ordered todo list', async () => {
+        const res = await request(app)
+          .get('/v1/todos')
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json');
+
+        const sortedRes = await request(app)
+          .get('/v1/todos?sorts[1][column]=createdAt&sorts[1][order]=asc')
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json');
+
+        expect(sortedRes.headers['content-type']).toMatch(/json/);
+        expect(sortedRes.status).toEqual(200);
+        expect(sortedRes.body.meta.total).toEqual(res.body.meta.total);
+        expect(sortedRes.body.data).toStrictEqual(
+          sortByField(res.body.data, 'createdAt', 'asc')
+        );
+      });
+    });
   });
 
   describe('when user is not authenticated', () => {
@@ -114,7 +199,7 @@ describe('GET /v1/todos', () => {
 
       expect(res.headers['content-type']).toMatch(/json/);
       expect(res.status).toEqual(401);
-      expect(res.body.message).toEqual('Invalid token');
+      expect(res.body.message).toEqual('No authorization token was found');
     });
   });
 });
