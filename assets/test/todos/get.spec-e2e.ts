@@ -89,7 +89,7 @@ describe('GET /v1/todos/:id', () => {
 
       expect(res.headers['content-type']).toMatch(/json/);
       expect(res.status).toEqual(401);
-      expect(res.body.message).toEqual('Invalid token');
+      expect(res.body.message).toEqual('No authorization token was found');
     });
   });
 });
