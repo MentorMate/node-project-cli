@@ -4,4 +4,4 @@ export { createTodo } from './create-todo';
 export { getRandomNumber } from './get-random-number';
 export { getUserCredentials } from './get-user-credentials';
 export { getTodoPayload } from './get-todo-payload';
-export { sortByNameTodos } from './sortby-field-todos';
+export { sortByField } from './sortby-field-todos';
