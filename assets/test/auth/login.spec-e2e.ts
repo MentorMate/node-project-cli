@@ -61,28 +61,15 @@ describe('POST /auth/login', () => {
           .expect(expectError(InvalidCredentials));
       });
     });
-
-    describe('when the password does not match in db', () => {
-      it('should return 422', () => {
-        return request(app)
-          .post('/auth/login')
-          .send({ email: credentials.email, password: 'wrong password' })
-          .expect('content-type', /json/)
-          .expect(expectError(InvalidCredentials));
-      });
-    });
   });
 
   describe('when the password does not match in db', () => {
-    it('should return 422', async () => {
-      const res = await request(app)
+    it('should return 422', () => {
+      return request(app)
         .post('/auth/login')
-        .set('Accept', 'application/json')
-        .send({ email: credentials.email, password: 'wrong password' });
-
-      expect(res.headers['content-type']).toMatch(/json/);
-      expect(res.status).toEqual(422);
-      expect(res.body.message).toEqual('Invalid email or password');
+        .send({ email: credentials.email, password: 'wrong password' })
+        .expect('content-type', /json/)
+        .expect(expectError(InvalidCredentials));
     });
   });
 });
