@@ -46,7 +46,6 @@ describe('GET /v1/todos/:id', () => {
         return request(app)
           .get(`/v1/todos/${todo.id}`)
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-
           .expect('content-type', /json/)
           .expect(200)
           .then((res) => {
@@ -73,7 +72,6 @@ describe('GET /v1/todos/:id', () => {
         return request(app)
           .get(`/v1/todos/test`)
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-
           .expect('content-type', /json/)
           .expect(expectError(UnprocessableEntity));
       });
@@ -84,7 +82,6 @@ describe('GET /v1/todos/:id', () => {
     it('should return 401 error', async () => {
       return request(app)
         .get(`/v1/todos/${todo.id}`)
-
         .expect('content-type', /json/)
         .expect(expectError(Unauthorized));
     });

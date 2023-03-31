@@ -45,7 +45,6 @@ describe('GET /v1/todos', () => {
         return request(app)
           .get('/v1/todos')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json')
           .expect(200)
           .then((res) => {
             expect(res.body.data.length).toEqual(3);
@@ -58,7 +57,6 @@ describe('GET /v1/todos', () => {
         return request(app)
           .get('/v1/todos?filters[completed]=true')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json')
           .expect(200)
           .then((res) => {
             expect(res.body.data.length).toEqual(1);
@@ -71,7 +69,6 @@ describe('GET /v1/todos', () => {
         return request(app)
           .get('/v1/todos?filters[completed]=false')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json')
           .expect(200)
           .then((res) => {
             expect(res.body.data.length).toEqual(2);
@@ -96,7 +93,6 @@ describe('GET /v1/todos', () => {
         return request(app)
           .get('/v1/todos?pagination[items]=2')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json')
           .expect(200)
           .then((res) => {
             expect(res.body.data.length).toEqual(2);
@@ -109,7 +105,6 @@ describe('GET /v1/todos', () => {
         return request(app)
           .get('/v1/todos?pagination[page]=2&pagination[items]=3')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json')
           .expect(200)
           .then((res) => {
             expect(res.body.data.length).toEqual(0);
@@ -215,7 +210,6 @@ describe('GET /v1/todos', () => {
       return request(app)
         .get('/v1/todos')
         .send(getTodoPayload())
-        .set('Accept', 'application/json')
         .expect('content-type', /json/)
         .expect(expectError(Unauthorized));
     });

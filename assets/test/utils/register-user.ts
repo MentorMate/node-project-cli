@@ -6,8 +6,5 @@ export const registerUser: (
   app: Express.Application,
   payload?: Register
 ) => Promise<Response> = async (app, payload = getUserCredentials()) => {
-  return await request(app)
-    .post('/auth/register')
-    .set('Accept', 'application/json')
-    .send(payload);
+  return await request(app).post('/auth/register').send(payload);
 };

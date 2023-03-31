@@ -9,6 +9,5 @@ export const createTodo = async (
   return await request(app)
     .post('/v1/todos')
     .set('Authorization', 'Bearer ' + idToken)
-    .set('Accept', 'application/json')
     .send(getTodoPayload(completed));
 };
