@@ -78,7 +78,12 @@ describe('GET /v1/todos', () => {
       it('should return todo list with matched results', async () => {
         const res = await request(app)
           .get('/v1/todos?filters[name]=Laundry')
+<<<<<<< HEAD
           .set('Authorization', 'Bearer ' + jwtTokens.idToken);
+=======
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json');
+>>>>>>> ff07173 (feat: add tests to improve the e2e coverage)
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(200);
