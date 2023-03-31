@@ -42,8 +42,7 @@ describe('GET /v1/todos', () => {
       it('should return whole todos list', async () => {
         const res = await request(app)
           .get('/v1/todos')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(200);
@@ -55,8 +54,7 @@ describe('GET /v1/todos', () => {
       it('should return completed todo list', async () => {
         const res = await request(app)
           .get('/v1/todos?filters[completed]=true')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(200);
@@ -68,8 +66,7 @@ describe('GET /v1/todos', () => {
       it('should return not completed todo list', async () => {
         const res = await request(app)
           .get('/v1/todos?filters[completed]=false')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(200);
@@ -81,8 +78,7 @@ describe('GET /v1/todos', () => {
       it('should return todo list with matched results', async () => {
         const res = await request(app)
           .get('/v1/todos?filters[name]=Laundry')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(200);
@@ -94,8 +90,7 @@ describe('GET /v1/todos', () => {
       it('should return not completed todo list', async () => {
         const res = await request(app)
           .get('/v1/todos?pagination[items]=2')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(200);
@@ -108,8 +103,7 @@ describe('GET /v1/todos', () => {
       it('should return not completed todo list', async () => {
         const res = await request(app)
           .get('/v1/todos?pagination[page]=2&pagination[items]=3')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(200);
@@ -122,13 +116,11 @@ describe('GET /v1/todos', () => {
       it('should return desc ordered todo list', async () => {
         const res = await request(app)
           .get('/v1/todos')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         const sortedRes = await request(app)
           .get('/v1/todos?sorts[0][column]=name&sorts[0][order]=desc')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(sortedRes.headers['content-type']).toMatch(/json/);
         expect(sortedRes.status).toEqual(200);
@@ -143,13 +135,11 @@ describe('GET /v1/todos', () => {
       it('should return asc ordered todo list', async () => {
         const res = await request(app)
           .get('/v1/todos')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         const sortedRes = await request(app)
           .get('/v1/todos?sorts[0][column]=name&sorts[0][order]=asc')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(sortedRes.headers['content-type']).toMatch(/json/);
         expect(sortedRes.status).toEqual(200);
@@ -164,13 +154,11 @@ describe('GET /v1/todos', () => {
       it('should return desc ordered todo list', async () => {
         const res = await request(app)
           .get('/v1/todos')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         const sortedRes = await request(app)
           .get('/v1/todos?sorts[1][column]=createdAt&sorts[1][order]=desc')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(sortedRes.headers['content-type']).toMatch(/json/);
         expect(sortedRes.status).toEqual(200);
@@ -185,13 +173,11 @@ describe('GET /v1/todos', () => {
       it('should return asc ordered todo list', async () => {
         const res = await request(app)
           .get('/v1/todos')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         const sortedRes = await request(app)
           .get('/v1/todos?sorts[1][column]=createdAt&sorts[1][order]=asc')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(sortedRes.headers['content-type']).toMatch(/json/);
         expect(sortedRes.status).toEqual(200);
@@ -208,8 +194,7 @@ describe('GET /v1/todos', () => {
           .get(
             '/v1/todos?filters[name]=Laundry&sorts[0][column]=name&sorts[0][order]=desc&pagination[page]=1&pagination[items]=2'
           )
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(200);
@@ -221,10 +206,7 @@ describe('GET /v1/todos', () => {
 
   describe('when user is not authenticated', () => {
     it('should return 401 error', async () => {
-      const res = await request(app)
-        .get('/v1/todos')
-        .send(getTodoPayload())
-        .set('Accept', 'application/json');
+      const res = await request(app).get('/v1/todos').send(getTodoPayload());
 
       expect(res.headers['content-type']).toMatch(/json/);
       expect(res.status).toEqual(401);

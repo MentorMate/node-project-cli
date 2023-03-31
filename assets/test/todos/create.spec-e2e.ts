@@ -63,10 +63,7 @@ describe('POST /v1/todos', () => {
     const todoPayload = getTodoPayload();
 
     it('should return 401 error', async () => {
-      const res = await request(app)
-        .post('/v1/todos')
-        .send(todoPayload)
-        .set('Accept', 'application/json');
+      const res = await request(app).post('/v1/todos').send(todoPayload);
 
       expect(res.headers['content-type']).toMatch(/json/);
       expect(res.status).toEqual(401);

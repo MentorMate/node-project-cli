@@ -41,18 +41,18 @@ describe('POST /auth/register', () => {
         expect(res.body.message).toEqual('User email already taken');
       });
     });
+  });
 
-    describe('when there is invalid payload', () => {
-      it('should return 422 error', async () => {
-        const res = await registerUser(app, {
-          email: 'test',
-          password: 'test',
-        });
-
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(422);
-        expect(res.body.message).toEqual('Bad Data');
+  describe('when there is invalid payload', () => {
+    it('should return 422 error', async () => {
+      const res = await registerUser(app, {
+        email: 'test',
+        password: 'test',
       });
+
+      expect(res.headers['content-type']).toMatch(/json/);
+      expect(res.status).toEqual(422);
+      expect(res.body.message).toEqual('Bad Data');
     });
   });
 });

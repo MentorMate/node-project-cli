@@ -36,19 +36,27 @@ describe('DELETE /v1/todos/:id', () => {
       it('should return 204 when todo is deleted', async () => {
         const res = await request(app)
           .delete(`/v1/todos/${todoId}`)
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.status).toEqual(204);
+      });
+    });
+
+    describe('given not existing todo id in the query', () => {
+      it('should return 404', async () => {
+        const res = await request(app)
+          .delete(`/v1/todos/${Date.now()}`)
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
+
+        expect(res.status).toEqual(404);
+        expect(res.body.message).toEqual('To-Do not found');
       });
     });
   });
 
   describe('when user is not authenticated', () => {
     it('should return 401 error', async () => {
-      const res = await request(app)
-        .delete(`/v1/todos/${todoId}`)
-        .set('Accept', 'application/json');
+      const res = await request(app).delete(`/v1/todos/${todoId}`);
 
       expect(res.headers['content-type']).toMatch(/json/);
       expect(res.status).toEqual(401);

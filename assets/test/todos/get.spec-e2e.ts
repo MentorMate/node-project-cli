@@ -2,12 +2,7 @@ import '@extensions/zod/register';
 import '@extensions/knex/register';
 
 import request from 'supertest';
-import {
-  create as createApp,
-  createTodo,
-  getRandomNumber,
-  registerUser,
-} from '../utils';
+import { create as createApp, createTodo, registerUser } from '../utils';
 import { JwtTokens } from '@common/data/auth';
 import { Todo } from '@modules/database';
 
@@ -42,8 +37,7 @@ describe('GET /v1/todos/:id', () => {
       it('should return the todo', async () => {
         const res = await request(app)
           .get(`/v1/todos/${todo.id}`)
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(200);
@@ -57,9 +51,8 @@ describe('GET /v1/todos/:id', () => {
     describe('given not existing todo id in the query', () => {
       it('should return 404', async () => {
         const res = await request(app)
-          .get(`/v1/todos/${getRandomNumber()}`)
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .get(`/v1/todos/${Date.now()}`)
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(404);
@@ -71,8 +64,7 @@ describe('GET /v1/todos/:id', () => {
       it('should return 422 error', async () => {
         const res = await request(app)
           .get(`/v1/todos/test`)
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(422);
@@ -83,9 +75,7 @@ describe('GET /v1/todos/:id', () => {
 
   describe('when user is not authenticated', () => {
     it('should return 401 error', async () => {
-      const res = await request(app)
-        .get(`/v1/todos/${todo.id}`)
-        .set('Accept', 'application/json');
+      const res = await request(app).get(`/v1/todos/${todo.id}`);
 
       expect(res.headers['content-type']).toMatch(/json/);
       expect(res.status).toEqual(401);

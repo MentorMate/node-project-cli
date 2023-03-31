@@ -5,7 +5,6 @@ import request from 'supertest';
 import {
   create as createApp,
   createTodo,
-  getRandomNumber,
   getTodoPayload,
   registerUser,
 } from '../utils';
@@ -57,13 +56,32 @@ describe('POST /v1/todos/:id', () => {
       });
     });
 
+    describe('given an empty payload and id in the query', () => {
+      it('should return the not updated todo', async () => {
+        const todoRes = await createTodo(app, jwtTokens.idToken, true);
+        const todo = todoRes.body;
+
+        const res = await request(app)
+          .patch(`/v1/todos/${todo.id}`)
+          .send({})
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
+
+        expect(res.headers['content-type']).toMatch(/json/);
+        expect(res.status).toEqual(200);
+        expect(res.body.id).toEqual(todo.id);
+        expect(res.body.name).toEqual(todo.name);
+        expect(res.body.note).toEqual(todo.note);
+        expect(res.body.completed).toEqual(todo.completed);
+        expect(res.body.userId).toEqual(todo.userId);
+      });
+    });
+
     describe('given not existing todo id in the query', () => {
       it('should return 404', async () => {
         const res = await request(app)
-          .patch(`/v1/todos/${getRandomNumber()}`)
+          .patch(`/v1/todos/${Date.now()}`)
           .send(getTodoPayload())
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(404);
@@ -76,8 +94,7 @@ describe('POST /v1/todos/:id', () => {
         const res = await request(app)
           .patch(`/v1/todos/test`)
           .send(getTodoPayload())
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(res.headers['content-type']).toMatch(/json/);
         expect(res.status).toEqual(422);
@@ -90,8 +107,7 @@ describe('POST /v1/todos/:id', () => {
     it('should return 401 error', async () => {
       const res = await request(app)
         .patch(`/v1/todos/${todo.id}`)
-        .send(getTodoPayload())
-        .set('Accept', 'application/json');
+        .send(getTodoPayload());
 
       expect(res.headers['content-type']).toMatch(/json/);
       expect(res.status).toEqual(401);
