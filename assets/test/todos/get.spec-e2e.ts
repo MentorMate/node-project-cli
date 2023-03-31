@@ -2,7 +2,15 @@ import '@extensions/zod/register';
 import '@extensions/knex/register';
 
 import request from 'supertest';
-import { create as createApp, createTodo, registerUser } from '../utils';
+import {
+  create as createApp,
+  createTodo,
+  expectError,
+  registerUser,
+  TodoNotFound,
+  Unauthorized,
+  UnprocessableEntity,
+} from '../utils';
 import { JwtTokens } from '@common/data/auth';
 import { Todo } from '@modules/database';
 
@@ -34,52 +42,51 @@ describe('GET /v1/todos/:id', () => {
 
   describe('when user is authenticated', () => {
     describe('given todo id in the query', () => {
-      it('should return the todo', async () => {
-        const res = await request(app)
+      it('should return the todo', () => {
+        return request(app)
           .get(`/v1/todos/${todo.id}`)
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
 
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(200);
-        expect(res.body.id).toEqual(todo.id);
-        expect(res.body.name).toEqual(todo.name);
-        expect(res.body.note).toEqual(todo.note);
-        expect(res.body.completed).toEqual(todo.completed);
+          .expect('content-type', /json/)
+          .expect(200)
+          .then((res) => {
+            expect(res.body.id).toEqual(todo.id);
+            expect(res.body.name).toEqual(todo.name);
+            expect(res.body.note).toEqual(todo.note);
+            expect(res.body.completed).toEqual(todo.completed);
+          });
       });
     });
 
     describe('given not existing todo id in the query', () => {
-      it('should return 404', async () => {
-        const res = await request(app)
+      it('should return 404', () => {
+        return request(app)
           .get(`/v1/todos/${Date.now()}`)
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
-
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(404);
-        expect(res.body.message).toEqual('To-Do not found');
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .expect('content-type', /json/)
+          .expect(expectError(TodoNotFound));
       });
     });
 
     describe('given a text id in the query', () => {
-      it('should return 422 error', async () => {
-        const res = await request(app)
+      it('should return 422 error', () => {
+        return request(app)
           .get(`/v1/todos/test`)
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
 
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(422);
-        expect(res.body.message).toEqual('Bad Data');
+          .expect('content-type', /json/)
+          .expect(expectError(UnprocessableEntity));
       });
     });
   });
 
   describe('when user is not authenticated', () => {
     it('should return 401 error', async () => {
-      const res = await request(app).get(`/v1/todos/${todo.id}`);
+      return request(app)
+        .get(`/v1/todos/${todo.id}`)
 
-      expect(res.headers['content-type']).toMatch(/json/);
-      expect(res.status).toEqual(401);
-      expect(res.body.message).toEqual('No authorization token was found');
+        .expect('content-type', /json/)
+        .expect(expectError(Unauthorized));
     });
   });
 });

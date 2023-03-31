@@ -5,9 +5,11 @@ import request from 'supertest';
 import {
   create as createApp,
   createTodo,
+  expectError,
   getTodoPayload,
   registerUser,
   sortByField,
+  Unauthorized,
 } from '../utils';
 import { JwtTokens } from '@common/data/auth';
 
@@ -39,81 +41,80 @@ describe('GET /v1/todos', () => {
 
   describe('when user is authenticated', () => {
     describe('when no filters are applied', () => {
-      it('should return whole todos list', async () => {
-        const res = await request(app)
+      it('should return whole todos list', () => {
+        return request(app)
           .get('/v1/todos')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
-
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(200);
-        expect(res.body.data.length).toEqual(3);
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .then((res) => {
+            expect(res.body.data.length).toEqual(3);
+          });
       });
     });
 
     describe('when completed=true filter is applied', () => {
-      it('should return completed todo list', async () => {
-        const res = await request(app)
+      it('should return completed todo list', () => {
+        return request(app)
           .get('/v1/todos?filters[completed]=true')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
-
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(200);
-        expect(res.body.data.length).toEqual(1);
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .then((res) => {
+            expect(res.body.data.length).toEqual(1);
+          });
       });
     });
 
     describe('when completed=false filter is applied', () => {
-      it('should return not completed todo list', async () => {
-        const res = await request(app)
+      it('should return not completed todo list', () => {
+        return request(app)
           .get('/v1/todos?filters[completed]=false')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
-
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(200);
-        expect(res.body.data.length).toEqual(2);
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .then((res) => {
+            expect(res.body.data.length).toEqual(2);
+          });
       });
     });
 
     describe('when name = "Laundry" filter is applied', () => {
-      it('should return todo list with matched results', async () => {
-        const res = await request(app)
+      it('should return todo list with matched results', () => {
+        return request(app)
           .get('/v1/todos?filters[name]=Laundry')
-<<<<<<< HEAD
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
-=======
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json');
->>>>>>> ff07173 (feat: add tests to improve the e2e coverage)
-
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(200);
-        expect(res.body.data.length).toEqual(3);
+          .expect(200)
+          .then((res) => {
+            expect(res.body.data.length).toEqual(3);
+          });
       });
     });
 
     describe('when pagination items is applied', () => {
-      it('should return not completed todo list', async () => {
-        const res = await request(app)
+      it('should return not completed todo list', () => {
+        return request(app)
           .get('/v1/todos?pagination[items]=2')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
-
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(200);
-        expect(res.body.data.length).toEqual(2);
-        expect(res.body.meta.total).toEqual(3);
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .then((res) => {
+            expect(res.body.data.length).toEqual(2);
+          });
       });
     });
 
     describe('when pagination page is applied', () => {
-      it('should return not completed todo list', async () => {
-        const res = await request(app)
+      it('should return not completed todo list', () => {
+        return request(app)
           .get('/v1/todos?pagination[page]=2&pagination[items]=3')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken);
-
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(200);
-        expect(res.body.data.length).toEqual(0);
-        expect(res.body.meta.total).toEqual(3);
+          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+          .set('Accept', 'application/json')
+          .expect(200)
+          .then((res) => {
+            expect(res.body.data.length).toEqual(0);
+            expect(res.body.meta.total).toEqual(3);
+          });
       });
     });
 
@@ -210,12 +211,13 @@ describe('GET /v1/todos', () => {
   });
 
   describe('when user is not authenticated', () => {
-    it('should return 401 error', async () => {
-      const res = await request(app).get('/v1/todos').send(getTodoPayload());
-
-      expect(res.headers['content-type']).toMatch(/json/);
-      expect(res.status).toEqual(401);
-      expect(res.body.message).toEqual('No authorization token was found');
+    it('should return 401 error', () => {
+      return request(app)
+        .get('/v1/todos')
+        .send(getTodoPayload())
+        .set('Accept', 'application/json')
+        .expect('content-type', /json/)
+        .expect(expectError(Unauthorized));
     });
   });
 });
