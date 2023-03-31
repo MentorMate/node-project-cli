@@ -14,7 +14,6 @@ export default defineRoute({
   },
   responses: {
     200: jwtTokensDTO,
-    404: response.NotFound(),
     422: response.UnprocessableEntity('Invalid email or password'),
   },
 }).attachHandler(

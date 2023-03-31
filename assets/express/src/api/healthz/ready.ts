@@ -7,7 +7,7 @@ const route: RouteDefinition = {
     'Used to check whether the application is ready to receive requests.',
   tags: ['Healthchecks'],
   method: 'get',
-  path: '/healthz/ready',
+  path: '/ready',
   handler: function (_req, res) {
     // Add your specific checks
     res.send('OK');

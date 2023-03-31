@@ -40,7 +40,7 @@ module.exports = {
     // type definitions
     '<rootDir>/src/@types/',
     // database migrations
-    '<rootDir>/src/database/migrations'
+    '<rootDir>/src/modules/database/migrations'
   ],
   coverageThreshold: {
     global: {

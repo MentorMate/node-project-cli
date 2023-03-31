@@ -17,7 +17,6 @@ export default defineRoute({
     200: todoDTO,
     401: response.Unauthorized(),
     404: response.NotFound(),
-    409: response.Conflict(),
     422: response.UnprocessableEntity(),
   },
 }).attachHandler(
