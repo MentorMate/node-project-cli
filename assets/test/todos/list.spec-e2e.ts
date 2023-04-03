@@ -158,7 +158,7 @@ describe('GET /v1/todos', () => {
           .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         const sortedRes = await request(app)
-          .get('/v1/todos?sorts[1][column]=createdAt&sorts[1][order]=desc')
+          .get('/v1/todos?sorts[0][column]=createdAt&sorts[0][order]=desc')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(sortedRes.headers['content-type']).toMatch(/json/);
@@ -177,7 +177,7 @@ describe('GET /v1/todos', () => {
           .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         const sortedRes = await request(app)
-          .get('/v1/todos?sorts[1][column]=createdAt&sorts[1][order]=asc')
+          .get('/v1/todos?sorts[0][column]=createdAt')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken);
 
         expect(sortedRes.headers['content-type']).toMatch(/json/);

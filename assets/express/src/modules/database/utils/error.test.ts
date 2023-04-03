@@ -15,14 +15,14 @@ describe('definedOrNotFound', () => {
 
   describe('returned function', () => {
     it('should return the value it is called with when the value is not undefined', () => {
-      expect(definedOrNotFound()(null)).toBe(null);
-      expect(definedOrNotFound()(false)).toBe(false);
-      expect(definedOrNotFound()(0)).toBe(0);
-      expect(definedOrNotFound()('')).toBe('');
+      expect(definedOrNotFound('message')(null)).toBe(null);
+      expect(definedOrNotFound('message')(false)).toBe(false);
+      expect(definedOrNotFound('message')(0)).toBe(0);
+      expect(definedOrNotFound('message')('')).toBe('');
       const emptyArray: unknown[] = [];
-      expect(definedOrNotFound()(emptyArray)).toBe(emptyArray);
+      expect(definedOrNotFound('message')(emptyArray)).toBe(emptyArray);
       const emptyObject = {};
-      expect(definedOrNotFound()(emptyObject)).toEqual(emptyObject);
+      expect(definedOrNotFound('message')(emptyObject)).toEqual(emptyObject);
     });
 
     it('should throw RecordNotFound when the value it is called with is undefined', () => {
@@ -35,14 +35,14 @@ describe('definedOrNotFound', () => {
 
 describe('updatedOrNotFound', () => {
   it('should return a function', () => {
-    expect(typeof updatedOrNotFound()).toBe('function');
+    expect(typeof updatedOrNotFound('message')).toBe('function');
   });
 
   describe('returned function', () => {
     it('should return the number it is called with when the number is not zero', () => {
-      expect(updatedOrNotFound()(-1)).toBe(-1);
-      expect(updatedOrNotFound()(1)).toBe(1);
-      expect(updatedOrNotFound()(NaN)).toEqual(NaN);
+      expect(updatedOrNotFound('message')(-1)).toBe(-1);
+      expect(updatedOrNotFound('message')(1)).toBe(1);
+      expect(updatedOrNotFound('message')(NaN)).toEqual(NaN);
     });
 
     it('should throw RecordNotFound when the value it is called with is zero', () => {

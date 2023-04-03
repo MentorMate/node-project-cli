@@ -20,11 +20,11 @@ describe('mapErrors', () => {
 
     it('should map the error and pass it to next when a mapping is provided', () => {
       const middleware = mapErrors({ [RecordNotFound.name]: DuplicateRecord });
-      const error = new RecordNotFound();
+      const error = new RecordNotFound('message');
       const next = jest.fn();
       middleware(error, {} as never, {} as never, next);
       expect(next).toHaveBeenCalledWith(
-        new DuplicateRecord(new RecordNotFound().message)
+        new DuplicateRecord(new RecordNotFound('message').message)
       );
     });
   });
