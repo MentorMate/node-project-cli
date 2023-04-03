@@ -68,6 +68,7 @@ module.exports = (toolbox) => {
               props: {
                 ts: projectLanguage === 'TS',
                 test: {
+                  unit: true,
                   e2e: isExampleApp,
                 },
               },

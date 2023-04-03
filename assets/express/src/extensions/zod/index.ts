@@ -9,7 +9,7 @@ declare module 'zod' {
 
 declare module '@asteasolutions/zod-to-openapi' {
   interface ZodOpenAPIMetadata {
-    schemaName: string;
+    refId?: string;
   }
 }
 

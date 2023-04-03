@@ -14,7 +14,7 @@ const listTodosFilters = z.object({
 
 type ListTodosFilters = z.infer<typeof listTodosFilters>;
 
-export const listTodosFilterMap: FilterMap<
+const listTodosFilterMap: FilterMap<
   KnexType.QueryBuilder<Tables['todos']>,
   ListTodosFilters
 > = {

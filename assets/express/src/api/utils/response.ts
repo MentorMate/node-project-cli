@@ -14,9 +14,14 @@ const zodErrorIssue = z.object({
 
 export const response = {
   NoContent: () => ({ description: httpStatuses.message[204] as string }),
-  NotFound: (message = 'Record not found') => error(message),
-  Conflict: (message = 'Record already exists') => error(message),
+  NotFound: (message = 'Record not found') =>
+    error(message).openapi({ refId: 'NotFound' }),
+  Conflict: (message = 'Record already exists') =>
+    error(message).openapi({ refId: 'Conflict' }),
   UnprocessableEntity: (message = 'Invalid input') =>
-    error(message).extend({ errors: z.array(zodErrorIssue) }),
-  Unauthorized: (message = 'Unauthorized') => error(message),
+    error(message)
+      .extend({ errors: z.array(zodErrorIssue) })
+      .openapi({ refId: 'UnprocessableEntity' }),
+  Unauthorized: (message = 'Unauthorized') =>
+    error(message).openapi({ refId: 'Unauthorized' }),
 };

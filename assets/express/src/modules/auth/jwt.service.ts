@@ -4,7 +4,9 @@ import { JwtServiceInterface } from './jwt.service.interface';
 import { JwtClaims } from '@common/data/auth';
 
 export class JwtService implements JwtServiceInterface {
-  constructor(private readonly env: Environment) {}
+  constructor(
+    private readonly env: Pick<Environment, 'JWT_SECRET' | 'JWT_EXPIRATION'>
+  ) {}
 
   sign(claims: JwtClaims): string {
     return jwt.sign(claims, this.env.JWT_SECRET, {

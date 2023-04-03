@@ -9,11 +9,7 @@ module.exports = {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
   // root dir is the app root
-  rootDir: '..',
-  // match anything that is spec-e2e or test-e2e with a js, jsx, ts and tsx extension
-  testMatch: [
-    "**/?(*.)+(spec|test)-e2e.[tj]s?(x)"
-  ],
+  rootDir: '.',
   // path aliases from tsconfig.json
   moduleNameMapper: {
     '^@api$': '<rootDir>/src/api',
@@ -23,29 +19,29 @@ module.exports = {
     '^@common$': '<rootDir>/src/common',
     '^@common/(.*)$': '<rootDir>/src/common/$1',
     '^@database$': '<rootDir>/src/database',
-    '^@extensions/(.*)$': '<rootDir>/src/extensions/$1'
+    '^@extensions/(.*)$': '<rootDir>/src/extensions/$1',
   },
-  // disable unit test manual mocks
-  modulePathIgnorePatterns: [
-    '<rootDir>/__mocks__',
-    '<rootDir>/src/.*/__mocks__'
-  ],
-  // change coverage directory name so that it doesn't overlap with unit test coverage
-  coverageDirectory: '<rootDir>/coverage-e2e',
   // coverage is collected from files under src/
   collectCoverageFrom: [
-    '<rootDir>/src/**/*.[tj]s?(x)',
+    '<rootDir>/src/**/*.[tj]s?(x)'
   ],
+  // coverage directory
+  coverageDirectory: '<rootDir>/coverage',
   // and from those files ignore
   coveragePathIgnorePatterns: [
     // entry points
     '<rootDir>/src/index.[tj]sx?$',
-    // unit tests
-    '(spec|test).[tj]sx?$',
+    '<rootDir>/src/app.[tj]sx?$',
+    // extensions
+    '<rootDir>/src/extensions',
+    // module indexes
+    '<rootDir>/.*/index.[tj]sx?$',
+    // e2e tests
+    '(spec|test)-e2e.[tj]sx?$',
     // type definitions
     '<rootDir>/src/@types/',
     // database migrations
-    '<rootDir>/src/modules/database/migrations'
+    '<rootDir>/src/modules/database/migrations',
   ],
   coverageThreshold: {
     global: {

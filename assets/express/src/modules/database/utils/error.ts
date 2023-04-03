@@ -5,7 +5,7 @@ import { DuplicateRecord, RecordNotFound } from '../errors';
 
 const definedOrThrow = <T>(errorFactory: () => Error) => {
   return (result: T | undefined): T => {
-    if (!result) {
+    if (result === undefined) {
       throw errorFactory();
     }
     return result;

@@ -1,4 +1,4 @@
-import { AnyZodObject, ZodObject } from 'zod';
+import { ZodObject, ZodType } from 'zod';
 import {
   OpenAPIGenerator,
   OpenAPIRegistry,
@@ -8,7 +8,7 @@ import { RouteDefinition } from '@api';
 import httpStatuses from 'statuses';
 
 // Changes the path param placeholder syntax from `:param` to `{param}`
-const reformatPathParams = (path: string) =>
+export const reformatPathParams = (path: string) =>
   path.replaceAll(/:[a-zA-Z]+/g, (match) => `{${match.substring(1)}}`);
 
 const registerRoute = (
@@ -48,7 +48,7 @@ const registerRoute = (
     responses: Object.fromEntries(
       Object.entries(responses).map(([code, schema]) => [
         code,
-        schema instanceof ZodObject
+        schema instanceof ZodType
           ? {
               description:
                 httpStatuses.message[code as never as number] ??
@@ -61,51 +61,85 @@ const registerRoute = (
   });
 };
 
-const schemaName = (schema: AnyZodObject) =>
-  schema._def.openapi?.metadata?.schemaName;
+const getRefId = <Schema extends ZodType>(schema: Schema) =>
+  schema._def.openapi?.metadata?.refId;
 
-const registerSchema = (registry: OpenAPIRegistry, schema: AnyZodObject) => {
-  const name = schemaName(schema);
-
-  if (!name) {
-    return;
+const registerSchema = <Schema extends ZodType>(
+  registry: OpenAPIRegistry,
+  registeredSchemas: Map<string, ZodType>,
+  schema: Schema
+): Schema => {
+  if (schema instanceof ZodObject) {
+    for (const [k, v] of Object.entries(schema.shape)) {
+      schema.shape[k] = registerSchema(
+        registry,
+        registeredSchemas,
+        v as ZodType
+      );
+    }
   }
 
-  const registered = !!registry.definitions.find(
-    (d) => d.type === 'schema' && name === schemaName(d.schema as never)
-  );
+  const refId = getRefId(schema);
 
-  if (registered) {
-    return;
+  if (!refId) {
+    return schema;
   }
 
-  registry.register(name, schema);
+  if (registeredSchemas.has(refId)) {
+    return registeredSchemas.get(refId) as Schema;
+  }
+
+  const registeredSchema = registry.register(refId, schema);
+  registeredSchemas.set(refId, registeredSchema);
+  return registeredSchema;
 };
 
 const registerRoutes = (
   registry: OpenAPIRegistry,
   routes: RouteDefinition[]
 ) => {
+  const registeredSchemas = new Map<string, ZodType>();
+
   for (const route of routes) {
     if (route.request?.body) {
-      registerSchema(registry, route.request.body);
+      route.request.body = registerSchema(
+        registry,
+        registeredSchemas,
+        route.request.body
+      );
     }
 
     if (route.request?.query) {
-      registerSchema(registry, route.request.query);
+      route.request.query = registerSchema(
+        registry,
+        registeredSchemas,
+        route.request.query
+      );
     }
 
     if (route.request?.params) {
-      registerSchema(registry, route.request.params);
+      route.request.params = registerSchema(
+        registry,
+        registeredSchemas,
+        route.request.params
+      );
     }
 
     if (route.request?.headers) {
-      registerSchema(registry, route.request.headers);
+      route.request.headers = registerSchema(
+        registry,
+        registeredSchemas,
+        route.request.headers
+      );
     }
 
-    for (const response of Object.values(route.responses)) {
+    for (const [code, response] of Object.entries(route.responses)) {
       if (response instanceof ZodObject) {
-        registerSchema(registry, response);
+        route.responses[code] = registerSchema(
+          registry,
+          registeredSchemas,
+          response
+        );
       }
     }
 
@@ -113,7 +147,7 @@ const registerRoutes = (
   }
 };
 
-export const generateDocument = (
+export const getDocumentGenerator = (
   // 3.1.0 is not yet supported by our version of swagger-ui
   version: Exclude<OpenApiVersion, '3.1.0'>,
   routes: RouteDefinition[]
@@ -128,16 +162,17 @@ export const generateDocument = (
 
   registerRoutes(registry, routes);
 
-  const generator = new OpenAPIGenerator(registry.definitions, version);
+  for (const def of registry.definitions) {
+    if (def.type !== 'schema') {
+      continue;
+    }
 
-  const document = generator.generateDocument({
-    info: {
-      version: '1.0.0',
-      title: 'My API',
-      description: 'This is the API',
-    },
-    servers: [],
-  });
+    const meta = def.schema._def?.openapi?.metadata;
 
-  return document;
+    if (meta) {
+      delete meta.refId;
+    }
+  }
+
+  return new OpenAPIGenerator(registry.definitions, version);
 };
