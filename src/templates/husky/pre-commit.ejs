@@ -5,7 +5,7 @@
 npx --no -- lint-staged
 npx --no -- ls-lint
 npm run initsecrets
-npm run test:e2e:cov
+<% if (props.test.e2e) { %>npm run test:e2e:cov<% } %>
 pre-commit run
 
 # Enable branch naming validation by uncommenting the lines below and adjust valid_branch_regex to your preference
