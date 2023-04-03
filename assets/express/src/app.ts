@@ -92,12 +92,12 @@ export function create(env: Environment) {
     middleware = [],
     handler,
   } of routes) {
-    if (request) {
-      middleware.push(validateRequest(request));
-    }
-
     if (authenticate) {
       middleware.push(validateAccessToken(env.JWT_SECRET));
+    }
+
+    if (request) {
+      middleware.push(validateRequest(request));
     }
 
     app[method](
