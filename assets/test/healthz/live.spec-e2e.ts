@@ -18,7 +18,7 @@ describe('GET /healthz/live', () => {
     await destroy();
   });
 
-  it('should return 200', async () => {
-    await request(app).get('/healthz/live').expect(200);
+  it('should return 200', () => {
+    return request(app).get('/healthz/live').expect(200);
   });
 });

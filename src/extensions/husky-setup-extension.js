@@ -7,6 +7,8 @@ module.exports = (toolbox) => {
     features,
     pkgJson,
     projectLanguage,
+    framework,
+    db,
   }) => {
     const {
       filesystem: { dir, copyAsync, read, writeAsync },
@@ -56,12 +58,18 @@ module.exports = (toolbox) => {
         if (features.includes('preCommit')) {
           dir(`${appDir}/scripts`);
 
+          const isExampleApp =
+            projectLanguage === 'TS' && framework === 'express' && db === 'pg';
+
           await Promise.all([
             generate({
               template: 'husky/pre-commit.ejs',
               target: `${appDir}/.husky/pre-commit`,
               props: {
                 ts: projectLanguage === 'TS',
+                test: {
+                  e2e: isExampleApp,
+                },
               },
             }).then(() => {
               run(`chmod +x ${appDir}/.husky/pre-commit`);

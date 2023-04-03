@@ -2,7 +2,14 @@ import '@extensions/zod/register';
 import '@extensions/knex/register';
 
 import request from 'supertest';
-import { create as createApp, getTodoPayload, registerUser } from '../utils';
+import {
+  create as createApp,
+  expectError,
+  getTodoPayload,
+  registerUser,
+  Unauthorized,
+  UnprocessableEntity,
+} from '../utils';
 import { JwtTokens } from '@common/data/auth';
 
 describe('POST /v1/todos', () => {
@@ -29,32 +36,29 @@ describe('POST /v1/todos', () => {
     const todoPayload = getTodoPayload();
 
     describe('given the todo payload', () => {
-      it('should return the created todo', async () => {
-        const res = await request(app)
+      it('should return the created todo', () => {
+        return request(app)
           .post('/v1/todos')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json')
-          .send(todoPayload);
-
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(201);
-        expect(res.body.name).toEqual(todoPayload.name);
-        expect(res.body.note).toEqual(todoPayload.note);
-        expect(res.body.completed).toEqual(false);
+          .send(todoPayload)
+          .expect('content-type', /json/)
+          .expect(201)
+          .then((res) => {
+            expect(res.body.name).toEqual(todoPayload.name);
+            expect(res.body.note).toEqual(todoPayload.note);
+            expect(res.body.completed).toEqual(todoPayload.completed);
+          });
       });
     });
 
     describe('given an empty payload', () => {
-      it('should return 422 error', async () => {
-        const res = await request(app)
+      it('should return 422 error', () => {
+        return request(app)
           .post('/v1/todos')
+          .send({})
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .set('Accept', 'application/json')
-          .send({});
-
-        expect(res.headers['content-type']).toMatch(/json/);
-        expect(res.status).toEqual(422);
-        expect(res.body.message).toEqual('Bad Data');
+          .expect('content-type', /json/)
+          .expect(expectError(UnprocessableEntity));
       });
     });
   });
@@ -62,12 +66,12 @@ describe('POST /v1/todos', () => {
   describe('when user is not authenticated', () => {
     const todoPayload = getTodoPayload();
 
-    it('should return 401 error', async () => {
-      const res = await request(app).post('/v1/todos').send(todoPayload);
-
-      expect(res.headers['content-type']).toMatch(/json/);
-      expect(res.status).toEqual(401);
-      expect(res.body.message).toEqual('No authorization token was found');
+    it('should return 401 error', () => {
+      return request(app)
+        .post('/v1/todos')
+        .send(todoPayload)
+        .expect('content-type', /json/)
+        .expect(expectError(Unauthorized));
     });
   });
 });
