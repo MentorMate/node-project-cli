@@ -223,6 +223,7 @@ describe('husky-setup-extension', () => {
             props: {
               ts: input.projectLanguage === 'TS',
               test: {
+                unit: true,
                 e2e:
                   input.projectLanguage === 'TS' &&
                   input.framework === 'express' &&

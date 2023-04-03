@@ -2,7 +2,7 @@ import { Paginated } from '@common/query';
 import { mapErrors } from '@common/utils';
 import { Knex } from 'knex';
 import { InsertTodo, Todo, UpdateTodo } from '../models';
-import { listTodosFilterMap, listTodosMaps, ListTodosQuery } from '../queries';
+import { listTodosMaps, ListTodosQuery } from '../queries';
 import { first, parseCount, extractPagination } from '../utils';
 import { TodoUserNotFound } from './todos.error-mappings';
 import { TodosRepositoryInterface } from './todos.repository.interface';
@@ -51,12 +51,11 @@ export class TodosRepository implements TodosRepositoryInterface {
     query: ListTodosQuery
   ): Promise<Paginated<Todo>> {
     const qb = this.knex('todos').where({ userId });
-
     const data = await qb.clone().list(query, listTodosMaps);
 
     const total = await qb
       .clone()
-      .filter(query.filters, listTodosFilterMap)
+      .filter(query.filters, listTodosMaps.filterMap)
       .count()
       .then(parseCount);
 

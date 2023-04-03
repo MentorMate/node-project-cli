@@ -4,3 +4,4 @@ coverage
 dist/
 *.config.js
 *rc.js
+src/extensions/**/*.js

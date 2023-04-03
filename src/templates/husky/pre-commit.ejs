@@ -5,6 +5,7 @@
 npx --no -- lint-staged
 npx --no -- ls-lint
 npm run initsecrets
+<% if (props.test.unit) { %>npm run test:cov<% } %>
 <% if (props.test.e2e) { %>npm run test:e2e:cov<% } %>
 pre-commit run
 

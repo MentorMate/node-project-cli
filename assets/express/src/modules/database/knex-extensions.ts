@@ -124,7 +124,10 @@ export const sort = <QB extends Knex.QueryBuilder, SortColumn extends string>(
   sorts: Sort<SortColumn>[],
   sorterMap: SorterMap<QB, SortColumn>
 ): QB =>
-  sorts.reduce<QB>((qb, sort) => sorterMap[sort.column](qb, sort.order), qb);
+  sorts.reduce<QB>(
+    (qb, sort) => sorterMap[sort.column](qb, sort.order || 'asc'),
+    qb
+  );
 
 export const paginate = <QB extends Knex.QueryBuilder>(
   qb: QB,

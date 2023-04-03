@@ -6,13 +6,21 @@ import { resolve } from 'path';
 
 import { envSchema } from '@common/environment';
 import { routes, RouteDefinition } from '@api';
-import { generateDocument } from '@common/openapi';
+import { getDocumentGenerator } from '@common/openapi';
 
 const run = async () => {
   const env = Object.freeze(envSchema.parse(process.env));
 
-  const document = generateDocument('3.0.3', routes as RouteDefinition[]);
-  document.servers = [{ url: `http://localhost:${env.PORT}` }];
+  const generator = getDocumentGenerator('3.0.3', routes as RouteDefinition[]);
+
+  const document = generator.generateDocument({
+    info: {
+      version: '1.0.0',
+      title: 'My API',
+      description: 'This is the API',
+    },
+    servers: [{ url: `http://localhost:${env.PORT}` }],
+  });
 
   const file = resolve(__dirname, '..', '.openapi', 'openapi.json');
   const data = JSON.stringify(document, null, 2);

@@ -8,6 +8,7 @@
     "**/*spec.ts",
     "**/*.test.ts",
     "**/*spec-e2e.ts",
-    "**/*.test-e2e.ts"
+    "**/*.test-e2e.ts",
+    "**/__mocks__",
   ]
 }

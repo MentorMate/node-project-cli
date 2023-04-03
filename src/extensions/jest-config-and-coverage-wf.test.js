@@ -162,6 +162,21 @@ describe('jest-config-and-coverage-wf', () => {
               input.db = 'pg';
             });
 
+            it('should copy the example project unit test config', () => {
+              expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+                `${input.assetsPath}/express/jest.config.js`,
+                `${input.appDir}/jest.config.js`,
+                { overwrite: true }
+              );
+            });
+
+            it('should copy the example project unit test mocks', () => {
+              expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+                `${input.assetsPath}/express/__mocks__/`,
+                `${input.appDir}/__mocks__/`
+              );
+            });
+
             it('should copy the example project tests', () => {
               expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
                 `${input.assetsPath}/test/`,

@@ -31,6 +31,15 @@ module.exports = (toolbox) => {
         }
 
         if (projectLanguage === 'TS' && framework !== 'nest' && db === 'pg') {
+          await copyAsync(
+            `${assetsPath}/express/jest.config.js`,
+            `${appDir}/jest.config.js`,
+            { overwrite: true }
+          );
+          await copyAsync(
+            `${assetsPath}/express/__mocks__/`,
+            `${appDir}/__mocks__/`
+          );
           await copyAsync(`${assetsPath}/test/`, `${appDir}/test/`);
         }
       } catch (err) {
