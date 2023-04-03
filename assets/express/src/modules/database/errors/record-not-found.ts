@@ -1,5 +1,5 @@
 export class RecordNotFound extends Error {
-  constructor(message = 'Record not found') {
+  constructor(message: string) {
     super(message);
     this.name = RecordNotFound.name;
   }

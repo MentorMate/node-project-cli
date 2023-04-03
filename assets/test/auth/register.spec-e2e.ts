@@ -8,6 +8,7 @@ import {
   getUserCredentials,
   UnprocessableEntity,
   UserConflict,
+  registerUser,
 } from '../utils';
 
 describe('POST /auth/register', () => {
@@ -25,12 +26,10 @@ describe('POST /auth/register', () => {
   });
 
   describe('given the email and password are valid', () => {
-    const credentials = getUserCredentials();
-
     it('should create a new user and return a jwt token', () => {
       return request(app)
         .post('/auth/register')
-        .send(credentials)
+        .send(getUserCredentials())
         .expect('content-type', /json/)
         .expect(200)
         .then((res) => {
@@ -39,8 +38,12 @@ describe('POST /auth/register', () => {
     });
 
     describe('when there is an existing user', () => {
-      it('should return 409 error', () => {
-        return request(app)
+      it('should return 409 error', async () => {
+        const credentials = getUserCredentials();
+
+        await registerUser(app, credentials);
+
+        await request(app)
           .post('/auth/register')
           .send(credentials)
           .expect('content-type', /json/)

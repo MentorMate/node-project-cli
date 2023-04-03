@@ -21,10 +21,10 @@ const updatedOrThrow = (errorFactory: () => Error) => {
   };
 };
 
-export const definedOrNotFound = <T>(message?: string) =>
+export const definedOrNotFound = <T>(message: string) =>
   definedOrThrow<T>(() => new RecordNotFound(message));
 
-export const updatedOrNotFound = (message?: string) =>
+export const updatedOrNotFound = (message: string) =>
   updatedOrThrow(() => new RecordNotFound(message));
 
 const isDatabaseError = (e: unknown): e is DatabaseError =>

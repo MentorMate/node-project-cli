@@ -40,12 +40,22 @@ module.exports = {
   coveragePathIgnorePatterns: [
     // entry points
     '<rootDir>/src/index.[tj]sx?$',
+    '<rootDir>/src/app.[tj]sx?$',
+    // extensions
+    '<rootDir>/src/extensions',
+    // module indexes
+    '<rootDir>/.*/index.[tj]sx?$',
     // unit tests
     '(spec|test).[tj]sx?$',
     // type definitions
     '<rootDir>/src/@types/',
     // database migrations
-    '<rootDir>/src/modules/database/migrations'
+    '<rootDir>/src/modules/database/migrations',
+    // utility code
+    '<rootDir>/src/common',
+    '<rootDir>/src/modules/database/utils',
+    // middleware
+    '<rootDir>/src/api/middleware'
   ],
   coverageThreshold: {
     global: {
