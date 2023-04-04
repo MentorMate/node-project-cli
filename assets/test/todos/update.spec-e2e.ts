@@ -28,8 +28,7 @@ describe('POST /v1/todos/:id', () => {
   });
 
   beforeAll(async () => {
-    const res = await registerUser(app);
-    jwtTokens = res.body;
+    jwtTokens = await registerUser(app);
   });
 
   beforeAll(async () => {
@@ -43,20 +42,19 @@ describe('POST /v1/todos/:id', () => {
 
   describe('when user is authenticated', () => {
     describe('given the todo payload and id in the query', () => {
-      it('should return the updated todo', () => {
+      it('should return the updated todo', async () => {
         const todoPayload = getTodoPayload();
 
-        return request(app)
+        const res = await request(app)
           .patch(`/v1/todos/${todo.id}`)
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
           .send(todoPayload)
           .expect('content-type', /json/)
-          .expect(200)
-          .then((res) => {
-            expect(res.body.name).toEqual(todoPayload.name);
-            expect(res.body.note).toEqual(todoPayload.note);
-            expect(res.body.completed).toEqual(todoPayload.completed);
-          });
+          .expect(200);
+
+        expect(res.body.name).toEqual(todoPayload.name);
+        expect(res.body.note).toEqual(todoPayload.note);
+        expect(res.body.completed).toEqual(todoPayload.completed);
       });
     });
 
@@ -81,8 +79,8 @@ describe('POST /v1/todos/:id', () => {
     });
 
     describe('given not existing todo id in the query', () => {
-      it('should return 404', () => {
-        return request(app)
+      it('should return 404', async () => {
+        await request(app)
           .patch(`/v1/todos/${Date.now()}`)
           .send(getTodoPayload())
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
@@ -112,8 +110,8 @@ describe('POST /v1/todos/:id', () => {
     });
 
     describe('given a text id in the query', () => {
-      it('should return 422 error', () => {
-        return request(app)
+      it('should return 422 error', async () => {
+        await request(app)
           .patch(`/v1/todos/test`)
           .send(getTodoPayload())
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
@@ -124,8 +122,8 @@ describe('POST /v1/todos/:id', () => {
   });
 
   describe('when user is not authenticated', () => {
-    it('should return 401 error', () => {
-      return request(app)
+    it('should return 401 error', async () => {
+      await request(app)
         .patch(`/v1/todos/${todo.id}`)
         .send(getTodoPayload())
         .expect('content-type', /json/)

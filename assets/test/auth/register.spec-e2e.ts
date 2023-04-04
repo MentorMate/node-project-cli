@@ -26,15 +26,13 @@ describe('POST /auth/register', () => {
   });
 
   describe('given the email and password are valid', () => {
-    it('should create a new user and return a jwt token', () => {
-      return request(app)
+    it('should create a new user and return a jwt token', async () => {
+      const res = await request(app)
         .post('/auth/register')
         .send(getUserCredentials())
         .expect('content-type', /json/)
-        .expect(200)
-        .then((res) => {
-          expect(typeof res.body.idToken).toBe('string');
-        });
+        .expect(200);
+      expect(typeof res.body.idToken).toBe('string');
     });
 
     describe('when there is an existing user', () => {
@@ -53,8 +51,8 @@ describe('POST /auth/register', () => {
   });
 
   describe('when there is invalid payload', () => {
-    it('should return 422 error', () => {
-      return request(app)
+    it('should return 422 error', async () => {
+      await request(app)
         .post('/auth/register')
         .send({
           email: 'test',

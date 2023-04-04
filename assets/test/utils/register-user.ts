@@ -1,10 +1,10 @@
-import request, { Response } from 'supertest';
-import { Register } from '@common/data/auth';
+import request from 'supertest';
 import { getUserCredentials } from './get-user-credentials';
 
-export const registerUser: (
+export const registerUser = async (
   app: Express.Application,
-  payload?: Register
-) => Promise<Response> = async (app, payload = getUserCredentials()) => {
-  return await request(app).post('/auth/register').send(payload);
+  payload = getUserCredentials()
+) => {
+  const res = await request(app).post('/auth/register').send(payload);
+  return res.body;
 };
