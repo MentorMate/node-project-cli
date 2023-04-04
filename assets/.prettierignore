@@ -1,4 +1,6 @@
 node_modules
 dist
+coverage
+coverage-e2e
 *.config.js
 *rc.js
