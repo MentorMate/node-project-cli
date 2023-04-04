@@ -3,5 +3,5 @@ import { Login, Register } from '@common/data/auth';
 
 export const getUserCredentials: () => Register | Login = () => ({
   email: uuidv4() + '@mail.com',
-  password: uuidv4().toString(),
+  password: uuidv4(),
 });

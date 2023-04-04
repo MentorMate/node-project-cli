@@ -32,7 +32,7 @@ describe('POST /v1/todos/:id', () => {
   });
 
   beforeAll(async () => {
-    const res = await createTodo(app, jwtTokens.idToken);
+    const res = await createTodo(app, jwtTokens.idToken, true);
     todo = res.body;
   });
 
