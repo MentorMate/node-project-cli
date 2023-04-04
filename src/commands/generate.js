@@ -75,7 +75,6 @@ module.exports = {
         message: 'Pick a framework for your project',
         choices: [
           { message: 'Express', value: 'express' },
-          { message: 'Fastify', value: 'fastify' },
           {
             message: 'NestJS (TS only) with pre-installed linters',
             value: 'nest',

@@ -20,7 +20,6 @@ module.exports = (toolbox) => {
 
     const frameworkVersion = {
       express: '^4.18.2',
-      fastify: '^4.13.0',
     };
 
     muted(`Installing ${framework}...`);
