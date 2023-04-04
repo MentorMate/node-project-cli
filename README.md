@@ -25,7 +25,6 @@ After the initial naming you will be provided with the following options:
 ### Framework
 
 - Express
-- Fastify
 - Nest.js - this option will automatically install its predefined linter settings and will always ues TypeScript
 
 ### Language
@@ -71,7 +70,7 @@ PRs that target the `main`/`master` branch and on every subsequent push to the o
 
 ### Folder structure
 
-If you've chosen `TypeScript` for project language and `Express` or `Fastify` for framework you are going to get a
+If you've chosen `TypeScript` for project language and `Express` for framework you are going to get a
 folder structure already setup for your project. The structure will include database configuration and models folders,
 API with controllers and services folder, etc... . In each file there's a short instruction of what should be included
 in the current file/folder. Some of the files are optional or just sample files and can/should be deleted.

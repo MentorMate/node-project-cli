@@ -28,7 +28,6 @@ describe('install-framework', () => {
     let devDependencies;
 
     beforeAll(() => {
-      input.framework = 'fastify'; // else-branch coverage
       input.projectLanguage = 'JS';
     });
 
