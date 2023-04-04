@@ -80,6 +80,7 @@ module.exports = (toolbox) => {
         'http-errors': '^2.0.0',
         bcrypt: '^5.1.0',
         'query-types': '^0.1.4',
+        uuid: '^9.0.0',
       });
 
       // with TypeScript
@@ -102,6 +103,7 @@ module.exports = (toolbox) => {
           'pino-pretty': '^9.4.0',
           '@types/http-errors': '^2.0.1',
           '@types/statuses': '^2.0.1',
+          '@types/uuid': '^9.0.1',
         });
 
         // OpenAPI
