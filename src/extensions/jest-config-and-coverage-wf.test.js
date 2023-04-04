@@ -183,6 +183,13 @@ describe('jest-config-and-coverage-wf', () => {
                 `${input.appDir}/test/`
               );
             });
+
+            it('should copy the e2e coverage workflow config', () => {
+              expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+                `${input.assetsPath}/.github/workflows/coverage-e2e.yaml`,
+                `${input.workflowsFolder}/coverage-e2e.yaml`
+              );
+            });
           });
         });
 

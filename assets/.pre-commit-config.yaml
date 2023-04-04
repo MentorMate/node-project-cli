@@ -1,9 +1,15 @@
 repos:
   - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.2.0
+    rev: v1.4.0
     hooks: 
       - id: detect-secrets
         name: Detect secrets
         language: python
         entry: detect-secrets-hook
-        args: ['--baseline', '.secrets.baseline', '--exclude-files', '.*\.(test|spec)(-e2e)?\.(js|ts)$']
+        args: 
+          - --baseline
+          - .secrets.baseline
+          - --exclude-files
+          - .*\.(test|spec)(-e2e)?\.(js|ts)$
+          - --exclude-files
+          - .github/workflows/coverage-e2e.yaml
