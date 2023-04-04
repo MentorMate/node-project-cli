@@ -71,21 +71,6 @@ describe('dockerize-workflow', () => {
         expect(toolbox.print.error).not.toHaveBeenCalled();
       });
 
-      it('should copy .npmignore', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/.project-npmignr`,
-          `${input.appDir}/.npmignore`
-        );
-      });
-
-      it('should copy scripts', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/scripts/`,
-          `${input.appDir}/scripts/`,
-          { overwrite: true }
-        );
-      });
-
       it('should copy Dockerfile', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/Dockerfile`,
@@ -100,50 +85,9 @@ describe('dockerize-workflow', () => {
         );
       });
 
-      it('should copy the dockerize GitHub workflow', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/.github/workflows/dockerize.yaml`,
-          `${input.workflowsFolder}/dockerize.yaml`
-        );
-      });
-
-      describe('when the project is scoped', () => {
-        beforeAll(() => {
-          input.projectScope = 'scope';
-        });
-
-        it('should replace the project name in dockerize.yml with the scoped project name', () => {
-          expect(toolbox.patching.replace).toHaveBeenCalledWith(
-            `${input.workflowsFolder}/dockerize.yaml`,
-            'custom-app-name',
-            `${input.projectScope}_${input.projectName}`
-          );
-        });
-      });
-
-      describe('when the project is not scoped', () => {
-        beforeAll(() => {
-          input.projectScope = '';
-        });
-
-        it('should replace the project name in dockerize.yml', () => {
-          expect(toolbox.patching.replace).toHaveBeenCalledWith(
-            `${input.workflowsFolder}/dockerize.yaml`,
-            'custom-app-name',
-            input.projectName
-          );
-        });
-      });
-
       describe('when the language is TypeScript', () => {
         beforeAll(() => {
           input.projectLanguage = 'TS';
-        });
-
-        it('should add src/ to .npmignore', () => {
-          expect(toolbox.system.run).toHaveBeenCalledWith(
-            `echo "src/" >> ${input.appDir}/.npmignore`
-          );
         });
 
         it('should update the start command in Dockefile to use the built index', () => {
@@ -151,20 +95,6 @@ describe('dockerize-workflow', () => {
             `${input.appDir}/Dockerfile`,
             './src/index.js',
             './dist/index.js'
-          );
-        });
-      });
-
-      describe('when the language is JavaScript', () => {
-        beforeAll(() => {
-          input.projectLanguage = 'JS';
-        });
-
-        it('should remove the build command from build_package.sh', () => {
-          expect(toolbox.patching.replace).toHaveBeenCalledWith(
-            `${input.appDir}/scripts/build_package.sh`,
-            'npm run build',
-            ''
           );
         });
       });
