@@ -25,8 +25,7 @@ describe('DELETE /v1/todos/:id', () => {
   });
 
   beforeAll(async () => {
-    const res = await registerUser(app);
-    jwtTokens = res.body;
+    jwtTokens = await registerUser(app);
   });
 
   beforeAll(async () => {
@@ -40,8 +39,8 @@ describe('DELETE /v1/todos/:id', () => {
 
   describe('when user is authenticated', () => {
     describe('given todo id in the query', () => {
-      it('should return 204 when todo is deleted', () => {
-        return request(app)
+      it('should return 204 when todo is deleted', async () => {
+        await request(app)
           .delete(`/v1/todos/${todoId}`)
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
           .expect(204);
@@ -50,7 +49,7 @@ describe('DELETE /v1/todos/:id', () => {
 
     describe('given not existing todo id in the query', () => {
       it('should return 404', async () => {
-        return request(app)
+        await request(app)
           .delete(`/v1/todos/${Date.now()}`)
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
           .expect('content-type', /json/)
@@ -60,8 +59,8 @@ describe('DELETE /v1/todos/:id', () => {
   });
 
   describe('when user is not authenticated', () => {
-    it('should return 401 error', () => {
-      return request(app)
+    it('should return 401 error', async () => {
+      await request(app)
         .delete(`/v1/todos/${todoId}`)
         .expect('content-type', /json/)
         .expect(expectError(Unauthorized));

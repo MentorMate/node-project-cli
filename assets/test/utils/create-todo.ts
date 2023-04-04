@@ -1,12 +1,12 @@
 import request from 'supertest';
 import { getTodoPayload } from './get-todo-payload';
 
-export const createTodo = async (
+export const createTodo = (
   app: Express.Application,
   idToken: string,
   completed?: boolean
 ) => {
-  return await request(app)
+  return request(app)
     .post('/v1/todos')
     .set('Authorization', 'Bearer ' + idToken)
     .send(getTodoPayload(completed));

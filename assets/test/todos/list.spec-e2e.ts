@@ -25,8 +25,7 @@ describe('GET /v1/todos', () => {
   });
 
   beforeAll(async () => {
-    const res = await registerUser(app);
-    jwtTokens = res.body;
+    jwtTokens = await registerUser(app);
   });
 
   beforeAll(async () => {
@@ -41,75 +40,69 @@ describe('GET /v1/todos', () => {
 
   describe('when user is authenticated', () => {
     describe('when no filters are applied', () => {
-      it('should return whole todos list', () => {
-        return request(app)
+      it('should return whole todos list', async () => {
+        const res = await request(app)
           .get('/v1/todos')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .expect(200)
-          .then((res) => {
-            expect(res.body.data.length).toEqual(3);
-          });
+          .expect(200);
+
+        expect(res.body.data.length).toEqual(3);
       });
     });
 
     describe('when completed=true filter is applied', () => {
-      it('should return completed todo list', () => {
-        return request(app)
+      it('should return completed todo list', async () => {
+        const res = await request(app)
           .get('/v1/todos?filters[completed]=true')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .expect(200)
-          .then((res) => {
-            expect(res.body.data.length).toEqual(1);
-          });
+          .expect(200);
+
+        expect(res.body.data.length).toEqual(1);
       });
     });
 
     describe('when completed=false filter is applied', () => {
-      it('should return not completed todo list', () => {
-        return request(app)
+      it('should return not completed todo list', async () => {
+        const res = await request(app)
           .get('/v1/todos?filters[completed]=false')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .expect(200)
-          .then((res) => {
-            expect(res.body.data.length).toEqual(2);
-          });
+          .expect(200);
+
+        expect(res.body.data.length).toEqual(2);
       });
     });
 
     describe('when name = "Laundry" filter is applied', () => {
-      it('should return todo list with matched results', () => {
-        return request(app)
+      it('should return todo list with matched results', async () => {
+        const res = await request(app)
           .get('/v1/todos?filters[name]=Laundry')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .expect(200)
-          .then((res) => {
-            expect(res.body.data.length).toEqual(3);
-          });
+          .expect(200);
+
+        expect(res.body.data.length).toEqual(3);
       });
     });
 
     describe('when pagination items is applied', () => {
-      it('should return not completed todo list', () => {
-        return request(app)
+      it('should return not completed todo list', async () => {
+        const res = await request(app)
           .get('/v1/todos?pagination[items]=2')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .expect(200)
-          .then((res) => {
-            expect(res.body.data.length).toEqual(2);
-          });
+          .expect(200);
+
+        expect(res.body.data.length).toEqual(2);
       });
     });
 
     describe('when pagination page is applied', () => {
-      it('should return not completed todo list', () => {
-        return request(app)
+      it('should return not completed todo list', async () => {
+        const res = await request(app)
           .get('/v1/todos?pagination[page]=2&pagination[items]=3')
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .expect(200)
-          .then((res) => {
-            expect(res.body.data.length).toEqual(0);
-            expect(res.body.meta.total).toEqual(3);
-          });
+          .expect(200);
+
+        expect(res.body.data.length).toEqual(0);
+        expect(res.body.meta.total).toEqual(3);
       });
     });
 
@@ -206,8 +199,8 @@ describe('GET /v1/todos', () => {
   });
 
   describe('when user is not authenticated', () => {
-    it('should return 401 error', () => {
-      return request(app)
+    it('should return 401 error', async () => {
+      await request(app)
         .get('/v1/todos')
         .send(getTodoPayload())
         .expect('content-type', /json/)
