@@ -119,21 +119,6 @@ describe('ts-setup', () => {
           expect(Object.keys(devDependencies).length).toBe(0);
         });
       });
-
-      describe('when the module system is ESM', () => {
-        beforeAll(() => {
-          input.moduleType = 'ESM';
-        });
-
-        it('should update the tsconfig file', () => {
-          expect(toolbox.filesystem.read).toHaveBeenCalledWith(
-            `${input.appDir}/tsconfig.json`
-          );
-          expect(toolbox.filesystem.write).toHaveBeenCalled();
-          const config = toolbox.filesystem.write.mock.calls[0][1];
-          expect(config.compilerOptions.module).toBe('ES2015');
-        });
-      });
     });
 
     describe('asyncOperations', () => {

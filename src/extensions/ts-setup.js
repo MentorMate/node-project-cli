@@ -1,15 +1,9 @@
 'use strict';
 
 module.exports = (toolbox) => {
-  toolbox.setupTs = ({
-    appDir,
-    moduleType,
-    pkgJson,
-    assetsPath,
-    framework,
-  }) => {
+  toolbox.setupTs = ({ appDir, pkgJson, assetsPath, framework }) => {
     const {
-      filesystem: { copyAsync, copy, write, read },
+      filesystem: { copyAsync, copy },
       print: { success, muted },
     } = toolbox;
 
@@ -52,16 +46,6 @@ module.exports = (toolbox) => {
           'ts-node': '^10.9.1',
         });
       }
-
-      const tsConfig = JSON.parse(read(`${appDir}/tsconfig.json`));
-
-      if (moduleType === 'ESM') {
-        tsConfig.compilerOptions = {
-          ...tsConfig.compilerOptions,
-          module: 'ES2015',
-        };
-      }
-      write(`${appDir}/tsconfig.json`, tsConfig);
     }
 
     return {
