@@ -6,7 +6,5 @@ export const registerUser = async (
   payload = getUserCredentials()
 ) => {
   const res = await request(app).post('/auth/register').send(payload);
-  if (res.body) {
-    return res.body;
-  }
+  return res.body;
 };
