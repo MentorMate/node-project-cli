@@ -99,17 +99,7 @@ module.exports = {
             'TypeScript should be selected unless there is a sufficient reason not to use it in your project.\n  Please contact the responsible architect on the project for approving Vanilla JS usage',
           choices: [
             { message: 'TypeScript', value: 'TS' },
-            { message: 'Vanilla JS', value: 'JS' },
-          ],
-          skip: pickedFramework.includes('nest'),
-        },
-        {
-          type: 'select',
-          name: 'moduleType',
-          message: 'CommonJS or ES Modules',
-          choices: [
-            { message: 'CommonJS', value: 'CJS' },
-            { message: 'ES Modules', value: 'ESM' },
+            { message: 'JavaScript', value: 'JS' },
           ],
           skip: pickedFramework.includes('nest'),
         },
@@ -134,7 +124,6 @@ module.exports = {
     );
 
     userInput.projectLanguage = userInput.projectLanguage || 'TS';
-    userInput.moduleType = userInput.moduleType || 'CJS';
     userInput.appDir = path(pwd, userInput.projectName);
     userInput.assetsPath = path(meta.src, '..', 'assets');
     userInput.workflowsFolder = `${userInput.appDir}/.github/workflows`;

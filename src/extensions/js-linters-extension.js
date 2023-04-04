@@ -1,13 +1,7 @@
 'use strict';
 
 module.exports = (toolbox) => {
-  toolbox.jsLinters = ({
-    appDir,
-    projectLanguage,
-    moduleType,
-    pkgJson,
-    assetsPath,
-  }) => {
+  toolbox.jsLinters = ({ appDir, projectLanguage, pkgJson, assetsPath }) => {
     const {
       template: { generate },
       filesystem: { copyAsync },
@@ -23,7 +17,6 @@ module.exports = (toolbox) => {
             target: `${appDir}/.eslintrc.js`,
             props: {
               ts: projectLanguage === 'TS',
-              cjs: moduleType === 'CJS',
             },
           }),
           copyAsync(`${assetsPath}/.eslintignore`, `${appDir}/.eslintignore`),

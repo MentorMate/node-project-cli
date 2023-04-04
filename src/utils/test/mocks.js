@@ -108,7 +108,6 @@ const createExtensionInput = () => ({
   projectScope: 'scope',
   framework: 'express',
   projectLanguage: 'TS',
-  moduleType: 'CJS',
   appDir: '/path/to/project-name',
   assetsPath: '/path/to/project-name/assets',
   workflowsFolder: '/path/to/project-name/workflows',
