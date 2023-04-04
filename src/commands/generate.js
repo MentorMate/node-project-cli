@@ -36,7 +36,7 @@ module.exports = {
         ],
       },
       {
-        message: 'Dockerize GitHub workflow step',
+        message: 'Containerization with Docker',
         value: 'dockerizeWorkflow',
       },
     ];
