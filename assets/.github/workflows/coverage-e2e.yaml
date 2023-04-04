@@ -1,12 +1,24 @@
-name: coverage
+name: coverage-e2e
 
 on:
   pull_request:
     branches:
       - main
 
+env:
+  NODE_ENV: test
+  DEBUG: ''
+  PORT: 3000
+  PGHOST: localhost
+  PGPORT: 5432
+  PGUSER: user
+  PGPASSWORD: password
+  PGDATABASE: tests
+  JWT_SECRET: super-secret
+  JWT_EXPIRATION: 7200
+
 jobs:
-  coverage:
+  coverage-e2e:
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -22,5 +34,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Get test coverage
+      - name: Create database
+        uses: isbang/compose-action@v1.4.1
+      - name: Run coverage
         uses: ArtiomTr/jest-coverage-report-action@v2
+        with:
+          test-script: npm run test:e2e

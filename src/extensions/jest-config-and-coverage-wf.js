@@ -41,6 +41,10 @@ module.exports = (toolbox) => {
             `${appDir}/__mocks__/`
           );
           await copyAsync(`${assetsPath}/test/`, `${appDir}/test/`);
+          await copyAsync(
+            `${assetsPath}/.github/workflows/coverage-e2e.yaml`,
+            `${workflowsFolder}/coverage-e2e.yaml`
+          );
         }
       } catch (err) {
         throw new Error(
