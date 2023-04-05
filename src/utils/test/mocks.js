@@ -85,6 +85,9 @@ const createToolboxMock = () => ({
     syncOperations: () => {},
     asyncOperations: async () => {},
   }),
+  auditConfig: () => ({
+    asyncOperations: async () => {},
+  }),
   setupTs: () => ({
     syncOperations: () => {},
     asyncOperations: async () => {},
