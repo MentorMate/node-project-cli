@@ -154,6 +154,7 @@ module.exports = {
     await toolbox.initializeGit(userInput);
 
     stepsOfExecution.push(toolbox.jestConfig(userInput));
+    stepsOfExecution.push(toolbox.auditConfig(userInput));
 
     if (userInput.projectLanguage === 'TS') {
       stepsOfExecution.push(toolbox.setupTs(userInput));
