@@ -72,6 +72,10 @@ module.exports = {
       });
     }
 
+    userInput.projectScope ||= '';
+    userInput.projectName ||= projectName;
+    userInput.framework ||= pickedFramework;
+    userInput.features ||= [];
     userInput.db ||= 'none';
     userInput.projectLanguage = userInput.projectLanguage || 'TS';
     userInput.appDir = path(pwd, userInput.projectName);
