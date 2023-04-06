@@ -88,17 +88,6 @@ describe('install-framework', () => {
       });
     });
 
-    it('should add the start:debug script', () => {
-      expect(scripts).toHaveProperty('start:debug');
-    });
-
-    it('should copy the vscode folder', () => {
-      expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-        `${input.assetsPath}/vscode/`,
-        `${input.appDir}/.vscode/`
-      );
-    });
-
     describe('when the framework is express', () => {
       beforeAll(() => {
         input.projectLanguage = 'JS'; // else-branch coverage
@@ -313,14 +302,6 @@ describe('install-framework', () => {
           `${input.appDir}/scripts`,
           { overwrite: true }
         );
-      });
-    });
-
-    it('should render the README template', () => {
-      expect(toolbox.template.generate).toHaveBeenCalledWith({
-        template: 'README.md.ejs',
-        target: `${input.appDir}/README.md`,
-        props: expect.anything(),
       });
     });
   });

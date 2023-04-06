@@ -110,6 +110,13 @@ const createToolboxMock = () => ({
     syncOperations: () => {},
     asyncOperations: async () => {},
   }),
+  generateReadme: () => ({
+    asyncOperations: async () => {},
+  }),
+  debug: () => ({
+    syncOperations: () => {},
+    asyncOperations: async () => {},
+  }),
 });
 
 const createExtensionInput = () => ({

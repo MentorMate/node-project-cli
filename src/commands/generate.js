@@ -110,6 +110,8 @@ module.exports = {
 
     stepsOfExecution.push(toolbox.jestConfig(userInput));
     stepsOfExecution.push(toolbox.auditConfig(userInput));
+    stepsOfExecution.push(toolbox.debug(userInput));
+    stepsOfExecution.push(toolbox.generateReadme(userInput));
 
     if (userInput.projectLanguage === 'TS' && userInput.framework !== 'nest') {
       stepsOfExecution.push(toolbox.setupTs(userInput));
@@ -171,6 +173,7 @@ module.exports = {
       ...userInput.pkgJson.devDependencies,
     };
 
+    // TODO: move out
     if (pickedFramework === 'nest') {
       packageJson.jest.coveragePathIgnorePatterns = [
         '<rootDir>/main.ts$',
