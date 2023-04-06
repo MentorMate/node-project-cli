@@ -6,6 +6,7 @@ module.exports = (toolbox) => {
     projectLanguage,
     framework,
     pkgJson,
+    isExampleApp,
   }) => {
     const {
       filesystem: { copyAsync },
@@ -15,31 +16,18 @@ module.exports = (toolbox) => {
 
     async function asyncOperations() {
       muted('Setting up containerization with Docker...');
-      try {
-        await Promise.all([
-          copyAsync(`${assetsPath}/Dockerfile`, `${appDir}/Dockerfile`),
-          copyAsync(`${assetsPath}/.dockerignore`, `${appDir}/.dockerignore`),
-        ]);
 
-        if (projectLanguage === 'TS') {
-          await patching.replace(
-            `${appDir}/Dockerfile`,
-            './src/index.js',
-            './dist/index.js'
-          );
-        }
+      const dockerfile = isExampleApp
+        ? `${assetsPath}/express/example-app/Dockerfile`
+        : `${assetsPath}/docker/${projectLanguage.toLowerCase()}/Dockerfile`;
 
-        if (framework === 'nest') {
-          await patching.replace(
-            `${appDir}/Dockerfile`,
-            '/index.js',
-            '/main.js'
-          );
-        }
-      } catch (err) {
-        throw new Error(
-          `An error has occurred while creating a dockerize workflow step: ${err}`
-        );
+      await Promise.all([
+        copyAsync(dockerfile, `${appDir}/Dockerfile`),
+        copyAsync(`${assetsPath}/.dockerignore`, `${appDir}/.dockerignore`),
+      ]);
+
+      if (framework === 'nest') {
+        await patching.replace(`${appDir}/Dockerfile`, '/index.js', '/main.js');
       }
 
       success(
@@ -50,7 +38,7 @@ module.exports = (toolbox) => {
     function syncOperations() {
       Object.assign(pkgJson.scripts, {
         'image:build': `DOCKER_BUILDKIT=1 docker build -t ${projectName} .`,
-        'image:run': `docker run --rm --net host --env-file .env ${projectName}`,
+        'image:run': `docker run --rm --net host -e NODE_ENV=production --env-file .env ${projectName}`,
       });
     }
 

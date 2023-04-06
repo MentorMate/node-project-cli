@@ -7,8 +7,7 @@ module.exports = (toolbox) => {
     features,
     pkgJson,
     projectLanguage,
-    framework,
-    db,
+    isExampleApp,
   }) => {
     const {
       filesystem: { dir, copyAsync, read, writeAsync },
@@ -57,9 +56,6 @@ module.exports = (toolbox) => {
 
         if (features.includes('preCommit')) {
           dir(`${appDir}/scripts`);
-
-          const isExampleApp =
-            projectLanguage === 'TS' && framework === 'express' && db === 'pg';
 
           await Promise.all([
             generate({

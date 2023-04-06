@@ -38,7 +38,9 @@ describe('ts-setup', () => {
       let devDependencies;
 
       beforeAll(() => {
-        input.framework = 'nest';
+        input.framework = 'express';
+        input.pkgJsonScripts = [];
+        input.pkgJsonInstalls = [];
       });
 
       beforeEach(() => {
@@ -52,76 +54,48 @@ describe('ts-setup', () => {
         devDependencies = input.pkgJson.devDependencies;
       });
 
-      describe('when the framework is not Nest', () => {
-        beforeAll(() => {
-          input.framework = 'express';
-          input.pkgJsonScripts = [];
-          input.pkgJsonInstalls = [];
-        });
-
-        it('should copy the tsconfig file', () => {
-          expect(toolbox.filesystem.copy).toHaveBeenCalledWith(
-            `${input.assetsPath}/tsconfig.json`,
-            `${input.appDir}/tsconfig.json`
-          );
-        });
-
-        it('should add a clean script', () => {
-          expect(scripts['clean']).toBeDefined();
-        });
-
-        it('should add a build script', () => {
-          expect(scripts['build']).toBeDefined();
-        });
-
-        it('should add the typescript devDependency', () => {
-          expect(devDependencies).toHaveProperty('typescript');
-        });
-
-        it('should add the @tsconfig/recommended devDependency', () => {
-          expect(devDependencies).toHaveProperty('@tsconfig/recommended');
-        });
-
-        it('should add the tsconfig-paths devDependency', () => {
-          expect(devDependencies).toHaveProperty('tsconfig-paths');
-        });
-
-        it('should add the tsc-alias devDependency', () => {
-          expect(devDependencies).toHaveProperty('tsc-alias');
-        });
-
-        it('should add the @types/node devDependency', () => {
-          expect(devDependencies).toHaveProperty('@types/node');
-        });
-
-        it('should add the rimraf devDependency', () => {
-          expect(devDependencies).toHaveProperty('rimraf');
-        });
-
-        it('should add the ts-node devDependency', () => {
-          expect(devDependencies).toHaveProperty('ts-node');
-        });
+      it('should add a clean script', () => {
+        expect(scripts['clean']).toBeDefined();
       });
 
-      describe('when the framework is Nest', () => {
-        beforeAll(() => {
-          input.framework = 'nest';
-          input.pkgJson.scripts = {};
-          input.pkgJson.devDependencies = {};
-        });
+      it('should add a build script', () => {
+        expect(scripts['build']).toBeDefined();
+      });
 
-        it('should not copy the tsconfig', () => {
-          expect(toolbox.filesystem.copy).not.toHaveBeenCalled();
-        });
+      it('should add the typescript devDependency', () => {
+        expect(devDependencies).toHaveProperty('typescript');
+      });
 
-        it('should not add any scripts or devDependencies', () => {
-          expect(Object.keys(scripts).length).toBe(0);
-          expect(Object.keys(devDependencies).length).toBe(0);
-        });
+      it('should add the @tsconfig/recommended devDependency', () => {
+        expect(devDependencies).toHaveProperty('@tsconfig/recommended');
+      });
+
+      it('should add the tsconfig-paths devDependency', () => {
+        expect(devDependencies).toHaveProperty('tsconfig-paths');
+      });
+
+      it('should add the tsc-alias devDependency', () => {
+        expect(devDependencies).toHaveProperty('tsc-alias');
+      });
+
+      it('should add the @types/node devDependency', () => {
+        expect(devDependencies).toHaveProperty('@types/node');
+      });
+
+      it('should add the rimraf devDependency', () => {
+        expect(devDependencies).toHaveProperty('rimraf');
+      });
+
+      it('should add the ts-node devDependency', () => {
+        expect(devDependencies).toHaveProperty('ts-node');
       });
     });
 
     describe('asyncOperations', () => {
+      beforeAll(() => {
+        input.framework = 'express';
+      });
+
       beforeEach(async () => {
         toolbox.print.muted = jest.fn(() => {});
         toolbox.print.success = jest.fn(() => {});
@@ -130,59 +104,43 @@ describe('ts-setup', () => {
         await toolbox.setupTs(input).asyncOperations();
       });
 
-      describe('when the framework is not Nest', () => {
-        beforeAll(() => {
-          input.framework = 'express';
-        });
+      it('should print a muted and a success message', () => {
+        expect(toolbox.print.muted).toHaveBeenCalledTimes(1);
+        expect(toolbox.print.success).toHaveBeenCalledTimes(1);
+        expect(toolbox.print.error).not.toHaveBeenCalled();
+      });
 
-        it('should print a muted and a success message', () => {
-          expect(toolbox.print.muted).toHaveBeenCalledTimes(1);
-          expect(toolbox.print.success).toHaveBeenCalledTimes(1);
-          expect(toolbox.print.error).not.toHaveBeenCalled();
+      describe('when it is the example app', () => {
+        beforeAll(() => {
+          input.isExampleApp = true;
         });
 
         it('should copy the tsconfig file', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${input.assetsPath}/tsconfig.build.json`,
-            `${input.appDir}/tsconfig.build.json`
+            `${input.assetsPath}/express/example-app/tsconfig.json`,
+            `${input.appDir}/tsconfig.json`
           );
         });
       });
 
-      describe('when the framework is Nest', () => {
+      describe('when it is not the example app', () => {
         beforeAll(() => {
-          input.framework = 'nest';
+          input.isExampleApp = false;
         });
 
-        it('should not a muted nor a success message', () => {
-          expect(toolbox.print.muted).not.toHaveBeenCalled();
-          expect(toolbox.print.success).not.toHaveBeenCalled();
-          expect(toolbox.print.error).not.toHaveBeenCalled();
-        });
-
-        it('should not copy anything', () => {
-          expect(toolbox.filesystem.copyAsync).not.toHaveBeenCalled();
+        it('should copy the tsconfig file', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/tsconfig.json`,
+            `${input.appDir}/tsconfig.json`
+          );
         });
       });
 
-      describe('when an error is thrown', () => {
-        const error = new Error('the-error');
-
-        beforeAll(() => {
-          input.framework = 'express';
-        });
-
-        beforeEach(() => {
-          toolbox.filesystem.copyAsync = jest.fn(() => {
-            throw error;
-          });
-        });
-
-        it('should rethrow the error with an added user-friendly message', () => {
-          expect(toolbox.setupTs(input).asyncOperations()).rejects.toThrow(
-            `An error has occurred while executing TS configuration: ${error}`
-          );
-        });
+      it('should copy the tsconfig build file', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/tsconfig.build.json`,
+          `${input.appDir}/tsconfig.build.json`
+        );
       });
     });
   });

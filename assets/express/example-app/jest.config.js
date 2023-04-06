@@ -21,12 +21,12 @@ module.exports = {
     '^@database$': '<rootDir>/src/database',
     '^@extensions/(.*)$': '<rootDir>/src/extensions/$1',
   },
+  // coverage directory
+  coverageDirectory: '<rootDir>/coverage',
   // coverage is collected from files under src/
   collectCoverageFrom: [
     '<rootDir>/src/**/*.[tj]s?(x)'
   ],
-  // coverage directory
-  coverageDirectory: '<rootDir>/coverage',
   // and from those files ignore
   coveragePathIgnorePatterns: [
     // entry points
