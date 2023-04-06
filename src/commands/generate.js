@@ -222,6 +222,11 @@ module.exports = {
     };
 
     if (pickedFramework === 'nest') {
+      packageJson.jest.coveragePathIgnorePatterns = [
+        '<rootDir>/main.ts$',
+        '<rootDir>/app.module.ts$',
+      ];
+
       packageJson.jest.coverageThreshold = {
         global: {
           branches: 85,
