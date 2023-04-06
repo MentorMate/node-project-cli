@@ -49,7 +49,7 @@ The default choice will include all of the listed features. The features are as 
   setup some initial configuration according to a common MentorMate standard.
 - Hooks with `husky` - this option will setup `husky` for your project and depending on your choice can add:
 
-  - Commit message linting - the hook will enforces usage of proper commit messages using `commitlint` and `commitizen`.
+  - Commit hook - the hook will enforces usage of proper commit messages using `commitlint` and `commitizen`.
     `commitizen` will guide you through a friendly CLI when `git cz` command is used instead of `git commit`:
 
     ![commitizen.png](https://raw.githubusercontent.com/commitizen/cz-cli/master/meta/screenshots/add-commit.png)
