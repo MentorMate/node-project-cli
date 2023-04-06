@@ -8,7 +8,7 @@ module.exports = (toolbox) => {
     pkgJson,
     assetsPath,
     framework,
-    db,
+    isExampleApp,
   }) => {
     const {
       print: { success, muted },
@@ -17,38 +17,34 @@ module.exports = (toolbox) => {
 
     async function asyncOperations() {
       muted('Configuring Jest...');
-      try {
-        await copyAsync(
-          `${assetsPath}/.github/workflows/coverage.yaml`,
-          `${workflowsFolder}/coverage.yaml`
-        );
-        if (framework !== 'nest') {
-          const jestConfigFile =
-            projectLanguage === 'TS'
-              ? `${assetsPath}/jest.config.ts.js`
-              : `${assetsPath}/jest.config.vanilla.js`;
-          await copyAsync(jestConfigFile, `${appDir}/jest.config.js`);
-        }
 
-        if (projectLanguage === 'TS' && framework !== 'nest' && db === 'pg') {
-          await copyAsync(
-            `${assetsPath}/express/jest.config.js`,
-            `${appDir}/jest.config.js`,
-            { overwrite: true }
-          );
-          await copyAsync(
-            `${assetsPath}/express/__mocks__/`,
-            `${appDir}/__mocks__/`
-          );
-          await copyAsync(`${assetsPath}/test/`, `${appDir}/test/`);
-          await copyAsync(
-            `${assetsPath}/.github/workflows/coverage-e2e.yaml`,
-            `${workflowsFolder}/coverage-e2e.yaml`
-          );
-        }
-      } catch (err) {
-        throw new Error(
-          `An error has occurred while copying jest configuration and workflow: ${err}`
+      await copyAsync(
+        `${assetsPath}/.github/workflows/coverage.yaml`,
+        `${workflowsFolder}/coverage.yaml`
+      );
+
+      if (framework !== 'nest') {
+        const jestConfigFile = `${assetsPath}/jest/${projectLanguage.toLowerCase()}-jest.config.js`;
+        await copyAsync(jestConfigFile, `${appDir}/jest.config.js`);
+      }
+
+      if (isExampleApp) {
+        await copyAsync(
+          `${assetsPath}/express/example-app/jest.config.js`,
+          `${appDir}/jest.config.js`,
+          { overwrite: true }
+        );
+        await copyAsync(
+          `${assetsPath}/express/example-app/__mocks__/`,
+          `${appDir}/__mocks__/`
+        );
+        await copyAsync(
+          `${assetsPath}/express/example-app/test/`,
+          `${appDir}/test/`
+        );
+        await copyAsync(
+          `${assetsPath}/.github/workflows/coverage-e2e.yaml`,
+          `${workflowsFolder}/coverage-e2e.yaml`
         );
       }
 
@@ -66,13 +62,16 @@ module.exports = (toolbox) => {
 
       Object.assign(pkgJson.devDependencies, {
         jest: '^29.4.2',
-        ...(projectLanguage === 'TS' && {
-          'ts-jest': '^29.0.5',
-          '@types/jest': '^29.4.0',
-        }),
       });
 
-      if (projectLanguage === 'TS' && framework !== 'nest' && db === 'pg') {
+      if (projectLanguage === 'TS') {
+        Object.assign(pkgJson.devDependencies, {
+          'ts-jest': '^29.0.5',
+          '@types/jest': '^29.4.0',
+        });
+      }
+
+      if (isExampleApp) {
         Object.assign(pkgJson.devDependencies, {
           pgtools: '^1.0.0',
           supertest: '^6.3.3',

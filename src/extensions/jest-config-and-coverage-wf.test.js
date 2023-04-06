@@ -75,41 +75,39 @@ describe('jest-config-and-coverage-wf', () => {
         it('should add the @types/jest devDependency', () => {
           expect(devDependencies).toHaveProperty('@types/jest');
         });
+      });
 
-        describe('and the framework is not nest', () => {
-          beforeAll(() => {
-            input.framework = 'express';
-          });
+      describe('and it is the example app', () => {
+        beforeAll(() => {
+          input.isExampleApp = true;
+        });
 
-          describe('and the database it pg', () => {
-            beforeAll(() => {
-              input.db = 'pg';
-            });
+        afterAll(() => {
+          input.isExampleApp = false;
+        });
 
-            it('should add the pgtools devDependency', () => {
-              expect(devDependencies).toHaveProperty('pgtools');
-            });
+        it('should add the pgtools devDependency', () => {
+          expect(devDependencies).toHaveProperty('pgtools');
+        });
 
-            it('should add the @types/supertest devDependency', () => {
-              expect(devDependencies).toHaveProperty('@types/supertest');
-            });
+        it('should add the @types/supertest devDependency', () => {
+          expect(devDependencies).toHaveProperty('@types/supertest');
+        });
 
-            it('should add the supertest devDependency', () => {
-              expect(devDependencies).toHaveProperty('supertest');
-            });
+        it('should add the supertest devDependency', () => {
+          expect(devDependencies).toHaveProperty('supertest');
+        });
 
-            it('should add the test:e2e script', () => {
-              expect(scripts).toHaveProperty('test:e2e');
-            });
+        it('should add the test:e2e script', () => {
+          expect(scripts).toHaveProperty('test:e2e');
+        });
 
-            it('should add the test:e2e:cov script', () => {
-              expect(scripts).toHaveProperty('test:e2e:cov');
-            });
+        it('should add the test:e2e:cov script', () => {
+          expect(scripts).toHaveProperty('test:e2e:cov');
+        });
 
-            it('should add the test:e2e:db:recreate script', () => {
-              expect(scripts).toHaveProperty('test:e2e:db:recreate');
-            });
-          });
+        it('should add the test:e2e:db:recreate script', () => {
+          expect(scripts).toHaveProperty('test:e2e:db:recreate');
         });
       });
     });
@@ -145,80 +143,68 @@ describe('jest-config-and-coverage-wf', () => {
           input.framework = 'express';
         });
 
-        describe('when the language is TypeScript', () => {
-          beforeAll(() => {
-            input.projectLanguage = 'TS';
-          });
-
-          it('should copy the TypeScript jest config', () => {
-            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-              `${input.assetsPath}/jest.config.ts.js`,
-              `${input.appDir}/jest.config.js`
-            );
-          });
-
-          describe('and the database is pg', () => {
-            beforeAll(() => {
-              input.db = 'pg';
-            });
-
-            it('should copy the example project unit test config', () => {
-              expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-                `${input.assetsPath}/express/jest.config.js`,
-                `${input.appDir}/jest.config.js`,
-                { overwrite: true }
-              );
-            });
-
-            it('should copy the example project unit test mocks', () => {
-              expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-                `${input.assetsPath}/express/__mocks__/`,
-                `${input.appDir}/__mocks__/`
-              );
-            });
-
-            it('should copy the example project tests', () => {
-              expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-                `${input.assetsPath}/test/`,
-                `${input.appDir}/test/`
-              );
-            });
-
-            it('should copy the e2e coverage workflow config', () => {
-              expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-                `${input.assetsPath}/.github/workflows/coverage-e2e.yaml`,
-                `${input.workflowsFolder}/coverage-e2e.yaml`
-              );
-            });
-          });
-        });
-
         describe('when the language is JavaScript', () => {
           beforeAll(() => {
             input.projectLanguage = 'JS';
           });
 
-          it('should copy the JavaScript jest config', () => {
+          it('should copy the jest config', () => {
             expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-              `${input.assetsPath}/jest.config.vanilla.js`,
+              `${input.assetsPath}/jest/js-jest.config.js`,
+              `${input.appDir}/jest.config.js`
+            );
+          });
+        });
+
+        describe('when the language is TypeScript', () => {
+          beforeAll(() => {
+            input.projectLanguage = 'TS';
+          });
+
+          it('should copy the jest config', () => {
+            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+              `${input.assetsPath}/jest/ts-jest.config.js`,
               `${input.appDir}/jest.config.js`
             );
           });
         });
       });
 
-      describe('when an error is thrown', () => {
-        const error = new Error('the-error');
-
-        beforeEach(async () => {
-          toolbox.filesystem.copyAsync = jest.fn(() => {
-            throw error;
-          });
+      describe('and is the example app', () => {
+        beforeAll(() => {
+          input.isExampleApp = true;
         });
 
-        it('should rethrow the error with an added user-friendly message', () => {
-          expect(toolbox.jestConfig(input).asyncOperations()).rejects.toThrow(
-            `An error has occurred while copying jest configuration and workflow: ${error}`
+        afterAll(() => {
+          input.isExampleApp = false;
+        });
+
+        it('should copy the example project unit test config', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/express/example-app/jest.config.js`,
+            `${input.appDir}/jest.config.js`,
+            { overwrite: true }
+          );
+        });
+
+        it('should copy the example project unit test mocks', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/express/example-app/__mocks__/`,
+            `${input.appDir}/__mocks__/`
+          );
+        });
+
+        it('should copy the example project tests', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/express/example-app/test/`,
+            `${input.appDir}/test/`
+          );
+        });
+
+        it('should copy the e2e coverage workflow config', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/.github/workflows/coverage-e2e.yaml`,
+            `${input.workflowsFolder}/coverage-e2e.yaml`
           );
         });
       });

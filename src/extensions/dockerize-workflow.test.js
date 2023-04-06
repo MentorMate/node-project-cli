@@ -71,18 +71,34 @@ describe('dockerize-workflow', () => {
         expect(toolbox.print.error).not.toHaveBeenCalled();
       });
 
-      it('should copy Dockerfile', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/Dockerfile`,
-          `${input.appDir}/Dockerfile`
-        );
+      describe('when it is the example app', () => {
+        beforeAll(() => {
+          input.isExampleApp = true;
+        });
+
+        afterAll(() => {
+          input.isExampleApp = false;
+        });
+
+        it('should copy Dockerfile', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/express/example-app/Dockerfile`,
+            `${input.appDir}/Dockerfile`
+          );
+        });
       });
 
-      it('should copy .dockerignore', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/.dockerignore`,
-          `${input.appDir}/.dockerignore`
-        );
+      describe('when the language is JavaScript', () => {
+        beforeAll(() => {
+          input.projectLanguage = 'JS';
+        });
+
+        it('should copy Dockerfile', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/docker/js/Dockerfile`,
+            `${input.appDir}/Dockerfile`
+          );
+        });
       });
 
       describe('when the language is TypeScript', () => {
@@ -90,13 +106,19 @@ describe('dockerize-workflow', () => {
           input.projectLanguage = 'TS';
         });
 
-        it('should update the start command in Dockefile to use the built index', () => {
-          expect(toolbox.patching.replace).toHaveBeenCalledWith(
-            `${input.appDir}/Dockerfile`,
-            './src/index.js',
-            './dist/index.js'
+        it('should copy Dockerfile', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/docker/ts/Dockerfile`,
+            `${input.appDir}/Dockerfile`
           );
         });
+      });
+
+      it('should copy .dockerignore', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/.dockerignore`,
+          `${input.appDir}/.dockerignore`
+        );
       });
 
       describe('when the framework is Nest', () => {
@@ -109,24 +131,6 @@ describe('dockerize-workflow', () => {
             `${input.appDir}/Dockerfile`,
             '/index.js',
             '/main.js'
-          );
-        });
-      });
-
-      describe('when an error is thrown', () => {
-        const error = new Error('the-error');
-
-        beforeEach(() => {
-          toolbox.patching.replace = jest.fn(() => {
-            throw error;
-          });
-        });
-
-        it('should rethrow the error with an added user-friendly message', () => {
-          expect(
-            toolbox.dockerizeWorkflow(input).asyncOperations()
-          ).rejects.toThrow(
-            `An error has occurred while creating a dockerize workflow step: ${error}`
           );
         });
       });

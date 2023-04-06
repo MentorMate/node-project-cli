@@ -57,8 +57,8 @@ describe('install-framework', () => {
       expect(envVars['HTTP']).toHaveProperty('PORT');
     });
 
-    it('should install add the framework to dependencies', () => {
-      expect(dependencies).toHaveProperty(input.framework);
+    it('should add http-terminator to dependencies', () => {
+      expect(dependencies).toHaveProperty('http-terminator');
     });
 
     it('should install add dotenv to devDependencies', () => {
@@ -88,21 +88,15 @@ describe('install-framework', () => {
       });
     });
 
-    describe('when the language is TypeScript', () => {
-      beforeAll(() => {
-        input.projectLanguage = 'TS';
-      });
+    it('should add the start:debug script', () => {
+      expect(scripts).toHaveProperty('start:debug');
+    });
 
-      it('should add the start:debug script', () => {
-        expect(scripts).toHaveProperty('start:debug');
-      });
-
-      it('should copy the vscode folder', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/vscode/`,
-          `${input.appDir}/.vscode/`
-        );
-      });
+    it('should copy the vscode folder', () => {
+      expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+        `${input.assetsPath}/vscode/`,
+        `${input.appDir}/.vscode/`
+      );
     });
 
     describe('when the framework is express', () => {
@@ -111,20 +105,83 @@ describe('install-framework', () => {
         input.framework = 'express';
       });
 
-      it('should add helmet to dependencies', () => {
-        expect(dependencies).toHaveProperty('helmet');
+      it('should install add the framework to dependencies', () => {
+        expect(dependencies).toHaveProperty('express');
       });
 
-      it('should add cors to dependencies', () => {
-        expect(dependencies).toHaveProperty('cors');
+      it('should add helmet to dependencies', () => {
+        expect(dependencies).toHaveProperty('helmet');
       });
 
       it('should add compression to dependencies', () => {
         expect(dependencies).toHaveProperty('compression');
       });
 
-      it('should add http-terminator to dependencies', () => {
-        expect(dependencies).toHaveProperty('http-terminator');
+      describe('and the language is TypeScript', () => {
+        beforeAll(() => {
+          input.projectLanguage = 'TS';
+        });
+
+        it('should add @types/express to devDependencies', () => {
+          expect(devDependencies).toHaveProperty('@types/express');
+        });
+
+        it('should add @types/compression to devDependencies', () => {
+          expect(devDependencies).toHaveProperty('@types/compression');
+        });
+      });
+    });
+
+    describe('when it is not the example app', () => {
+      beforeAll(() => {
+        input.isExampleApp = false;
+      });
+
+      describe('and the language is JavaScript', () => {
+        beforeAll(() => {
+          input.projectLanguage = 'JS';
+        });
+
+        it('should copy the project source', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/express/js/src/`,
+            `${input.appDir}/src/`
+          );
+        });
+      });
+
+      describe('and the language is TypeScript', () => {
+        beforeAll(() => {
+          input.projectLanguage = 'TS';
+        });
+
+        it('should copy the project source', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/express/ts/src/`,
+            `${input.appDir}/src/`
+          );
+        });
+      });
+    });
+
+    describe('when it is the example app', () => {
+      beforeAll(() => {
+        input.isExampleApp = true;
+      });
+
+      afterAll(() => {
+        input.isExampleApp = false;
+      });
+
+      it('should copy the example project source', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/express/example-app/src/`,
+          `${input.appDir}/src/`
+        );
+      });
+
+      it('should add cors to dependencies', () => {
+        expect(dependencies).toHaveProperty('cors');
       });
 
       it('should add pino to dependencies', () => {
@@ -135,135 +192,127 @@ describe('install-framework', () => {
         expect(dependencies).toHaveProperty('http-errors');
       });
 
-      describe('and the language is TypeScript', () => {
-        beforeAll(() => {
-          input.projectLanguage = 'TS';
-        });
+      it('should add bcrypt to dependencies', () => {
+        expect(dependencies).toHaveProperty('bcrypt');
+      });
 
-        it('should copy the example express project source', () => {
-          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${input.assetsPath}/express/src/`,
-            `${input.appDir}/src/`,
-            { overwrite: true }
-          );
-        });
+      it('should add query-types to dependencies', () => {
+        expect(dependencies).toHaveProperty('query-types');
+      });
 
-        it('should add zod to dependencies', () => {
-          expect(dependencies).toHaveProperty('zod');
-        });
+      it('should add statuses to dependencies', () => {
+        expect(dependencies).toHaveProperty('statuses');
+      });
 
-        it('should add query types to dependencies', () => {
-          expect(dependencies).toHaveProperty('query-types');
-        });
+      it('should add zod to dependencies', () => {
+        expect(dependencies).toHaveProperty('zod');
+      });
 
-        it('should add @asteasolutions/zod-to-openapi to dependencies', () => {
-          expect(dependencies).toHaveProperty('@asteasolutions/zod-to-openapi');
-        });
+      it('should add @asteasolutions/zod-to-openapi to dependencies', () => {
+        expect(dependencies).toHaveProperty('@asteasolutions/zod-to-openapi');
+      });
 
-        it('should add statuses to dependencies', () => {
-          expect(dependencies).toHaveProperty('statuses');
-        });
+      it('should add @types/cors to devDependencies', () => {
+        expect(devDependencies).toHaveProperty('@types/cors');
+      });
 
-        it('should add @types/express to devDependencies', () => {
-          expect(devDependencies).toHaveProperty('@types/express');
-        });
+      it('should add pino-pretty to devDependencies', () => {
+        expect(devDependencies).toHaveProperty('pino-pretty');
+      });
 
-        it('should add @types/cors to devDependencies', () => {
-          expect(devDependencies).toHaveProperty('@types/cors');
-        });
+      it('should add @types/http-errors to devDependencies', () => {
+        expect(devDependencies).toHaveProperty('@types/http-errors');
+      });
 
-        it('should add @types/compression to devDependencies', () => {
-          expect(devDependencies).toHaveProperty('@types/compression');
-        });
+      it('should add @types/bcrypt to devDependencies', () => {
+        expect(devDependencies).toHaveProperty('@types/bcrypt');
+      });
 
-        it('should add pino-pretty to devDependencies', () => {
-          expect(devDependencies).toHaveProperty('pino-pretty');
-        });
+      it('should add @types/statuses to devDependencies', () => {
+        expect(devDependencies).toHaveProperty('@types/statuses');
+      });
 
-        it('should add @types/statuses to devDependencies', () => {
-          expect(devDependencies).toHaveProperty('@types/statuses');
-        });
+      it('should add @types/uuid to devDependencies', () => {
+        expect(devDependencies).toHaveProperty('@types/uuid');
+      });
 
-        it('should add the OpenAPI env var section', () => {
-          expect(envVars).toHaveProperty('OpenAPI');
-          expect(envVars['OpenAPI']).toHaveProperty('SWAGGER_UI_PORT');
-        });
+      it('should add uuid to devDependencies', () => {
+        expect(devDependencies).toHaveProperty('uuid');
+      });
 
-        it('should add the openapi scripts', () => {
-          expect(Object.keys(scripts)).toEqual(
-            expect.arrayContaining([
-              'openapi:g',
-              'openapi:ui:run',
-              'openapi:ui:open',
-              'openapi:serve',
-            ])
-          );
-        });
+      it('should add the OpenAPI env var section', () => {
+        expect(envVars).toHaveProperty('OpenAPI');
+        expect(envVars['OpenAPI']).toHaveProperty('SWAGGER_UI_PORT');
+      });
 
-        it('should add concurrently to devDependencies', () => {
-          expect(devDependencies).toHaveProperty('concurrently');
-        });
+      it('should add the openapi scripts', () => {
+        expect(Object.keys(scripts)).toEqual(
+          expect.arrayContaining([
+            'openapi:g',
+            'openapi:ui:run',
+            'openapi:ui:open',
+            'openapi:serve',
+          ])
+        );
+      });
 
-        it('should add open to devDependencies', () => {
-          expect(devDependencies).toHaveProperty('open');
-        });
+      it('should add concurrently to devDependencies', () => {
+        expect(devDependencies).toHaveProperty('concurrently');
+      });
 
-        it('should copy the openapi-generate script', () => {
-          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${input.assetsPath}/express/scripts`,
-            `${input.appDir}/scripts`,
-            { overwrite: true }
-          );
-        });
+      it('should add open to devDependencies', () => {
+        expect(devDependencies).toHaveProperty('open');
+      });
 
-        it('should copy the .openapi dir', () => {
-          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${input.assetsPath}/express/.openapi`,
-            `${input.appDir}/.openapi`
-          );
-        });
+      it('should copy the openapi-generate script', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/express/example-app/scripts/generate-openapi.ts`,
+          `${input.appDir}/scripts/generate-openapi.ts`
+        );
+      });
 
-        describe('and the database is PostgreSQL', () => {
-          beforeAll(() => {
-            input.db = 'pg';
-          });
+      it('should copy the .openapi dir', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/express/example-app/.openapi`,
+          `${input.appDir}/.openapi`
+        );
+      });
 
-          it('should add Knex to envVars', () => {
-            expect(envVars).toHaveProperty('Knex');
-          });
+      it('should add Knex env vars', () => {
+        expect(envVars).toHaveProperty('Knex');
+        expect(envVars['Knex']).toHaveProperty('DEBUG');
+      });
 
-          it('should add knex to dependencies', () => {
-            expect(dependencies).toHaveProperty('knex');
-          });
+      it('should add knex to dependencies', () => {
+        expect(dependencies).toHaveProperty('knex');
+      });
 
-          it('should add pg-error-enum to dependencies', () => {
-            expect(dependencies).toHaveProperty('pg-error-enum');
-          });
+      it('should add pg-error-enum to dependencies', () => {
+        expect(dependencies).toHaveProperty('pg-error-enum');
+      });
 
-          it('shoudl add knex migration scripts', () => {
-            expect(Object.keys(scripts)).toEqual(
-              expect.arrayContaining([
-                'db:connection:print',
-                'db:migrate:make',
-                'db:migrate:up',
-                'db:migrate:down',
-                'db:migrate:latest',
-                'db:migrate:rollback',
-                'db:migrate:version',
-                'db:migrate:status',
-                'db:migrate:reset',
-              ])
-            );
-          });
+      it('shoudl add knex migration scripts', () => {
+        expect(Object.keys(scripts)).toEqual(
+          expect.arrayContaining([
+            'db:connection:print',
+            'db:migrate:make',
+            'db:migrate:up',
+            'db:migrate:down',
+            'db:migrate:latest',
+            'db:migrate:rollback',
+            'db:migrate:version',
+            'db:migrate:status',
+            'db:migrate:reset',
+          ])
+        );
+      });
 
-          it('should copy the pg scripts', () => {
-            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-              `${input.assetsPath}/db/pg/scripts`,
-              `${input.appDir}/scripts`,
-              { overwrite: true }
-            );
-          });
-        });
+      it('should copy the pg scripts', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/db/pg/scripts`,
+          `${input.appDir}/scripts`,
+          { overwrite: true }
+        );
       });
     });
 

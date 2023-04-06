@@ -133,6 +133,7 @@ const createExtensionInput = () => ({
     },
   },
   db: 'none',
+  isExampleApp: false,
 });
 
 module.exports = {

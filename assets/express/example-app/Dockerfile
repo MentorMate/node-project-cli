@@ -20,12 +20,12 @@ COPY --chown=node:node package*.json ./
 
 # Run clean install
 RUN npm ci \
-  # skip vulnerability check
-  --no-audit \
   # skip funding messages
   --fund false \
   # skip pre/post scripts
   --ignore-scripts \
+  # skip vulnerability check
+  --no-audit \
   # skip update information
   --no-update-notifier
 
@@ -57,16 +57,18 @@ COPY --from=builder --chown=node:node /app/package*.json ./
 
 # Run clean install
 RUN npm ci \
-  # skip dev dependencies
-  --omit=dev \
-  # skip vulnerability check
-  --no-audit \
   # skip funding messages
   --fund false \
   # skip pre/post scripts
   --ignore-scripts \
+  # skip vulnerability check
+  --no-audit \
   # skip update information
   --no-update-notifier \
+  # skip dev dependencies
+  --omit=dev \
+  # rebuild bcrypt
+  && npm rebuild bcrypt \
   # attempt to reduce image size
   && npm cache clean --force
 
@@ -74,4 +76,4 @@ RUN npm ci \
 COPY --from=builder --chown=node:node /app/dist/ ./dist/
 
 # Run
-CMD [ "node", "./src/index.js" ]
+CMD [ "node", "./dist/index.js" ]

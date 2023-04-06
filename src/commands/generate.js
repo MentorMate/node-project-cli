@@ -142,6 +142,11 @@ module.exports = {
     const stepsOfExecution = [];
     const asyncOperations = [];
 
+    userInput.isExampleApp =
+      userInput.framework === 'express' &&
+      userInput.projectLanguage === 'TS' &&
+      userInput.db === 'pg';
+
     if (pickedFramework === 'nest') {
       await toolbox.installNest(userInput);
     } else if (pickedFramework) {
@@ -156,7 +161,7 @@ module.exports = {
     stepsOfExecution.push(toolbox.jestConfig(userInput));
     stepsOfExecution.push(toolbox.auditConfig(userInput));
 
-    if (userInput.projectLanguage === 'TS') {
+    if (userInput.projectLanguage === 'TS' && userInput.framework !== 'nest') {
       stepsOfExecution.push(toolbox.setupTs(userInput));
     }
 
@@ -177,7 +182,9 @@ module.exports = {
       stepsOfExecution.push(toolbox.setupPostgreSQL(userInput));
     }
 
-    stepsOfExecution.push(toolbox.setupJwt(userInput));
+    if (userInput.isExampleApp) {
+      stepsOfExecution.push(toolbox.setupJwt(userInput));
+    }
 
     dir(userInput.workflowsFolder);
 
