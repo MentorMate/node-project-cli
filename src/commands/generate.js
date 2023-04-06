@@ -175,19 +175,48 @@ module.exports = {
 
     // TODO: move out
     if (pickedFramework === 'nest') {
-      packageJson.jest.coveragePathIgnorePatterns = [
-        '<rootDir>/main.ts$',
-        '<rootDir>/app.module.ts$',
-      ];
-
-      packageJson.jest.coverageThreshold = {
-        global: {
-          branches: 85,
-          functions: 85,
-          lines: 85,
-          statements: 85,
+      Object.assign(packageJson.jest, {
+        coveragePathIgnorePatterns: [
+          '<rootDir>/main.ts$',
+          '<rootDir>/app.module.ts$',
+        ],
+        coverageThreshold: {
+          global: {
+            branches: 85,
+            functions: 85,
+            lines: 85,
+            statements: 85,
+          },
         },
-      };
+      });
+
+      Object.assign(packageJson.scripts, {
+        'test:e2e:cov': 'npm run test:e2e -- --coverage',
+      });
+
+      const jestE2eConfig = JSON.parse(
+        read(`${userInput.appDir}/test/jest-e2e.json`)
+      );
+
+      Object.assign(jestE2eConfig, {
+        rootDir: '..',
+        coverageDirectory: 'coverage-e2e',
+        collectCoverageFrom: ['<rootDir>/src/**/*.(t|j)s'],
+        coveragePathIgnorePatterns: [
+          '<rootDir>/src/main.ts$',
+          '<rootDir>/.*spec.ts$',
+        ],
+        coverageThreshold: {
+          global: {
+            branches: 85,
+            functions: 85,
+            lines: 85,
+            statements: 85,
+          },
+        },
+      });
+
+      write(`${userInput.appDir}/test/jest-e2e.json`, jestE2eConfig);
     }
 
     try {

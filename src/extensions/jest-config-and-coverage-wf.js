@@ -42,6 +42,9 @@ module.exports = (toolbox) => {
           `${assetsPath}/express/example-app/test/`,
           `${appDir}/test/`
         );
+      }
+
+      if (framework === 'nest' || isExampleApp) {
         await copyAsync(
           `${assetsPath}/.github/workflows/coverage-e2e.yaml`,
           `${workflowsFolder}/coverage-e2e.yaml`

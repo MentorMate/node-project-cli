@@ -8,6 +8,7 @@ module.exports = (toolbox) => {
     pkgJson,
     projectLanguage,
     isExampleApp,
+    framework,
   }) => {
     const {
       filesystem: { dir, copyAsync, read, writeAsync },
@@ -65,7 +66,7 @@ module.exports = (toolbox) => {
                 ts: projectLanguage === 'TS',
                 test: {
                   unit: true,
-                  e2e: isExampleApp,
+                  e2e: framework === 'nest' || isExampleApp,
                 },
               },
             }).then(() => {
