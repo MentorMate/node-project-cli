@@ -8,6 +8,7 @@ module.exports = (toolbox) => {
     appDir,
     db,
     isExampleApp,
+    framework,
   }) => {
     const {
       template: { generate },
@@ -38,7 +39,7 @@ module.exports = (toolbox) => {
             debug: true,
           },
           test: {
-            e2e: isExampleApp,
+            e2e: framework === 'nest' || isExampleApp,
           },
           debug: {
             vscode: true,
