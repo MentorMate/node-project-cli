@@ -59,7 +59,7 @@ describe('husky-setup-extension', () => {
         expect(devDependencies).toHaveProperty('husky');
       });
 
-      describe('when the features include commit message linting', () => {
+      describe('when the features include commit hook', () => {
         beforeAll(() => {
           input.features = ['commitMsgLint'];
         });

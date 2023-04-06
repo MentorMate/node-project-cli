@@ -17,7 +17,9 @@ const createToolboxMock = () => ({
     plugin: 'node-cli',
     command: 'generate',
     array: ['project-name'],
-    options: {},
+    options: {
+      interactive: true,
+    },
     raw: [
       '/path/to/node',
       '/path/to/app/bin/node-cli',

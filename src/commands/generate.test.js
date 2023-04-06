@@ -46,31 +46,29 @@ describe('generate', () => {
       expect(toolbox.prompt.ask).toHaveBeenCalledTimes(2);
     });
 
-    it('should ask for the project name, scope and framework', async () => {
+    it('should ask for the project name and framework', async () => {
       const questions = toolbox.prompt.ask.mock.calls[0][0];
 
-      expect(questions).toHaveLength(3);
+      expect(questions).toHaveLength(2);
       expect(questions[0].name).toBe('projectName');
-      expect(questions[1].name).toBe('projectScope');
-      expect(questions[2].name).toBe('framework');
+      expect(questions[1].name).toBe('framework');
 
       const answers = await toolbox.prompt.ask.mock.results[0].value;
-      const { projectName, projectScope, framework } = userInput;
-      const expectedAnswers = { projectName, projectScope, framework };
+      const { projectName, framework } = userInput;
+      const expectedAnswers = { projectName, framework };
       expect(answers).toEqual(expectedAnswers);
     });
 
-    it('should ask for the project language, module system, app features and database', async () => {
+    it('should ask for the project language, module system and app features', async () => {
       const questions = toolbox.prompt.ask.mock.calls[1][0];
 
-      expect(questions).toHaveLength(3);
+      expect(questions).toHaveLength(2);
       expect(questions[0].name).toBe('projectLanguage');
       expect(questions[1].name).toBe('features');
-      expect(questions[2].name).toBe('db');
 
       const answers = await toolbox.prompt.ask.mock.results[1].value;
-      const { projectLanguage, features, db } = userInput;
-      const expectedAnswers = { projectLanguage, features, db };
+      const { projectLanguage, features } = userInput;
+      const expectedAnswers = { projectLanguage, features };
       expect(answers).toEqual(expectedAnswers);
     });
 
