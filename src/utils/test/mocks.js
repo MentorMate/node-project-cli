@@ -106,6 +106,10 @@ const createToolboxMock = () => ({
     syncOperations: () => {},
     asyncOperations: async () => {},
   }),
+  setupPostgreSQL: () => ({
+    syncOperations: () => {},
+    asyncOperations: async () => {},
+  }),
 });
 
 const createExtensionInput = () => ({
