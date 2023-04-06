@@ -2,15 +2,12 @@
 
 module.exports = (toolbox) => {
   toolbox.installFramework = async ({
-    projectName,
     projectLanguage,
     framework,
-    features,
     appDir,
     assetsPath,
     pkgJson,
     envVars,
-    db,
     isExampleApp,
   }) => {
     const {
@@ -52,17 +49,6 @@ module.exports = (toolbox) => {
         exec: pkgJson.scripts['start'],
       },
     });
-
-    const debugScript =
-      projectLanguage === 'TS'
-        ? 'tsc --sourceMap -p tsconfig.build.json && tsc-alias && node --inspect -r dotenv/config dist/index'
-        : 'node --inspect -r dotenv/config src/index';
-
-    Object.assign(pkgJson.scripts, {
-      'start:debug': debugScript,
-    });
-
-    await copyAsync(`${assetsPath}/vscode/`, `${appDir}/.vscode/`);
 
     // Express
     if (framework === 'express') {
@@ -177,41 +163,6 @@ module.exports = (toolbox) => {
         overwrite: true,
       });
     }
-
-    // README.md
-    // TODO: move out
-    await generate({
-      template: 'README.md.ejs',
-      target: `${appDir}/README.md`,
-      props: {
-        projectName,
-        prerequisites: {
-          pip3:
-            features.includes('huskyHooks') || features.includes('preCommit'),
-          docker: features.includes('dockerizeWorkflow'),
-          dockerCompose: db === 'pg',
-        },
-        setup: {
-          dockerCompose: db === 'pg',
-          migrations:
-            projectLanguage === 'TS' && framework === 'express' && db === 'pg',
-          tests: {
-            unit: true,
-            e2e: isExampleApp,
-          },
-        },
-        run: {
-          build: projectLanguage === 'TS',
-          debug: true,
-        },
-        test: {
-          e2e: isExampleApp,
-        },
-        debug: {
-          vscode: projectLanguage === 'TS',
-        },
-      },
-    });
 
     success(
       `${framework} installation completed successfully. Please wait for the other steps to be completed...`
