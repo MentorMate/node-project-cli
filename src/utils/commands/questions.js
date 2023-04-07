@@ -38,7 +38,6 @@ const getQuestions = (projectName, pickedFramework) => [
       },
     ],
     result(v) {
-      pickedFramework = v;
       return v;
     },
   },

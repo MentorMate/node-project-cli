@@ -49,19 +49,20 @@ module.exports = {
       );
     }
 
-    let pickedFramework = 'express';
     let userInput = {};
     let projectName = first;
 
     if (isInteractiveMode) {
       userInput = await prompt.ask(
-        getQuestions(projectName, pickedFramework).slice(0, 2)
+        getQuestions(projectName, userInput.framework).slice(0, 2)
       );
 
       userInput = Object.assign(
         {},
         userInput,
-        await prompt.ask(getQuestions(projectName, pickedFramework).slice(2))
+        await prompt.ask(
+          getQuestions(userInput.projectName, userInput.framework).slice(2)
+        )
       );
     }
 
@@ -76,7 +77,7 @@ module.exports = {
 
     userInput.projectScope ||= '';
     userInput.projectName ||= projectName;
-    userInput.framework ||= pickedFramework;
+    userInput.framework ||= 'express';
     userInput.features ||= features;
     userInput.db ||= 'none';
     userInput.projectLanguage = userInput.projectLanguage || 'TS';
@@ -99,9 +100,9 @@ module.exports = {
     const stepsOfExecution = [];
     const asyncOperations = [];
 
-    if (pickedFramework === 'nest') {
+    if (userInput.framework === 'nest') {
       await toolbox.installNest(userInput);
-    } else if (pickedFramework) {
+    } else if (userInput.framework) {
       await toolbox.createProjectDirectory(userInput);
       await toolbox.initializeNpm(userInput);
       await toolbox.installFramework(userInput);
@@ -176,7 +177,7 @@ module.exports = {
     };
 
     // TODO: move out
-    if (pickedFramework === 'nest') {
+    if (userInput.framework === 'nest') {
       Object.assign(packageJson.jest, {
         coveragePathIgnorePatterns: [
           '<rootDir>/main.ts$',
