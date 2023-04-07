@@ -23,32 +23,26 @@ module.exports = (toolbox) => {
         `${workflowsFolder}/coverage.yaml`
       );
 
+      await copyAsync(
+        `${assetsPath}/.github/workflows/coverage-e2e.yaml`,
+        `${workflowsFolder}/coverage-e2e.yaml`
+      );
+
       if (framework !== 'nest') {
-        const jestConfigFile = `${assetsPath}/jest/${projectLanguage.toLowerCase()}-jest.config.js`;
-        await copyAsync(jestConfigFile, `${appDir}/jest.config.js`);
-      }
+        const assetsAppDir = isExampleApp
+          ? `${assetsPath}/express/example-app`
+          : `${assetsPath}/express/${projectLanguage.toLowerCase()}`;
 
-      if (isExampleApp) {
         await copyAsync(
-          `${assetsPath}/express/example-app/jest.config.js`,
-          `${appDir}/jest.config.js`,
-          { overwrite: true }
+          `${assetsAppDir}/jest.config.js`,
+          `${appDir}/jest.config.js`
         );
-        await copyAsync(
-          `${assetsPath}/express/example-app/__mocks__/`,
-          `${appDir}/__mocks__/`
-        );
-        await copyAsync(
-          `${assetsPath}/express/example-app/test/`,
-          `${appDir}/test/`
-        );
-      }
 
-      if (framework === 'nest' || isExampleApp) {
-        await copyAsync(
-          `${assetsPath}/.github/workflows/coverage-e2e.yaml`,
-          `${workflowsFolder}/coverage-e2e.yaml`
-        );
+        await copyAsync(`${assetsAppDir}/test/`, `${appDir}/test/`);
+
+        if (isExampleApp) {
+          await copyAsync(`${assetsAppDir}/__mocks__/`, `${appDir}/__mocks__/`);
+        }
       }
 
       success(
@@ -74,17 +68,32 @@ module.exports = (toolbox) => {
         });
       }
 
+      if (framework !== 'nest') {
+        Object.assign(pkgJson.scripts, {
+          'test:e2e':
+            'DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.config.js',
+          'test:e2e:cov': 'npm run test:e2e -- --coverage',
+        });
+
+        Object.assign(pkgJson.devDependencies, {
+          supertest: '^6.3.3',
+        });
+
+        if (projectLanguage === 'TS') {
+          Object.assign(pkgJson.devDependencies, {
+            '@types/supertest': '^2.0.12',
+          });
+        }
+      }
+
       if (isExampleApp) {
         Object.assign(pkgJson.devDependencies, {
           pgtools: '^1.0.0',
-          supertest: '^6.3.3',
-          '@types/supertest': '^2.0.12',
         });
 
         Object.assign(pkgJson.scripts, {
           'test:e2e':
             'DOTENV_CONFIG_PATH=.env.test npm run test:e2e:db:recreate && DOTENV_CONFIG_PATH=.env.test npm run db:migrate:latest && DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.config.js',
-          'test:e2e:cov': 'npm run test:e2e -- --coverage',
           'test:e2e:db:recreate':
             'DOTENV_CONFIG_PATH=.env.test ts-node -r dotenv/config ./test/utils/recreate-db',
         });

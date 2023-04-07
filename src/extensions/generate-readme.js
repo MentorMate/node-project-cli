@@ -8,7 +8,6 @@ module.exports = (toolbox) => {
     appDir,
     db,
     isExampleApp,
-    framework,
   }) => {
     const {
       template: { generate },
@@ -27,11 +26,15 @@ module.exports = (toolbox) => {
             dockerCompose: db === 'pg',
           },
           setup: {
+            docker: features.includes('dockerizeWorkflow'),
             dockerCompose: db === 'pg',
             migrations: isExampleApp,
             tests: {
               unit: true,
-              e2e: isExampleApp,
+              e2e: {
+                pg: isExampleApp,
+                knex: isExampleApp,
+              },
             },
           },
           run: {
@@ -39,7 +42,7 @@ module.exports = (toolbox) => {
             debug: true,
           },
           test: {
-            e2e: framework === 'nest' || isExampleApp,
+            e2e: true,
           },
           debug: {
             vscode: true,

@@ -77,6 +77,34 @@ describe('jest-config-and-coverage-wf', () => {
         });
       });
 
+      describe('when the framework is not nest', () => {
+        beforeAll(() => {
+          input.framework = 'express';
+        });
+
+        it('should add the test:e2e script', () => {
+          expect(scripts).toHaveProperty('test:e2e');
+        });
+
+        it('should add the test:e2e:cov script', () => {
+          expect(scripts).toHaveProperty('test:e2e:cov');
+        });
+
+        it('should add the supertest devDependency', () => {
+          expect(devDependencies).toHaveProperty('supertest');
+        });
+
+        describe('when the languange is TypeScript', () => {
+          beforeAll(() => {
+            input.projectLanguage = 'TS';
+          });
+
+          it('should add the @types/supertest devDependency', () => {
+            expect(devDependencies).toHaveProperty('@types/supertest');
+          });
+        });
+      });
+
       describe('and it is the example app', () => {
         beforeAll(() => {
           input.isExampleApp = true;
@@ -90,20 +118,8 @@ describe('jest-config-and-coverage-wf', () => {
           expect(devDependencies).toHaveProperty('pgtools');
         });
 
-        it('should add the @types/supertest devDependency', () => {
-          expect(devDependencies).toHaveProperty('@types/supertest');
-        });
-
-        it('should add the supertest devDependency', () => {
-          expect(devDependencies).toHaveProperty('supertest');
-        });
-
         it('should add the test:e2e script', () => {
           expect(scripts).toHaveProperty('test:e2e');
-        });
-
-        it('should add the test:e2e:cov script', () => {
-          expect(scripts).toHaveProperty('test:e2e:cov');
         });
 
         it('should add the test:e2e:db:recreate script', () => {
@@ -138,74 +154,55 @@ describe('jest-config-and-coverage-wf', () => {
         );
       });
 
-      describe('when the framework is not Nest', () => {
-        beforeAll(() => {
-          input.framework = 'express';
-        });
-
-        describe('when the language is JavaScript', () => {
-          beforeAll(() => {
-            input.projectLanguage = 'JS';
-          });
-
-          it('should copy the jest config', () => {
-            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-              `${input.assetsPath}/jest/js-jest.config.js`,
-              `${input.appDir}/jest.config.js`
-            );
-          });
-        });
-
-        describe('when the language is TypeScript', () => {
-          beforeAll(() => {
-            input.projectLanguage = 'TS';
-          });
-
-          it('should copy the jest config', () => {
-            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-              `${input.assetsPath}/jest/ts-jest.config.js`,
-              `${input.appDir}/jest.config.js`
-            );
-          });
-        });
+      it('should copy the coverage-e2e workflow config', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/.github/workflows/coverage-e2e.yaml`,
+          `${input.workflowsFolder}/coverage-e2e.yaml`
+        );
       });
 
-      describe('and is the example app', () => {
+      describe('when the framework is not Nest', () => {
+        let assetsAppDir;
+
         beforeAll(() => {
-          input.isExampleApp = true;
+          input.framework = 'express';
+
+          assetsAppDir = input.isExampleApp
+            ? `${input.assetsPath}/express/example-app`
+            : `${
+                input.assetsPath
+              }/express/${input.projectLanguage.toLowerCase()}`;
         });
 
-        afterAll(() => {
-          input.isExampleApp = false;
-        });
-
-        it('should copy the example project unit test config', () => {
+        it('should copy the jest config', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${input.assetsPath}/express/example-app/jest.config.js`,
-            `${input.appDir}/jest.config.js`,
-            { overwrite: true }
+            `${assetsAppDir}/jest.config.js`,
+            `${input.appDir}/jest.config.js`
           );
         });
 
-        it('should copy the example project unit test mocks', () => {
+        it('should copy the project tests', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${input.assetsPath}/express/example-app/__mocks__/`,
-            `${input.appDir}/__mocks__/`
-          );
-        });
-
-        it('should copy the example project tests', () => {
-          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${input.assetsPath}/express/example-app/test/`,
+            `${assetsAppDir}/test/`,
             `${input.appDir}/test/`
           );
         });
 
-        it('should copy the e2e coverage workflow config', () => {
-          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${input.assetsPath}/.github/workflows/coverage-e2e.yaml`,
-            `${input.workflowsFolder}/coverage-e2e.yaml`
-          );
+        describe('and is the example app', () => {
+          beforeAll(() => {
+            input.isExampleApp = true;
+          });
+
+          afterAll(() => {
+            input.isExampleApp = false;
+          });
+
+          it('should copy the example project unit test mocks', () => {
+            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+              `${input.assetsPath}/express/example-app/__mocks__/`,
+              `${input.appDir}/__mocks__/`
+            );
+          });
         });
       });
     });
