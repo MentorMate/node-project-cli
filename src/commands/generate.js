@@ -36,6 +36,7 @@ module.exports = {
       // removes huskyHooks
       featureChoices.splice(1, 1);
       initialFeatureChoices.pop();
+      features.splice(1, 4);
     }
 
     const pwd = strings.trim(cwd());
