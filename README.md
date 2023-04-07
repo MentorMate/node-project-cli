@@ -13,32 +13,37 @@ be in its own folder inside the current one.
 ## Commands
 
 - `generate` / `g` `[project name]` - This command starts the process of generating your Node.js project.
-  You will have to answer a couple of question so the result will be customized according to your needs.
+
+  There are three main ways to generate your Node.js project:
+
+  - Interactive mode - `node-cli g [project name] --interactive`
+  - Generate fully featured express demo app - `node-cli g [project name] --example-app`
+  - No flags - by default, the `g` `[project name]` command will generate basic express app when no flags are supplied.
+
 - `version` / `v` / `--version` / `-v` - Outputs the current version of the CLI tool
 - `help` / `h` / `--help` / `-h` - Lists the available commands and their aliases
 
+### Flags
+
+- `--interactive` - Start interactive mode. You will have to answer a couple of questions so the result will be customized
+  according to your needs.
+- `--example-app` - Generate automatically fully featured express demo application
+
 ## Features
 
-The `generate` command will start prompting question so you can customize the project you want to create.
+The `generate` command in `interactive` mode will start prompting question so you can customize the project you want to create.
 After the initial naming you will be provided with the following options:
 
 ### Framework
 
 - Express
-- Nest.js - this option will automatically install its predefined linter settings and will always ues TypeScript
+- Nest.js - this option will automatically install its predefined linter settings and will always use TypeScript
 
 ### Language
 
-Although you will be provided with two options - `TypeScript` and `Vanilla JS` the usage of the latter is strongly
+Although you will be provided with two options - `TypeScript` and `JavaScript` the usage of the latter is strongly
 discouraged. Only for edge cases, small projects and only after getting permission from your project's architect/team lead
-you should choose the `Vanilla JS` option
-
-### Module type
-
-You can choose the type of modules you are going to use in your project. The available options are:
-
-- CommonJS modules
-- ES Modules
+you should choose the `JavaScript` option
 
 ### Features select
 
@@ -60,7 +65,7 @@ The default choice will include all of the listed features. The features are as 
     unwanted secrets/keys committed
   - Pre-push hook - this hook is just a placeholder. For now no action will happen here, but you can configure it by your needs
 
-- Dockerizing GitHub workflow step - this option will create a GitHub workflow file for building a Docker images
+- Containerization with Docker - this option will create a GitHub workflow file for building a Docker images
   of your application. You can extend this workflow or just use this step in another workflow for testing/releasing/etc...
 
 ### Testing
@@ -70,10 +75,9 @@ PRs that target the `main`/`master` branch and on every subsequent push to the o
 
 ### Folder structure
 
-If you've chosen `TypeScript` for project language and `Express` for framework you are going to get a
-folder structure already setup for your project. The structure will include database configuration and models folders,
-API with controllers and services folder, etc... . In each file there's a short instruction of what should be included
-in the current file/folder. Some of the files are optional or just sample files and can/should be deleted.
+If you have supplied `--example-app` flag, you are going to get a folder structure already setup for your project. The structure will include
+database configuration, models folders, API with controllers, services folder, tests, etc... In each file there's a short instruction of what
+should be included in the current file/folder. Some of the files are optional or just sample files and can/should be deleted.
 
 # License
 
