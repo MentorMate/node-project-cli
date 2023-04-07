@@ -20,6 +20,7 @@ module.exports = {
   coveragePathIgnorePatterns: [
     // entry point
     '<rootDir>/src/index.ts',
+    '<rootDir>/src/app.ts',
   ],
   // minimum coverage percent
   coverageThreshold: {

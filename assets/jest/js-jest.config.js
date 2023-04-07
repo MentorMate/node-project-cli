@@ -16,6 +16,7 @@ module.exports = {
   coveragePathIgnorePatterns: [
     // entry point
     '<rootDir>/src/index.js',
+    '<rootDir>/src/app.js',
   ],
   // minimum coverage percent
   coverageThreshold: {
