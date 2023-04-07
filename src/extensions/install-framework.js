@@ -29,7 +29,6 @@ module.exports = (toolbox) => {
     });
 
     Object.assign(pkgJson.devDependencies, {
-      dotenv: '^16.0.3',
       nodemon: '^2.0.20',
     });
 

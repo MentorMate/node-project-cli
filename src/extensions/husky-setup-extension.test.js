@@ -224,10 +224,7 @@ describe('husky-setup-extension', () => {
               ts: input.projectLanguage === 'TS',
               test: {
                 unit: true,
-                e2e:
-                  input.projectLanguage === 'TS' &&
-                  input.framework === 'express' &&
-                  input.db === 'pg',
+                e2e: true,
               },
             },
           });

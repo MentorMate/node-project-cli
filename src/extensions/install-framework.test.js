@@ -61,12 +61,8 @@ describe('install-framework', () => {
       expect(dependencies).toHaveProperty('http-terminator');
     });
 
-    it('should install add dotenv to devDependencies', () => {
-      expect(devDependencies).toHaveProperty('dotenv');
-    });
-
     it('should install add nodemon to devDependencies', () => {
-      expect(devDependencies).toHaveProperty('dotenv');
+      expect(devDependencies).toHaveProperty('nodemon');
     });
 
     it('should add the start script', () => {

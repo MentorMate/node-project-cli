@@ -97,7 +97,7 @@ module.exports = {
     const stepsOfExecution = [];
     const asyncOperations = [];
 
-    if (pickedFramework === 'nest') {
+    if (userInput.framework === 'nest') {
       await toolbox.installNest(userInput);
     } else if (pickedFramework) {
       await toolbox.createProjectDirectory(userInput);
@@ -169,12 +169,13 @@ module.exports = {
       ...userInput.pkgJson.dependencies,
     };
     packageJson.devDependencies = {
+      dotenv: '^16.0.3',
       ...packageJson.devDependencies,
       ...userInput.pkgJson.devDependencies,
     };
 
     // TODO: move out
-    if (pickedFramework === 'nest') {
+    if (userInput.framework === 'nest') {
       Object.assign(packageJson.jest, {
         coveragePathIgnorePatterns: [
           '<rootDir>/main.ts$',
@@ -191,6 +192,8 @@ module.exports = {
       });
 
       Object.assign(packageJson.scripts, {
+        'test:e2e':
+          'DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.json',
         'test:e2e:cov': 'npm run test:e2e -- --coverage',
       });
 

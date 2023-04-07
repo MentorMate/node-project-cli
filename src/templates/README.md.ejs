@@ -27,12 +27,12 @@ nvm alias default $(cat .nvmrc)
 
 Follow the instructions for your shell [here](https://github.com/nvm-sh/nvm#deeper-shell-integration).
 
-<% if (props.prerequisites.pip3) { %>
+<% if (props.prerequisites.pip3) { -%>
 #### Pip3
 Follow the instructions [here](https://pip.pypa.io/en/stable/installation/).
-<% } %>
+<% } -%>
 
-<% if (props.prerequisites.docker) { %>
+<% if (props.prerequisites.docker) { -%>
 #### Docker
 Follow the instructions [here](https://docs.docker.com/engine/install/).
 
@@ -40,12 +40,12 @@ Follow the instructions [here](https://docs.docker.com/engine/install/).
 
 Follow the instructions [here](https://docs.docker.com/engine/install/linux-postinstall/).
 
-<% if (props.prerequisites.dockerCompose) { %>
+<% if (props.prerequisites.dockerCompose) { -%>
 **Docker Compose:**
 
 In case `docker compose` isn't setup with the docker intallation follow the instructions [here](https://docs.docker.com/compose/install/).
-<% } %>
-<% } %>
+<% } -%>
+<% } -%>
 
 ### Clone the repo and cd into the folder
 
@@ -68,7 +68,7 @@ Copy the `.env.example` file to `.env`. Update environment variables as needed.
 cp .env.example .env
 ```
 
-<% if (props.setup.tests?.e2e) { %>
+<% if (props.setup.tests.e2e) { -%>
 ### Setup environment variables for e2e tests
 
 Copy the `.env` file to `.env.test`. Update environment variables as needed.
@@ -76,15 +76,20 @@ Copy the `.env` file to `.env.test`. Update environment variables as needed.
 ```bash
 cp .env .env.test
 ```
+
 Update `NODE_ENV` to `test`.
 
+<% if (props.setup.tests.e2e.pg) { -%>
 Make sure to provide a different `PGDATABASE` from what you have in `.env`
 as e2e tests wipe the database clean before they run.
+<% } -%>
 
-You may want to disable query logging by removing `DEBUG=knex:query`. 
-<% } %>
+<% if (props.setup.tests.e2e.knex) { -%>
+You may want to disable query logging by removing `DEBUG=knex:query`.
+<% } -%>
+<% } -%>
 
-<% if (props.setup.dockerCompose) { %>
+<% if (props.setup.dockerCompose) { -%>
 ### (Optional) Setup docker-compose overrides
 
 Create a `docker-compose.override.yml` file.
@@ -111,15 +116,15 @@ Update `/path/to/volume` with the directory you want to store the volumes into.
 ```bash
 docker-compose up -d
 ```
-<% } %>
+<% } -%>
 
-<% if (props.setup.migrations) { %>
+<% if (props.setup.migrations) { -%>
 ### Run database migrations
 
 ```bash
 npm run db:migrate:latest
 ```
-<% } %>
+<% } -%>
 
 ## Running the app
 
@@ -127,7 +132,7 @@ npm run db:migrate:latest
 <% if (props.run.build) { -%>
 # build the app
 npm run build
-<% } %>
+<% } -%>
 # run in development mode
 npm run start
 
@@ -155,7 +160,7 @@ npm run test:watch
 npm run test:cov
 ```
 
-<% if (props.test.e2e) { %>
+<% if (props.test.e2e) { -%>
 **End-to-end Tests**
 
 ```bash
@@ -165,10 +170,10 @@ npm run test:e2e
 # e2e coverage
 npm run test:e2e:cov
 ```
-<% } %>
+<% } -%>
 
 
-<% if (props.setup.migrations) { %>
+<% if (props.setup.migrations) { -%>
 ## Working with migrations
 
 The underlying library is `knex`. You can find their guide on migraions [here](http://knexjs.org/guide/migrations.html).
@@ -206,9 +211,9 @@ To debug migrations set the `DEBUG` environment variable to `knex:query`, e.g.
 ```bash
 DEBUG=knex:query npm run db:migrate:up
 ```
-<% } %>
+<% } -%>
 
-<% if (props.setup.docker) { %>
+<% if (props.setup.docker) { -%>
 ## Working with Docker
 
 ```bash
@@ -218,13 +223,13 @@ npm run image:build
 # run the image
 npm run image:run
 ```
-<% } %>
+<% } -%>
 
-<% if (props.debug.vscode) { %>
+<% if (props.debug.vscode) { -%>
 ## Debug
 
 **VS Code**
 
 Go to the Debug menu (CTRL+SHIFT+D). From `RUN AND DEBUG` at the top select `Run Script: Launch via NPM`.
 You should now be able to start debugging by pressing `F5`.
-<% } %>
+<% } -%>
