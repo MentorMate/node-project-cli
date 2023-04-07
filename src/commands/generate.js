@@ -6,6 +6,7 @@ const {
   getQuestions,
 } = require('../utils/commands/questions');
 const exampleAppConfig = require('../utils/commands/example-app.config');
+const features = require('../utils/commands/features');
 
 module.exports = {
   name: 'generate',
@@ -35,6 +36,7 @@ module.exports = {
       // removes huskyHooks
       featureChoices.splice(1, 1);
       initialFeatureChoices.pop();
+      features.splice(1, 4);
     }
 
     const pwd = strings.trim(cwd());
@@ -75,7 +77,7 @@ module.exports = {
     userInput.projectScope ||= '';
     userInput.projectName ||= projectName;
     userInput.framework ||= pickedFramework;
-    userInput.features ||= [];
+    userInput.features ||= features;
     userInput.db ||= 'none';
     userInput.projectLanguage = userInput.projectLanguage || 'TS';
     userInput.appDir = path(pwd, userInput.projectName);
