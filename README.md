@@ -14,25 +14,41 @@ be in its own folder inside the current one.
 
 - `generate` / `g` `[project name]` - This command starts the process of generating your Node.js project.
 
-  There are three main ways to generate your Node.js project:
+  There are three ways to generate it:
 
-  - Interactive mode - `node-cli g [project name] --interactive`
-  - Generate fully featured express demo app - `node-cli g [project name] --example-app`
-  - No flags - by default, the `g` `[project name]` command will generate basic express app when no flags are supplied.
+  - `node-cli g [project name] --interactive` - Interactive mode
+  - `node-cli g [project name] --example-app` - Generate an example application
+  - `node-cli g [project name]` - No flags. By default, the command will generate a basic express application when no flags are supplied.
 
 - `version` / `v` / `--version` / `-v` - Outputs the current version of the CLI tool
 - `help` / `h` / `--help` / `-h` - Lists the available commands and their aliases
 
 ### Flags
 
-- `--interactive` - Start interactive mode. You will have to answer a couple of questions so the result will be customized
+- `--interactive` - Start an interactive mode. You will have to answer a couple of questions so the result will be customized
   according to your needs.
-- `--example-app` - Generate automatically fully featured express demo application
+- `--example-app` - Generate automatically an express ToDo application
 
 ## Features
 
-The `generate` command in `interactive` mode will start prompting question so you can customize the project you want to create.
-After the initial naming you will be provided with the following options:
+- When `--example-app` flag is used, the generated ToDo app will include the following features:
+  &nbsp;
+
+  - Language: `typescript`
+  - Db: `postgresql`
+  - JS code linters: `prettier` and `eslint`
+  - Hooks with `husky`: `commitlint`, `commitizen`, `pre-commit`, `pre-push`
+  - Containerization with `docker`
+  - Unit and E2E tests with `jest` and `supertest`
+  - JWT authentication
+  - API documentation with `openapi`
+  - TypeScript-first schema validation with `zod`
+  - Query Builder with `knex`
+  - Global error handling
+    &nbsp;
+
+- When `--interactive` flag is used, it will start prompting question so you can customize the project you want to create.
+  After the initial naming you will be provided with the following options:
 
 ### Framework
 
@@ -65,8 +81,7 @@ The default choice will include all of the listed features. The features are as 
     unwanted secrets/keys committed
   - Pre-push hook - this hook is just a placeholder. For now no action will happen here, but you can configure it by your needs
 
-- Containerization with Docker - this option will create a GitHub workflow file for building a Docker images
-  of your application. You can extend this workflow or just use this step in another workflow for testing/releasing/etc...
+- Containerization with Docker - this option will create a Dockerfile file for building Docker images of your application.
 
 ### Testing
 
