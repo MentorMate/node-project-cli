@@ -83,12 +83,13 @@ module.exports = {
       });
     }
 
+    userInput.projectScope ||= '';
+    userInput.projectName ||= projectName;
+
     if (!userInput.projectName) {
       throw new Error('You must specify a project name');
     }
 
-    userInput.projectScope ||= '';
-    userInput.projectName ||= projectName;
     userInput.framework ||= 'express';
     userInput.features ||= features;
     userInput.db ||= 'none';
