@@ -24,6 +24,14 @@ module.exports = {
       template: { generate },
     } = toolbox;
 
+    if (options['help']) {
+      // TODO: write a better help
+      console.log(
+        'node-cli generate project-name [--interactive|--example-app]'
+      );
+      return;
+    }
+
     const pip3Installation = which('pip3');
 
     if (!pip3Installation) {
@@ -73,6 +81,10 @@ module.exports = {
         projectName,
         ...exampleAppConfig,
       });
+    }
+
+    if (!userInput.projectName) {
+      throw new Error('You must specify a project name');
     }
 
     userInput.projectScope ||= '';
