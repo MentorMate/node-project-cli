@@ -74,9 +74,9 @@ module.exports = {
       );
     }
 
-    userInput.isExampleApp = isExampleApp;
     userInput.projectScope ||= '';
     userInput.projectName ||= projectName;
+    userInput.isExampleApp = isExampleApp;
 
     if (userInput.isExampleApp) {
       Object.assign(userInput, exampleAppConfig);
