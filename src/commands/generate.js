@@ -75,16 +75,12 @@ module.exports = {
     }
 
     userInput.isExampleApp = isExampleApp;
-
-    if (userInput.isExampleApp) {
-      userInput = Object.assign(userInput, {
-        projectName,
-        ...exampleAppConfig,
-      });
-    }
-
     userInput.projectScope ||= '';
     userInput.projectName ||= projectName;
+
+    if (userInput.isExampleApp) {
+      Object.assign(userInput, exampleAppConfig);
+    }
 
     if (!userInput.projectName) {
       throw new Error('You must specify a project name');
