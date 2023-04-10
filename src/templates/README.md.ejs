@@ -225,6 +225,18 @@ npm run image:run
 ```
 <% } -%>
 
+<% if (props.setup.openApi) { -%>
+## Working with OpenAPI
+  
+```bash
+# generate a json file in .openapi folder
+npm run openapi:g
+  
+# run the openapi
+npm run openapi:serve
+```
+<% } -%>
+
 <% if (props.debug.vscode) { -%>
 ## Debug
 

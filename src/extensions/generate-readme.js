@@ -36,6 +36,7 @@ module.exports = (toolbox) => {
                 knex: isExampleApp,
               },
             },
+            openApi: isExampleApp,
           },
           run: {
             build: projectLanguage === 'TS',
