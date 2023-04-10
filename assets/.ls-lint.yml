@@ -1,27 +1,23 @@
 ls:
+  # directory extensions
   .dir: kebab-case | regex:__mocks__
-  .js: kebab-case
-  .config.js: kebab-case
-  .controller.js: kebab-case
-  .service.js: kebab-case
-  .dto.js: kebab-case
-  .model.js: kebab-case
-  .test.js: kebab-case
-  .spec.js: kebab-case
-  .test-e2e.js: kebab-case
-  .spec-e2e.js: kebab-case
-  .mock.js: kebab-case
-  .integration.test.js: kebab-case
 
+  # js extensions
+  .js: regex:([.a-z0-9]*)([-.][a-z0-9]+)*
+
+  # ts extensions
+  .ts: regex:([.a-z0-9]*)([-.][a-z0-9]+)*
+
+  src/modules/database/migrations:
+    .ts: regex:([.a-z0-9]*)([_.][a-z0-9]+)*
+
+# ignored directories and files
 ignore:
   - node_modules
   - .git
   - .github
   - .vscode
   - .husky
-  - .commitlintrc.js
-  - .prettierrc.js
-  - .eslintrc.js
   - dist
   - .openapi
   - src/@types
