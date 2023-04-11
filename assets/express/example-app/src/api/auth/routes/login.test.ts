@@ -1,5 +1,3 @@
-import '@extensions/zod/register';
-
 import createHttpError from 'http-errors';
 import route from './login';
 

@@ -14,6 +14,10 @@ module.exports = {
   testMatch: [
     "**/?(*.)+(spec|test)-e2e.[tj]s?(x)"
   ],
+  // does some setup before each test file
+  setupFiles: [
+    '<rootDir>/test/jest.setup.ts'
+  ],
   // path aliases from tsconfig.json
   moduleNameMapper: {
     '^@api$': '<rootDir>/src/api',

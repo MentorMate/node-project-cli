@@ -1,5 +1,3 @@
-import '@extensions/zod/register';
-
 import z from 'zod';
 import { getDocumentGenerator, reformatPathParams } from './openapi';
 import { response, RouteDefinition } from '@api';

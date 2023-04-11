@@ -49,6 +49,21 @@ const knex = jest.fn((name: string) => {
   return (mocks[name] ||= newQueryBuilder());
 });
 
-const Knex = jest.fn(() => knex);
+interface KnexType {
+  (): typeof knex;
+  QueryBuilder: {
+    extend(): void;
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const Knex: KnexType = jest.fn(() => knex);
+
+Knex.QueryBuilder = {
+  extend() {
+    return;
+  },
+};
 
 export default Knex;

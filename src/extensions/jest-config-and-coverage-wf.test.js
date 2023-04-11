@@ -203,6 +203,13 @@ describe('jest-config-and-coverage-wf', () => {
               `${input.appDir}/__mocks__/`
             );
           });
+
+          it('should copy the jest setup file', () => {
+            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+              `${input.assetsPath}/express/example-app/jest.setup.ts`,
+              `${input.appDir}/jest.setup.ts`
+            );
+          });
         });
       });
     });

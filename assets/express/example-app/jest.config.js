@@ -10,6 +10,10 @@ module.exports = {
   },
   // root dir is the app root
   rootDir: '.',
+  // does some setup before each test file
+  setupFiles: [
+    '<rootDir>/jest.setup.ts'
+  ],
   // path aliases from tsconfig.json
   moduleNameMapper: {
     '^@api$': '<rootDir>/src/api',
