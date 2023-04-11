@@ -50,6 +50,8 @@ be in its own folder inside the current one.
 - When `--interactive` flag is used, it will start prompting question so you can customize the project you want to create.
   After the initial naming you will be provided with the following options:
 
+For an exaustive list of features refer to [the features document](docs/features.md).
+
 ### Framework
 
 - Express
