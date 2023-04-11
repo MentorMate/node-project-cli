@@ -225,6 +225,22 @@ npm run image:run
 ```
 <% } -%>
 
+<% if (props.setup.openApi) { -%>
+## Working with OpenAPI
+  
+```bash
+# generate the openapi document (in the .openapi folder)
+npm run openapi:g
+  
+# serve swagger ui with the generated openapi document
+# note: supported is only 'linux/amd64' architecture
+npm run openapi:serve
+```
+
+You can change the port SwaggerUI is being served on by modifying SWAGGER_UI_PORT environment variable in .env
+
+<% } -%>
+
 <% if (props.debug.vscode) { -%>
 ## Debug
 

@@ -74,21 +74,18 @@ module.exports = {
       );
     }
 
+    userInput.projectScope ||= '';
+    userInput.projectName ||= projectName;
     userInput.isExampleApp = isExampleApp;
 
     if (userInput.isExampleApp) {
-      userInput = Object.assign(userInput, {
-        projectName,
-        ...exampleAppConfig,
-      });
+      Object.assign(userInput, exampleAppConfig);
     }
 
     if (!userInput.projectName) {
       throw new Error('You must specify a project name');
     }
 
-    userInput.projectScope ||= '';
-    userInput.projectName ||= projectName;
     userInput.framework ||= 'express';
     userInput.features ||= features;
     userInput.db ||= 'none';
