@@ -1,5 +1,3 @@
-import '@extensions/zod/register';
-
 import { ZodString, ZodObject } from 'zod';
 import { response } from './response';
 

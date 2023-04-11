@@ -42,6 +42,11 @@ module.exports = (toolbox) => {
 
         if (isExampleApp) {
           await copyAsync(`${assetsAppDir}/__mocks__/`, `${appDir}/__mocks__/`);
+
+          await copyAsync(
+            `${assetsAppDir}/jest.setup.ts`,
+            `${appDir}/jest.setup.ts`
+          );
         }
       }
 

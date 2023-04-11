@@ -1,6 +1,3 @@
-import '@extensions/zod/register';
-import '@extensions/knex/register';
-
 import request from 'supertest';
 import { create as createApp } from './utils/app';
 

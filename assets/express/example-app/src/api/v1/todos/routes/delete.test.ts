@@ -1,5 +1,3 @@
-import '@extensions/zod/register';
-
 import route from './delete';
 
 describe('route', () => {
