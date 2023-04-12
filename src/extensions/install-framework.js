@@ -55,6 +55,7 @@ module.exports = (toolbox) => {
         express: '^4.18.2',
         helmet: '^6.0.1',
         compression: '^1.7.4',
+        cors: '^2.8.5',
       });
 
       // with TypeScript
@@ -62,6 +63,7 @@ module.exports = (toolbox) => {
         Object.assign(pkgJson.devDependencies, {
           '@types/express': '^4.17.17',
           '@types/compression': '^1.7.2',
+          '@types/cors': '^2.8.5',
         });
       }
     }
@@ -75,7 +77,6 @@ module.exports = (toolbox) => {
     // Example Express app
     if (isExampleApp) {
       Object.assign(pkgJson.dependencies, {
-        cors: '^2.8.5',
         pino: '^8.11.0',
         'http-errors': '^2.0.0',
         bcrypt: '^5.1.0',
@@ -86,7 +87,6 @@ module.exports = (toolbox) => {
       });
 
       Object.assign(pkgJson.devDependencies, {
-        '@types/cors': '^2.8.5',
         'pino-pretty': '^9.4.0',
         '@types/http-errors': '^2.0.1',
         '@types/bcrypt': '^5.0.0',

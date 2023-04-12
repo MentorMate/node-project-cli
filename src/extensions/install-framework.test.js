@@ -102,6 +102,10 @@ describe('install-framework', () => {
         expect(dependencies).toHaveProperty('compression');
       });
 
+      it('should add cors to dependencies', () => {
+        expect(dependencies).toHaveProperty('cors');
+      });
+
       describe('and the language is TypeScript', () => {
         beforeAll(() => {
           input.projectLanguage = 'TS';
@@ -113,6 +117,10 @@ describe('install-framework', () => {
 
         it('should add @types/compression to devDependencies', () => {
           expect(devDependencies).toHaveProperty('@types/compression');
+        });
+
+        it('should add @types/cors to devDependencies', () => {
+          expect(devDependencies).toHaveProperty('@types/cors');
         });
       });
     });
