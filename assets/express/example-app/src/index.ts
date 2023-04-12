@@ -1,4 +1,5 @@
 // register extensions as the very first thing in the entry point
+import 'reflect-metadata';
 import '@extensions/zod/register';
 import '@extensions/knex/register';
 

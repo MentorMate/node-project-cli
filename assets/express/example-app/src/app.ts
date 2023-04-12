@@ -1,3 +1,4 @@
+import { Container } from 'typedi';
 import express, { json, RequestHandler } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -6,13 +7,11 @@ import pino from 'pino';
 import queryType from 'query-types';
 import { NotFound, Conflict, Unauthorized } from 'http-errors';
 import { UnauthorizedError } from 'express-jwt';
-
+import { DB_CLIENT, ENV } from '@common/di';
 import {
   onInit as initDatabase,
   create as createDbClient,
   destroy as destroyDbClient,
-  TodosRepository,
-  UsersRepository,
   RecordNotFound,
   DuplicateRecord,
 } from '@modules/database';
@@ -26,7 +25,7 @@ import {
   validateAccessToken,
 } from '@api';
 import { Environment } from '@common/environment';
-import { JwtService, PasswordService, AuthService } from '@modules/auth';
+import { AuthService } from '@modules/auth';
 import { TodosService } from '@modules/todos';
 import { Services } from '@modules';
 
@@ -47,16 +46,13 @@ export function create(env: Environment) {
 
   // create services
   const dbClient = createDbClient();
-  const usersRepository = new UsersRepository(dbClient);
-  const todosRepository = new TodosRepository(dbClient);
-  const jwtService = new JwtService(env);
-  const passwordService = new PasswordService();
-  const authService = new AuthService(
-    usersRepository,
-    jwtService,
-    passwordService
-  );
-  const todosService = new TodosService(todosRepository);
+
+  // Register services with the DI container using Tokens
+  Container.set(ENV, env);
+  Container.set(DB_CLIENT, dbClient);
+
+  const authService = Container.get(AuthService)
+  const todosService = Container.get(TodosService);
   const services: Services = { todosService, authService };
 
   // create the app

@@ -205,6 +205,14 @@ describe('install-framework', () => {
         expect(dependencies).toHaveProperty('@asteasolutions/zod-to-openapi');
       });
 
+      it('should add reflect-metadata to dependencies', () => {
+        expect(dependencies).toHaveProperty('reflect-metadata');
+      });
+
+      it('should add typedi to dependencies', () => {
+        expect(dependencies).toHaveProperty('typedi');
+      });
+
       it('should add @types/cors to devDependencies', () => {
         expect(devDependencies).toHaveProperty('@types/cors');
       });
