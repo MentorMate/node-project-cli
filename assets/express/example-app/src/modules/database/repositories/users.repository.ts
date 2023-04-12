@@ -1,12 +1,15 @@
-import { mapErrors } from '@common/utils';
 import { Knex } from 'knex';
+import { Inject, Service } from 'typedi';
+import { DB_CLIENT } from '@common/di';
+import { mapErrors } from '@common/utils';
 import { InsertUser, User } from '../models';
 import { first } from '../utils';
 import { UserEmailTaken } from './users.error-mappings';
 import { UsersRepositoryInterface } from './users.repository.interface';
 
+@Service()
 export class UsersRepository implements UsersRepositoryInterface {
-  constructor(private readonly knex: Knex) {}
+  constructor(@Inject(DB_CLIENT) private readonly knex: Knex) {}
 
   async insertOne(input: InsertUser): Promise<User> {
     return await this.knex('users')

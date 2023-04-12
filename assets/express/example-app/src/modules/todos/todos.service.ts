@@ -1,5 +1,10 @@
-import { definedOrNotFound, updatedOrNotFound } from '@modules/database';
+import { Inject, Service } from 'typedi';
 import { Paginated } from '@common/query';
+import {
+  definedOrNotFound,
+  TodosRepository,
+  updatedOrNotFound,
+} from '@modules/database';
 import {
   InsertTodo,
   ListTodosQuery,
@@ -9,8 +14,12 @@ import {
 } from '@modules/database';
 import { TodosServiceInterface } from './todos.service.interface';
 
+@Service()
 export class TodosService implements TodosServiceInterface {
-  constructor(private readonly todos: TodosRepositoryInterface) {}
+  constructor(
+    @Inject(() => TodosRepository)
+    private readonly todos: TodosRepositoryInterface
+  ) {}
 
   create(input: InsertTodo): Promise<Todo> {
     return this.todos.insertOne(input);

@@ -1,14 +1,17 @@
+import { Knex } from 'knex';
+import { Inject, Service } from 'typedi';
+import { DB_CLIENT } from '@common/di';
 import { Paginated } from '@common/query';
 import { mapErrors } from '@common/utils';
-import { Knex } from 'knex';
 import { InsertTodo, Todo, UpdateTodo } from '../models';
 import { listTodosMaps, ListTodosQuery } from '../queries';
 import { first, parseCount, extractPagination } from '../utils';
 import { TodoUserNotFound } from './todos.error-mappings';
 import { TodosRepositoryInterface } from './todos.repository.interface';
 
+@Service()
 export class TodosRepository implements TodosRepositoryInterface {
-  constructor(private readonly knex: Knex) {}
+  constructor(@Inject(DB_CLIENT) private readonly knex: Knex) {}
 
   async insertOne(input: InsertTodo): Promise<Todo> {
     return await this.knex('todos')

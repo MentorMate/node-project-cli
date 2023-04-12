@@ -84,6 +84,8 @@ module.exports = (toolbox) => {
         statuses: '^2.0.1',
         zod: '^3.20.6',
         '@asteasolutions/zod-to-openapi': '^4.4.0',
+        'reflect-metadata': '0.1.13',
+        typedi: '^0.10.0',
       });
 
       Object.assign(pkgJson.devDependencies, {
