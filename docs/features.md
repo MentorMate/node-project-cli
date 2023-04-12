@@ -2,6 +2,12 @@
 
 ## Basic App
 
+To generate a basic app run:
+
+```bash
+node-cli g <project-name>
+```
+
 ### Working with `git`:
 
 - `.gitignore` file
@@ -13,7 +19,7 @@
   - setup and use `nvm`
   - shell integration (switch between node versions automatically)
 
-### TypeScript
+### TypeScript:
 
 - `tsconfig.json` file
   - `ts-node` config:
@@ -63,7 +69,7 @@
 - `.env.example` file with defaults
 - `dotenv` as a `devDependency`
 
-### Containerization via `Docker`
+### Containerization via `Docker`:
 
 - `Docker` file
   - multi-stage build to ensure no `devDependencies`
@@ -101,7 +107,8 @@
 
 - security headers via `helmet`
 - compression via `compression`
-- graceful shutdown via `http-terminator`
+- graceful shutdown
+  - for http via `http-terminator`
 - example app:
   - `Hello, World!` route
   - unit tests
@@ -115,9 +122,9 @@
 
 ### Git hooks via `husky` and `lint-staged`:
 
-- commit-msg
+- commit-msg:
   - `commitlint`
-- pre-commit
+- pre-commit:
   - `tsc`
   - `prettier` (staged)
   - `eslint` (staged)
@@ -128,7 +135,7 @@
   - `test:cov`
   - `test:e2e:cov`
   - commented out branch name linting example
-- pre-push (empty)
+- pre-push (empty):
 
 ### GitHub workflows:
 
@@ -155,14 +162,113 @@
   - `start`
   - `start:dev`
   - `start:debug`
-- testing
+- testing:
   - `test`
   - `test:watch`
   - `test:cov`
   - `test:e2e`
   - `test:e2e:cov`
-- working with Docker
+- working with Docker:
   - `image:build`
   - `image:run`
-- debugging
+- debugging:
   - using `VS Code` launch config
+
+## Example To-Do App
+
+While the goal of the basic application is to get rid of the mundane parts of the project setup, you can only go so far without picking your stack. The example application builds on top of the basic application and also implements a To-Do app backend as a RESTful JSON API.
+
+The stack is as follows:
+
+- `PostgreSQL` - database
+- `knex` - query builder
+- `express-jwt` - JWT validation
+- `pino` - logger
+- `zod` - validation
+- `zod-to-openapi` - OpenAPI generation
+
+To generate the example app run:
+
+```bash
+node-cli g <project-name> --example-app
+```
+
+### Database `PostgreSQL`:
+
+- env vars in `.env`
+  - the default `pg` env var names are used
+- `docker-compose.yml` file for local setup
+  - env vars are read from `.env`
+- a `README.md` section
+
+### Database migrations `knex`:
+
+- read `.env` instead of `knexfile.js`
+- `npm` scripts for working with migrations
+- a `README.md` section for working with migrations
+
+### Query Builder `knex`:
+
+- `TypeScript` declarations
+- extensions:
+  - `paginate` - offset based pagination
+  - `sort` - an attempt at a more declarative sorting
+  - `filter` - an attempt at a more declarative filtration
+
+### Application:
+
+- env var validation
+- graceful shutdown
+  - for the database connections
+- request logging in development
+- CORS via `cors`
+- authentication via `express-jwt`
+- request payload validation via `zod`
+- global error handler with support for HTTP errors via `http-errors`
+- database error handling for Foreign Key and Unique contraint violations via `pg-error-enum`
+- adds support for async route handlers for express
+- adds type inference for the request params, query and body based on the validation schemas via `zod.infer`
+
+### Endpoints
+
+- `/healthz` - dummy healthcheck endpoints
+  - `GET /live` - liveness
+  - `GET /ready` - readiness
+- `/auth` - authentication
+  - `POST /register` - register
+  - `POST /login` - login
+- `/v1` - versioned part of the API
+  - `/todos` - the To-Dos resource
+    - `GET` - get a page of To-Dos
+    - `POST` - create a To-Do
+    - `/:id` - a To-Do resource
+      - `GET` - get a To-Do
+      - `PATCH` - update a To-Do
+      - `DELETE` - delete a To-Do
+
+### Open API:
+
+- an `OpenAPI` generation
+  - via a script, so that it doesn't run in production
+  - uses `zod` schemas to generate param and body schemas
+  - uses route definitions to generate paths
+  - supports named schemas
+  - adds authentication when required by the route definition
+  - provides utility for JSON only APIs
+  - provides utility for describing responses
+- `SwaggerUI`
+  - via a `Docker` image
+  - an `npm` script that runs the image and opens the UI in your default browser via `open` and `concurrently`
+  - server port can be adjusted in `.env`
+- a `README.md` section
+
+### Unit Tests:
+  - coverage
+
+### e2e Tests:
+
+- database re-initialization before every run
+  - drop and create
+  - run migrations
+- separate `.env.test` to be able to keep your development database intact
+- coverage
