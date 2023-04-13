@@ -1,10 +1,17 @@
 'use strict';
 
 module.exports = (toolbox) => {
-  toolbox.installNest = async ({ projectScope, projectName }) => {
+  toolbox.installNest = async ({
+    projectScope,
+    projectName,
+    framework,
+    appDir,
+    assetsPath,
+  }) => {
     const {
       system: { run },
       print: { success, muted },
+      filesystem: { copyAsync },
     } = toolbox;
 
     const fullProjectName = projectScope
@@ -18,6 +25,12 @@ module.exports = (toolbox) => {
 
       await run(
         `nest new ${fullProjectName} --directory ${projectName} --skip-git --skip-install --package-manager npm`
+      );
+
+      await copyAsync(
+        `${assetsPath}/${framework}/src/main.ts`,
+        `${appDir}/src/main.ts`,
+        { overwrite: true }
       );
 
       await run(
