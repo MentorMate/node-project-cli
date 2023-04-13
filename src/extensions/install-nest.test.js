@@ -38,9 +38,7 @@ describe('install-nest', () => {
     });
 
     it('should install the nest cli', () => {
-      expect(toolbox.system.run).toHaveBeenCalledWith(
-        'npm install -g @nestjs/cli'
-      );
+      expect(toolbox.system.run).toHaveBeenCalledWith('npx @nestjs/cli@^9.0.0');
     });
 
     describe('when the project is scoped', () => {
