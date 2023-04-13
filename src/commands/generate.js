@@ -176,10 +176,12 @@ module.exports = {
       ...packageJson.scripts,
       ...userInput.pkgJson.scripts,
     };
+
     packageJson.dependencies = {
       ...packageJson.dependencies,
       ...userInput.pkgJson.dependencies,
     };
+
     packageJson.devDependencies = {
       dotenv: '^16.0.3',
       ...packageJson.devDependencies,
@@ -204,6 +206,7 @@ module.exports = {
       });
 
       Object.assign(packageJson.scripts, {
+        start: 'node -r dotenv/config ./node_modules/.bin/nest start',
         'test:e2e':
           'DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.json',
         'test:e2e:cov': 'npm run test:e2e -- --coverage',
