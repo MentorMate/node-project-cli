@@ -23,11 +23,17 @@ describe('install-nest', () => {
   describe('installNest', () => {
     const input = createExtensionInput();
 
+    beforeAll(() => {
+      input.projectScope = '';
+      input.framework = 'nest';
+    });
+
     beforeEach(async () => {
       toolbox.print.muted = jest.fn(() => {});
       toolbox.print.success = jest.fn(() => {});
       toolbox.print.error = jest.fn(() => {});
       toolbox.system.run = jest.fn(() => {});
+      toolbox.filesystem.copyAsync = jest.fn(() => {});
       await toolbox.installNest(input);
     });
 
@@ -38,31 +44,21 @@ describe('install-nest', () => {
     });
 
     it('should install the nest cli', () => {
-      expect(toolbox.system.run).toHaveBeenCalledWith(
-        'npm install -g @nestjs/cli'
-      );
+      expect(toolbox.system.run).toHaveBeenCalledWith('npx @nestjs/cli@^9.0.0');
     });
 
-    describe('when the project is scoped', () => {
-      beforeAll(() => {
-        input.projectScope = 'scope';
-      });
-
-      it('should init a new scoped project', () => {
-        expect(toolbox.system.run).toHaveBeenCalledWith(
-          `nest new @${input.projectScope}/${input.projectName} --directory ${input.projectName} --skip-git --skip-install --package-manager npm`
-        );
-      });
-    });
-
-    describe('when the project is not scoped', () => {
-      beforeAll(() => {
-        input.projectScope = '';
-      });
-
+    describe('when the nest is installed', () => {
       it('should init a new project', () => {
         expect(toolbox.system.run).toHaveBeenCalledWith(
           `nest new ${input.projectName} --directory ${input.projectName} --skip-git --skip-install --package-manager npm`
+        );
+      });
+
+      it('should copy and overwrite the project main file', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/nest/src/main.ts`,
+          `${input.appDir}/src/main.ts`,
+          { overwrite: true }
         );
       });
     });
