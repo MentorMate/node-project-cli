@@ -126,6 +126,21 @@ describe('jest-config-and-coverage-wf', () => {
           expect(scripts).toHaveProperty('test:e2e:db:recreate');
         });
       });
+
+      describe('when the framework is nest', () => {
+        beforeAll(() => {
+          input.framework = 'nest';
+          input.projectLanguage = 'TS';
+        });
+
+        it('should add the test:e2e script', () => {
+          expect(scripts).toHaveProperty('test:e2e');
+        });
+
+        it('should add the test:e2e:cov script', () => {
+          expect(scripts).toHaveProperty('test:e2e:cov');
+        });
+      });
     });
 
     describe('asyncOperations', () => {
