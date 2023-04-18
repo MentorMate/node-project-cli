@@ -21,13 +21,9 @@ import {
   mapErrors,
   logRequest,
   validateRequest,
-  attachServices,
   validateAccessToken,
 } from '@api';
 import { Environment } from '@common/environment';
-import { AuthService } from '@modules/auth';
-import { TodosService } from '@modules/todos';
-import { Services } from '@modules';
 
 export function create(env: Environment) {
   // init modules
@@ -51,10 +47,6 @@ export function create(env: Environment) {
   Container.set(ENV, env);
   Container.set(DB_CLIENT, dbClient);
 
-  const authService = Container.get(AuthService)
-  const todosService = Container.get(TodosService);
-  const services: Services = { todosService, authService };
-
   // create the app
   const app = express();
 
@@ -73,8 +65,6 @@ export function create(env: Environment) {
     json(),
     // compresses response bodies
     compression(),
-    // makes the services available to the route handlers by attaching them to the request
-    attachServices(services),
     // handles numeric and boolean values for Express req.query object
     queryType.middleware()
   );
@@ -84,6 +74,7 @@ export function create(env: Environment) {
     method,
     path,
     request,
+    inject,
     authenticate = false,
     middleware = [],
     handler,
@@ -95,11 +86,22 @@ export function create(env: Environment) {
     if (request) {
       middleware.push(validateRequest(request));
     }
+    
+    let _handler = handler;
+
+    if (inject) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      _handler = function (req, res, next) {
+        const injectables = inject.map(i => Container.get(i as never));
+        handler(req, res, next, ...injectables as never[]);
+      };
+    }
 
     app[method](
       path,
       ...(middleware as RequestHandler[]),
-      handler as RequestHandler
+      _handler as RequestHandler
     );
   }
 

@@ -1,7 +1,3 @@
-import { AuthServiceInterface } from './auth';
-import { TodosServiceInterface } from './todos';
-
-export type Services = {
-  authService: AuthServiceInterface;
-  todosService: TodosServiceInterface;
-};
+export * from './database';
+export * from './auth';
+export * from './todos';

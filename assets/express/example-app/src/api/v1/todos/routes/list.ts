@@ -1,6 +1,7 @@
 import { paginated } from '@common/query';
 import { todoDTO, todoQueryDTO } from '../dto';
 import { asyncHandler, defineRoute, response } from '../../../utils';
+import { TodosService } from '@modules/todos';
 
 export default defineRoute({
   operationId: 'todo-list',
@@ -13,13 +14,14 @@ export default defineRoute({
   request: {
     query: todoQueryDTO,
   },
+  inject: [TodosService] as const,
   responses: {
     401: response.Unauthorized(),
     200: paginated(todoDTO),
   },
 }).attachHandler(
-  asyncHandler(async ({ query, services, auth: { sub } }, res) => {
-    const todos = await services.todosService.list(Number(sub), query);
+  asyncHandler(async ({ query, auth: { sub } }, res, _next, todosService) => {
+    const todos = await todosService.list(Number(sub), query);
 
     res.send(todos);
   })

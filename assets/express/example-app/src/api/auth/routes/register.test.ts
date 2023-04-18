@@ -10,14 +10,13 @@ describe('route', () => {
     const authService = { register: jest.fn(() => tokens) };
     const req = {
       body: { key: 'value' },
-      services: { authService },
     };
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const res = { send, status };
 
     it('should call AuthService#register', () => {
-      route.handler(req as never, res as never, jest.fn());
+      route.handler(req as never, res as never, jest.fn(), authService as never);
       expect(authService.register).toHaveBeenCalledWith(req.body);
     });
 

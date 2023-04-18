@@ -1,25 +1,10 @@
 import z from 'zod';
 import {
-  attachServices,
   logRequest,
   validateAccessToken,
   validateRequest,
 } from './request';
 import { UnprocessableEntity } from 'http-errors';
-
-describe('attachServices', () => {
-  it('should assign the services to the request', () => {
-    const services = {};
-    const req = {};
-    const next = jest.fn();
-
-    const middleware = attachServices(services as never);
-    middleware(req as never, {} as never, next);
-
-    expect((req as { services: typeof services }).services).toBe(services);
-    expect(next).toHaveBeenCalled();
-  });
-});
 
 describe('validateAccessToken', () => {
   it('should return an instance of the express-jwt middleware', () => {

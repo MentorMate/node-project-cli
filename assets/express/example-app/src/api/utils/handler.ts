@@ -1,8 +1,10 @@
 import { RouteConfig } from '@asteasolutions/zod-to-openapi';
+import { Concat } from '@common/utils';
 import {
   RequestHandler as ExpressRequestHandler,
   ErrorRequestHandler as ExpressErrorHandler,
 } from 'express';
+import { Token } from 'typedi';
 import { AnyZodObject, z } from 'zod';
 
 type Request = NonNullable<RouteConfig['request']>;
@@ -21,13 +23,45 @@ export type RequestSchema<
   headers?: Headers;
 };
 
-export type RequestHandler<Schema extends RequestSchema = RequestSchema> =
+type InferInjects<Tuple extends ReadonlyArray<unknown>> = {
+  [Index in keyof Tuple]: Tuple[Index] extends Token<infer Injectable>
+    ? Injectable
+    : Tuple[Index] extends { prototype: infer P }
+    ? P
+    : never;
+};
+
+type RequestHandlerFromSchema<Schema extends RequestSchema> =
   ExpressRequestHandler<
     z.infer<Exclude<Schema['params'], undefined>>,
     unknown,
     z.infer<Exclude<Schema['body'], undefined>>,
     z.infer<Exclude<Schema['query'], undefined>>
   >;
+
+type RequestHandlerWithInjects<Inject extends ReadonlyArray<unknown>> =
+  (...args: Concat<[Parameters<ExpressRequestHandler>, InferInjects<Inject>]>) => ReturnType<ExpressRequestHandler>;
+
+type RequestHandlerWithInjectsAndSchema<
+  Schema extends RequestSchema,
+  Inject extends ReadonlyArray<unknown>
+> = (
+  ...args: Concat<
+    [Parameters<RequestHandlerFromSchema<Schema>>, InferInjects<Inject>]
+  >
+) => ReturnType<RequestHandlerFromSchema<Schema>>;
+
+
+export type RequestHandler<
+  Schema extends RequestSchema | undefined = undefined,
+  Inject extends ReadonlyArray<unknown> | undefined = undefined
+> = Schema extends RequestSchema
+    ? Inject extends ReadonlyArray<unknown>
+      ? RequestHandlerWithInjectsAndSchema<Schema, Inject>
+      : RequestHandlerFromSchema<Schema>
+    : Inject extends ReadonlyArray<unknown>
+      ? RequestHandlerWithInjects<Inject>
+      : ExpressRequestHandler;
 
 export type ErrorHandler<T extends RequestSchema = RequestSchema> =
   ExpressErrorHandler<
@@ -59,12 +93,14 @@ export type ErrorHandler<T extends RequestSchema = RequestSchema> =
  */
 export const asyncHandler = <
   S extends RequestSchema,
-  H extends RequestHandler<S>
+  I extends ReadonlyArray<unknown>
 >(
-  handler: H
-): RequestHandler<S> => {
-  return function (req, res, next) {
-    const result = handler(req, res, next);
+  handler: RequestHandler<S, I>
+): RequestHandler<S, I> => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return function (req, res, next, ...args) {
+    const result = handler(req, res, next, ...args);
     return Promise.resolve(result).catch(next);
   };
 };

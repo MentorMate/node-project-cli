@@ -12,14 +12,13 @@ describe('route', () => {
       auth: { sub: '1' },
       params: { id: 1 },
       body: { name: 'Laundry' },
-      services: { todosService },
     };
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const res = { send, status };
 
     it('should call TodoService#update', () => {
-      route.handler(req as never, res as never, jest.fn());
+      route.handler(req as never, res as never, jest.fn(), todosService as never);
       expect(todosService.update).toHaveBeenCalledWith(
         req.params.id,
         Number(req.auth.sub),

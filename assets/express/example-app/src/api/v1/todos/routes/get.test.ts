@@ -11,14 +11,13 @@ describe('route', () => {
     const req = {
       auth: { sub: '1' },
       params: { id: 1 },
-      services: { todosService },
     };
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const res = { send, status };
 
     it('should call TodoService#find', () => {
-      route.handler(req as never, res as never, jest.fn());
+      route.handler(req as never, res as never, jest.fn(), todosService as never);
       expect(todosService.find).toHaveBeenCalledWith(
         req.params.id,
         Number(req.auth.sub)

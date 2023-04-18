@@ -5,7 +5,12 @@ import { AnyZodObject } from 'zod';
 
 type Responses = { [statusCode: string]: ResponseConfig | AnyZodObject };
 
-export type RouteDefinition<S extends RequestSchema = RequestSchema> = {
+type Inject = readonly [unknown, ...unknown[]];
+
+export type RouteDefinition<
+  S extends RequestSchema | undefined = RequestSchema,
+  I extends Inject | undefined = undefined,
+> = {
   operationId: string;
   summary?: string;
   description?: string;
@@ -14,8 +19,9 @@ export type RouteDefinition<S extends RequestSchema = RequestSchema> = {
   path: string;
   authenticate?: boolean;
   request?: S;
-  middleware?: Array<ExpressRequestHandler | RequestHandler<S>>;
-  handler: RequestHandler<S>;
+  inject?: I;
+  middleware?: Array<ExpressRequestHandler | RequestHandler<S, I>>;
+  handler: RequestHandler<S, I>;
   responses: Responses;
 };
 
@@ -32,10 +38,13 @@ export const prefixRoutes = <R extends { path: string }>(
   routes: R[]
 ): R[] => routes.map((route) => prefixRoute(prefix, route));
 
-export const defineRoute = <S extends RequestSchema>(
-  route: Omit<RouteDefinition<S>, 'handler'>
+export const defineRoute = <
+  S extends RequestSchema | undefined = undefined,
+  I extends Inject | undefined = undefined,
+>(
+  route: Omit<RouteDefinition<S, I>, 'handler'>
 ) => ({
   attachHandler: (
-    handler: RouteDefinition<S>['handler']
-  ): RouteDefinition<S> => ({ ...route, handler }),
+    handler: RouteDefinition<S, I>['handler']
+  ): RouteDefinition<S, I> => ({ ...route, handler }),
 });

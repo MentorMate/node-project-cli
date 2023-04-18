@@ -1,3 +1,4 @@
+import { TodosService } from '@modules/todos';
 import { asyncHandler, defineRoute, response } from '../../../utils';
 import { todoIdDTO } from '../dto';
 
@@ -12,6 +13,7 @@ export default defineRoute({
   request: {
     params: todoIdDTO,
   },
+  inject: [TodosService] as const,
   responses: {
     204: response.NoContent(),
     401: response.Unauthorized(),
@@ -19,8 +21,8 @@ export default defineRoute({
     422: response.UnprocessableEntity(),
   },
 }).attachHandler(
-  asyncHandler(async ({ params, services, auth: { sub } }, res) => {
-    await services.todosService.delete(params.id, Number(sub));
+  asyncHandler(async ({ params, auth: { sub } }, res, _next, todosService) => {
+    await todosService.delete(params.id, Number(sub));
 
     res.status(204).send();
   })

@@ -1,4 +1,4 @@
-import { Services } from '@modules';
+import { } from '@modules';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -6,6 +6,5 @@ declare module 'express-serve-static-core' {
       sub: string;
       email: string;
     };
-    services: Services;
   }
 }

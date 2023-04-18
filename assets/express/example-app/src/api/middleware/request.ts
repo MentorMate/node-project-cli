@@ -4,14 +4,6 @@ import { Logger } from 'pino';
 import createError from 'http-errors';
 import z from 'zod';
 import { RequestSchema, RequestKey } from '../utils';
-import { Services } from '@modules';
-
-export const attachServices =
-  (services: Services): RequestHandler =>
-  (req, _res, next) => {
-    req.services = services;
-    next();
-  };
 
 export const validateAccessToken = (secret: string) =>
   jwt({

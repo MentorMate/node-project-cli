@@ -6,6 +6,12 @@ export type NullableKeys<T> = { [K in keyof T]: IsNullable<T[K], K> }[keyof T];
 export type NullableKeysPartial<T> = Omit<T, NullableKeys<T>> &
   Partial<Pick<T, NullableKeys<T>>>;
 
+export type Concat<T> = T extends readonly [infer A, ...infer Rest]
+  ? A extends readonly unknown[]
+    ? readonly [...A, ...Concat<Rest>]
+    : A
+  : T;
+
 export type IsErrorPredicate = (error: unknown) => boolean;
 
 export type ErrorFactory = () => Error;

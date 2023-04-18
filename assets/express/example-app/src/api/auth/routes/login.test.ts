@@ -11,14 +11,13 @@ describe('route', () => {
     const authService = { login: jest.fn(() => tokens) };
     const req = {
       body: { key: 'value' },
-      services: { authService },
     };
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const res = { send, status };
 
     it('should call AuthService#login', () => {
-      route.handler(req as never, res as never, jest.fn());
+      route.handler(req as never, res as never, jest.fn(), authService as never);
       expect(authService.login).toHaveBeenCalledWith(req.body);
     });
 
@@ -28,7 +27,7 @@ describe('route', () => {
       const res = { send, status };
 
       beforeAll(() => {
-        route.handler(req as never, res as never, jest.fn());
+        route.handler(req as never, res as never, jest.fn(), authService as never);
       });
 
       it('should respond with 200', () => {
@@ -44,7 +43,6 @@ describe('route', () => {
       const authService = { login: jest.fn(() => undefined) };
       const req = {
         body: { key: 'value' },
-        services: { authService },
       };
       const send = jest.fn();
       const status = jest.fn(() => ({ send }));
@@ -52,7 +50,7 @@ describe('route', () => {
       const next = jest.fn();
 
       beforeAll(async () => {
-        await route.handler(req as never, res as never, next);
+        await route.handler(req as never, res as never, next, authService as never);
       });
 
       it('should throw an error', () => {
