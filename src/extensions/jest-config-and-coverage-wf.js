@@ -12,7 +12,7 @@ module.exports = (toolbox) => {
   }) => {
     const {
       print: { success, muted },
-      filesystem: { copyAsync },
+      filesystem: { copyAsync, write, read },
     } = toolbox;
 
     async function asyncOperations() {
@@ -102,6 +102,51 @@ module.exports = (toolbox) => {
           'test:e2e:db:recreate':
             'DOTENV_CONFIG_PATH=.env.test ts-node -r dotenv/config ./test/utils/recreate-db',
         });
+      }
+
+      if (framework === 'nest') {
+        pkgJson.jest = {
+          coveragePathIgnorePatterns: [
+            '<rootDir>/main.ts$',
+            '<rootDir>/app.module.ts$',
+          ],
+          coverageThreshold: {
+            global: {
+              branches: 85,
+              functions: 85,
+              lines: 85,
+              statements: 85,
+            },
+          },
+        };
+
+        Object.assign(pkgJson.scripts, {
+          'test:e2e':
+            'DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.json',
+          'test:e2e:cov': 'npm run test:e2e -- --coverage',
+        });
+
+        const jestE2eConfig = JSON.parse(read(`${appDir}/test/jest-e2e.json`));
+
+        Object.assign(jestE2eConfig, {
+          rootDir: '..',
+          coverageDirectory: 'coverage-e2e',
+          collectCoverageFrom: ['<rootDir>/src/**/*.(t|j)s'],
+          coveragePathIgnorePatterns: [
+            '<rootDir>/src/main.ts$',
+            '<rootDir>/.*spec.ts$',
+          ],
+          coverageThreshold: {
+            global: {
+              branches: 85,
+              functions: 85,
+              lines: 85,
+              statements: 85,
+            },
+          },
+        });
+
+        write(`${appDir}/test/jest-e2e.json`, jestE2eConfig);
       }
     }
 
