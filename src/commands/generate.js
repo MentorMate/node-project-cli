@@ -177,12 +177,6 @@ module.exports = {
       ...userInput.pkgJson.scripts,
     };
 
-    if (userInput.framework === 'nest') {
-      Object.assign(packageJson.scripts, {
-        start: 'node -r dotenv/config ./node_modules/.bin/nest start',
-      });
-    }
-
     packageJson.dependencies = {
       ...packageJson.dependencies,
       ...userInput.pkgJson.dependencies,
@@ -193,6 +187,10 @@ module.exports = {
       ...packageJson.devDependencies,
       ...userInput.pkgJson.devDependencies,
     };
+
+    if (userInput.framework === 'nest') {
+      Object.assign(packageJson.jest, userInput.pkgJson.jest);
+    }
 
     try {
       write(`${userInput.appDir}/package.json`, packageJson);

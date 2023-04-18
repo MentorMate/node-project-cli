@@ -105,20 +105,17 @@ module.exports = (toolbox) => {
       }
 
       if (framework === 'nest') {
-        pkgJson = {
-          ...pkgJson,
-          jest: {
-            coveragePathIgnorePatterns: [
-              '<rootDir>/main.ts$',
-              '<rootDir>/app.module.ts$',
-            ],
-            coverageThreshold: {
-              global: {
-                branches: 85,
-                functions: 85,
-                lines: 85,
-                statements: 85,
-              },
+        pkgJson.jest = {
+          coveragePathIgnorePatterns: [
+            '<rootDir>/main.ts$',
+            '<rootDir>/app.module.ts$',
+          ],
+          coverageThreshold: {
+            global: {
+              branches: 85,
+              functions: 85,
+              lines: 85,
+              statements: 85,
             },
           },
         };
