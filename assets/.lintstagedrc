@@ -3,6 +3,7 @@
         "prettier --write",
         "eslint --fix"
     ],
+    "*.md": "prettier --write",
     "*.sh": "shellcheck -x",
     "package.json": "sort-package-json"
 }

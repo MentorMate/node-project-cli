@@ -16,7 +16,7 @@
     "bin"
   ],
   "scripts": {
-    "format": "prettier \"**/*.js\" --write --cache --cache-strategy metadata --cache-location .prettiercache",
+    "format": "prettier \"**/*.{js,md}\" --write --cache --cache-strategy metadata --cache-location .prettiercache",
     "lint": "eslint \"**/*.js\" --fix --cache",
     "prepare": "husky install",
     "test": "jest",

@@ -263,7 +263,8 @@ node-cli g <project-name> --example-app
 - a `README.md` section
 
 ### Unit Tests:
-  - coverage
+
+- coverage
 
 ### e2e Tests:
 
