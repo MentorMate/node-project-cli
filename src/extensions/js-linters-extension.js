@@ -44,7 +44,7 @@ module.exports = (toolbox) => {
         ext.push('ts');
       }
 
-      const formatExt = ext.join(',');
+      const formatExt = [...ext, 'md'].join(',');
       const lintExt = ext.map((e) => `.${e}`).join(',');
 
       Object.assign(pkgJson.scripts, {
