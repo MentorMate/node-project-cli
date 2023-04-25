@@ -43,14 +43,10 @@ describe('install-nest', () => {
       expect(toolbox.print.error).not.toHaveBeenCalled();
     });
 
-    it('should install the nest cli', () => {
-      expect(toolbox.system.run).toHaveBeenCalledWith('npx @nestjs/cli@^9.0.0');
-    });
-
     describe('when the nest is installed', () => {
       it('should init a new project', () => {
         expect(toolbox.system.run).toHaveBeenCalledWith(
-          `nest new ${input.projectName} --directory ${input.projectName} --skip-git --skip-install --package-manager npm`
+          `npx @nestjs/cli@^9.0.0 new ${input.projectName} --directory ${input.projectName} --skip-git --skip-install --package-manager npm`
         );
       });
 
