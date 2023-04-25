@@ -88,10 +88,6 @@ describe('husky-setup-extension', () => {
           input.features = ['preCommit'];
         });
 
-        it('should add the init secrets script', () => {
-          expect(scripts['initsecrets']).toBeDefined();
-        });
-
         it('should add the lint-staged package', () => {
           expect(devDependencies).toHaveProperty('lint-staged');
         });

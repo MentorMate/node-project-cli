@@ -118,8 +118,6 @@ module.exports = (toolbox) => {
       }
 
       if (features.includes('preCommit')) {
-        pkgJson.scripts['initsecrets'] = 'scripts/detect-secrets.sh';
-
         Object.assign(pkgJson.devDependencies, {
           'lint-staged': '^13.1.2',
           'sort-package-json': '^2.4.1',
