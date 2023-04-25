@@ -170,23 +170,26 @@ module.exports = {
 
     const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`));
 
-    packageJson.private = true;
-
-    packageJson.scripts = {
-      ...packageJson.scripts,
-      ...userInput.pkgJson.scripts,
-    };
-
-    packageJson.dependencies = {
-      ...packageJson.dependencies,
-      ...userInput.pkgJson.dependencies,
-    };
-
-    packageJson.devDependencies = {
-      dotenv: '^16.0.3',
-      ...packageJson.devDependencies,
-      ...userInput.pkgJson.devDependencies,
-    };
+    Object.assign(packageJson, {
+      private: true,
+      engines: {
+        node: '>=18.6.0',
+        npm: '>=9.5.0',
+      },
+      scripts: {
+        ...packageJson.scripts,
+        ...userInput.pkgJson.scripts,
+      },
+      dependencies: {
+        ...packageJson.dependencies,
+        ...userInput.pkgJson.dependencies,
+      },
+      devDependencies: {
+        dotenv: '^16.0.3',
+        ...packageJson.devDependencies,
+        ...userInput.pkgJson.devDependencies,
+      },
+    });
 
     if (userInput.framework === 'nest') {
       Object.assign(packageJson.jest, userInput.pkgJson.jest);
