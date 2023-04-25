@@ -24,10 +24,8 @@ module.exports = (toolbox) => {
     muted('Installing Nest...');
 
     try {
-      await run('npx @nestjs/cli@^9.0.0');
-
       await run(
-        `nest new ${fullProjectName} --directory ${projectName} --skip-git --skip-install --package-manager npm`
+        `npx @nestjs/cli@^9.0.0 new ${fullProjectName} --directory ${projectName} --skip-git --skip-install --package-manager npm`
       );
 
       await copyAsync(
