@@ -73,7 +73,7 @@ The default choice will include all of the listed features. The features are as 
 - Hooks with `husky` - this option will setup `husky` for your project and depending on your choice can add:
 
   - Commit hook - the hook will enforces usage of proper commit messages using `commitlint` and `commitizen`.
-    `commitizen` will guide you through a friendly CLI when `git cz` command is used instead of `git commit`:
+    `commitizen` will guide you through a friendly CLI when `npx cz` command is used instead of `git commit`:
 
     ![commitizen.png](https://raw.githubusercontent.com/commitizen/cz-cli/master/meta/screenshots/add-commit.png)
 
