@@ -117,6 +117,9 @@ const createToolboxMock = () => ({
     syncOperations: () => {},
     asyncOperations: async () => {},
   }),
+  editorconfig: () => ({
+    asyncOperations: async () => {},
+  }),
 });
 
 const createExtensionInput = () => ({

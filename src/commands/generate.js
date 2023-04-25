@@ -124,6 +124,7 @@ module.exports = {
     stepsOfExecution.push(toolbox.auditConfig(userInput));
     stepsOfExecution.push(toolbox.debug(userInput));
     stepsOfExecution.push(toolbox.generateReadme(userInput));
+    stepsOfExecution.push(toolbox.editorconfig(userInput));
 
     if (userInput.projectLanguage === 'TS' && userInput.framework !== 'nest') {
       stepsOfExecution.push(toolbox.setupTs(userInput));
