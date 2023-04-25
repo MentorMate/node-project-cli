@@ -19,7 +19,15 @@ fi
 if ! command -v detect-secrets &> /dev/null
 then
   echo "detect-secrets could not be found. Installing detect-secrets..."
-  pip3 install detect-secrets
+  pip3 install detect-secrets==1.4.0 --upgrade
+fi
+
+# Switch to the needed version
+DETECT_SECRETS_VERSION=$(detect-secrets --version)
+
+if [ "$DETECT_SECRETS_VERSION" != "1.4.0" ]
+then
+  pip3 install detect-secrets==1.4.0 --upgrade
 fi
 
 pre-commit autoupdate

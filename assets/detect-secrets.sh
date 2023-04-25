@@ -6,11 +6,19 @@ then
     echo "detect-secrets could not be found. Installing detect-secrets..."
     if command -v pip3 &> /dev/null
     then
-      pip3 install detect-secrets
+      pip3 install detect-secrets==1.4.0 --upgrade
     else
       echo "pip3 not found, could not install detect-secrets"
       exit 1
     fi
+fi
+
+# Switch to the needed version
+DETECT_SECRETS_VERSION=$(detect-secrets --version)
+
+if [ "$DETECT_SECRETS_VERSION" != "1.4.0" ]
+then
+  pip3 install detect-secrets==1.4.0 --upgrade
 fi
 
 # Install pre-commit if not found
