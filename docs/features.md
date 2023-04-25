@@ -30,6 +30,7 @@ node-cli g <project-name>
 
 ### Code formatting:
 
+- `.editorconfig` file
 - `.prettierrc.js` file
 - `.prettierignore` file
 - `format` script with caching
