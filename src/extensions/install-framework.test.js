@@ -264,6 +264,13 @@ describe('install-framework', () => {
         );
       });
 
+      it('should copy the openapi container await script', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/express/example-app/scripts/await-openapi-ui-start.sh`,
+          `${input.appDir}/scripts/await-openapi-ui-start.sh`
+        );
+      });
+
       it('should copy the .openapi dir', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/express/example-app/.openapi`,
