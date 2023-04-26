@@ -106,7 +106,7 @@ module.exports = (toolbox) => {
       Object.assign(pkgJson.scripts, {
         'openapi:g': 'ts-node scripts/generate-openapi',
         'openapi:ui:run':
-          "docker run --rm -p $(node -r dotenv/config -e 'console.log(process.env.SWAGGER_UI_PORT)'):8080 -v ./.openapi:/openapi -e SWAGGER_JSON=/openapi/openapi.json swaggerapi/swagger-ui",
+          "docker run --rm -p $(node -r dotenv/config -e 'console.log(process.env.SWAGGER_UI_PORT)'):8080 -v $(pwd)/.openapi:/openapi -e SWAGGER_JSON=/openapi/openapi.json swaggerapi/swagger-ui",
         'openapi:ui:open':
           'node -r dotenv/config -e \'require("open")(`http://localhost:${process.env.SWAGGER_UI_PORT}`)\'',
         'openapi:serve':
