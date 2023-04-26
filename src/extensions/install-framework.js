@@ -3,6 +3,7 @@
 module.exports = (toolbox) => {
   toolbox.installFramework = async ({
     projectLanguage,
+    projectName,
     framework,
     appDir,
     assetsPath,
@@ -103,14 +104,14 @@ module.exports = (toolbox) => {
         },
       });
 
+      const swaggerUIContainerName = `${projectName}-swagger-ui`;
+
       Object.assign(pkgJson.scripts, {
         'openapi:g': 'ts-node scripts/generate-openapi',
-        'openapi:ui:run':
-          "docker run --rm -p $(node -r dotenv/config -e 'console.log(process.env.SWAGGER_UI_PORT)'):8080 -v $(pwd)/.openapi:/openapi -e SWAGGER_JSON=/openapi/openapi.json swaggerapi/swagger-ui",
+        'openapi:ui:run': `docker run --rm -p $(node -r dotenv/config -e 'console.log(process.env.SWAGGER_UI_PORT)'):8080 -v $(pwd)/.openapi:/openapi -e SWAGGER_JSON=/openapi/openapi.json --name ${swaggerUIContainerName} swaggerapi/swagger-ui`,
         'openapi:ui:open':
           'node -r dotenv/config -e \'require("open")(`http://localhost:${process.env.SWAGGER_UI_PORT}`)\'',
-        'openapi:serve':
-          'concurrently "npm run openapi:ui:run" "npm run openapi:ui:open"',
+        'openapi:serve': `concurrently "bash ./scripts/await-openapi-ui-start.sh ${swaggerUIContainerName} && npm run openapi:ui:open" "npm run openapi:ui:run"`,
       });
 
       Object.assign(pkgJson.devDependencies, {
@@ -121,6 +122,10 @@ module.exports = (toolbox) => {
       await copyAsync(
         `${assetsPath}/express/example-app/scripts/generate-openapi.ts`,
         `${appDir}/scripts/generate-openapi.ts`
+      );
+      await copyAsync(
+        `${assetsPath}/express/example-app/scripts/await-openapi-ui-start.sh`,
+        `${appDir}/scripts/await-openapi-ui-start.sh`
       );
       await copyAsync(
         `${assetsPath}/express/example-app/.openapi`,
