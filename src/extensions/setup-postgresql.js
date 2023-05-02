@@ -1,7 +1,13 @@
 'use strict';
 
 module.exports = (toolbox) => {
-  toolbox.setupPostgreSQL = ({ assetsPath, appDir, envVars, pkgJson }) => {
+  toolbox.setupPostgreSQL = ({
+    assetsPath,
+    appDir,
+    envVars,
+    pkgJson,
+    isExampleApp,
+  }) => {
     const {
       filesystem: { copyAsync },
     } = toolbox;
@@ -27,10 +33,21 @@ module.exports = (toolbox) => {
     };
 
     const asyncOperations = async () => {
-      await copyAsync(
-        `${assetsPath}/db/pg/docker-compose.yml`,
-        `${appDir}/docker-compose.yml`
-      );
+      // TODO: move out somehow
+      if (isExampleApp) {
+        return;
+      }
+
+      await Promise.all([
+        copyAsync(
+          `${assetsPath}/db/pg/docker-compose.yml`,
+          `${appDir}/docker-compose.yml`
+        ),
+        copyAsync(
+          `${assetsPath}/db/pg/docker-compose.override.example.yml`,
+          `${appDir}/docker-compose.override.example.yml`
+        ),
+      ]);
     };
 
     return {

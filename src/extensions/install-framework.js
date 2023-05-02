@@ -3,7 +3,6 @@
 module.exports = (toolbox) => {
   toolbox.installFramework = async ({
     projectLanguage,
-    projectName,
     framework,
     appDir,
     assetsPath,
@@ -98,39 +97,28 @@ module.exports = (toolbox) => {
 
       // OpenAPI
       // TODO: Move out
-      Object.assign(envVars, {
-        OpenAPI: {
-          SWAGGER_UI_PORT: 3001,
-        },
-      });
-
-      const swaggerUIContainerName = `${projectName}-swagger-ui`;
-
       Object.assign(pkgJson.scripts, {
         'openapi:g': 'ts-node scripts/generate-openapi',
-        'openapi:ui:run': `docker run --rm -p $(node -r dotenv/config -e 'console.log(process.env.SWAGGER_UI_PORT)'):8080 -v $(pwd)/.openapi:/openapi -e SWAGGER_JSON=/openapi/openapi.json --name ${swaggerUIContainerName} swaggerapi/swagger-ui`,
-        'openapi:ui:open':
-          'node -r dotenv/config -e \'require("open")(`http://localhost:${process.env.SWAGGER_UI_PORT}`)\'',
-        'openapi:serve': `concurrently "bash ./scripts/await-openapi-ui-start.sh ${swaggerUIContainerName} && npm run openapi:ui:open" "npm run openapi:ui:run"`,
       });
 
-      Object.assign(pkgJson.devDependencies, {
-        concurrently: '^7.6.0',
-        open: '^8.4.2',
-      });
-
-      await copyAsync(
-        `${assetsPath}/express/example-app/scripts/generate-openapi.ts`,
-        `${appDir}/scripts/generate-openapi.ts`
-      );
-      await copyAsync(
-        `${assetsPath}/express/example-app/scripts/await-openapi-ui-start.sh`,
-        `${appDir}/scripts/await-openapi-ui-start.sh`
-      );
-      await copyAsync(
-        `${assetsPath}/express/example-app/.openapi`,
-        `${appDir}/.openapi`
-      );
+      await Promise.all([
+        copyAsync(
+          `${assetsPath}/express/example-app/scripts/generate-openapi.ts`,
+          `${appDir}/scripts/generate-openapi.ts`
+        ),
+        copyAsync(
+          `${assetsPath}/express/example-app/.openapi`,
+          `${appDir}/.openapi`
+        ),
+        copyAsync(
+          `${assetsPath}/express/example-app/docker-compose.yml`,
+          `${appDir}/docker-compose.yml`
+        ),
+        copyAsync(
+          `${assetsPath}/express/example-app/docker-compose.override.example.yml`,
+          `${appDir}/docker-compose.override.example.yml`
+        ),
+      ]);
 
       Object.assign(envVars, {
         Knex: {

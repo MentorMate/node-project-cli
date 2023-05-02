@@ -233,28 +233,10 @@ describe('install-framework', () => {
         expect(devDependencies).toHaveProperty('uuid');
       });
 
-      it('should add the OpenAPI env var section', () => {
-        expect(envVars).toHaveProperty('OpenAPI');
-        expect(envVars['OpenAPI']).toHaveProperty('SWAGGER_UI_PORT');
-      });
-
       it('should add the openapi scripts', () => {
         expect(Object.keys(scripts)).toEqual(
-          expect.arrayContaining([
-            'openapi:g',
-            'openapi:ui:run',
-            'openapi:ui:open',
-            'openapi:serve',
-          ])
+          expect.arrayContaining(['openapi:g'])
         );
-      });
-
-      it('should add concurrently to devDependencies', () => {
-        expect(devDependencies).toHaveProperty('concurrently');
-      });
-
-      it('should add open to devDependencies', () => {
-        expect(devDependencies).toHaveProperty('open');
       });
 
       it('should copy the openapi-generate script', () => {
@@ -264,17 +246,24 @@ describe('install-framework', () => {
         );
       });
 
-      it('should copy the openapi container await script', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/express/example-app/scripts/await-openapi-ui-start.sh`,
-          `${input.appDir}/scripts/await-openapi-ui-start.sh`
-        );
-      });
-
       it('should copy the .openapi dir', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/express/example-app/.openapi`,
           `${input.appDir}/.openapi`
+        );
+      });
+
+      it('should copy the docker-compose config', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/express/example-app/docker-compose.yml`,
+          `${input.appDir}/docker-compose.yml`
+        );
+      });
+
+      it('should copy the docker-compose overrider config', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/express/example-app/docker-compose.override.example.yml`,
+          `${input.appDir}/docker-compose.override.example.yml`
         );
       });
 

@@ -1,7 +1,7 @@
 #
 # Create an intermediate image to build the application that will have devDependencies
 #
-FROM node:18-alpine as builder
+FROM node:18-alpine AS builder
 
 # Update OS packages
 RUN apk update && apk upgrade --no-cache

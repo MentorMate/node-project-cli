@@ -95,6 +95,13 @@ describe('setup-postgresql', () => {
           `${appDir}/docker-compose.yml`
         );
       });
+
+      it('should copy the docker-compose.override.yml file', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${assetsPath}/db/pg/docker-compose.override.example.yml`,
+          `${appDir}/docker-compose.override.example.yml`
+        );
+      });
     });
   });
 });
