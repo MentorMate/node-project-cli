@@ -59,6 +59,15 @@ const getQuestions = (projectName, pickedFramework) => [
     choices: featureChoices,
     initial: initialFeatureChoices,
   },
+  {
+    type: 'select',
+    name: 'db',
+    message: 'Select a database',
+    choices: [
+      { message: 'None', value: 'none' },
+      { message: 'PostgreSQL', value: 'pg' },
+    ],
+  },
 ];
 
 module.exports = {
