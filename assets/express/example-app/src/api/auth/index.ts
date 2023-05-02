@@ -1,6 +1,4 @@
-import { prefixRoutes } from '../utils';
+import { prefixRoutes } from '@common/api';
+import routes from './routes';
 
-import login from './routes/login';
-import register from './routes/register';
-
-export default prefixRoutes('/auth', [login, register]);
+export default prefixRoutes('/auth', routes);

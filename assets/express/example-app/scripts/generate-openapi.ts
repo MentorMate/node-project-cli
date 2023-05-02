@@ -5,7 +5,8 @@ import { writeFileSync } from 'fs';
 import { resolve } from 'path';
 
 import { envSchema } from '@common/environment';
-import { routes, RouteDefinition } from '@api';
+import { routes } from '@api';
+import { RouteDefinition } from '@common/api';
 import { getDocumentGenerator } from '@common/openapi';
 
 const run = async () => {

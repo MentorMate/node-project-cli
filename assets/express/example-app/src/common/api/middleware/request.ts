@@ -3,7 +3,7 @@ import { expressjwt as jwt } from 'express-jwt';
 import { Logger } from 'pino';
 import createError from 'http-errors';
 import z from 'zod';
-import { RequestSchema, RequestKey } from '../utils';
+import { RequestSchema, RequestKey } from '../handler';
 import { Services } from '@modules';
 
 export const attachServices =

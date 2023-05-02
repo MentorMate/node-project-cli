@@ -1,4 +1,4 @@
-import { asyncHandler, defineRoute, response } from '../../utils';
+import { asyncHandler, defineRoute, response } from '@common/api';
 import { jwtTokensDTO, registerDTO } from '../dto';
 
 export default defineRoute({

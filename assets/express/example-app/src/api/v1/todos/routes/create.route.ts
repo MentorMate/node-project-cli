@@ -1,5 +1,5 @@
+import { asyncHandler, defineRoute, response } from '@common/api';
 import { createTodoDTO, todoDTO } from '../dto';
-import { asyncHandler, defineRoute, response } from '../../../utils';
 
 export default defineRoute({
   operationId: 'todo-create',

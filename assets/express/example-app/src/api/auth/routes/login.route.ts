@@ -1,5 +1,5 @@
 import createHttpError from 'http-errors';
-import { asyncHandler, defineRoute, response } from '../../utils';
+import { asyncHandler, defineRoute, response } from '@common/api';
 import { jwtTokensDTO, loginDTO } from '../dto';
 
 export default defineRoute({

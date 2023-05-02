@@ -1,6 +1,6 @@
 import z from 'zod';
 import { getDocumentGenerator, reformatPathParams } from './openapi';
-import { response, RouteDefinition } from '@api';
+import { response, RouteDefinition } from '@common/api';
 import { OpenAPIGenerator } from '@asteasolutions/zod-to-openapi';
 
 describe('reformatPathParams', () => {

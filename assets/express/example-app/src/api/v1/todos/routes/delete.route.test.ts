@@ -1,4 +1,4 @@
-import route from './update';
+import route from './delete.route';
 
 describe('route', () => {
   it('should be defined', () => {
@@ -6,29 +6,30 @@ describe('route', () => {
   });
 
   describe('handler', () => {
-    const todo = { id: 1, name: 'Laundry' };
-    const todosService = { update: jest.fn(() => todo) };
+    const todosService = { delete: jest.fn(() => 1) };
     const req = {
       auth: { sub: '1' },
       params: { id: 1 },
-      body: { name: 'Laundry' },
       services: { todosService },
     };
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const res = { send, status };
 
-    it('should call TodoService#update', () => {
+    it('should call TodoService#delete', () => {
       route.handler(req as never, res as never, jest.fn());
-      expect(todosService.update).toHaveBeenCalledWith(
+      expect(todosService.delete).toHaveBeenCalledWith(
         req.params.id,
-        Number(req.auth.sub),
-        req.body
+        Number(req.auth.sub)
       );
     });
 
-    it('should send the updated todo', () => {
-      expect(send).toHaveBeenCalledWith(todo);
+    it('should respond with 201', () => {
+      expect(status).toHaveBeenCalledWith(204);
+    });
+
+    it('should send nothing', () => {
+      expect(send).toHaveBeenCalled();
     });
   });
 });

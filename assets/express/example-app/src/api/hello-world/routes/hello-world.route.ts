@@ -1,4 +1,4 @@
-import { RouteDefinition } from '../utils';
+import { RouteDefinition } from '@common/api';
 
 const route: RouteDefinition = {
   operationId: 'hello-world',

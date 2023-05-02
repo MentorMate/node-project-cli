@@ -1,5 +1,4 @@
-import { prefixRoutes } from '../utils';
-import live from './live';
-import ready from './ready';
+import { prefixRoutes } from '@common/api';
+import routes from './routes';
 
-export default prefixRoutes('/healthz', [live, ready]);
+export default prefixRoutes('/healthz', routes);

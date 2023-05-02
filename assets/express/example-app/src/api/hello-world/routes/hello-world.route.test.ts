@@ -1,4 +1,4 @@
-import route from './hello-world';
+import route from './hello-world.route';
 
 describe('route', () => {
   it('should be defined', () => {

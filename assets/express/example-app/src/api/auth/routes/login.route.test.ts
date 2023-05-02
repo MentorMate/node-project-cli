@@ -1,5 +1,5 @@
 import createHttpError from 'http-errors';
-import route from './login';
+import route from './login.route';
 
 describe('route', () => {
   it('should be defined', () => {

@@ -1,3 +1,3 @@
-import helloWorld from './hello-world';
+import routes from './routes';
 
-export default [helloWorld];
+export default routes;

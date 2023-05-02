@@ -1,4 +1,4 @@
-import { asyncHandler, defineRoute, response } from '../../../utils';
+import { asyncHandler, defineRoute, response } from '@common/api';
 import { todoIdDTO, updateTodoDTO, todoDTO } from '../dto';
 
 export default defineRoute({

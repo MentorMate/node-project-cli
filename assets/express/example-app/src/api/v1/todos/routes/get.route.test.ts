@@ -1,4 +1,4 @@
-import route from './delete';
+import route from './get.route';
 
 describe('route', () => {
   it('should be defined', () => {
@@ -6,7 +6,8 @@ describe('route', () => {
   });
 
   describe('handler', () => {
-    const todosService = { delete: jest.fn(() => 1) };
+    const todo = { id: 1, name: 'Laundry' };
+    const todosService = { find: jest.fn(() => todo) };
     const req = {
       auth: { sub: '1' },
       params: { id: 1 },
@@ -16,20 +17,16 @@ describe('route', () => {
     const status = jest.fn(() => ({ send }));
     const res = { send, status };
 
-    it('should call TodoService#delete', () => {
+    it('should call TodoService#find', () => {
       route.handler(req as never, res as never, jest.fn());
-      expect(todosService.delete).toHaveBeenCalledWith(
+      expect(todosService.find).toHaveBeenCalledWith(
         req.params.id,
         Number(req.auth.sub)
       );
     });
 
-    it('should respond with 201', () => {
-      expect(status).toHaveBeenCalledWith(204);
-    });
-
-    it('should send nothing', () => {
-      expect(send).toHaveBeenCalled();
+    it('should send the found todo', () => {
+      expect(send).toHaveBeenCalledWith(todo);
     });
   });
 });

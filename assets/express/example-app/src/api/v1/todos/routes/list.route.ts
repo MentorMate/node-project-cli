@@ -1,6 +1,6 @@
+import { asyncHandler, defineRoute, response } from '@common/api';
 import { paginated } from '@common/query';
 import { todoDTO, todoQueryDTO } from '../dto';
-import { asyncHandler, defineRoute, response } from '../../../utils';
 
 export default defineRoute({
   operationId: 'todo-list',

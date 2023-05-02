@@ -4,7 +4,7 @@ import {
   OpenAPIRegistry,
 } from '@asteasolutions/zod-to-openapi';
 import { OpenApiVersion } from '@asteasolutions/zod-to-openapi/dist/openapi-generator';
-import { RouteDefinition } from '@api';
+import { RouteDefinition } from '@common/api';
 import httpStatuses from 'statuses';
 
 // Changes the path param placeholder syntax from `:param` to `{param}`

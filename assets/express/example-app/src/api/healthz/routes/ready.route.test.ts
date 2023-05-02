@@ -1,4 +1,4 @@
-import route from './live';
+import route from './ready.route';
 
 describe('route', () => {
   it('should be defined', () => {

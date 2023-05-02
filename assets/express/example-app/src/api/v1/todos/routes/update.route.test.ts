@@ -1,4 +1,4 @@
-import route from './get';
+import route from './update.route';
 
 describe('route', () => {
   it('should be defined', () => {
@@ -7,25 +7,27 @@ describe('route', () => {
 
   describe('handler', () => {
     const todo = { id: 1, name: 'Laundry' };
-    const todosService = { find: jest.fn(() => todo) };
+    const todosService = { update: jest.fn(() => todo) };
     const req = {
       auth: { sub: '1' },
       params: { id: 1 },
+      body: { name: 'Laundry' },
       services: { todosService },
     };
     const send = jest.fn();
     const status = jest.fn(() => ({ send }));
     const res = { send, status };
 
-    it('should call TodoService#find', () => {
+    it('should call TodoService#update', () => {
       route.handler(req as never, res as never, jest.fn());
-      expect(todosService.find).toHaveBeenCalledWith(
+      expect(todosService.update).toHaveBeenCalledWith(
         req.params.id,
-        Number(req.auth.sub)
+        Number(req.auth.sub),
+        req.body
       );
     });
 
-    it('should send the found todo', () => {
+    it('should send the updated todo', () => {
       expect(send).toHaveBeenCalledWith(todo);
     });
   });
