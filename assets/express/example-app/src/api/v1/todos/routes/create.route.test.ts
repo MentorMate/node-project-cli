@@ -1,4 +1,4 @@
-import route from './create';
+import route from './create.route';
 
 describe('route', () => {
   it('should be defined', () => {

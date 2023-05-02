@@ -1,18 +1,20 @@
-import { RouteDefinition } from '../utils';
+import { RouteDefinition } from '@common/api';
 
 const route: RouteDefinition = {
-  operationId: 'health-liveness',
-  summary: 'Liveness endpoint',
-  description: 'Used to check whether the application is alive.',
+  operationId: 'health-readiness',
+  summary: 'Readiness endpoint',
+  description:
+    'Used to check whether the application is ready to receive requests.',
   tags: ['Healthchecks'],
   method: 'get',
-  path: '/live',
+  path: '/ready',
   handler: function (_req, res) {
+    // Add your specific checks
     res.send('OK');
   },
   responses: {
     200: {
-      description: 'Application is alive',
+      description: 'Application is ready',
       content: {
         'text/plain': {
           schema: {

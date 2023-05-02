@@ -16,15 +16,15 @@ import {
   RecordNotFound,
   DuplicateRecord,
 } from '@modules/database';
+import { routes } from '@api';
 import {
-  routes,
   handleError,
   mapErrors,
   logRequest,
   validateRequest,
   attachServices,
   validateAccessToken,
-} from '@api';
+} from '@common/api';
 import { Environment } from '@common/environment';
 import { JwtService, PasswordService, AuthService } from '@modules/auth';
 import { TodosService } from '@modules/todos';
