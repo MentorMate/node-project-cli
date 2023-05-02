@@ -252,8 +252,17 @@ Then, if you haven't already, start the Swagger UI service:
 docker compose --profile tools up -d
 ```
 
-You can change the port SwaggerUI is being served on by modifying SWAGGER_UI_PORT environment variable in .env
+Otherwise, restart the services:
 
+```
+docker compose --profile tools restart
+```
+
+You only need to do this once, if you ran `docker-compose` before `npm run openapi:g`.
+
+Now navigate to `http://localhost:3001` and you should be able to see the `To-Do` API documentation.
+
+If you're experiencing issues setting this up, checkout the troubleshooting section at the bottom.
 <% } -%>
 
 <% if (props.debug.vscode) { -%>

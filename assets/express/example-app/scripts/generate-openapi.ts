@@ -16,8 +16,8 @@ const run = async () => {
   const document = generator.generateDocument({
     info: {
       version: '1.0.0',
-      title: 'My API',
-      description: 'This is the API',
+      title: 'To-Do',
+      description: 'A To-Do application API',
     },
     servers: [{ url: `http://localhost:${env.PORT}` }],
   });
