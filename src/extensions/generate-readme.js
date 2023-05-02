@@ -23,11 +23,11 @@ module.exports = (toolbox) => {
             pip3:
               features.includes('huskyHooks') || features.includes('preCommit'),
             docker: features.includes('dockerizeWorkflow'),
-            dockerCompose: db === 'pg',
+            dockerCompose: db === 'pg' || isExampleApp,
           },
           setup: {
             docker: features.includes('dockerizeWorkflow'),
-            dockerCompose: db === 'pg',
+            dockerCompose: db === 'pg' || isExampleApp,
             migrations: isExampleApp,
             tests: {
               unit: true,
@@ -48,6 +48,11 @@ module.exports = (toolbox) => {
           debug: {
             vscode: true,
           },
+          ...(isExampleApp && {
+            troubleshooting: {
+              openApi: true,
+            },
+          }),
         },
       });
     }

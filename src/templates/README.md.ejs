@@ -90,32 +90,45 @@ You may want to disable query logging by removing `DEBUG=knex:query`.
 <% } -%>
 
 <% if (props.setup.dockerCompose) { -%>
-### (Optional) Setup docker-compose overrides
+### Setup docker-compose overrides
 
-Create a `docker-compose.override.yml` file.
-
-```bash
-touch docker-compose.override.yml
-```
-
-Paste the following configuration into the file:
+Create a `docker-compose.override.yml` file using the example:
 
 ```bash
-version: '3'
-
-services:
-  db:
-    volumes:
-      - /path/to/volume:/var/lib/postgresql/data
+cp docker-compose.override.example.yml docker-compose.override.yml
 ```
 
-Update `/path/to/volume` with the directory you want to store the volumes into.
+<% if (props.setup.openApi) { -%>
+You can open the `docker-compose.override.yml` and addjust the port Swagger UI is being served on (default is 3001).
 
-### Create the database
+If you're on Apple M1, uncomment the `platform: linux/amd64` line:
+
+```yaml
+  swaggerui:
+    # uncomment the line below for Apple M1
+    platform: linux/amd64
+    ports:
+      - '3001:8080'
+```
+<% } -%>
+
+### Provision the services
+
+In order to provision the database run:
 
 ```bash
 docker-compose up -d
 ```
+
+<% if (props.setup.openApi) { -%>
+If you want to provision Swagger UI as well, then use the `tools` profile:
+
+```bash
+docker-compose --profile tools up -d
+```
+
+To learn more about using profiles, checkout the [documentation](https://docs.docker.com/compose/profiles/).
+<% } -%>
 <% } -%>
 
 <% if (props.setup.migrations) { -%>
@@ -226,14 +239,17 @@ npm run image:run
 
 <% if (props.setup.openApi) { -%>
 ## Working with OpenAPI
-  
+
+In order to generate the OpenAPI document run:
+
 ```bash
-# generate the openapi document (in the .openapi folder)
 npm run openapi:g
-  
-# serve swagger ui with the generated openapi document
-# note: supported is only 'linux/amd64' architecture
-npm run openapi:serve
+```
+
+Then, if you haven't already, start the Swagger UI service:
+
+```
+docker compose --profile tools up -d
 ```
 
 You can change the port SwaggerUI is being served on by modifying SWAGGER_UI_PORT environment variable in .env
@@ -247,4 +263,52 @@ You can change the port SwaggerUI is being served on by modifying SWAGGER_UI_POR
 
 Go to the Debug menu (CTRL+SHIFT+D). From `RUN AND DEBUG` at the top select `Run Script: Launch via NPM`.
 You should now be able to start debugging by pressing `F5`.
+<% } -%>
+
+<% if (props.troubleshooting) { -%>
+## Troubleshooting
+
+<% if (props.troubleshooting.openApi) { -%>
+**OpenAPI**
+
+If `docker-compose` fails with this message and you're on Apple M1:
+
+```bash
+The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+```
+
+then uncomment the `platform: linux/amd64` line in `docker-compose.override.yml`
+
+```yaml
+  swaggerui:
+    # uncomment the line below for Apple M1
+    platform: linux/amd64
+    ports:
+      - '3001:8080'
+```
+
+If you're seeing `This site can't be reached` after navigating to `http://localhost:3001`,
+then it means that the `swaggerui` service is not running. Try provisioning it:
+
+```bash
+docker compose --profile tools up -d
+```
+
+In case you're seeing the `Swagger Petstore` documentation
+
+```bash
+# generate the OpenApi document
+npm run openapi:g
+
+# restart the services
+docker compose --profile tools restart
+```
+
+If Swagger UI is running successfully, but all requests you make through it are failing,
+then you probably forgot to start the application:
+
+```bash
+npm run start:dev
+```
+<% } -%>
 <% } -%>
