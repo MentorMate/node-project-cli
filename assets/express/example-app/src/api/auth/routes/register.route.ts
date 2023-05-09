@@ -13,8 +13,8 @@ export default defineRoute({
   },
   responses: {
     200: jwtTokensDTO,
-    409: response.Conflict(),
-    422: response.UnprocessableEntity(),
+    409: response.Conflict,
+    422: response.UnprocessableEntity,
   },
 }).attachHandler(
   asyncHandler(async ({ body, services }, res) => {

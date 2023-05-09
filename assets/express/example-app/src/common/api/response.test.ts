@@ -4,7 +4,7 @@ import { response } from './response';
 describe('response', () => {
   describe('NoContent', () => {
     it('should be an OpenAPI response without content', () => {
-      const noContent = response.NoContent();
+      const noContent = response.NoContent;
       expect(noContent).toHaveProperty('description');
       expect(noContent).not.toHaveProperty('content');
     });
@@ -12,7 +12,7 @@ describe('response', () => {
 
   describe('NotFound', () => {
     it('should return a zod schema for an error', () => {
-      const schema = response.NotFound();
+      const schema = response.NotFound;
       expect(schema).toBeInstanceOf(ZodObject);
       expect(schema.shape.message).toBeInstanceOf(ZodString);
       const error = { message: 'error' };
@@ -22,7 +22,7 @@ describe('response', () => {
 
   describe('Conflict', () => {
     it('should return a zod schema for an error', () => {
-      const schema = response.Conflict();
+      const schema = response.Conflict;
       expect(schema).toBeInstanceOf(ZodObject);
       expect(schema.shape.message).toBeInstanceOf(ZodString);
       const error = { message: 'error' };
@@ -32,7 +32,7 @@ describe('response', () => {
 
   describe('UnprocessableEntity', () => {
     it('should return a zod schema for an error', () => {
-      const schema = response.UnprocessableEntity();
+      const schema = response.UnprocessableEntity;
       expect(schema).toBeInstanceOf(ZodObject);
       expect(schema.shape.message).toBeInstanceOf(ZodString);
       const error = { message: 'error', errors: [] };
@@ -42,7 +42,7 @@ describe('response', () => {
 
   describe('Unauthorized', () => {
     it('should return a zod schema for an error', () => {
-      const schema = response.Unauthorized();
+      const schema = response.Unauthorized;
       expect(schema).toBeInstanceOf(ZodObject);
       expect(schema.shape.message).toBeInstanceOf(ZodString);
       const error = { message: 'error' };

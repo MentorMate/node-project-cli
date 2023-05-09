@@ -7,21 +7,22 @@ import { resolve } from 'path';
 import { envSchema } from '@common/environment';
 import { routes } from '@api';
 import { RouteDefinition } from '@common/api';
-import { getDocumentGenerator } from '@common/openapi';
+import { generateDocument } from '@common/openapi';
 
 const run = async () => {
   const env = Object.freeze(envSchema.parse(process.env));
 
-  const generator = getDocumentGenerator('3.0.3', routes as RouteDefinition[]);
-
-  const document = generator.generateDocument({
+  const document = generateDocument({
+    version: '3.0.3',
     info: {
       version: '1.0.0',
       title: 'To-Do',
       description: 'A To-Do application API',
     },
-    servers: [{ url: `http://localhost:${env.PORT}` }],
+    routes: routes as RouteDefinition[],
   });
+
+  document.servers = [{ url: `http://localhost:${env.PORT}` }];
 
   const file = resolve(__dirname, '..', '.openapi', 'openapi.json');
   const data = JSON.stringify(document, null, 2);

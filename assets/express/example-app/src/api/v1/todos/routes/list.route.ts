@@ -14,7 +14,7 @@ export default defineRoute({
     query: todoQueryDTO,
   },
   responses: {
-    401: response.Unauthorized(),
+    401: response.Unauthorized,
     200: paginated(todoDTO),
   },
 }).attachHandler(

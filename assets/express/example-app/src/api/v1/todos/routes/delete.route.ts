@@ -13,10 +13,10 @@ export default defineRoute({
     params: todoIdDTO,
   },
   responses: {
-    204: response.NoContent(),
-    401: response.Unauthorized(),
-    404: response.NotFound(),
-    422: response.UnprocessableEntity(),
+    204: response.NoContent,
+    401: response.Unauthorized,
+    404: response.NotFound,
+    422: response.UnprocessableEntity,
   },
 }).attachHandler(
   asyncHandler(async ({ params, services, auth: { sub } }, res) => {

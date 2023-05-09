@@ -14,7 +14,7 @@ export default defineRoute({
   },
   responses: {
     200: jwtTokensDTO,
-    422: response.UnprocessableEntity('Invalid email or password'),
+    422: response.UnprocessableEntity,
   },
 }).attachHandler(
   asyncHandler(async ({ body, services }, res) => {

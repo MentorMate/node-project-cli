@@ -14,8 +14,8 @@ export default defineRoute({
   },
   responses: {
     201: todoDTO,
-    401: response.Unauthorized(),
-    422: response.UnprocessableEntity(),
+    401: response.Unauthorized,
+    422: response.UnprocessableEntity,
   },
 }).attachHandler(
   asyncHandler(async ({ body, services, auth: { sub } }, res) => {

@@ -1,13 +1,10 @@
-import { RouteConfig } from '@asteasolutions/zod-to-openapi';
 import {
   RequestHandler as ExpressRequestHandler,
   ErrorRequestHandler as ExpressErrorHandler,
 } from 'express';
 import { AnyZodObject, z } from 'zod';
 
-type Request = NonNullable<RouteConfig['request']>;
-
-export type RequestKey = keyof Request;
+export type RequestKey = 'params' | 'query' | 'headers' | 'body';
 
 export type RequestSchema<
   Params extends AnyZodObject = AnyZodObject,
