@@ -1,16 +1,18 @@
-import { ResponseConfig, RouteConfig } from '@asteasolutions/zod-to-openapi';
+import { ZodOpenApiResponseObject } from 'zod-openapi';
 import { RequestSchema, RequestHandler } from './handler';
 import { RequestHandler as ExpressRequestHandler } from 'express';
 import { AnyZodObject } from 'zod';
 
-type Responses = { [statusCode: string]: ResponseConfig | AnyZodObject };
+type Responses = {
+  [statusCode: string]: ZodOpenApiResponseObject | AnyZodObject;
+};
 
 export type RouteDefinition<S extends RequestSchema = RequestSchema> = {
   operationId: string;
   summary?: string;
   description?: string;
   tags?: string[];
-  method: RouteConfig['method'];
+  method: 'get' | 'put' | 'post' | 'delete' | 'patch';
   path: string;
   authenticate?: boolean;
   request?: S;

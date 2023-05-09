@@ -1,15 +1,9 @@
 import z from 'zod';
-import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+import { extendZodWithOpenApi } from 'zod-openapi';
 
 declare module 'zod' {
   interface ZodNumber {
     coerce(): ZodNumber;
-  }
-}
-
-declare module '@asteasolutions/zod-to-openapi' {
-  interface ZodOpenAPIMetadata {
-    refId?: string;
   }
 }
 
