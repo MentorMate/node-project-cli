@@ -10,6 +10,10 @@ ls:
   .js: regex:([a-z]+)([a-z0-9]*)([-.][a-z0-9]+)*
   .ts: regex:([a-z]+)([a-z0-9]*)([-.][a-z0-9]+)*
 
+  # migrations
+  src/modules/database/migrations:
+    .ts: snake_case
+
 # ignored directories and files
 ignore:
   - node_modules
@@ -21,3 +25,5 @@ ignore:
   - .commitlintrc.js
   - .eslintrc.js
   - .prettierrc.js
+  - .openapi
+  - src/@types
