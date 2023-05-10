@@ -7,6 +7,7 @@ module.exports = (toolbox) => {
     features,
     pkgJson,
     projectLanguage,
+    isExampleApp,
   }) => {
     const {
       filesystem: { dir, copyAsync, read, writeAsync },
@@ -71,7 +72,12 @@ module.exports = (toolbox) => {
               run(`chmod +x ${appDir}/.husky/pre-commit`);
             }),
             writeAsync(`${appDir}/.lintstagedrc`, lintstagedrcData),
-            copyAsync(`${assetsPath}/.ls-lint.yml`, `${appDir}/.ls-lint.yml`),
+            copyAsync(
+              isExampleApp
+                ? `${assetsPath}/express/example-app/.ls-lint.yml`
+                : `${assetsPath}/.ls-lint.yml`,
+              `${appDir}/.ls-lint.yml`
+            ),
             copyAsync(
               `${assetsPath}/.pre-commit-config.yaml`,
               `${appDir}/.pre-commit-config.yaml`

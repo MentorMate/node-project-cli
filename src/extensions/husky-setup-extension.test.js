@@ -244,6 +244,23 @@ describe('husky-setup-extension', () => {
           );
         });
 
+        describe('and it is the example app', () => {
+          beforeAll(() => {
+            input.isExampleApp = true;
+          });
+
+          afterAll(() => {
+            input.isExampleApp = false;
+          });
+
+          it('should copy the example app ls-lint config', () => {
+            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+              `${assetsPath}/express/example-app/.ls-lint.yml`,
+              `${appDir}/.ls-lint.yml`
+            );
+          });
+        });
+
         it('should copy the pre-commit config', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${assetsPath}/.pre-commit-config.yaml`,
