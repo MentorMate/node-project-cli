@@ -267,6 +267,13 @@ describe('install-framework', () => {
         );
       });
 
+      it('should copy the database migrations', () => {
+        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+          `${input.assetsPath}/express/example-app/migrations`,
+          `${input.appDir}/migrations`
+        );
+      });
+
       it('should add Knex env vars', () => {
         expect(envVars).toHaveProperty('Knex');
         expect(envVars['Knex']).toHaveProperty('DEBUG');

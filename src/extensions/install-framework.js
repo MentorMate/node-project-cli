@@ -118,6 +118,10 @@ module.exports = (toolbox) => {
           `${assetsPath}/express/example-app/docker-compose.override.example.yml`,
           `${appDir}/docker-compose.override.example.yml`
         ),
+        copyAsync(
+          `${assetsPath}/express/example-app/migrations`,
+          `${appDir}/migrations`
+        ),
       ]);
 
       Object.assign(envVars, {
@@ -134,19 +138,19 @@ module.exports = (toolbox) => {
       Object.assign(pkgJson.scripts, {
         'db:connection:print': 'ts-node scripts/db-connection',
         'db:migrate:make':
-          'knex migrate:make -x ts --migrations-directory ./src/modules/database/migrations',
+          'knex migrate:make -x ts --migrations-directory ./migrations',
         'db:migrate:up':
-          'ts-node node_modules/.bin/knex migrate:up --migrations-directory ./src/modules/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+          'ts-node node_modules/.bin/knex migrate:up --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
         'db:migrate:down':
-          'ts-node node_modules/.bin/knex migrate:down --migrations-directory ./src/modules/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+          'ts-node node_modules/.bin/knex migrate:down --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
         'db:migrate:latest':
-          'ts-node node_modules/.bin/knex migrate:latest --migrations-directory ./src/modules/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+          'ts-node node_modules/.bin/knex migrate:latest --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
         'db:migrate:rollback':
-          'ts-node node_modules/.bin/knex migrate:rollback --migrations-directory ./src/modules/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+          'ts-node node_modules/.bin/knex migrate:rollback --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
         'db:migrate:version':
-          'ts-node node_modules/.bin/knex migrate:currentVersion --migrations-directory ./src/modules/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+          'ts-node node_modules/.bin/knex migrate:currentVersion --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
         'db:migrate:status':
-          'ts-node node_modules/.bin/knex migrate:status --migrations-directory ./src/modules/database/migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+          'ts-node node_modules/.bin/knex migrate:status --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
         'db:migrate:reset':
           'npm run db:migrate:rollback --all && npm run db:migrate:latest',
       });
