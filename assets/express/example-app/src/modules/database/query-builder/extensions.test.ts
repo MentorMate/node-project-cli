@@ -1,5 +1,5 @@
 import { Sort } from '@common/query';
-import { filter, sort, paginate, list } from './knex-extensions';
+import { filter, sort, paginate } from './extensions';
 
 describe('filter', () => {
   it('should apply all the filters to the query builder', () => {
@@ -44,7 +44,7 @@ describe('sort', () => {
       age: jest.fn((qb, _order) => qb),
     };
 
-    sort(queryBuilder, sorts, sorterMap);
+    sort(queryBuilder as never, sorts, sorterMap);
 
     expect(sorterMap.name).toHaveBeenCalledWith(queryBuilder, 'asc');
     expect(sorterMap.age).toHaveBeenCalledWith(queryBuilder, 'desc');
@@ -74,54 +74,5 @@ describe('paginate', () => {
 
     expect(queryBuilder.offset).toHaveBeenCalledWith(30);
     expect(queryBuilder.limit).toHaveBeenCalledWith(15);
-  });
-});
-
-describe('list', () => {
-  it('should apply the filters, sortings and pagination', () => {
-    const queryBuilder = {
-      filter() {
-        return this;
-      },
-      sort() {
-        return this;
-      },
-      paginate() {
-        return this;
-      },
-    };
-
-    jest.spyOn(queryBuilder, 'filter');
-    jest.spyOn(queryBuilder, 'sort');
-    jest.spyOn(queryBuilder, 'paginate');
-
-    const query = {
-      filters: {
-        name: 'John',
-      },
-      sorts: [{ column: 'age', order: 'desc' }],
-      pagination: {
-        page: 2,
-        items: 9,
-      },
-    };
-
-    const maps = {
-      filterMap: {
-        name: jest.fn((qb) => qb),
-      },
-      sorterMap: {
-        age: jest.fn((qb) => qb),
-      },
-    };
-
-    list(queryBuilder as never, query as never, maps as never);
-
-    expect(queryBuilder.filter).toHaveBeenCalledWith(
-      query.filters,
-      maps.filterMap
-    );
-    expect(queryBuilder.sort).toHaveBeenCalledWith(query.sorts, maps.sorterMap);
-    expect(queryBuilder.paginate).toHaveBeenCalledWith(query.pagination);
   });
 });

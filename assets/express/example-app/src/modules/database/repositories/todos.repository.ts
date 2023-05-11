@@ -2,10 +2,12 @@ import { Paginated } from '@common/query';
 import { mapErrors } from '@common/utils';
 import { Knex } from 'knex';
 import { InsertTodo, Todo, UpdateTodo } from '../models';
-import { listTodosMaps, ListTodosQuery } from '../queries';
 import { first, parseCount, extractPagination } from '../utils';
 import { TodoUserNotFound } from './todos.error-mappings';
 import { TodosRepositoryInterface } from './todos.repository.interface';
+import { filterByCompleted, filterByName } from '../filters/todo.filters';
+import { sortByCreatedAt, sortByName } from '../sorters/todo.sorters';
+import { ListTodosQuery } from '@common/data/models';
 
 export class TodosRepository implements TodosRepositoryInterface {
   constructor(private readonly knex: Knex) {}
@@ -51,11 +53,25 @@ export class TodosRepository implements TodosRepositoryInterface {
     query: ListTodosQuery
   ): Promise<Paginated<Todo>> {
     const qb = this.knex('todos').where({ userId });
-    const data = await qb.clone().list(query, listTodosMaps);
+
+    const data = await qb
+      .clone()
+      .filter(query.filters, {
+        name: filterByName,
+        completed: filterByCompleted,
+      })
+      .sort(query.sorts, {
+        name: sortByName,
+        createdAt: sortByCreatedAt,
+      })
+      .paginate(query.pagination);
 
     const total = await qb
       .clone()
-      .filter(query.filters, listTodosMaps.filterMap)
+      .filter(query.filters, {
+        name: filterByName,
+        completed: filterByCompleted,
+      })
       .count()
       .then(parseCount);
 

@@ -3,8 +3,9 @@ import { DatabaseError } from 'pg';
 import { PostgresError } from 'pg-error-enum';
 import { RecordNotFound } from '../errors';
 import { Todo } from '../models';
-import { listTodosMaps } from '../queries';
 import { TodosRepository } from './todos.repository';
+import { filterByCompleted, filterByName } from '../filters/todo.filters';
+import { sortByCreatedAt, sortByName } from '../sorters/todo.sorters';
 
 describe('TodosRepository', () => {
   const knex = Knex({ client: 'pg', connection: {} });
@@ -167,10 +168,11 @@ describe('TodosRepository', () => {
     it('should list the records', async () => {
       jest.spyOn(todosQb, 'where');
       jest.spyOn(todosQb, 'clone');
-      jest
-        .spyOn(todosQb, 'list')
-        .mockImplementationOnce(() => Promise.resolve([]) as never);
       jest.spyOn(todosQb, 'filter');
+      jest.spyOn(todosQb, 'sort');
+      jest
+        .spyOn(todosQb, 'paginate')
+        .mockImplementationOnce(() => Promise.resolve([]) as never);
       jest
         .spyOn(todosQb, 'count')
         .mockImplementationOnce(() => Promise.resolve([{ count: 0 }]) as never);
@@ -182,7 +184,14 @@ describe('TodosRepository', () => {
 
       expect(todosQb.where).toHaveBeenCalledWith({ userId });
       expect(todosQb.clone).toHaveBeenCalledTimes(2);
-      expect(todosQb.list).toHaveBeenCalledWith(query, listTodosMaps);
+      expect(todosQb.filter).toHaveBeenCalledWith(undefined, {
+        name: filterByName,
+        completed: filterByCompleted,
+      });
+      expect(todosQb.sort).toHaveBeenCalledWith(undefined, {
+        name: sortByName,
+        createdAt: sortByCreatedAt,
+      });
       expect(todosQb.count).toHaveBeenCalled();
     });
   });

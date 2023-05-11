@@ -1,3 +1,3 @@
-import { listTodosQuery } from '@modules/database';
+import { listTodosQuery } from '@common/data/models';
 
 export const todoQueryDTO = listTodosQuery;
