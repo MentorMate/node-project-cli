@@ -1,8 +1,8 @@
 import { Paginated } from '@common/query';
-import { ListTodosQuery } from '@modules/database/queries';
 import { extractPagination } from '@modules/database/utils';
 import { InsertTodo, Todo, UpdateTodo } from '../../models';
 import { TodosRepositoryInterface } from '../todos.repository.interface';
+import { ListTodosQuery } from '@common/data/models';
 
 export class TodosRepository implements TodosRepositoryInterface {
   private lastId = 0;

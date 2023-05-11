@@ -1,8 +1,6 @@
 import { Knex } from 'knex';
 import { Sort, SortOrder, Pagination } from '@common/query';
-import { extractPagination } from './utils';
-
-// TODO: these type definitions seem unnecessarily complicated
+import { extractPagination } from '../utils';
 
 /**
  * A Filter is a function that accepts a QueryBuilder for a given entity and a value,
@@ -18,10 +16,11 @@ import { extractPagination } from './utils';
  * const filterByName: FilterByName = (qb, name) => qb.where({ name });
  * ```
  */
-type Filter<QueryBuilder extends Knex.QueryBuilder, Value> = (
-  qb: QueryBuilder,
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type Filter<Model extends {}, Value> = (
+  qb: Knex.QueryBuilder<Model>,
   value: Value
-) => QueryBuilder;
+) => Knex.QueryBuilder<Model>;
 
 /**
  * A FilerMap is a map is a mapping from query param names to filters.
@@ -45,11 +44,12 @@ type Filter<QueryBuilder extends Knex.QueryBuilder, Value> = (
  * };
  * ```
  */
-export type FilterMap<QueryBuilder extends Knex.QueryBuilder, Filters> = {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type FilterMap<Model extends {}, Filters> = {
   // Since query params are usually optional,
   // we loop through the query params removing their optionality via `-?`,
   // then map them to a filter of their value excluding undefined.
-  [K in keyof Filters]-?: Filter<QueryBuilder, Exclude<Filters[K], undefined>>;
+  [K in keyof Filters]-?: Filter<Model, Exclude<Filters[K], undefined>>;
 };
 
 /**
@@ -66,10 +66,11 @@ export type FilterMap<QueryBuilder extends Knex.QueryBuilder, Filters> = {
  * const sortByName: SortByName = (qb, order) => qb.orderBy('name', order);
  * ```
  */
-type Sorter<QueryBuilder extends Knex.QueryBuilder> = (
-  qb: QueryBuilder,
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type Sorter<Model extends {}> = (
+  qb: Knex.QueryBuilder<Model>,
   order?: SortOrder
-) => QueryBuilder;
+) => Knex.QueryBuilder<Model>;
 
 /**
  * A SorterMap is a map is a mapping from query param names to sorters.
@@ -90,9 +91,10 @@ type Sorter<QueryBuilder extends Knex.QueryBuilder> = (
  * ```
  */
 export type SorterMap<
-  QueryBuilder extends Knex.QueryBuilder,
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  Model extends {},
   SortColumn extends string
-> = Record<SortColumn, Sorter<QueryBuilder>>;
+> = Record<SortColumn, Sorter<Model>>;
 
 export interface ListQuery<Filters, Sort, Pagination> {
   filters?: Filters;
@@ -104,27 +106,29 @@ export interface ListQuery<Filters, Sort, Pagination> {
 // Knex extensions
 //
 export const filter = <
-  QB extends Knex.QueryBuilder,
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  Model extends {},
   Query extends Record<string, unknown>,
-  Filters extends FilterMap<QB, Query>
+  Filters extends FilterMap<Model, Query>
 >(
-  qb: QB,
+  qb: Knex.QueryBuilder<Model>,
   filters: Query,
   filterMap: Filters
-): QB =>
+): Knex.QueryBuilder<Model> =>
   Object.entries(filters)
     .filter(([, v]) => v !== undefined)
-    .reduce<QB>(
+    .reduce<Knex.QueryBuilder<Model>>(
       (qb, [k, v]) => filterMap[k as keyof Filters](qb, v as never),
       qb
     );
 
-export const sort = <QB extends Knex.QueryBuilder, SortColumn extends string>(
-  qb: QB,
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const sort = <Model extends {}, SortColumn extends string>(
+  qb: Knex.QueryBuilder<Model>,
   sorts: Sort<SortColumn>[],
-  sorterMap: SorterMap<QB, SortColumn>
-): QB =>
-  sorts.reduce<QB>(
+  sorterMap: SorterMap<Model, SortColumn>
+): Knex.QueryBuilder<Model> =>
+  sorts.reduce<Knex.QueryBuilder<Model>>(
     (qb, sort) => sorterMap[sort.column](qb, sort.order || 'asc'),
     qb
   );
@@ -137,19 +141,3 @@ export const paginate = <QB extends Knex.QueryBuilder>(
 
   return qb.offset((page - 1) * items).limit(items);
 };
-
-export const list = <
-  QB extends Knex.QueryBuilder,
-  Filters,
-  SortColumn extends string,
-  FM extends FilterMap<Knex.QueryBuilder, Filters>,
-  SM extends SorterMap<Knex.QueryBuilder, SortColumn>
->(
-  qb: QB,
-  query: ListQuery<Filters, Sort<SortColumn>, Pagination>,
-  { filterMap, sorterMap }: { filterMap: FM; sorterMap: SM }
-): QB =>
-  qb
-    .filter(query.filters, filterMap)
-    .sort(query.sorts, sorterMap)
-    .paginate(query.pagination);

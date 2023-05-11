@@ -1,8 +1,8 @@
+import { ListTodosQuery } from '@common/data/models';
 import { InsertTodo, Todo, UpdateTodo } from '../models';
-import { ListTodosQuery } from '../queries';
 import { Paginated } from '@common/query';
 
-export type TodosRepositoryInterface = {
+export interface TodosRepositoryInterface {
   insertOne: (input: InsertTodo) => Promise<Todo>;
   findById: (
     id: Todo['id'],
@@ -18,4 +18,4 @@ export type TodosRepositoryInterface = {
     userId: Todo['userId'],
     query: ListTodosQuery
   ) => Promise<Paginated<Todo>>;
-};
+}

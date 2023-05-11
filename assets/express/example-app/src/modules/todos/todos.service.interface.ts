@@ -1,10 +1,6 @@
+import { ListTodosQuery } from '@common/data/models';
 import { Paginated } from '@common/query';
-import {
-  Todo,
-  InsertTodo,
-  UpdateTodo,
-  ListTodosQuery,
-} from '@modules/database';
+import { Todo, InsertTodo, UpdateTodo } from '@modules/database';
 
 export interface TodosServiceInterface {
   create: (input: InsertTodo) => Promise<Todo>;

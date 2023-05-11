@@ -1,3 +1,3 @@
-import { todo as todoSchema } from '@common/data/models';
+import { todo } from '@common/data/models';
 
-export const todoDTO = todoSchema.openapi({ ref: 'Todo' });
+export const todoDTO = todo.openapi({ ref: 'Todo' });

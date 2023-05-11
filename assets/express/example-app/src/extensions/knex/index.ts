@@ -1,19 +1,17 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import Knex, { Knex as KnexOriginal } from 'knex';
+import Knex from 'knex';
 import {
   FilterMap,
   SorterMap,
-  ListQuery,
   filter,
   sort,
   paginate,
-  list,
 } from '@modules/database';
 import { Pagination, Sort } from '@common/query';
 
 declare module 'knex' {
   namespace Knex {
-    interface QueryBuilder<TRecord, TResult> {
+    interface QueryBuilder<TRecord> {
       /**
        * Given a column-to-value map and column-to-filter map, applies the filters to the query builder.
        * Filter map must cover all columns in the column-to-value map.
@@ -34,10 +32,7 @@ declare module 'knex' {
        */
       filter<Filters>(
         filters: Filters | undefined,
-        filterMap: FilterMap<
-          KnexOriginal.QueryBuilder<TRecord, TResult>,
-          Filters
-        >
+        filterMap: FilterMap<TRecord, Filters>
       ): this;
       /**
        * Given a list of column sortings an a column-to-sorter map, applies the sorters to the query builder.
@@ -59,7 +54,7 @@ declare module 'knex' {
        */
       sort<SortColumn extends string>(
         sorts: Sort<SortColumn>[] | undefined,
-        sorterMap: SorterMap<QueryBuilder<TRecord, TResult>, SortColumn>
+        sorterMap: SorterMap<TRecord, SortColumn>
       ): this;
       /**
        * Offset pagination. This a shorthand for the following:
@@ -71,23 +66,6 @@ declare module 'knex' {
        * ```
        */
       paginate(pagination?: Pagination): this;
-      /**
-       * Applies filtering, sorting and pagination. This is a shorthand for the following:
-       *
-       * ```
-       * queryBuilder
-       *  .filter(query.filters, listMaps.filterMap)
-       *  .sort(query.sorts, listMaps.sorterMap)
-       *  .paginate(query.pagination);
-       * ```
-       */
-      list<Filters, SortKey extends string>(
-        query: ListQuery<Filters, Sort<SortKey>, Pagination>,
-        listMaps: {
-          filterMap?: FilterMap<QueryBuilder<TRecord, TResult>, Filters>;
-          sorterMap?: SorterMap<QueryBuilder<TRecord, TResult>, SortKey>;
-        }
-      ): this;
     }
   }
 }
@@ -114,14 +92,6 @@ export const register = () => {
   if (!Knex.paginate) {
     Knex.QueryBuilder.extend('paginate', function (pagination) {
       return paginate(this, pagination);
-    });
-  }
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  if (!Knex.list) {
-    Knex.QueryBuilder.extend('list', function (input, listMaps) {
-      return list(this, input, listMaps);
     });
   }
 };

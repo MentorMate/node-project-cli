@@ -2,12 +2,12 @@ import { definedOrNotFound, updatedOrNotFound } from '@modules/database';
 import { Paginated } from '@common/query';
 import {
   InsertTodo,
-  ListTodosQuery,
   Todo,
   TodosRepositoryInterface,
   UpdateTodo,
 } from '@modules/database';
 import { TodosServiceInterface } from './todos.service.interface';
+import { ListTodosQuery } from '@common/data/models';
 
 export class TodosService implements TodosServiceInterface {
   constructor(private readonly todos: TodosRepositoryInterface) {}
