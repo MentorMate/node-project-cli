@@ -107,8 +107,8 @@ module.exports = (toolbox) => {
           `${appDir}/scripts/generate-openapi.ts`
         ),
         copyAsync(
-          `${assetsPath}/express/example-app/.openapi`,
-          `${appDir}/.openapi`
+          `${assetsPath}/express/example-app/.openapi/gitignorefile`,
+          `${appDir}/.openapi/.gitignore`
         ),
         copyAsync(
           `${assetsPath}/express/example-app/docker-compose.yml`,
