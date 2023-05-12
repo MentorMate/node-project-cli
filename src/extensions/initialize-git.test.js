@@ -61,7 +61,7 @@ describe('initialize-git', () => {
 
       it('should copy the .gitignore file over', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/git/.gitignore`,
+          `${input.assetsPath}/git/gitignorefile`,
           `${input.appDir}/.gitignore`
         );
       });

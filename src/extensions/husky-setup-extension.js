@@ -36,7 +36,7 @@ module.exports = (toolbox) => {
         dir(appHuskyPath);
 
         await copyAsync(
-          `${assetHuskyPath}/.gitignore`,
+          `${assetHuskyPath}/gitignorefile`,
           `${appHuskyPath}/.gitignore`
         );
 

@@ -248,8 +248,8 @@ describe('install-framework', () => {
 
       it('should copy the .openapi dir', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/express/example-app/.openapi`,
-          `${input.appDir}/.openapi`
+          `${input.assetsPath}/express/example-app/.openapi/gitignorefile`,
+          `${input.appDir}/.openapi/.gitignore`
         );
       });
 

@@ -169,7 +169,7 @@ describe('husky-setup-extension', () => {
 
       it('should copy the husky .gitignore', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${assetHuskyPath}/.gitignore`,
+          `${assetHuskyPath}/gitignorefile`,
           `${appHuskyPath}/.gitignore`
         );
       });
