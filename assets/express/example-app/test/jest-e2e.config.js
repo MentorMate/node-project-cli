@@ -20,14 +20,21 @@ module.exports = {
   ],
   // path aliases from tsconfig.json
   moduleNameMapper: {
-    '^@api$': '<rootDir>/src/api',
-    '^@api/(.*)$': '<rootDir>/src/api/$1',
-    '^@modules$': '<rootDir>/src/modules',
-    '^@modules/(.*)$': '<rootDir>/src/modules/$1',
-    '^@common$': '<rootDir>/src/common',
-    '^@common/(.*)$': '<rootDir>/src/common/$1',
     '^@database$': '<rootDir>/src/database',
-    '^@extensions/(.*)$': '<rootDir>/src/extensions/$1'
+    '^@database/(.*)$': '<rootDir>/src/database/$1',
+    '^@extensions/(.*)$': '<rootDir>/src/extensions/$1',
+    '^@middleware$': '<rootDir>/src/middleware',
+    '^@auth$': '<rootDir>/src/features/auth',
+    '^@auth/(.*)$': '<rootDir>/src/features/auth/$1',
+    '^@healthchecks$': '<rootDir>/src/features/healthchecks',
+    '^@healthchecks/(.*)$': '<rootDir>/src/features/healthchecks/$1',
+    '^@hello-world$': '<rootDir>/src/features/hello-world',
+    '^@hello-world/(.*)$': '<rootDir>/src/features/hello-world/$1',
+    '^@todos$': '<rootDir>/src/features/todos',
+    '^@todos/(.*)$': '<rootDir>/src/features/todos/$1',
+    '^@users$': '<rootDir>/src/features/users',
+    '^@users/(.*)$': '<rootDir>/src/features/users/$1',
+    '^@utils/(.*)$': '<rootDir>/src/utils/$1',
   },
   // disable unit test manual mocks
   modulePathIgnorePatterns: [
@@ -38,7 +45,7 @@ module.exports = {
   coverageDirectory: '<rootDir>/coverage-e2e',
   // coverage is collected from files under src/
   collectCoverageFrom: [
-    '<rootDir>/src/**/*.[tj]s?(x)',
+    '<rootDir>/src/features/**/*.[tj]s?(x)',
   ],
   // and from those files ignore
   coveragePathIgnorePatterns: [

@@ -1,16 +1,12 @@
 import { Knex } from 'knex';
-import {
-  Todo,
-  InsertTodo,
-  UpdateTodo,
-  User,
-  InsertUser,
-  UpdateUser,
-} from '@modules/database';
+import { InsertUser, UpdateUser, User } from '@users/entities';
+import { InsertTodo, UpdateTodo, Todo } from '@todos/entities';
 
+// This is how knex adds TypeScript support.
+// For more information see the docs https://knexjs.org/guide/#typescript.
 declare module 'knex/types/tables' {
   interface Tables {
-    todos: Knex.CompositeTableType<Todo, InsertTodo, UpdateTodo>;
     users: Knex.CompositeTableType<User, InsertUser, UpdateUser>;
+    todos: Knex.CompositeTableType<Todo, InsertTodo, UpdateTodo>;
   }
 }

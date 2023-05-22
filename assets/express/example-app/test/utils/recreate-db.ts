@@ -1,8 +1,8 @@
 import pgtools, { PgtoolsError } from 'pgtools';
 import { PostgresError } from 'pg-error-enum';
-import { envSchema } from '@common/environment';
+import { environmentSchema } from '@utils/environment';
 
-const env = envSchema.parse(process.env);
+const env = environmentSchema.parse(process.env);
 
 const config = {
   user: env.PGUSER,

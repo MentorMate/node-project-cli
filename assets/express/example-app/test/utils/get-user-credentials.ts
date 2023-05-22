@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Login, Register } from '@common/data/auth';
+import { Credentials } from '@auth';
 
-export const getUserCredentials: () => Register | Login = () => ({
+export const getUserCredentials: () => Credentials = () => ({
   email: uuidv4() + '@mail.com',
   password: uuidv4(),
 });

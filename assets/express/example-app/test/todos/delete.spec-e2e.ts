@@ -7,7 +7,7 @@ import {
   Unauthorized,
   TodoNotFound,
 } from '../utils';
-import { JwtTokens } from '@common/data/auth';
+import { JwtTokens } from '@auth';
 
 describe('DELETE /v1/todos/:id', () => {
   let app: Express.Application;

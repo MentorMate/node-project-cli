@@ -8,14 +8,21 @@
     "skipLibCheck": false,
     "lib": ["ES2021"],
     "paths": {
-      "@api": ["src/api"],
-      "@api/*": ["src/api/*"],
-      "@modules": ["src/modules"],
-      "@modules/*": ["src/modules/*"],
-      "@common": ["src/common"],
-      "@common/*": ["src/common/*"],
       "@database": ["src/database"],
-      "@extensions/*": ["src/extensions/*"]
+      "@database/*": ["src/database/*"],
+      "@extensions/*": ["src/extensions/*"],
+      "@middleware": ["src/middleware"],
+      "@auth": ["src/features/auth"],
+      "@auth/*": ["src/features/auth/*"],
+      "@healthchecks": ["src/features/healthchecks"],
+      "@healthchecks/*": ["src/features/healthchecks/*"],
+      "@hello-world": ["src/features/hello-world"],
+      "@hello-world/*": ["src/features/hello-world/*"],
+      "@users": ["src/features/users"],
+      "@users/*": ["src/features/users/*"],
+      "@todos": ["src/features/todos"],
+      "@todos/*": ["src/features/todos/*"],
+      "@utils/*": ["src/utils/*"]
     }
   },
   "ts-node": {
