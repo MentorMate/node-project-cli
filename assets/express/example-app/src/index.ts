@@ -4,12 +4,12 @@ import '@extensions/knex/register';
 
 import { createHttpTerminator } from 'http-terminator';
 
-import { envSchema } from '@common/environment';
+import { environmentSchema } from '@utils/environment';
 import { create as createApp } from './app';
 
 function bootstrap() {
   // validate environment and freeze it
-  const env = Object.freeze(envSchema.parse(process.env));
+  const env = Object.freeze(environmentSchema.parse(process.env));
 
   // create the application
   const { app, destroy: destroyApp } = createApp(env);

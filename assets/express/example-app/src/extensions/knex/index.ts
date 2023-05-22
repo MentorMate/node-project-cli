@@ -1,13 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import Knex from 'knex';
-import {
-  FilterMap,
-  SorterMap,
-  filter,
-  sort,
-  paginate,
-} from '@modules/database';
-import { Pagination, Sort } from '@common/query';
+import { filter, sort, paginate } from '@database/query-builder';
+import { FilterMap, Pagination, Sort, SorterMap } from '@utils/query';
 
 declare module 'knex' {
   namespace Knex {

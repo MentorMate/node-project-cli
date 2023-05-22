@@ -1,5 +1,5 @@
-import { Todo } from '@common/data/models/todo';
-import { SortOrder } from '@common/query';
+import { Todo } from '@todos/entities';
+import { SortOrder } from '@utils/query';
 
 type ListTodoSortColumn = 'name' | 'createdAt';
 

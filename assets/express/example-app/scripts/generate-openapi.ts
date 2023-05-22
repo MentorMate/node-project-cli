@@ -4,13 +4,22 @@ import '@extensions/zod/register';
 import { writeFileSync } from 'fs';
 import { resolve } from 'path';
 
-import { envSchema } from '@common/environment';
-import { routes } from '@api';
-import { RouteDefinition } from '@common/api';
-import { generateDocument } from '@common/openapi';
+import { environmentSchema } from '@utils/environment';
+import { generateDocument } from '@utils/openapi';
+import { helloWorldRoutes } from '@hello-world';
+import { healthcheckRoutes } from '@healthchecks';
+import { authRoutes } from '@auth';
+import { todoRoutes } from '@todos';
 
 const run = async () => {
-  const env = Object.freeze(envSchema.parse(process.env));
+  const env = Object.freeze(environmentSchema.parse(process.env));
+
+  const routes = [
+    ...helloWorldRoutes,
+    ...healthcheckRoutes,
+    ...authRoutes,
+    ...todoRoutes,
+  ];
 
   const document = generateDocument({
     version: '3.0.3',
@@ -19,7 +28,7 @@ const run = async () => {
       title: 'To-Do',
       description: 'A To-Do application API',
     },
-    routes: routes as RouteDefinition[],
+    routes,
   });
 
   document.servers = [{ url: `http://localhost:${env.PORT}` }];
