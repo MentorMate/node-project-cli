@@ -92,6 +92,10 @@ describe('js-linters-extension', () => {
       it('should add the eslint-config-prettier package', () => {
         expect(devDependencies).toHaveProperty('eslint-config-prettier');
       });
+
+      it('should add the markdownlint-cli package', () => {
+        expect(devDependencies).toHaveProperty('markdownlint-cli');
+      });
     });
 
     describe('asyncOperations', () => {

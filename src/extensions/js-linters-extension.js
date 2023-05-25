@@ -56,6 +56,7 @@ module.exports = (toolbox) => {
         prettier: '^2.8.4',
         eslint: '^8.34.0',
         'eslint-config-prettier': '^8.6.0',
+        'markdownlint-cli': '~0.34.0',
         ...(projectLanguage === 'TS' && {
           '@typescript-eslint/eslint-plugin': '^5.52.0',
           '@typescript-eslint/parser': '^5.52.0',

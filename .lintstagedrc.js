@@ -3,6 +3,9 @@ module.exports = {
     'prettier --write',
     'eslint --fix'
   ],
-  '*.md': 'prettier --write',
+  '*.md': [
+    'prettier --write',
+    'markdownlint --fix'
+  ],
   'package.json': 'sort-package-json',
 };

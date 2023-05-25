@@ -8,18 +8,18 @@ To generate a basic app run:
 node-cli g <project-name>
 ```
 
-### Working with `git`:
+### Working with `git`
 
 - `.gitignore` file
 
-### Node version management:
+### Node version management
 
 - `.nvmrc` file with the `NodeJs` version
 - `README.md` sections:
   - setup and use `nvm`
   - shell integration (switch between node versions automatically)
 
-### TypeScript:
+### TypeScript
 
 - `tsconfig.json` file
   - `ts-node` config:
@@ -28,14 +28,14 @@ node-cli g <project-name>
 - `tsconfig.build.json` file
 - `build` script
 
-### Code formatting:
+### Code formatting
 
 - `.editorconfig` file
 - `.prettierrc.js` file
 - `.prettierignore` file
 - `format` script with caching
 
-### Code linting:
+### Code linting
 
 - `.eslintrc.js` file
   - `TypeScript` config
@@ -43,34 +43,38 @@ node-cli g <project-name>
 - `.eslintignore` file
 - `lint` script with caching
 
-### File and directory linting:
+### File and directory linting
 
 - `.ls-lint.yml` file
 
-### Commit message linting:
+### Markdown linting
+
+- `lint-staged` config entry
+
+### Commit message linting
 
 - `.commitlintrc.js` file
 
-### Commit message helper:
+### Commit message helper
 
 - `.czrc` file for `commitizen`
 
-### Shell sciprt static analysis:
+### Shell sciprt static analysis
 
 - `shellcheck`
 
-### Secret detection:
+### Secret detection
 
 - `detect-secrets`
 - `.pre-commit-config.yaml` file
   - test files excluded
 
-### Working with environment variables:
+### Working with environment variables
 
 - `.env.example` file with defaults
 - `dotenv` as a `devDependency`
 
-### Containerization via `Docker`:
+### Containerization via `Docker`
 
 - `Docker` file
   - multi-stage build to ensure no `devDependencies`
@@ -86,7 +90,7 @@ node-cli g <project-name>
   - run in host network
   - uses `.env` via `--env-file` flag
 
-### Unit tests:
+### Unit tests
 
 - `jest.config.js` file
   - `TypeScript` config
@@ -95,7 +99,7 @@ node-cli g <project-name>
 - `test:watch` script
 - `test:cov` script
 
-### e2e tests:
+### e2e tests
 
 - `jest.config.js` file
   - `TypeScript` config
@@ -104,7 +108,7 @@ node-cli g <project-name>
 - `test:e2e:cov` script
 - uses `.env.test` via `DOTENV_CONFIG_PATH` env var
 
-### Application:
+### Application features
 
 - security headers via `helmet`
 - compression via `compression`
@@ -115,13 +119,13 @@ node-cli g <project-name>
   - unit tests
   - e2e tests
 
-### Auto restart:
+### Auto restart
 
 - `nodemon.json` file
 - `signal` config to enable graceful shutdown
 - `start:dev` script for running the application in watch mode
 
-### Git hooks via `husky` and `lint-staged`:
+### Git hooks via `husky` and `lint-staged`
 
 - commit-msg:
   - `commitlint`
@@ -129,6 +133,7 @@ node-cli g <project-name>
   - `tsc`
   - `prettier` (staged)
   - `eslint` (staged)
+  - `markdownlint` (staged)
   - `shellcheck` (staged)
   - `sort-package-json` (staged)
   - `ls-lint`
@@ -138,18 +143,18 @@ node-cli g <project-name>
   - commented out branch name linting example
 - pre-push (empty):
 
-### GitHub workflows:
+### GitHub workflows
 
 - dependency audit via `npm`
 - unit test coverage and report via PR comment
 - e2e test coverage and report via PR
 
-### Debugging:
+### Debugging
 
 - `start:debug` script
 - `VS Code` launch config
 
-### Documentation via `README.md` including the following sections:
+### Documentation via `README.md` including the following sections
 
 - setup:
   - `nvm`
@@ -177,7 +182,10 @@ node-cli g <project-name>
 
 ## Example To-Do App
 
-While the goal of the basic application is to get rid of the mundane parts of the project setup, you can only go so far without picking your stack. The example application builds on top of the basic application and also implements a To-Do app backend as a RESTful JSON API.
+While the goal of the basic application is to get rid of the mundane parts
+of the project setup, you can only go so far without picking your stack.
+The example application builds on top of the basic application and also
+implements a To-Do app backend as a RESTful JSON API.
 
 The stack is as follows:
 
@@ -186,7 +194,7 @@ The stack is as follows:
 - `express-jwt` - JWT validation
 - `pino` - logger
 - `zod` - validation
-- `zod-to-openapi` - OpenAPI generation
+- `zod-openapi` - OpenAPI generation
 
 To generate the example app run:
 
@@ -194,7 +202,7 @@ To generate the example app run:
 node-cli g <project-name> --example-app
 ```
 
-### Database `PostgreSQL`:
+### Database `PostgreSQL`
 
 - env vars in `.env`
   - the default `pg` env var names are used
@@ -202,13 +210,13 @@ node-cli g <project-name> --example-app
   - env vars are read from `.env`
 - a `README.md` section
 
-### Database migrations `knex`:
+### Database migrations `knex`
 
 - read `.env` instead of `knexfile.js`
 - `npm` scripts for working with migrations
 - a `README.md` section for working with migrations
 
-### Query Builder `knex`:
+### Query Builder `knex`
 
 - `TypeScript` declarations
 - extensions:
@@ -216,7 +224,7 @@ node-cli g <project-name> --example-app
   - `sort` - an attempt at a more declarative sorting
   - `filter` - an attempt at a more declarative filtration
 
-### Application:
+### To-Do Application features
 
 - env var validation
 - graceful shutdown
@@ -228,7 +236,8 @@ node-cli g <project-name> --example-app
 - global error handler with support for HTTP errors via `http-errors`
 - database error handling for Foreign Key and Unique contraint violations via `pg-error-enum`
 - adds support for async route handlers for express
-- adds type inference for the request params, query and body based on the validation schemas via `zod.infer`
+- adds type inference for the request params, query and body based
+  on the validation schemas via `zod.infer`
 
 ### Endpoints
 
@@ -247,7 +256,7 @@ node-cli g <project-name> --example-app
       - `PATCH` - update a To-Do
       - `DELETE` - delete a To-Do
 
-### Open API:
+### Open API
 
 - an `OpenAPI` generation
   - via a script, so that it doesn't run in production
@@ -259,15 +268,14 @@ node-cli g <project-name> --example-app
   - provides utility for describing responses
 - `SwaggerUI`
   - via a `Docker` image
-  - an `npm` script that runs the image and opens the UI in your default browser via `open` and `concurrently`
   - server port can be adjusted in `.env`
 - a `README.md` section
 
-### Unit Tests:
+### Unit Tests
 
 - coverage
 
-### e2e Tests:
+### e2e Tests
 
 - database re-initialization before every run
   - drop and create

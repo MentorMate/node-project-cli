@@ -29,11 +29,13 @@ Follow the instructions for your shell [here](https://github.com/nvm-sh/nvm#deep
 
 <% if (props.prerequisites.pip3) { -%>
 #### Pip3
+
 Follow the instructions [here](https://pip.pypa.io/en/stable/installation/).
 <% } -%>
 
 <% if (props.prerequisites.docker) { -%>
 #### Docker
+
 Follow the instructions [here](https://docs.docker.com/engine/install/).
 
 **Post installation steps for Linux users:**
@@ -43,7 +45,8 @@ Follow the instructions [here](https://docs.docker.com/engine/install/linux-post
 <% if (props.prerequisites.dockerCompose) { -%>
 **Docker Compose:**
 
-In case `docker compose` isn't setup with the docker intallation follow the instructions [here](https://docs.docker.com/compose/install/).
+In case `docker compose` isn't setup with the docker intallation follow the
+instructions [here](https://docs.docker.com/compose/install/).
 <% } -%>
 <% } -%>
 
@@ -99,7 +102,8 @@ cp docker-compose.override.example.yml docker-compose.override.yml
 ```
 
 <% if (props.setup.openApi) { -%>
-You can open the `docker-compose.override.yml` and addjust the port Swagger UI is being served on (default is 3001).
+You can open the `docker-compose.override.yml` and addjust the port Swagger UI
+is being served on (default is 3001).
 
 If you're on Apple M1, uncomment the `platform: linux/amd64` line:
 
@@ -160,7 +164,7 @@ npm run start:debug
 
 ## Test
 
-**Unit Tests**
+### Unit Tests
 
 ```bash
 # run
@@ -174,7 +178,7 @@ npm run test:cov
 ```
 
 <% if (props.test.e2e) { -%>
-**End-to-end Tests**
+### End-to-end Tests
 
 ```bash
 # e2e tests
@@ -220,6 +224,7 @@ npm run db:migrate:reset
 ```
 
 To debug migrations set the `DEBUG` environment variable to `knex:query`, e.g.
+
 ```bash
 DEBUG=knex:query npm run db:migrate:up
 ```
@@ -248,42 +253,46 @@ npm run openapi:g
 
 Then, if you haven't already, start the Swagger UI service:
 
-```
+```bash
 docker compose --profile tools up -d
 ```
 
 Otherwise, restart the services:
 
-```
+```bash
 docker compose --profile tools restart
 ```
 
 You only need to do this once, if you ran `docker-compose` before `npm run openapi:g`.
 
-Now navigate to `http://localhost:3001` and you should be able to see the `To-Do` API documentation.
+Now navigate to `http://localhost:3001` and you should be able to see the `To-Do`
+API documentation.
 
-If you're experiencing issues setting this up, checkout the troubleshooting section at the bottom.
+If you're experiencing issues setting this up, checkout the troubleshooting
+section at the bottom.
 <% } -%>
 
 <% if (props.debug.vscode) { -%>
 ## Debug
 
-**VS Code**
+### VS Code
 
-Go to the Debug menu (CTRL+SHIFT+D). From `RUN AND DEBUG` at the top select `Run Script: Launch via NPM`.
-You should now be able to start debugging by pressing `F5`.
+Go to the Debug menu (CTRL+SHIFT+D). From `RUN AND DEBUG` at the top select
+`Run Script: Launch via NPM`. You should now be able to start debugging
+by pressing `F5`.
 <% } -%>
 
 <% if (props.troubleshooting) { -%>
 ## Troubleshooting
 
 <% if (props.troubleshooting.openApi) { -%>
-**OpenAPI**
+### OpenAPI
 
 If `docker-compose` fails with this message and you're on Apple M1:
 
 ```bash
-The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+The requested image's platform (linux/amd64) does not match the detected host
+platform (linux/arm64/v8) and no specific platform was requested
 ```
 
 then uncomment the `platform: linux/amd64` line in `docker-compose.override.yml`
