@@ -83,7 +83,7 @@ module.exports = (toolbox) => {
         'query-types': '^0.1.4',
         statuses: '^2.0.1',
         zod: '^3.20.6',
-        'zod-openapi': '^2.2.2',
+        'zod-openapi': '~2.2.2',
       });
 
       Object.assign(pkgJson.devDependencies, {
