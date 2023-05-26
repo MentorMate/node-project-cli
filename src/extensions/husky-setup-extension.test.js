@@ -218,6 +218,7 @@ describe('husky-setup-extension', () => {
             target: `${appDir}/.husky/pre-commit`,
             props: {
               ts: input.projectLanguage === 'TS',
+              licenseChecks: false,
               test: {
                 unit: true,
                 e2e: true,

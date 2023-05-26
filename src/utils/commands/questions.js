@@ -13,9 +13,13 @@ const featureChoices = [
     message: 'Containerization with Docker',
     value: 'dockerizeWorkflow',
   },
+  {
+    message: 'Dependency License Checks',
+    value: 'licenseChecks',
+  },
 ];
 
-const initialFeatureChoices = [0, 1, 5];
+const initialFeatureChoices = [0, 1, 5, 6];
 
 const getQuestions = (projectName, pickedFramework) => [
   {

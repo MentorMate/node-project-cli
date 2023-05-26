@@ -108,6 +108,12 @@ node-cli g <project-name>
 - `test:e2e:cov` script
 - uses `.env.test` via `DOTENV_CONFIG_PATH` env var
 
+### License Check
+
+- `license:check` script
+- `license:for-review` script
+- `license:summary` script
+
 ### Application features
 
 - security headers via `helmet`

@@ -5,4 +5,5 @@ module.exports = [
   'preCommit',
   'prePush',
   'dockerizeWorkflow',
+  'licenseChecks',
 ];
