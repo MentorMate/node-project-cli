@@ -70,7 +70,9 @@ export const mapRouteToPath = ({
 export const mapRoutesToPaths = (routes: RouteDefinition[]) =>
   routes.reduce((paths, route) => {
     const path = reformatPathParams(route.path);
+    // eslint-disable-next-line security/detect-object-injection
     paths[path] ||= {};
+    // eslint-disable-next-line security/detect-object-injection
     paths[path][route.method] = mapRouteToPath(route);
     return paths;
   }, {} as ZodOpenApiPathsObject);

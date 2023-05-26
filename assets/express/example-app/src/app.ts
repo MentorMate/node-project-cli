@@ -110,6 +110,7 @@ export function create(env: Environment) {
       middleware.push(validateRequest(request));
     }
 
+    // eslint-disable-next-line security/detect-object-injection
     app[method](
       path,
       ...(middleware as RequestHandler[]),

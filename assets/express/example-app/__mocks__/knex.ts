@@ -46,6 +46,7 @@ const newQueryBuilder = () => ({
 const mocks: Record<string, ReturnType<typeof newQueryBuilder>> = {};
 
 const knex = jest.fn((name: string) => {
+  // eslint-disable-next-line security/detect-object-injection
   return (mocks[name] ||= newQueryBuilder());
 });
 
