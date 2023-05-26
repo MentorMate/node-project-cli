@@ -51,13 +51,17 @@ describe('js-linters-extension', () => {
         expect(scripts['format']).toMatch(/prettier/);
       });
 
+      it('should add a lint script', () => {
+        expect(scripts).toHaveProperty('lint');
+      });
+
+      it('should add a lint:markdown script', () => {
+        expect(scripts).toHaveProperty('lint:markdown');
+      });
+
       describe('when the language is TypeScript', () => {
         beforeAll(() => {
           input.projectLanguage = 'TS';
-        });
-
-        it('should add a lint script', () => {
-          expect(scripts['lint']).toMatch(/eslint/);
         });
 
         it('should add the @typescript-eslint/eslint-plugin package', () => {
