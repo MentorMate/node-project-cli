@@ -8,6 +8,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     <% if (props.ts) { %>'plugin:@typescript-eslint/recommended',<% } %>
+    'plugin:security/recommended',
     'prettier',
   ],
   <% if (props.ts) { %>parser: '@typescript-eslint/parser',<% } else { %>parser: null,<% } %>

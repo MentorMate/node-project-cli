@@ -55,6 +55,7 @@ module.exports = (toolbox) => {
       Object.assign(pkgJson.devDependencies, {
         prettier: '^2.8.4',
         eslint: '^8.34.0',
+        'eslint-plugin-security': '~1.7.1',
         'eslint-config-prettier': '^8.6.0',
         'markdownlint-cli': '~0.34.0',
         ...(projectLanguage === 'TS' && {
