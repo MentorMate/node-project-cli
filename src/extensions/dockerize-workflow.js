@@ -39,6 +39,7 @@ module.exports = (toolbox) => {
       Object.assign(pkgJson.scripts, {
         'image:build': `DOCKER_BUILDKIT=1 docker build -t ${projectName} .`,
         'image:run': `docker run --rm --net host -e NODE_ENV=production --env-file .env ${projectName}`,
+        'lint:dockerfile': `docker run --rm -i hadolint/hadolint < Dockerfile`,
       });
     }
 

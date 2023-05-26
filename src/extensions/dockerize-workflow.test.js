@@ -52,6 +52,10 @@ describe('dockerize-workflow', () => {
       it('should add a image:run script', () => {
         expect(scripts['image:run']).toMatch(/docker run/);
       });
+
+      it('should add a lint:dockerfile script', () => {
+        expect(scripts).toHaveProperty('lint:dockerfile');
+      });
     });
 
     describe('asyncOperations', () => {

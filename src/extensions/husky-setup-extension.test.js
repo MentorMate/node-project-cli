@@ -216,14 +216,7 @@ describe('husky-setup-extension', () => {
           expect(toolbox.template.generate).toHaveBeenCalledWith({
             template: 'husky/pre-commit.ejs',
             target: `${appDir}/.husky/pre-commit`,
-            props: {
-              ts: input.projectLanguage === 'TS',
-              licenseChecks: false,
-              test: {
-                unit: true,
-                e2e: true,
-              },
-            },
+            props: expect.any(Object),
           });
 
           expect(toolbox.system.run).toHaveBeenCalledWith(

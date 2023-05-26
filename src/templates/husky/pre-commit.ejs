@@ -4,6 +4,7 @@
 <% if (props.ts) { %>npx --no -- tsc --noEmit<% } %>
 npx --no -- lint-staged
 npx --no -- ls-lint
+<% if (props.dockerized) { %>npm run lint:dockerfile<% } %>
 <% if (props.licenseChecks) { %>npm run license:check<% } %>
 <% if (props.test.unit) { %>npm run test:cov<% } %>
 <% if (props.test.e2e) { %>npm run test:e2e:cov<% } %>
