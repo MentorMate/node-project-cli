@@ -37,6 +37,7 @@ module.exports = (toolbox) => {
               },
             },
             openApi: isExampleApp,
+            licenseChecks: features.includes('licenseChecks'),
           },
           run: {
             build: projectLanguage === 'TS',

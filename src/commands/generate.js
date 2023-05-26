@@ -143,6 +143,10 @@ module.exports = {
       stepsOfExecution.push(toolbox.dockerizeWorkflow(userInput));
     }
 
+    if (userInput.features.includes('licenseChecks')) {
+      stepsOfExecution.push(toolbox.setupLicenseChecks(userInput));
+    }
+
     if (userInput.db === 'pg') {
       stepsOfExecution.push(toolbox.setupPostgreSQL(userInput));
     }

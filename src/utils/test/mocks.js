@@ -120,6 +120,10 @@ const createToolboxMock = () => ({
   editorconfig: () => ({
     asyncOperations: async () => {},
   }),
+  setupLicenseChecks: () => ({
+    syncOperations: () => {},
+    asyncOperations: async () => {},
+  }),
 });
 
 const createExtensionInput = () => ({
@@ -137,6 +141,7 @@ const createExtensionInput = () => ({
     'preCommit',
     'prePush',
     'dockerizeWorkflow',
+    'licenseChecks',
   ],
   pkgJson: {
     scripts: {},

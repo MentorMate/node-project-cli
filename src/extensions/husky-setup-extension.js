@@ -63,6 +63,7 @@ module.exports = (toolbox) => {
               target: `${appDir}/.husky/pre-commit`,
               props: {
                 ts: projectLanguage === 'TS',
+                licenseChecks: features.includes('licenseChecks'),
                 test: {
                   unit: true,
                   e2e: true,
