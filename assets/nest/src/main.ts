@@ -1,6 +1,7 @@
 import helmet from 'helmet';
 import * as compression from 'compression';
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -14,15 +15,18 @@ async function bootstrap() {
     // add security HTTP headers
     helmet(),
     // compresses response bodies
-    compression()
+    compression(),
   );
 
   // setup graceful shutdown
   app.enableShutdownHooks();
 
+  const configService = app.get(ConfigService);
+  const port = configService.get('PORT');
+
   // start server
-  await app.listen(process.env.PORT, () => {
-    console.log(`App is running on http://localhost:${process.env.PORT}`);
+  await app.listen(port, () => {
+    console.log(`App is running on http://localhost:${port}`);
   });
 }
 
