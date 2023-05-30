@@ -1,6 +1,7 @@
 /* eslint no-unused-vars: 0 */
 
 const { strings } = require('gluegun');
+const features = require('../commands/features');
 
 const createToolboxMock = () => ({
   filesystem: {
@@ -124,6 +125,9 @@ const createToolboxMock = () => ({
     syncOperations: () => {},
     asyncOperations: async () => {},
   }),
+  setupMarkdownLinter: () => ({
+    syncOperations: () => {},
+  }),
 });
 
 const createExtensionInput = () => ({
@@ -134,15 +138,7 @@ const createExtensionInput = () => ({
   appDir: '/path/to/project-name',
   assetsPath: '/path/to/project-name/assets',
   workflowsFolder: '/path/to/project-name/workflows',
-  features: [
-    'JSLinters',
-    'huskyHooks',
-    'commitMsgLint',
-    'preCommit',
-    'prePush',
-    'dockerizeWorkflow',
-    'licenseChecks',
-  ],
+  features: features,
   pkgJson: {
     scripts: {},
     dependencies: {},

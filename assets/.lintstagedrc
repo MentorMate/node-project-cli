@@ -4,8 +4,7 @@
         "eslint --fix"
     ],
     "*.md": [
-      "prettier --write",
-      "markdownlint --fix"
+      "prettier --write"
     ],
     "*.sh": "shellcheck -x",
     "package.json": "sort-package-json"

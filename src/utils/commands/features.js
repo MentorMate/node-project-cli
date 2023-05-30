@@ -6,4 +6,5 @@ module.exports = [
   'prePush',
   'dockerizeWorkflow',
   'licenseChecks',
+  'markdownLinter',
 ];

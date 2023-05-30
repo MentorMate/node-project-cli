@@ -17,21 +17,28 @@ module.exports = (toolbox) => {
       os,
     } = toolbox;
 
-    const lintstagedrc = read(`${assetsPath}/.lintstagedrc`, 'json');
-
-    /*
-      We need to delete the *.sh option on windows since
-      the package we use - shellcheck doesn't support windows
-    */
-    const lintstagedrcData = os.isWin()
-      ? delete lintstagedrc['*.sh'] && lintstagedrc
-      : lintstagedrc;
-
     const appHuskyPath = `${appDir}/.husky`;
     const assetHuskyPath = `${assetsPath}/.husky`;
 
     async function asyncOperations() {
+      const lintstagedrc = read(`${assetsPath}/.lintstagedrc`, 'json');
+
+      /*
+        We need to delete the *.sh option on windows since
+        the package we use - shellcheck doesn't support windows
+      */
+      if (os.isWin()) {
+        delete lintstagedrc['*.sh'];
+      }
+
+      // TODO: use a template instead
+      if (features.includes('markdownLinter')) {
+        lintstagedrc['*.md'] ||= [];
+        lintstagedrc['*.md'].push('markdownlint --fix');
+      }
+
       muted('Creating Husky hooks...');
+
       try {
         dir(appHuskyPath);
 
@@ -73,7 +80,7 @@ module.exports = (toolbox) => {
             }).then(() => {
               run(`chmod +x ${appDir}/.husky/pre-commit`);
             }),
-            writeAsync(`${appDir}/.lintstagedrc`, lintstagedrcData),
+            writeAsync(`${appDir}/.lintstagedrc`, lintstagedrc),
             copyAsync(
               isExampleApp
                 ? `${assetsPath}/express/example-app/.ls-lint.yml`

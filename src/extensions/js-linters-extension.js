@@ -50,7 +50,6 @@ module.exports = (toolbox) => {
       Object.assign(pkgJson.scripts, {
         format: `prettier "**/*.{${formatExt}}" --write --cache --cache-strategy metadata --cache-location .prettiercache`,
         lint: `eslint . --ext ${lintExt} --fix --cache`,
-        'lint:markdown': 'markdownlint **/*.md --ignore node_modules',
       });
 
       Object.assign(pkgJson.devDependencies, {
@@ -58,7 +57,6 @@ module.exports = (toolbox) => {
         eslint: '^8.34.0',
         'eslint-plugin-security': '~1.7.1',
         'eslint-config-prettier': '^8.6.0',
-        'markdownlint-cli': '~0.34.0',
         ...(projectLanguage === 'TS' && {
           '@typescript-eslint/eslint-plugin': '^5.52.0',
           '@typescript-eslint/parser': '^5.52.0',

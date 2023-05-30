@@ -147,6 +147,10 @@ module.exports = {
       stepsOfExecution.push(toolbox.setupLicenseChecks(userInput));
     }
 
+    if (userInput.features.includes('markdownLinter')) {
+      stepsOfExecution.push(toolbox.setupMarkdownLinter(userInput));
+    }
+
     if (userInput.db === 'pg') {
       stepsOfExecution.push(toolbox.setupPostgreSQL(userInput));
     }

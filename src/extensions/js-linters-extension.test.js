@@ -55,10 +55,6 @@ describe('js-linters-extension', () => {
         expect(scripts).toHaveProperty('lint');
       });
 
-      it('should add a lint:markdown script', () => {
-        expect(scripts).toHaveProperty('lint:markdown');
-      });
-
       describe('when the language is TypeScript', () => {
         beforeAll(() => {
           input.projectLanguage = 'TS';
@@ -95,10 +91,6 @@ describe('js-linters-extension', () => {
 
       it('should add the eslint-config-prettier package', () => {
         expect(devDependencies).toHaveProperty('eslint-config-prettier');
-      });
-
-      it('should add the markdownlint-cli package', () => {
-        expect(devDependencies).toHaveProperty('markdownlint-cli');
       });
     });
 

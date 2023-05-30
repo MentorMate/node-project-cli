@@ -147,6 +147,7 @@ describe('husky-setup-extension', () => {
         toolbox.print.success = jest.fn(() => {});
         toolbox.print.error = jest.fn(() => {});
         toolbox.filesystem.dir = jest.fn(() => {});
+        toolbox.filesystem.read = jest.fn(() => ({}));
         toolbox.filesystem.copyAsync = jest.fn(() => {});
         toolbox.filesystem.writeAsync = jest.fn(() => {});
         toolbox.template.generate = jest.fn(() => Promise.resolve(''));
@@ -227,7 +228,7 @@ describe('husky-setup-extension', () => {
         it('should write the lintstaged config', () => {
           expect(toolbox.filesystem.writeAsync).toHaveBeenCalledWith(
             `${appDir}/.lintstagedrc`,
-            '{}'
+            {}
           );
         });
 
