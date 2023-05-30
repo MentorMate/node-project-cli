@@ -3,3 +3,4 @@
 
 npx --no -- lint-staged -c .lintstagedrc.js
 npm run license:check
+npm test
