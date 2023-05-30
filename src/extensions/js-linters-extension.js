@@ -1,7 +1,13 @@
 'use strict';
 
 module.exports = (toolbox) => {
-  toolbox.jsLinters = ({ appDir, projectLanguage, pkgJson, assetsPath }) => {
+  toolbox.jsLinters = ({
+    appDir,
+    projectLanguage,
+    pkgJson,
+    assetsPath,
+    framework,
+  }) => {
     const {
       template: { generate },
       filesystem: { copyAsync },
@@ -10,17 +16,26 @@ module.exports = (toolbox) => {
 
     async function asyncOperations() {
       muted('Configuring JS linters...');
+
       try {
+        if (framework !== 'nest') {
+          await Promise.all([
+            generate({
+              template: 'eslintrc-model.js.ejs',
+              target: `${appDir}/.eslintrc.js`,
+              props: {
+                ts: projectLanguage === 'TS',
+              },
+            }),
+            copyAsync(
+              `${assetsPath}/.prettierrc.js`,
+              `${appDir}/.prettierrc.js`
+            ),
+          ]);
+        }
+
         await Promise.all([
-          generate({
-            template: 'eslintrc-model.js.ejs',
-            target: `${appDir}/.eslintrc.js`,
-            props: {
-              ts: projectLanguage === 'TS',
-            },
-          }),
           copyAsync(`${assetsPath}/.eslintignore`, `${appDir}/.eslintignore`),
-          copyAsync(`${assetsPath}/.prettierrc.js`, `${appDir}/.prettierrc.js`),
           copyAsync(
             `${assetsPath}/.prettierignore`,
             `${appDir}/.prettierignore`
@@ -38,6 +53,10 @@ module.exports = (toolbox) => {
     }
 
     function syncOperations() {
+      if (framework === 'nest') {
+        return;
+      }
+
       const ext = ['js', 'cjs', 'mjs'];
 
       if (projectLanguage === 'TS') {
