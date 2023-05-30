@@ -115,11 +115,11 @@ module.exports = {
       await toolbox.createProjectDirectory(userInput);
       await toolbox.initializeNpm(userInput);
       await toolbox.installFramework(userInput);
-      stepsOfExecution.push(toolbox.jsLinters(userInput));
     }
 
     await toolbox.initializeGit(userInput);
 
+    stepsOfExecution.push(toolbox.jsLinters(userInput));
     stepsOfExecution.push(toolbox.jestConfig(userInput));
     stepsOfExecution.push(toolbox.auditConfig(userInput));
     stepsOfExecution.push(toolbox.debug(userInput));

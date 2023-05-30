@@ -37,60 +37,63 @@ describe('js-linters-extension', () => {
       let scripts;
       let devDependencies;
 
-      beforeAll(() => {
-        input.projectLanguage = 'JS';
-      });
-
       beforeEach(() => {
         toolbox.jsLinters(input).syncOperations();
         scripts = input.pkgJson.scripts;
         devDependencies = input.pkgJson.devDependencies;
       });
 
-      it('should add a format script', () => {
-        expect(scripts['format']).toMatch(/prettier/);
-      });
-
-      it('should add a lint script', () => {
-        expect(scripts).toHaveProperty('lint');
-      });
-
-      describe('when the language is TypeScript', () => {
+      describe('when the framework is not Nest', () => {
         beforeAll(() => {
-          input.projectLanguage = 'TS';
-        });
-
-        it('should add the @typescript-eslint/eslint-plugin package', () => {
-          expect(devDependencies).toHaveProperty(
-            '@typescript-eslint/eslint-plugin'
-          );
-        });
-
-        it('should add the @typescript-eslint/parser package', () => {
-          expect(devDependencies).toHaveProperty('@typescript-eslint/parser');
-        });
-      });
-
-      describe('when the language is JavaScript', () => {
-        beforeAll(() => {
+          input.framework = 'express';
           input.projectLanguage = 'JS';
         });
 
-        it('should add a lint script', () => {
-          expect(scripts['lint']).toMatch(/eslint/);
+        it('should add a format script', () => {
+          expect(scripts['format']).toMatch(/prettier/);
         });
-      });
 
-      it('should add the prettier package', () => {
-        expect(devDependencies).toHaveProperty('prettier');
-      });
+        it('should add a lint script', () => {
+          expect(scripts).toHaveProperty('lint');
+        });
 
-      it('should add the eslint package', () => {
-        expect(devDependencies).toHaveProperty('eslint');
-      });
+        describe('when the language is TypeScript', () => {
+          beforeAll(() => {
+            input.projectLanguage = 'TS';
+          });
 
-      it('should add the eslint-config-prettier package', () => {
-        expect(devDependencies).toHaveProperty('eslint-config-prettier');
+          it('should add the @typescript-eslint/eslint-plugin package', () => {
+            expect(devDependencies).toHaveProperty(
+              '@typescript-eslint/eslint-plugin'
+            );
+          });
+
+          it('should add the @typescript-eslint/parser package', () => {
+            expect(devDependencies).toHaveProperty('@typescript-eslint/parser');
+          });
+        });
+
+        describe('when the language is JavaScript', () => {
+          beforeAll(() => {
+            input.projectLanguage = 'JS';
+          });
+
+          it('should add a lint script', () => {
+            expect(scripts['lint']).toMatch(/eslint/);
+          });
+        });
+
+        it('should add the prettier package', () => {
+          expect(devDependencies).toHaveProperty('prettier');
+        });
+
+        it('should add the eslint package', () => {
+          expect(devDependencies).toHaveProperty('eslint');
+        });
+
+        it('should add the eslint-config-prettier package', () => {
+          expect(devDependencies).toHaveProperty('eslint-config-prettier');
+        });
       });
     });
 
@@ -110,24 +113,31 @@ describe('js-linters-extension', () => {
         expect(toolbox.print.error).not.toHaveBeenCalled();
       });
 
-      it('should generate an eslint config', () => {
-        expect(toolbox.template.generate).toHaveBeenCalled();
-        const opts = toolbox.template.generate.mock.calls[0][0];
-        expect(opts.template).toBe('eslintrc-model.js.ejs');
-        expect(opts.target).toBe(`${input.appDir}/.eslintrc.js`);
+      describe('when the framework is not Nest', () => {
+        beforeAll(() => {
+          input.framework = 'express';
+          input.projectLanguage = 'JS';
+        });
+
+        it('should generate an eslint config', () => {
+          expect(toolbox.template.generate).toHaveBeenCalled();
+          const opts = toolbox.template.generate.mock.calls[0][0];
+          expect(opts.template).toBe('eslintrc-model.js.ejs');
+          expect(opts.target).toBe(`${input.appDir}/.eslintrc.js`);
+        });
+
+        it('should copy the prettier config', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/.prettierrc.js`,
+            `${input.appDir}/.prettierrc.js`
+          );
+        });
       });
 
       it('should copy the .eslintignore file', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.eslintignore`,
           `${input.appDir}/.eslintignore`
-        );
-      });
-
-      it('should copy the prettier config', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/.prettierrc.js`,
-          `${input.appDir}/.prettierrc.js`
         );
       });
 
