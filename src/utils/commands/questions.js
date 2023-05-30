@@ -17,9 +17,10 @@ const featureChoices = [
     message: 'Dependency License Checks',
     value: 'licenseChecks',
   },
+  { message: 'Markdown Linter', value: 'markdownLinter' },
 ];
 
-const initialFeatureChoices = [0, 1, 5, 6];
+const initialFeatureChoices = [0, 1, 5, 6, 7];
 
 const getQuestions = (projectName, pickedFramework) => [
   {
