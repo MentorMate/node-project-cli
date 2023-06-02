@@ -7,6 +7,7 @@ const {
 } = require('../utils/commands/questions');
 const exampleAppConfig = require('../utils/commands/example-app.config');
 const features = require('../utils/commands/features');
+const { CommandError } = require('../errors/command.error');
 
 const helpMessage = `Generate a new Node.Js project
 
@@ -93,7 +94,7 @@ module.exports = {
     }
 
     if (!userInput.projectName) {
-      throw new Error('You must specify a project name');
+      throw new CommandError('You must specify a project name');
     }
 
     userInput.framework ||= 'express';
