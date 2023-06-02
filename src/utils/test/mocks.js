@@ -128,6 +128,7 @@ const createToolboxMock = () => ({
   setupMarkdownLinter: () => ({
     syncOperations: () => {},
   }),
+  shouldPrintHelp: () => false,
 });
 
 const createExtensionInput = () => ({
