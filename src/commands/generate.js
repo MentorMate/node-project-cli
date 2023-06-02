@@ -8,6 +8,19 @@ const {
 const exampleAppConfig = require('../utils/commands/example-app.config');
 const features = require('../utils/commands/features');
 
+const helpMessage = `Generate a new Node.Js project
+
+Usage:
+node-cli generate project-name [...options]
+
+Aliases: g
+
+Options:
+  -i, --interactive     Run in interactive mode
+  -e, --example-app     Generate an example To-Do app
+  -h, --help            Print this help message
+`;
+
 module.exports = {
   name: 'generate',
   description: 'Generate a Node.js project',
@@ -24,11 +37,8 @@ module.exports = {
       template: { generate },
     } = toolbox;
 
-    if (options['help']) {
-      // TODO: write a better help
-      console.log(
-        'node-cli generate project-name [--interactive|--example-app]'
-      );
+    if (toolbox.shouldPrintHelp()) {
+      console.log(helpMessage);
       return;
     }
 
@@ -48,8 +58,8 @@ module.exports = {
     }
 
     const pwd = strings.trim(cwd());
-    const isInteractiveMode = !!options.interactive;
-    const isExampleApp = !!options['example-app'];
+    const isInteractiveMode = !!options.interactive || !!options['i'];
+    const isExampleApp = !!options['example-app'] || !!options['e'];
 
     if (isInteractiveMode && isExampleApp) {
       return error(
