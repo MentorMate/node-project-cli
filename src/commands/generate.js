@@ -9,19 +9,6 @@ const exampleAppConfig = require('../utils/commands/example-app.config');
 const features = require('../utils/commands/features');
 const { CommandError } = require('../errors/command.error');
 
-const helpMessage = `Generate a new Node.Js project
-
-Usage:
-node-cli generate project-name [...options]
-
-Aliases: g
-
-Options:
-  -i, --interactive     Run in interactive mode
-  -e, --example-app     Generate an example To-Do app
-  -h, --help            Print this help message
-`;
-
 module.exports = {
   name: 'generate',
   description: 'Generate a Node.js project',
@@ -36,10 +23,28 @@ module.exports = {
       prompt,
       meta,
       template: { generate },
+      commandHelp,
     } = toolbox;
 
-    if (toolbox.shouldPrintHelp()) {
-      console.log(helpMessage);
+    if (commandHelp.shouldPrint()) {
+      commandHelp.print({
+        description: 'Generate a Node.js project',
+        usage: 'node-cli generate project-name [...options]',
+        aliases: ['g'],
+        options: [
+          {
+            name: 'interactive',
+            alias: 'i',
+            description: 'Run in interactive mode',
+          },
+          {
+            name: 'example-app',
+            alias: 'e',
+            description: 'Generate an example To-Do app',
+          },
+        ],
+      });
+
       return;
     }
 
