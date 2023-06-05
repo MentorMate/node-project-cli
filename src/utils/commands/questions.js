@@ -1,14 +1,18 @@
-const featureChoices = [
+const getFeatureChoices = (isPip3Available) => [
   { message: 'JS Code Linters', value: 'JSLinters' },
-  {
-    message: 'Hooks with `husky`',
-    value: 'huskyHooks',
-    choices: [
-      { message: 'Commit message linting', value: 'commitMsgLint' },
-      { message: 'Pre-commit hook', value: 'preCommit' },
-      { message: 'Pre-push hook', value: 'prePush' },
-    ],
-  },
+  ...(isPip3Available
+    ? [
+        {
+          message: 'Hooks with `husky`',
+          value: 'huskyHooks',
+          choices: [
+            { message: 'Commit message linting', value: 'commitMsgLint' },
+            { message: 'Pre-commit hook', value: 'preCommit' },
+            { message: 'Pre-push hook', value: 'prePush' },
+          ],
+        },
+      ]
+    : []),
   {
     message: 'Containerization with Docker',
     value: 'dockerizeWorkflow',
@@ -20,9 +24,10 @@ const featureChoices = [
   { message: 'Markdown Linter', value: 'markdownLinter' },
 ];
 
-const initialFeatureChoices = [0, 1, 5, 6, 7];
+const getInitialFeatureChoices = (isPip3Available) =>
+  isPip3Available ? [0, 1, 5, 6, 7] : [0, 1, 2, 3];
 
-const getQuestions = (projectName, pickedFramework) => [
+const getQuestions = (projectName, pickedFramework, isPip3Available) => [
   {
     type: 'input',
     name: 'projectName',
@@ -61,8 +66,8 @@ const getQuestions = (projectName, pickedFramework) => [
     type: 'multiselect',
     name: 'features',
     message: 'Select the features you want to be prebuilt',
-    choices: featureChoices,
-    initial: initialFeatureChoices,
+    choices: getFeatureChoices(isPip3Available),
+    initial: getInitialFeatureChoices(isPip3Available),
   },
   {
     type: 'select',
@@ -76,7 +81,7 @@ const getQuestions = (projectName, pickedFramework) => [
 ];
 
 module.exports = {
-  featureChoices,
-  initialFeatureChoices,
+  getFeatureChoices,
+  getInitialFeatureChoices,
   getQuestions,
 };

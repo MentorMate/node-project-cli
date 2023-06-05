@@ -1,13 +1,9 @@
 'use strict';
 
-const {
-  featureChoices,
-  initialFeatureChoices,
-  getQuestions,
-} = require('../utils/commands/questions');
-const exampleAppConfig = require('../utils/commands/example-app.config');
-const features = require('../utils/commands/features');
+const { getQuestions } = require('../utils/commands/questions');
 const { CommandError } = require('../errors/command.error');
+const exampleAppConfig = require('../utils/commands/example-app.config');
+const getFeatures = require('../utils/commands/features');
 
 const command = {
   name: 'generate',
@@ -50,19 +46,12 @@ module.exports = {
       return;
     }
 
-    const pip3Installation = which('pip3');
+    const isPip3Avaialble = !!which('pip3');
 
-    if (!pip3Installation) {
+    if (!isPip3Avaialble) {
       warning(
         "No `pip3` found on your system, some of the offered functionalities won't be available"
       );
-    }
-
-    if (!pip3Installation) {
-      // removes huskyHooks
-      featureChoices.splice(1, 1);
-      initialFeatureChoices.pop();
-      features.splice(1, 4);
     }
 
     const pwd = strings.trim(cwd());
@@ -80,14 +69,21 @@ module.exports = {
 
     if (isInteractiveMode) {
       userInput = await prompt.ask(
-        getQuestions(projectName, userInput.framework).slice(0, 2)
+        getQuestions(projectName, userInput.framework, isPip3Avaialble).slice(
+          0,
+          2
+        )
       );
 
       userInput = Object.assign(
         {},
         userInput,
         await prompt.ask(
-          getQuestions(userInput.projectName, userInput.framework).slice(2)
+          getQuestions(
+            userInput.projectName,
+            userInput.framework,
+            isPip3Avaialble
+          ).slice(2)
         )
       );
     }
@@ -97,7 +93,7 @@ module.exports = {
     userInput.isExampleApp = isExampleApp;
 
     if (userInput.isExampleApp) {
-      Object.assign(userInput, exampleAppConfig);
+      Object.assign(userInput, exampleAppConfig(isPip3Avaialble));
     }
 
     if (!userInput.projectName) {
@@ -105,7 +101,7 @@ module.exports = {
     }
 
     userInput.framework ||= 'express';
-    userInput.features ||= features;
+    userInput.features ||= getFeatures(isPip3Avaialble);
     userInput.db ||= 'none';
     userInput.projectLanguage = userInput.projectLanguage || 'TS';
     userInput.appDir = path(pwd, userInput.projectName);
