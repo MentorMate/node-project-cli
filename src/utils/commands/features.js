@@ -1,9 +1,8 @@
-module.exports = [
+module.exports = (isPip3Avaialble) => [
   'JSLinters',
-  'huskyHooks',
-  'commitMsgLint',
-  'preCommit',
-  'prePush',
+  ...(isPip3Avaialble
+    ? ['huskyHooks', 'commitMsgLint', 'preCommit', 'prePush']
+    : []),
   'dockerizeWorkflow',
   'licenseChecks',
   'markdownLinter',

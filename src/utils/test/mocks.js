@@ -1,7 +1,7 @@
 /* eslint no-unused-vars: 0 */
 
 const { strings } = require('gluegun');
-const features = require('../commands/features');
+const getFeatures = require('../commands/features');
 
 const createToolboxMock = () => ({
   filesystem: {
@@ -142,7 +142,7 @@ const createExtensionInput = () => ({
   appDir: '/path/to/project-name',
   assetsPath: '/path/to/project-name/assets',
   workflowsFolder: '/path/to/project-name/workflows',
-  features: features,
+  features: getFeatures(true),
   pkgJson: {
     scripts: {},
     dependencies: {},
