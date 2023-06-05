@@ -1,7 +1,7 @@
 const getFeatures = require('./features');
 
-module.exports = (isPip3Avaialble) => ({
-  framework: 'express',
+module.exports = (framework, isPip3Avaialble) => ({
+  framework,
   projectLanguage: 'TS',
   db: 'pg',
   features: getFeatures(isPip3Avaialble)
