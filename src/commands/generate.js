@@ -12,6 +12,11 @@ const command = {
   aliases: ['g'],
   options: [
     {
+      name: 'framework',
+      alias: 'f',
+      description: 'Possible values: express, nest',
+    },
+    {
       name: 'interactive',
       alias: 'i',
       description: 'Run in interactive mode',
@@ -57,6 +62,8 @@ module.exports = {
     const pwd = strings.trim(cwd());
     const isInteractiveMode = !!options.interactive || !!options['i'];
     const isExampleApp = !!options['example-app'] || !!options['e'];
+    const framework = options['framework'] || options['f'];
+    const projectName = first;
 
     if (isInteractiveMode && isExampleApp) {
       return error(
@@ -64,36 +71,30 @@ module.exports = {
       );
     }
 
-    let userInput = {};
-    let projectName = first;
+    let userInput = {
+      projectName,
+      projectScope: '',
+      framework,
+      isExampleApp,
+    };
 
     if (isInteractiveMode) {
       userInput = await prompt.ask(
-        getQuestions(projectName, userInput.framework, isPip3Avaialble).slice(
-          0,
-          2
-        )
+        getQuestions(userInput, isPip3Avaialble).slice(0, 2)
       );
 
       userInput = Object.assign(
         {},
         userInput,
-        await prompt.ask(
-          getQuestions(
-            userInput.projectName,
-            userInput.framework,
-            isPip3Avaialble
-          ).slice(2)
-        )
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2))
       );
     }
 
-    userInput.projectScope ||= '';
-    userInput.projectName ||= projectName;
-    userInput.isExampleApp = isExampleApp;
-
     if (userInput.isExampleApp) {
-      Object.assign(userInput, exampleAppConfig(isPip3Avaialble));
+      Object.assign(
+        userInput,
+        exampleAppConfig(userInput.framework, isPip3Avaialble)
+      );
     }
 
     if (!userInput.projectName) {

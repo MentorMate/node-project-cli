@@ -27,7 +27,7 @@ const getFeatureChoices = (isPip3Available) => [
 const getInitialFeatureChoices = (isPip3Available) =>
   isPip3Available ? [0, 1, 5, 6, 7] : [0, 1, 2, 3];
 
-const getQuestions = (projectName, pickedFramework, isPip3Available) => [
+const getQuestions = ({ projectName, framework }, isPip3Available) => [
   {
     type: 'input',
     name: 'projectName',
@@ -47,6 +47,7 @@ const getQuestions = (projectName, pickedFramework, isPip3Available) => [
         value: 'nest',
       },
     ],
+    initial: framework,
     result(v) {
       return v;
     },
@@ -60,7 +61,7 @@ const getQuestions = (projectName, pickedFramework, isPip3Available) => [
       { message: 'TypeScript', value: 'TS' },
       { message: 'JavaScript', value: 'JS' },
     ],
-    skip: pickedFramework?.includes('nest'),
+    skip: framework === 'nest',
   },
   {
     type: 'multiselect',
