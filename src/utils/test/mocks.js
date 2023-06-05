@@ -136,7 +136,6 @@ const createToolboxMock = () => ({
 
 const createExtensionInput = () => ({
   projectName: 'project-name',
-  projectScope: 'scope',
   framework: 'express',
   projectLanguage: 'TS',
   appDir: '/path/to/project-name',

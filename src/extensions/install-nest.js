@@ -2,7 +2,6 @@
 
 module.exports = (toolbox) => {
   toolbox.installNest = async ({
-    projectScope,
     projectName,
     framework,
     appDir,
@@ -16,15 +15,11 @@ module.exports = (toolbox) => {
       filesystem: { copyAsync },
     } = toolbox;
 
-    const fullProjectName = projectScope
-      ? `@${projectScope}/${projectName}`
-      : projectName;
-
     muted('Installing Nest...');
 
     try {
       await run(
-        `npx @nestjs/cli@9.4.2 new ${fullProjectName} --directory ${projectName} --skip-git --skip-install --package-manager npm`
+        `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --skip-git --skip-install --package-manager npm`
       );
 
       await copyAsync(
