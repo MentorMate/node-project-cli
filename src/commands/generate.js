@@ -73,7 +73,6 @@ module.exports = {
 
     let userInput = {
       projectName,
-      projectScope: '',
       framework,
       isExampleApp,
     };

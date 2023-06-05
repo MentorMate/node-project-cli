@@ -28,7 +28,6 @@ describe('install-nest', () => {
     let devDependencies;
 
     beforeAll(() => {
-      input.projectScope = '';
       input.framework = 'nest';
     });
 
