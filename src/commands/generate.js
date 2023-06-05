@@ -9,10 +9,29 @@ const exampleAppConfig = require('../utils/commands/example-app.config');
 const features = require('../utils/commands/features');
 const { CommandError } = require('../errors/command.error');
 
-module.exports = {
+const command = {
   name: 'generate',
   description: 'Generate a Node.js project',
-  alias: 'g',
+  usage: 'node-cli generate project-name [...options]',
+  aliases: ['g'],
+  options: [
+    {
+      name: 'interactive',
+      alias: 'i',
+      description: 'Run in interactive mode',
+    },
+    {
+      name: 'example-app',
+      alias: 'e',
+      description: 'Generate an example To-Do app',
+    },
+  ],
+};
+
+module.exports = {
+  name: command.name,
+  description: command.description,
+  alias: command.aliases[0],
   run: async (toolbox) => {
     const {
       parameters: { options, first },
@@ -27,24 +46,7 @@ module.exports = {
     } = toolbox;
 
     if (commandHelp.shouldPrint()) {
-      commandHelp.print({
-        description: 'Generate a Node.js project',
-        usage: 'node-cli generate project-name [...options]',
-        aliases: ['g'],
-        options: [
-          {
-            name: 'interactive',
-            alias: 'i',
-            description: 'Run in interactive mode',
-          },
-          {
-            name: 'example-app',
-            alias: 'e',
-            description: 'Generate an example To-Do app',
-          },
-        ],
-      });
-
+      commandHelp.print(command);
       return;
     }
 
