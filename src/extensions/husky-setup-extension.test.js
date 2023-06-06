@@ -248,11 +248,30 @@ describe('husky-setup-extension', () => {
             input.isExampleApp = false;
           });
 
-          it('should copy the example app ls-lint config', () => {
-            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-              `${assetsPath}/express/example-app/.ls-lint.yml`,
-              `${appDir}/.ls-lint.yml`
-            );
+          describe('and the fraemwork is nest', () => {
+            beforeAll(() => {
+              input.framework = 'nest';
+            });
+
+            it('should copy the example app ls-lint config', () => {
+              expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+                `${assetsPath}/${input.framework}/example-app/.ls-lint.yml`,
+                `${appDir}/.ls-lint.yml`
+              );
+            });
+          });
+
+          describe('and the framework is express', () => {
+            beforeAll(() => {
+              input.framework = 'express';
+            });
+
+            it('should copy the example app ls-lint config', () => {
+              expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+                `${assetsPath}/${input.framework}/example-app/.ls-lint.yml`,
+                `${appDir}/.ls-lint.yml`
+              );
+            });
           });
         });
 

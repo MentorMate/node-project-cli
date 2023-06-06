@@ -25,9 +25,9 @@ describe('install-nest', () => {
     let envVars;
     let scripts;
     let dependencies;
-    let devDependencies;
 
     beforeAll(() => {
+      input.projectLanguage = 'TS';
       input.framework = 'nest';
     });
 
@@ -37,11 +37,11 @@ describe('install-nest', () => {
       toolbox.print.error = jest.fn(() => {});
       toolbox.system.run = jest.fn(() => {});
       toolbox.filesystem.copyAsync = jest.fn(() => {});
+      toolbox.filesystem.removeAsync = jest.fn(() => {});
       await toolbox.installNest(input);
       envVars = input.envVars;
       scripts = input.pkgJson.scripts;
       dependencies = input.pkgJson.dependencies;
-      devDependencies = input.pkgJson.devDependencies;
     });
 
     it('should print a muted and a success message', async () => {
@@ -50,67 +50,85 @@ describe('install-nest', () => {
       expect(toolbox.print.error).not.toHaveBeenCalled();
     });
 
-    describe('when the nest is installed', () => {
-      it('should init a new project', () => {
-        expect(toolbox.system.run).toHaveBeenCalledWith(
-          `npx @nestjs/cli@9.4.2 new ${input.projectName} --directory ${input.projectName} --skip-git --skip-install --package-manager npm`
-        );
+    it('should init a new project', () => {
+      expect(toolbox.system.run).toHaveBeenCalledWith(
+        `npx @nestjs/cli@9.4.2 new ${input.projectName} --directory ${input.projectName} --strict --skip-git --skip-install --package-manager npm`
+      );
+    });
+
+    it('should remove the src/ dir', () => {
+      expect(toolbox.filesystem.removeAsync).toHaveBeenCalledWith(
+        `${input.appDir}/src/`
+      );
+    });
+
+    it('should remove the test/ dir', () => {
+      expect(toolbox.filesystem.removeAsync).toHaveBeenCalledWith(
+        `${input.appDir}/test/`
+      );
+    });
+
+    it('should copy the project source', () => {
+      expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+        `${input.assetsPath}/nest/ts/src/`,
+        `${input.appDir}/src/`
+      );
+    });
+
+    describe('when it is the example app', () => {
+      beforeAll(() => {
+        input.isExampleApp = true;
       });
 
-      it('should copy and overwrite the project main file', () => {
+      afterAll(() => {
+        input.isExampleApp = false;
+      });
+
+      it('should copy the example app project source', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/src/main.ts`,
-          `${input.appDir}/src/main.ts`,
-          { overwrite: true }
+          `${input.assetsPath}/nest/example-app/src/`,
+          `${input.appDir}/src/`
         );
       });
+    });
 
-      it('should copy and overwrite the app module', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/src/app.module.ts`,
-          `${input.appDir}/src/app.module.ts`,
-          { overwrite: true }
-        );
-      });
+    it('should add the HTTP env var section', () => {
+      expect(envVars).toHaveProperty('HTTP');
+      expect(envVars['HTTP']).toHaveProperty('PORT');
+    });
 
-      it('should add the HTTP env var section', () => {
-        expect(envVars).toHaveProperty('HTTP');
-        expect(envVars['HTTP']).toHaveProperty('PORT');
-      });
+    it('should add @nestjs/platform-fastify to dependencies', () => {
+      expect(dependencies).toHaveProperty('@nestjs/platform-fastify');
+    });
 
-      it('should add helmet to dependencies', () => {
-        expect(dependencies).toHaveProperty('helmet');
-      });
+    it('should add helmet to dependencies', () => {
+      expect(dependencies).toHaveProperty('@fastify/helmet');
+    });
 
-      it('should add compression to dependencies', () => {
-        expect(dependencies).toHaveProperty('compression');
-      });
+    it('should add @fastify/compress to dependencies', () => {
+      expect(dependencies).toHaveProperty('@fastify/compress');
+    });
 
-      it('should add @nestjs/config to dependencies', () => {
-        expect(dependencies).toHaveProperty('@nestjs/config');
-      });
+    it('should add @nestjs/config to dependencies', () => {
+      expect(dependencies).toHaveProperty('@nestjs/config');
+    });
 
-      it('should add @types/compression to devDependencies', () => {
-        expect(devDependencies).toHaveProperty('@types/compression');
-      });
+    it('should update the start script', () => {
+      expect(scripts['start']).toEqual(
+        expect.stringContaining('-r dotenv/config')
+      );
+    });
 
-      it('should update the start script', () => {
-        expect(scripts['start']).toEqual(
-          expect.stringContaining('-r dotenv/config')
-        );
-      });
+    it('should update the start:dev script', () => {
+      expect(scripts['start:dev']).toEqual(
+        expect.stringContaining('-r dotenv/config')
+      );
+    });
 
-      it('should update the start:dev script', () => {
-        expect(scripts['start:dev']).toEqual(
-          expect.stringContaining('-r dotenv/config')
-        );
-      });
-
-      it('should update the start:debug script', () => {
-        expect(scripts['start:debug']).toEqual(
-          expect.stringContaining('-r dotenv/config')
-        );
-      });
+    it('should update the start:debug script', () => {
+      expect(scripts['start:debug']).toEqual(
+        expect.stringContaining('-r dotenv/config')
+      );
     });
 
     describe('when an error is thrown', () => {

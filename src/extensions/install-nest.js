@@ -8,31 +8,29 @@ module.exports = (toolbox) => {
     assetsPath,
     pkgJson,
     envVars,
+    isExampleApp,
+    projectLanguage,
   }) => {
     const {
       system: { run },
       print: { success, muted },
-      filesystem: { copyAsync },
+      filesystem: { copyAsync, removeAsync },
     } = toolbox;
 
     muted('Installing Nest...');
 
     try {
       await run(
-        `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --skip-git --skip-install --package-manager npm`
+        `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --strict --skip-git --skip-install --package-manager npm`
       );
 
-      await copyAsync(
-        `${assetsPath}/${framework}/src/main.ts`,
-        `${appDir}/src/main.ts`,
-        { overwrite: true }
-      );
+      const srcDir = isExampleApp
+        ? `${assetsPath}/${framework}/example-app/src/`
+        : `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}/src/`;
 
-      await copyAsync(
-        `${assetsPath}/${framework}/src/app.module.ts`,
-        `${appDir}/src/app.module.ts`,
-        { overwrite: true }
-      );
+      await removeAsync(`${appDir}/src/`);
+      await removeAsync(`${appDir}/test/`);
+      await copyAsync(srcDir, `${appDir}/src/`);
 
       Object.assign(envVars, {
         HTTP: {
@@ -41,13 +39,10 @@ module.exports = (toolbox) => {
       });
 
       Object.assign(pkgJson.dependencies, {
-        helmet: '^6.0.1',
-        compression: '^1.7.4',
+        '@nestjs/platform-fastify': '^9.0.0',
+        '@fastify/helmet': '^10.1.1',
+        '@fastify/compress': '^6.4.0',
         '@nestjs/config': '^2.3.1',
-      });
-
-      Object.assign(pkgJson.devDependencies, {
-        '@types/compression': '^1.7.2',
       });
 
       Object.assign(pkgJson.scripts, {

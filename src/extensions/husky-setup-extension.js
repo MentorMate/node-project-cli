@@ -8,6 +8,7 @@ module.exports = (toolbox) => {
     pkgJson,
     projectLanguage,
     isExampleApp,
+    framework,
   }) => {
     const {
       filesystem: { dir, copyAsync, read, writeAsync },
@@ -83,7 +84,7 @@ module.exports = (toolbox) => {
             writeAsync(`${appDir}/.lintstagedrc`, lintstagedrc),
             copyAsync(
               isExampleApp
-                ? `${assetsPath}/express/example-app/.ls-lint.yml`
+                ? `${assetsPath}/${framework}/example-app/.ls-lint.yml`
                 : `${assetsPath}/.ls-lint.yml`,
               `${appDir}/.ls-lint.yml`
             ),
