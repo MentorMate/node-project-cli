@@ -1,22 +1,30 @@
-import helmet from 'helmet';
-import * as compression from 'compression';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
+import helmet from '@fastify/helmet';
+import compression from '@fastify/compress';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   // create the app
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(),
+  );
 
   // register global middleware
+
   // enables CORS
   app.enableCors();
-  app.use(
-    // add security HTTP headers
-    helmet(),
-    // compresses response bodies
-    compression(),
-  );
+
+  // add security HTTP headers
+  app.register(helmet);
+
+  // compresses response bodies
+  app.register(compression);
 
   // setup graceful shutdown
   app.enableShutdownHooks();

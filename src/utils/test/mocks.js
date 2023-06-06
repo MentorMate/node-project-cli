@@ -13,6 +13,7 @@ const createToolboxMock = () => ({
     read: (path) => JSON.stringify({}),
     write: (path, data, options) => {},
     cwd: () => '/path/to',
+    removeAsync: async (path) => {},
   },
   parameters: {
     plugin: 'node-cli',

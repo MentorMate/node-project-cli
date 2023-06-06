@@ -123,15 +123,15 @@ module.exports = {
     const stepsOfExecution = [];
     const asyncOperations = [];
 
+    await toolbox.createProjectDirectory(userInput);
+    await toolbox.initializeGit(userInput);
+
     if (userInput.framework === 'nest') {
       await toolbox.installNest(userInput);
     } else if (userInput.framework) {
-      await toolbox.createProjectDirectory(userInput);
       await toolbox.initializeNpm(userInput);
       await toolbox.installFramework(userInput);
     }
-
-    await toolbox.initializeGit(userInput);
 
     stepsOfExecution.push(toolbox.jsLinters(userInput));
     stepsOfExecution.push(toolbox.jestConfig(userInput));
@@ -216,6 +216,9 @@ module.exports = {
 
     if (userInput.framework === 'nest') {
       Object.assign(packageJson.jest, userInput.pkgJson.jest);
+      delete packageJson.jest;
+      delete packageJson.dependencies['@nestjs/platform-express'];
+      delete packageJson.devDependencies['@types/express'];
     }
 
     try {
