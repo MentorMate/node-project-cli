@@ -7,6 +7,7 @@ import compression from '@fastify/compress';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   // create the app
@@ -25,6 +26,9 @@ async function bootstrap() {
 
   // compresses response bodies
   app.register(compression);
+
+  // enable validation globally
+  app.useGlobalPipes(new ValidationPipe());
 
   // setup graceful shutdown
   app.enableShutdownHooks();
