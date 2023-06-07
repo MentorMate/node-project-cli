@@ -15,7 +15,7 @@ module.exports = {
   },
   coverageDirectory: 'coverage-e2e',
   collectCoverageFrom: [
-    '<rootDir>/src/**/*.(t|j)s'
+    '<rootDir>/src/features/**/*.(t|j)s'
   ],
   coveragePathIgnorePatterns: [
     '<rootDir>/src/main.ts$',
@@ -29,5 +29,8 @@ module.exports = {
       lines: 85,
       statements: 85
     }
-  }
+  },
+  setupFiles: [
+    '<rootDir>/jest.setup.ts'
+  ],
 }

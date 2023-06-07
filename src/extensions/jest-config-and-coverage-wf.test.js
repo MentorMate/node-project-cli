@@ -170,9 +170,8 @@ describe('jest-config-and-coverage-wf', () => {
         );
       });
 
-      describe('and is the express example app', () => {
+      describe('and is the example app', () => {
         beforeAll(() => {
-          input.framework = 'express';
           input.isExampleApp = true;
         });
 
@@ -180,18 +179,24 @@ describe('jest-config-and-coverage-wf', () => {
           input.isExampleApp = false;
         });
 
-        it('should copy the example project unit test mocks', () => {
+        it('should copy the jest setup file', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${input.assetsPath}/express/example-app/__mocks__/`,
-            `${input.appDir}/__mocks__/`
+            `${input.assetsPath}/${input.framework}/example-app/jest.setup.ts`,
+            `${input.appDir}/jest.setup.ts`
           );
         });
 
-        it('should copy the jest setup file', () => {
-          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-            `${input.assetsPath}/express/example-app/jest.setup.ts`,
-            `${input.appDir}/jest.setup.ts`
-          );
+        describe('and the framework is express', () => {
+          beforeAll(() => {
+            input.framework = 'express';
+          });
+
+          it('should copy the example project unit test mocks', () => {
+            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+              `${input.assetsPath}/express/example-app/__mocks__/`,
+              `${input.appDir}/__mocks__/`
+            );
+          });
         });
       });
     });

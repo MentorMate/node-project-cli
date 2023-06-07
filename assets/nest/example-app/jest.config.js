@@ -28,5 +28,8 @@ module.exports = {
   testRegex: '.*\\.spec\\.ts$',
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest'
-  }
+  },
+  setupFiles: [
+    '<rootDir>/../jest.setup.ts'
+  ],
 }

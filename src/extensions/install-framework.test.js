@@ -260,7 +260,7 @@ describe('install-framework', () => {
         );
       });
 
-      it('should copy the docker-compose overrider config', () => {
+      it('should copy the docker-compose override config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/express/example-app/docker-compose.override.example.yml`,
           `${input.appDir}/docker-compose.override.example.yml`

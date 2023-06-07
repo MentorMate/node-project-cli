@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+
+  db:
+    image: postgres:13-alpine
+    restart: always
+    ports:
+      - '${PGPORT}:5432'
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_DB: ${PGDATABASE}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+
+  swaggerui:
+    image: swaggerapi/swagger-ui
+    restart: always
+    ports:
+      - '3001:8080'
+    volumes:
+      - .openapi:/openapi
+    environment:
+      SWAGGER_JSON: /openapi/openapi.json
+    profiles:
+      - tools
