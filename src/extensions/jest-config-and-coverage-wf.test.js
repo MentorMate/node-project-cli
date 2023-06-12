@@ -165,14 +165,14 @@ describe('jest-config-and-coverage-wf', () => {
       it('should copy the coverage workflow config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.github/workflows/coverage.yaml`,
-          `${input.workflowsFolder}/coverage.yaml`
+          `${input.appDir}/.github/workflows/coverage.yaml`
         );
       });
 
       it('should copy the coverage-e2e workflow config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.github/workflows/coverage-e2e.yaml`,
-          `${input.workflowsFolder}/coverage-e2e.yaml`
+          `${input.appDir}/.github/workflows/coverage-e2e.yaml`
         );
       });
 

@@ -1,3 +1,8 @@
+const dockerization = require('../../features/dockerization');
+const licenseChecks = require('../../features/license-checks');
+const markdownLint = require('../../features/markdown-lint');
+const feature = require('../feature');
+
 const featureChoices = [
   { message: 'JS Code Linters', value: 'JSLinters' },
   {
@@ -9,15 +14,9 @@ const featureChoices = [
       { message: 'Pre-push hook', value: 'prePush' },
     ],
   },
-  {
-    message: 'Containerization with Docker',
-    value: 'dockerizeWorkflow',
-  },
-  {
-    message: 'Dependency License Checks',
-    value: 'licenseChecks',
-  },
-  { message: 'Markdown Linter', value: 'markdownLinter' },
+  feature.toMultiselectOption(dockerization),
+  feature.toMultiselectOption(licenseChecks),
+  feature.toMultiselectOption(markdownLint),
 ];
 
 const initialFeatureChoices = [0, 1, 5, 6, 7];
@@ -42,6 +41,7 @@ const getQuestions = (projectName, pickedFramework) => [
         value: 'nest',
       },
     ],
+    initial: pickedFramework,
     result(v) {
       return v;
     },
@@ -55,7 +55,7 @@ const getQuestions = (projectName, pickedFramework) => [
       { message: 'TypeScript', value: 'TS' },
       { message: 'JavaScript', value: 'JS' },
     ],
-    skip: pickedFramework?.includes('nest'),
+    skip: pickedFramework === 'nest',
   },
   {
     type: 'multiselect',

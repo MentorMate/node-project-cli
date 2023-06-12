@@ -2,13 +2,14 @@
 
 module.exports = (toolbox) => {
   toolbox.installNest = async ({
-    projectScope,
     projectName,
     framework,
     appDir,
     assetsPath,
     pkgJson,
     envVars,
+    isExampleApp,
+    build,
   }) => {
     const {
       system: { run },
@@ -16,55 +17,49 @@ module.exports = (toolbox) => {
       filesystem: { copyAsync },
     } = toolbox;
 
-    const fullProjectName = projectScope
-      ? `@${projectScope}/${projectName}`
-      : projectName;
-
     muted('Installing Nest...');
 
-    try {
-      await run(
-        `npx @nestjs/cli@9.4.2 new ${fullProjectName} --directory ${projectName} --skip-git --skip-install --package-manager npm`
-      );
+    await run(
+      `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --skip-git --skip-install --package-manager npm`
+    );
 
-      await copyAsync(
-        `${assetsPath}/${framework}/src/main.ts`,
-        `${appDir}/src/main.ts`,
-        { overwrite: true }
-      );
+    const variantDir = isExampleApp ? 'example-app' : 'ts';
+    const variantPath = `${assetsPath}/${framework}/${variantDir}`;
 
-      await copyAsync(
-        `${assetsPath}/${framework}/src/app.module.ts`,
-        `${appDir}/src/app.module.ts`,
-        { overwrite: true }
-      );
+    await copyAsync(`${variantPath}/src/`, `${appDir}/src/`, {
+      overwrite: true,
+    });
 
-      Object.assign(envVars, {
-        HTTP: {
-          PORT: 3000,
-        },
-      });
+    Object.assign(build, {
+      entryPoint: 'main.js',
+      ...(isExampleApp && {
+        rebuildDependencies: ['bcrypt'],
+      }),
+    });
 
-      Object.assign(pkgJson.dependencies, {
-        helmet: '^6.0.1',
-        compression: '^1.7.4',
-        '@nestjs/config': '^2.3.1',
-      });
+    Object.assign(envVars, {
+      HTTP: {
+        PORT: 3000,
+      },
+    });
 
-      Object.assign(pkgJson.devDependencies, {
-        '@types/compression': '^1.7.2',
-      });
+    Object.assign(pkgJson.dependencies, {
+      helmet: '^6.0.1',
+      compression: '^1.7.4',
+      '@nestjs/config': '^2.3.1',
+    });
 
-      Object.assign(pkgJson.scripts, {
-        start: 'node -r dotenv/config ./node_modules/.bin/nest start',
-        'start:debug':
-          'node -r dotenv/config ./node_modules/.bin/nest start --debug --watch',
-        'start:dev':
-          'node -r dotenv/config ./node_modules/.bin/nest start --watch',
-      });
-    } catch (err) {
-      throw new Error(`An error has occurred while installing Nest: ${err}`);
-    }
+    Object.assign(pkgJson.devDependencies, {
+      '@types/compression': '^1.7.2',
+    });
+
+    Object.assign(pkgJson.scripts, {
+      start: 'node -r dotenv/config ./node_modules/.bin/nest start',
+      'start:debug':
+        'node -r dotenv/config ./node_modules/.bin/nest start --debug --watch',
+      'start:dev':
+        'node -r dotenv/config ./node_modules/.bin/nest start --watch',
+    });
 
     success(
       'Nest installation completed successfully. Please wait for the other steps to be completed...'

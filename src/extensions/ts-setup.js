@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (toolbox) => {
-  toolbox.setupTs = ({ appDir, pkgJson, assetsPath, isExampleApp }) => {
+  toolbox.setupTs = ({ appDir, pkgJson, assetsPath, isExampleApp, build }) => {
     const {
       filesystem: { copyAsync },
       print: { success, muted },
@@ -27,6 +27,10 @@ module.exports = (toolbox) => {
     }
 
     function syncOperations() {
+      Object.assign(build, {
+        dir: 'dist',
+      });
+
       Object.assign(pkgJson.scripts, {
         clean: 'rimraf dist',
         build: 'npm run clean && tsc -p tsconfig.build.json && tsc-alias',

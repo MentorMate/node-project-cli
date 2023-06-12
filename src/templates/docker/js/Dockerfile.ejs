@@ -1,7 +1,8 @@
-FROM node:18-alpine
+FROM node:<%= props.imageTag %>
 
-# Update OS packages
-RUN apk update && apk upgrade --no-cache
+# Do not update OS packages
+# https://github.com/goldbergyoni/nodebestpractices/blob/master/sections/docker/generic-tips.md#-avoid-updating-the-base-os
+# RUN apk update && apk upgrade --no-cache
 
 # Create a directory under the node user
 RUN mkdir -p /usr/src/app && chown node:node /usr/src/app
@@ -27,6 +28,10 @@ RUN npm ci \
   --no-update-notifier \
   # skip dev dependencies
   --omit=dev \
+<% if (props.rebuildDependencies && props.rebuildDependencies.length > 0) { -%>
+  # rebuild dependencies %>
+  && npm rebuild <%= props.rebuildDependencies.join(' ') %> \
+<% } -%>
   # attempt to reduce image size
   && npm cache clean --force
 
@@ -34,4 +39,4 @@ RUN npm ci \
 COPY --chown=node:node ./src/ ./dist/
 
 # Run
-CMD [ "node", "./dist/index.js" ]
+CMD [ "node", "./dist/<%= props.entryPoint %>" ]

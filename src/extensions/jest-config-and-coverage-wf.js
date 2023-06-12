@@ -4,7 +4,6 @@ module.exports = (toolbox) => {
   toolbox.jestConfig = ({
     appDir,
     projectLanguage,
-    workflowsFolder,
     pkgJson,
     assetsPath,
     framework,
@@ -20,12 +19,12 @@ module.exports = (toolbox) => {
 
       await copyAsync(
         `${assetsPath}/.github/workflows/coverage.yaml`,
-        `${workflowsFolder}/coverage.yaml`
+        `${appDir}/.github/workflows/coverage.yaml`
       );
 
       await copyAsync(
         `${assetsPath}/.github/workflows/coverage-e2e.yaml`,
-        `${workflowsFolder}/coverage-e2e.yaml`
+        `${appDir}/.github/workflows/coverage-e2e.yaml`
       );
 
       if (framework !== 'nest') {

@@ -13,7 +13,7 @@ module.exports = (toolbox) => {
     await system.run(`git init && git checkout -b main`, { cwd: appDir });
 
     await filesystem.copyAsync(
-      `${assetsPath}/git/gitignorefile`,
+      `${assetsPath}/git/gitignore`,
       `${appDir}/.gitignore`
     );
   };

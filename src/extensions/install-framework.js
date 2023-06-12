@@ -9,6 +9,7 @@ module.exports = (toolbox) => {
     pkgJson,
     envVars,
     isExampleApp,
+    build,
   }) => {
     const {
       filesystem: { copyAsync },
@@ -17,6 +18,13 @@ module.exports = (toolbox) => {
     } = toolbox;
 
     muted(`Installing ${framework}...`);
+
+    Object.assign(build, {
+      entryPoint: 'index.js',
+      ...(isExampleApp && {
+        rebuildDependencies: ['bcrypt'],
+      }),
+    });
 
     Object.assign(envVars, {
       HTTP: {

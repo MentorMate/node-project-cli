@@ -25,7 +25,6 @@ describe('initialize-npm', () => {
 
     beforeAll(() => {
       input.appDir = 'dir';
-      input.projectScope = 'scope';
     });
 
     beforeEach(() => {
@@ -35,10 +34,9 @@ describe('initialize-npm', () => {
     });
 
     it('should initialize NPM', () => {
-      expect(toolbox.system.run).toHaveBeenCalledWith(
-        `npm init -y --scope ${input.projectScope}`,
-        { cwd: input.appDir }
-      );
+      expect(toolbox.system.run).toHaveBeenCalledWith(`npm init -y`, {
+        cwd: input.appDir,
+      });
     });
   });
 });

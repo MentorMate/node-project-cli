@@ -99,10 +99,6 @@ const createToolboxMock = () => ({
     syncOperations: () => {},
     asyncOperations: async () => {},
   }),
-  dockerizeWorkflow: () => ({
-    syncOperations: () => {},
-    asyncOperations: async () => {},
-  }),
   setupJwt: () => ({
     syncOperations: () => {},
     asyncOperations: async () => {},
@@ -132,12 +128,10 @@ const createToolboxMock = () => ({
 
 const createExtensionInput = () => ({
   projectName: 'project-name',
-  projectScope: 'scope',
   framework: 'express',
   projectLanguage: 'TS',
   appDir: '/path/to/project-name',
   assetsPath: '/path/to/project-name/assets',
-  workflowsFolder: '/path/to/project-name/workflows',
   features: features,
   pkgJson: {
     scripts: {},
@@ -151,6 +145,8 @@ const createExtensionInput = () => ({
   },
   db: 'none',
   isExampleApp: false,
+  build: {},
+  dockerComposeServices: {},
 });
 
 module.exports = {

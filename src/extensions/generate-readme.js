@@ -22,11 +22,11 @@ module.exports = (toolbox) => {
           prerequisites: {
             pip3:
               features.includes('huskyHooks') || features.includes('preCommit'),
-            docker: features.includes('dockerizeWorkflow'),
+            docker: features.includes('containerization'),
             dockerCompose: db === 'pg' || isExampleApp,
           },
           setup: {
-            docker: features.includes('dockerizeWorkflow'),
+            docker: features.includes('containerization'),
             dockerCompose: db === 'pg' || isExampleApp,
             migrations: isExampleApp,
             tests: {

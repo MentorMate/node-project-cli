@@ -1,10 +1,11 @@
 #
 # Create an intermediate image to build the application that will have devDependencies
 #
-FROM node:18-alpine AS builder
+FROM node:<%= props.imageTag %> AS builder
 
-# Update OS packages
-RUN apk update && apk upgrade --no-cache
+# Do not update OS packages
+# https://github.com/goldbergyoni/nodebestpractices/blob/master/sections/docker/generic-tips.md#-avoid-updating-the-base-os
+# RUN apk update && apk upgrade --no-cache
 
 # Create a directory under the node user
 RUN mkdir /app && chown node:node /app
@@ -38,10 +39,11 @@ RUN npm run build
 #
 # This will be the image used in production with just the build and prod dependencies
 #
-FROM node:18-alpine
+FROM node:<%= props.imageTag %>
 
-# Update OS packages
-RUN apk update && apk upgrade --no-cache
+# Do not update OS packages
+# https://github.com/goldbergyoni/nodebestpractices/blob/master/sections/docker/generic-tips.md#-avoid-updating-the-base-os
+# RUN apk update && apk upgrade --no-cache
 
 # Create a directory under the node user
 RUN mkdir -p /usr/src/app && chown node:node /usr/src/app
@@ -67,13 +69,15 @@ RUN npm ci \
   --no-update-notifier \
   # skip dev dependencies
   --omit=dev \
-  # rebuild bcrypt
-  && npm rebuild bcrypt \
+<% if (props.rebuildDependencies && props.rebuildDependencies.length > 0) { -%>
+  # rebuild dependencies %>
+  && npm rebuild <%= props.rebuildDependencies.join(' ') %> \
+<% } -%>
   # attempt to reduce image size
   && npm cache clean --force
 
 # Copy the build from the builder image
-COPY --from=builder --chown=node:node /app/dist/ ./dist/
+COPY --from=builder --chown=node:node /app/<%= props.buildDir %>/ ./dist/
 
 # Run
-CMD [ "node", "./dist/index.js" ]
+CMD [ "node", "./dist/<%= props.entryPoint %>" ]

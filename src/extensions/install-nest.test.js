@@ -28,7 +28,6 @@ describe('install-nest', () => {
     let devDependencies;
 
     beforeAll(() => {
-      input.projectScope = '';
       input.framework = 'nest';
     });
 
@@ -58,18 +57,10 @@ describe('install-nest', () => {
         );
       });
 
-      it('should copy and overwrite the project main file', () => {
+      it('should copy the project source', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/src/main.ts`,
-          `${input.appDir}/src/main.ts`,
-          { overwrite: true }
-        );
-      });
-
-      it('should copy and overwrite the app module', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/src/app.module.ts`,
-          `${input.appDir}/src/app.module.ts`,
+          `${input.assetsPath}/nest/ts/src/`,
+          `${input.appDir}/src/`,
           { overwrite: true }
         );
       });
@@ -110,22 +101,6 @@ describe('install-nest', () => {
       it('should update the start:debug script', () => {
         expect(scripts['start:debug']).toEqual(
           expect.stringContaining('-r dotenv/config')
-        );
-      });
-    });
-
-    describe('when an error is thrown', () => {
-      const error = new Error('the-error');
-
-      beforeEach(() => {
-        toolbox.system.run = jest.fn(() => {
-          throw error;
-        });
-      });
-
-      it('should rethrow the error with an added user-friendly message', () => {
-        expect(toolbox.installNest(input)).rejects.toThrow(
-          `An error has occurred while installing Nest: ${error}`
         );
       });
     });
