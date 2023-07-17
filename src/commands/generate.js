@@ -90,6 +90,12 @@ module.exports = {
     }
 
     if (userInput.isExampleApp) {
+      userInput = Object.assign(
+        {},
+        userInput,
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(1, 2))
+      );
+
       Object.assign(
         userInput,
         exampleAppConfig(userInput.framework, isPip3Avaialble)
