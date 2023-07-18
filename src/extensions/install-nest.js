@@ -69,6 +69,7 @@ module.exports = (toolbox) => {
 
         Object.assign(pkgJson.devDependencies, {
           '@nestjs/swagger': '^6.3.0',
+          '@fastify/static': '^6.10.2',
           // nestjs-knex doesn't have TypeScript 5 support yet
           typescript: '^4.9.5',
           '@types/statuses': '^2.0.1',
