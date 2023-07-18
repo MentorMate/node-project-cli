@@ -9,7 +9,6 @@ import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   // create the app
@@ -17,15 +16,6 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter()
   );
-
-  const config = new DocumentBuilder()
-    .setTitle('Nest Example API')
-    .setDescription('This is an example Nest.JS REST API')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-
-  SwaggerModule.setup('/swagger', app, document);
 
   // register global middleware
 
