@@ -29,7 +29,8 @@ The generated project will be in its own folder inside the current one.
 
 - `--interactive` - Start an interactive mode. You will have to answer a couple
   of questions so the result will be customized according to your needs.
-- `--example-app` - Generate automatically an express ToDo application
+- `--example-app` - You will have to choose between express and Nest.js
+  to generate an example ToDo application.
 
 ## Features
 
