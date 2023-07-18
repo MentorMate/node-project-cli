@@ -32,11 +32,6 @@ module.exports = (toolbox) => {
       await removeAsync(`${appDir}/test/`);
       await copyAsync(srcDir, `${appDir}/src/`);
 
-      await copyAsync(
-        `${assetsPath}/${framework}/example-app/tsconfig.build.json`,
-        `${appDir}/tsconfig.build.json`
-      );
-
       Object.assign(envVars, {
         HTTP: {
           PORT: 3000,
@@ -102,6 +97,11 @@ module.exports = (toolbox) => {
           copyAsync(
             `${assetsPath}/nest/example-app/migrations`,
             `${appDir}/migrations`
+          ),
+          copyAsync(
+            `${assetsPath}/${framework}/example-app/tsconfig.build.json`,
+            `${appDir}/tsconfig.build.json`,
+            { overwrite: true }
           ),
           copyAsync(
             `${assetsPath}/nest/example-app/tsconfig.json`,
