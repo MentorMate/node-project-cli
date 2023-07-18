@@ -1,4 +1,4 @@
-import { UsersRepositoryInterface } from '@users/interfaces';
+import { UsersRepositoryInterface } from '@api/users/interfaces';
 import { Credentials, JwtTokens } from '../entities';
 import {
   AuthServiceInterface,
@@ -6,7 +6,7 @@ import {
   PasswordServiceInterface,
 } from '../interfaces';
 import { Inject, Injectable } from '@nestjs/common';
-import { UsersRepository } from '@users/repositories';
+import { UsersRepository } from '@api/users/repositories';
 import { JwtService } from './jwt.service';
 import { PasswordService } from './password.service';
 

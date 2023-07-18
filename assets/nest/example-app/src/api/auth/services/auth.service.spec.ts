@@ -1,6 +1,6 @@
 import { DuplicateRecordError } from '@database/errors';
-import { User } from '@users/entities';
-import { UsersRepository } from '@users/repositories';
+import { User } from '@api/users/entities';
+import { UsersRepository } from '@api/users/repositories';
 import { JwtTokens } from '../entities';
 import { JwtService } from './jwt.service';
 import { PasswordService } from './password.service';

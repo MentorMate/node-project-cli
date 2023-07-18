@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { validateConfig } from '@utils/environment';
 import { DatabaseModule } from '@database/database.module';
-import { HelloWorldModule } from '@hello-world/hello-world.module';
-import { HealthchecksModule } from '@healthchecks/healthchecks.module';
-import { AuthModule } from '@auth/auth.module';
-import { UsersModule } from '@users/users.module';
-import { TodosModule } from '@todos/todos.module';
+import { HelloWorldModule } from '@api/hello-world/hello-world.module';
+import { HealthchecksModule } from '@api/healthchecks/healthchecks.module';
+import { AuthModule } from '@api/auth/auth.module';
+import { UsersModule } from '@api/users/users.module';
+import { TodosModule } from '@api/todos/todos.module';
 
 @Module({
   imports: [

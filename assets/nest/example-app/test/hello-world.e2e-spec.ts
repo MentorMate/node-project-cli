@@ -4,7 +4,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { HelloWorldModule } from '../src/api/hello-world/hello-world.module';
+import { HelloWorldModule } from '@api/hello-world/hello-world.module';
 
 describe('HelloWorldController (e2e)', () => {
   let app: NestFastifyApplication;

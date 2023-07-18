@@ -20,20 +20,11 @@
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
     "paths": {
+      "@api/*": ["src/api/*"],
       "@database": ["src/database"],
       "@database/*": ["src/database/*"],
       "@extensions/*": ["src/extensions/*"],
       "@middleware": ["src/middleware"],
-      "@auth": ["src/features/auth"],
-      "@auth/*": ["src/features/auth/*"],
-      "@healthchecks": ["src/api/healthchecks"],
-      "@healthchecks/*": ["src/api/healthchecks/*"],
-      "@hello-world": ["src/api/hello-world"],
-      "@hello-world/*": ["src/api/hello-world/*"],
-      "@users": ["src/features/users"],
-      "@users/*": ["src/features/users/*"],
-      "@todos": ["src/features/todos"],
-      "@todos/*": ["src/features/todos/*"],
       "@utils/*": ["src/utils/*"]
     }
   },
