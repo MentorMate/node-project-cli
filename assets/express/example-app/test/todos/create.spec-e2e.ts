@@ -7,7 +7,7 @@ import {
   Unauthorized,
   UnprocessableEntity,
 } from '../utils';
-import { JwtTokens } from '@auth';
+import { JwtTokens } from '@api/auth';
 
 describe('POST /v1/todos', () => {
   let app: Express.Application;

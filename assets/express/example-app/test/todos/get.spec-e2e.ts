@@ -8,8 +8,8 @@ import {
   Unauthorized,
   UnprocessableEntity,
 } from '../utils';
-import { JwtTokens } from '@auth';
-import { Todo } from '@todos';
+import { JwtTokens } from '@api/auth';
+import { Todo } from '@api/todos';
 
 describe('GET /v1/todos/:id', () => {
   let app: Express.Application;

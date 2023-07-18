@@ -26,10 +26,10 @@
       "@middleware": ["src/middleware"],
       "@auth": ["src/features/auth"],
       "@auth/*": ["src/features/auth/*"],
-      "@healthchecks": ["src/features/healthchecks"],
-      "@healthchecks/*": ["src/features/healthchecks/*"],
-      "@hello-world": ["src/features/hello-world"],
-      "@hello-world/*": ["src/features/hello-world/*"],
+      "@healthchecks": ["src/api/healthchecks"],
+      "@healthchecks/*": ["src/api/healthchecks/*"],
+      "@hello-world": ["src/api/hello-world"],
+      "@hello-world/*": ["src/api/hello-world/*"],
       "@users": ["src/features/users"],
       "@users/*": ["src/features/users/*"],
       "@todos": ["src/features/todos"],
@@ -38,9 +38,6 @@
     }
   },
   "ts-node": {
-    "require": [
-      "tsconfig-paths/register",
-      "dotenv/config",
-    ]
+    "require": ["tsconfig-paths/register", "dotenv/config"]
   }
 }

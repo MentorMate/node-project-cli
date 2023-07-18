@@ -1,5 +1,5 @@
-import { AuthServiceInterface } from '@auth/interfaces';
-import { TodosServiceInterface } from '@todos/interfaces';
+import { AuthServiceInterface } from '@api/auth/interfaces';
+import { TodosServiceInterface } from '@api/todos/interfaces';
 
 declare module 'express-serve-static-core' {
   interface Request {

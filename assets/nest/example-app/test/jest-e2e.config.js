@@ -15,7 +15,7 @@ module.exports = {
   },
   coverageDirectory: 'coverage-e2e',
   collectCoverageFrom: [
-    '<rootDir>/src/features/**/*.(t|j)s'
+    '<rootDir>/src/api/**/*.(t|j)s'
   ],
   coveragePathIgnorePatterns: [
     '<rootDir>/src/main.ts$',
