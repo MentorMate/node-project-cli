@@ -1,4 +1,4 @@
-import { Todo } from '@todos';
+import { Todo } from '@api/todos';
 
 export const getTodoPayload: (
   completed?: boolean

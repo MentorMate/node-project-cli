@@ -1,4 +1,4 @@
-import { UsersRepositoryInterface } from '@users';
+import { UsersRepositoryInterface } from '@api/users';
 import { Credentials, JwtTokens } from '../entities';
 import {
   AuthServiceInterface,

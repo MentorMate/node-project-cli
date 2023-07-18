@@ -8,7 +8,7 @@ import {
   sortByField,
   Unauthorized,
 } from '../utils';
-import { JwtTokens } from '@auth';
+import { JwtTokens } from '@api/auth';
 
 describe('GET /v1/todos', () => {
   let app: Express.Application;

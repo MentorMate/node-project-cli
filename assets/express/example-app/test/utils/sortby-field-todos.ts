@@ -1,4 +1,4 @@
-import { Todo } from '@todos/entities';
+import { Todo } from '@api/todos/entities';
 import { SortOrder } from '@utils/query';
 
 type ListTodoSortColumn = 'name' | 'createdAt';
