@@ -24,11 +24,16 @@ import {
   validateJwt,
 } from '@middleware';
 
-import { JwtService, PasswordService, AuthService, authRoutes } from '@auth';
-import { healthcheckRoutes } from '@healthchecks';
-import { helloWorldRoutes } from '@hello-world';
-import { TodosRepository, TodosService, todoRoutes } from '@todos';
-import { UsersRepository } from '@users';
+import {
+  JwtService,
+  PasswordService,
+  AuthService,
+  authRoutes,
+} from '@api/auth';
+import { healthcheckRoutes } from '@api/healthchecks';
+import { helloWorldRoutes } from '@api/hello-world';
+import { TodosRepository, TodosService, todoRoutes } from '@api/todos';
+import { UsersRepository } from '@api/users';
 
 export function create(env: Environment) {
   // init modules

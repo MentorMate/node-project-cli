@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { withId, withTimestamps } from '@utils/validation';
-import { userSchema } from '@users/schemas';
+import { userSchema } from '@api/users/schemas';
 
 export const todoSchema = z
   .object({

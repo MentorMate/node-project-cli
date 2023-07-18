@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
-import { InsertUser, UpdateUser, User } from '@users/entities';
-import { InsertTodo, UpdateTodo, Todo } from '@todos/entities';
+import { InsertUser, UpdateUser, User } from '@api/users/entities';
+import { InsertTodo, UpdateTodo, Todo } from '@api/todos/entities';
 
 // This is how knex adds TypeScript support.
 // For more information see the docs https://knexjs.org/guide/#typescript.
