@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { HelloWorldModule } from './features/hello-world/hello-world.module';
-import { HealthchecksModule } from './features/healthchecks/healthchecks.module';
+import { HelloWorldModule } from './api/hello-world/hello-world.module';
+import { HealthchecksModule } from './api/healthchecks/healthchecks.module';
 import { validateConfig } from './utils/environment';
 
 @Module({

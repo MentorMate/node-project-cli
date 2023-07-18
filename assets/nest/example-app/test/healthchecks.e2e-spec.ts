@@ -4,7 +4,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { HealthchecksModule } from '../src/features/healthchecks/healthchecks.module';
+import { HealthchecksModule } from '../src/api/healthchecks/healthchecks.module';
 
 describe('HelloWorldController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -15,7 +15,7 @@ describe('HelloWorldController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     await app.init();
