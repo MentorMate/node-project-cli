@@ -46,11 +46,12 @@ module.exports = (toolbox) => {
       });
 
       Object.assign(pkgJson.scripts, {
-        start: 'node -r dotenv/config ./node_modules/.bin/nest start',
+        start:
+          'node -r dotenv/config ./node_modules/@nestjs/cli/bin/nest.js start',
         'start:debug':
-          'node -r dotenv/config ./node_modules/.bin/nest start --debug --watch',
+          'node -r dotenv/config ./node_modules/@nestjs/cli/bin/nest.js start --debug --watch',
         'start:dev':
-          'node -r dotenv/config ./node_modules/.bin/nest start --watch',
+          'node -r dotenv/config ./node_modules/@nestjs/cli/bin/nest.js start --watch',
       });
 
       // Example Nest app
