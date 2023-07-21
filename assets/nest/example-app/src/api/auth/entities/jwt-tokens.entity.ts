@@ -1,3 +1,3 @@
-export interface JwtTokens {
+export interface JwtToken {
   idToken: string;
 }

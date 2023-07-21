@@ -3,7 +3,7 @@
  */
 module.exports = {
   collectCoverageFrom: [
-    '**/*.(t|j)s'
+    '<rootDir>/src/**/*.(t|j)s'
   ],
   coverageDirectory: './coverage',
   coveragePathIgnorePatterns: [
@@ -11,7 +11,7 @@ module.exports = {
     '<rootDir>/src/.*module.ts$',
     '<rootDir>/src/.*/index.ts$',
     '<rootDir>/src/.*dto.ts$',
-    '<rootDir>/src/utils/class-transofrmers/.*$',
+    '<rootDir>/src/utils/class-transformers/.*',
     '<rootDir>/src/.*interceptor.ts$',
   ],
   coverageThreshold: {

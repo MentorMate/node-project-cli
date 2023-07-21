@@ -1,11 +1,15 @@
 import { UsersRepositoryInterface } from '@api/users/interfaces';
-import { Credentials, JwtTokens } from '../entities';
+import { Credentials, JwtToken } from '../entities';
 import {
   AuthServiceInterface,
   JwtServiceInterface,
   PasswordServiceInterface,
 } from '../interfaces';
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { UsersRepository } from '@api/users/repositories';
 import { JwtService } from './jwt.service';
 import { PasswordService } from './password.service';
@@ -18,10 +22,10 @@ export class AuthService implements AuthServiceInterface {
     @Inject(JwtService)
     private readonly jwt: JwtServiceInterface,
     @Inject(PasswordService)
-    private readonly password: PasswordServiceInterface,
+    private readonly password: PasswordServiceInterface
   ) {}
 
-  async register({ email, password }: Credentials): Promise<JwtTokens> {
+  async register({ email, password }: Credentials): Promise<JwtToken> {
     const user = await this.users.insertOne({
       email,
       password: await this.password.hash(password),
@@ -32,10 +36,7 @@ export class AuthService implements AuthServiceInterface {
     };
   }
 
-  async login({
-    email,
-    password,
-  }: Credentials): Promise<JwtTokens | undefined> {
+  async login({ email, password }: Credentials): Promise<JwtToken | undefined> {
     const user = await this.users.findByEmail(email);
 
     if (!user) {
@@ -44,11 +45,17 @@ export class AuthService implements AuthServiceInterface {
 
     const passwordMatches = await this.password.compare(
       password,
-      user.password,
+      user.password
     );
 
     if (!passwordMatches) {
       return;
+    }
+
+    const token = this.jwt.sign({ sub: user.id.toString(), email });
+
+    if (!token) {
+      throw new UnprocessableEntityException('Invalid email or password');
     }
 
     return {

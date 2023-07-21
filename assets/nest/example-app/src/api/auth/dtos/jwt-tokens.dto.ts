@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { JwtTokens } from '../entities';
+import { JwtToken } from '../entities';
 
-export class JwtTokensDto implements JwtTokens {
+export class JwtTokensDto implements JwtToken {
   @ApiProperty()
   idToken: string;
 }

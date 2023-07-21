@@ -18,16 +18,18 @@ import { AuthServiceInterface } from './interfaces';
 import { CredentialsDto, JwtTokensDto } from './dtos';
 import { AuthService } from './services';
 import { ConflictDto, UnprocessableEntityDto } from '@utils/api/response';
+import { Public } from '@utils/decorators/public.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
     @Inject(AuthService)
-    private readonly authService: AuthServiceInterface,
+    private readonly authService: AuthServiceInterface
   ) {}
 
   @Post('register')
+  @Public()
   @HttpCode(200)
   @ApiOperation({
     summary: 'Register a user',
@@ -51,6 +53,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @Public()
   @ApiOperation({
     summary: 'Login a user',
     description: 'Authenticate a user',
@@ -64,13 +67,9 @@ export class AuthController {
     description: 'UnprocessableEntity',
     type: UnprocessableEntityDto,
   })
-  async login(@Body() credentials: CredentialsDto): Promise<JwtTokensDto> {
-    const tokens = await this.authService.login(credentials);
-
-    if (!tokens) {
-      throw new UnprocessableEntityException('Invalid email or password');
-    }
-
-    return tokens;
+  async login(
+    @Body() credentials: CredentialsDto
+  ): Promise<JwtTokensDto | undefined> {
+    return this.authService.login(credentials);
   }
 }

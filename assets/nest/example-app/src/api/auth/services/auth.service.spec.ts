@@ -1,12 +1,13 @@
 import { DuplicateRecordError } from '@database/errors';
 import { User } from '@api/users/entities';
 import { UsersRepository } from '@api/users/repositories';
-import { JwtTokens } from '../entities';
+import { JwtToken } from '../entities';
 import { JwtService } from './jwt.service';
 import { PasswordService } from './password.service';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { Environment } from '@utils/environment';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 jest.mock('../../users/repositories/users.repository');
 
@@ -27,7 +28,7 @@ describe('AuthService', () => {
   describe('register', () => {
     describe('when the email is not regisered', () => {
       const creds = { email: 'new-email@example.com', password: 'very-secret' };
-      let result: JwtTokens;
+      let result: JwtToken;
       let user: User | undefined;
 
       beforeAll(async () => {
@@ -45,7 +46,7 @@ describe('AuthService', () => {
 
       it('should return jwt tokens', () => {
         expect(result).toEqual(
-          expect.objectContaining({ idToken: expect.any(String) }),
+          expect.objectContaining({ idToken: expect.any(String) })
         );
       });
     });
@@ -62,7 +63,7 @@ describe('AuthService', () => {
 
       it('should throw an error', async () => {
         await expect(auth.register(creds)).rejects.toThrowError(
-          DuplicateRecordError,
+          DuplicateRecordError
         );
       });
     });
@@ -75,7 +76,7 @@ describe('AuthService', () => {
           await auth.login({
             email: 'notregistered@email.com',
             password: '123',
-          }),
+          })
         ).toBeUndefined();
       });
     });
@@ -93,7 +94,7 @@ describe('AuthService', () => {
             await auth.login({
               email: creds.email,
               password: 'not-my-password',
-            }),
+            })
           ).toBeUndefined();
         });
       });
@@ -101,7 +102,17 @@ describe('AuthService', () => {
       describe('and the email and password are valid', () => {
         it('should return jwt tokens', async () => {
           expect(await auth.login(creds)).toEqual(
-            expect.objectContaining({ idToken: expect.any(String) }),
+            expect.objectContaining({ idToken: expect.any(String) })
+          );
+        });
+      });
+
+      describe('and the email or password are not valid', () => {
+        it('should throw an UnprocessableEntity error with message "Invalid email or password"', async () => {
+          jest.spyOn(jwt, 'sign').mockReturnValue('');
+
+          await expect(auth.login(creds)).rejects.toThrowError(
+            new UnprocessableEntityException('Invalid email or password')
           );
         });
       });
