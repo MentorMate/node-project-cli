@@ -7,7 +7,7 @@ describe('TodosController', () => {
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule(
-      todosModuleMetadata
+      todosModuleMetadata,
     ).compile();
 
     todosController = app.get<TodosController>(TodosController);

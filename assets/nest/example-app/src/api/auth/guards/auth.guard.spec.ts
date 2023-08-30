@@ -5,14 +5,19 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from './auth.guard';
 import jwt from 'jsonwebtoken';
 import { JwtClaims } from '../entities';
+import { Test } from '@nestjs/testing';
 
 describe('AuthenticatedGuard', () => {
   let authGuard: AuthGuard;
   let reflector: Reflector;
 
-  beforeEach(() => {
-    reflector = new Reflector();
-    authGuard = new AuthGuard(new ConfigService(), reflector);
+  beforeEach(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [ConfigService, AuthGuard, Reflector],
+    }).compile();
+
+    authGuard = moduleRef.get<AuthGuard>(AuthGuard);
+    reflector = moduleRef.get<Reflector>(Reflector);
   });
 
   it('should be defined', () => {

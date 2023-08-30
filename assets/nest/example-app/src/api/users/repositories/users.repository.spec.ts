@@ -1,83 +1,73 @@
-import Knex from 'knex';
-import { DatabaseError } from 'pg';
-import { PostgresError } from 'pg-error-enum';
-import { DuplicateRecordError } from '@database/errors';
-import { User } from '../entities/user.entity';
 import { UsersRepository } from './users.repository';
+import { Test } from '@nestjs/testing';
+import { NestKnexService } from '@database/nest-knex.service';
+import { InsertUser } from '../entities';
 
 describe('UsersRepository', () => {
-  const knex = Knex({ client: 'pg', connection: {} });
-  const users = new UsersRepository(knex);
-  const usersQb = knex('users');
+  let usersRepository: UsersRepository;
 
-  it('dummy test', () => {
-    expect(users).toBe(users);
+  const first = jest.fn(() => Promise.resolve({}));
+  const returning = jest.fn().mockImplementation(() => Promise.resolve([]));
+
+  const where = jest.fn().mockImplementation(() => ({
+    first,
+  }));
+
+  const insert = jest.fn().mockImplementation(() => ({
+    returning,
+  }));
+
+  beforeEach(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        {
+          provide: NestKnexService,
+          useFactory: () => ({
+            connection: () => ({
+              insert,
+              where,
+            }),
+          }),
+        },
+        UsersRepository,
+      ],
+    }).compile();
+
+    usersRepository = moduleRef.get<UsersRepository>(UsersRepository);
   });
 
-  // TODO: fix tests when knex is available
-  // describe('insertOne', () => {
-  //   it('should return the newly created record', async () => {
-  //     const user = { email: 'email@example.com', password: '123' };
+  it('insertOne - create a user', async () => {
+    const insertUser: InsertUser = {
+      email: 'user@example.com',
+      password: 'password',
+    };
 
-  //     jest.spyOn(usersQb, 'insert');
-  //     jest.spyOn(usersQb, 'returning');
-  //     jest.spyOn(usersQb, 'then');
-  //     jest.spyOn(usersQb, 'catch').mockImplementationOnce(async () => ({
-  //       id: 1,
-  //       ...user,
-  //       createdAt: new Date().toISOString(),
-  //       updatedAt: new Date().toISOString(),
-  //     }));
+    const createdUser = {
+      id: 1,
+      email: 'user@example.com',
+      password: 'password',
+    };
 
-  //     const result = await users.insertOne(user);
+    returning.mockImplementationOnce(() => Promise.resolve([createdUser]));
 
-  //     expect(usersQb.insert).toHaveBeenCalledWith(user);
-  //     expect(usersQb.returning).toHaveBeenCalledWith('*');
-  //     expect(usersQb.then).toHaveBeenCalled();
-  //     expect(usersQb.catch).toHaveBeenCalled();
+    const result = await usersRepository.insertOne(insertUser);
 
-  //     expect(result).toEqual(expect.objectContaining(user));
-  //   });
+    expect(result).toBe(createdUser);
+    expect(insert).toHaveBeenCalledWith(insertUser);
+  });
 
-  //   it('should rethrow email uniq constraint violation as duplicate record', () => {
-  //     const error = new DatabaseError('unique violation', 72, 'error');
-  //     error.code = PostgresError.UNIQUE_VIOLATION;
-  //     error.constraint = 'unq_users_email';
-  //     const thenable = () => ({ then: () => Promise.reject(error) });
+  it('findByEmail - find a user', async () => {
+    const userFound = {
+      id: 1,
+      email: 'user@example.com',
+      password: 'password',
+    };
 
-  //     jest
-  //       .spyOn(usersQb, 'returning')
-  //       .mockImplementationOnce(thenable as never);
+    first.mockImplementationOnce(() => Promise.resolve(userFound));
 
-  //     expect(
-  //       users.insertOne({ email: 'email@example.com', password: '123' }),
-  //     ).rejects.toThrowError(
-  //       new DuplicateRecordError('User email already taken'),
-  //     );
-  //   });
-  // });
+    const result = await usersRepository.findByEmail('user@example.com');
 
-  // describe('findByEmail', () => {
-  //   it('should return the first record found', async () => {
-  //     const user: User = {
-  //       id: 1,
-  //       email: 'email@example.com',
-  //       password: '123',
-  //       createdAt: new Date().toISOString(),
-  //       updatedAt: new Date().toISOString(),
-  //     };
-
-  //     jest.spyOn(usersQb, 'where');
-  //     jest
-  //       .spyOn(usersQb, 'first')
-  //       .mockImplementationOnce(() => Promise.resolve(user) as never);
-
-  //     const result = await users.findByEmail(user.email);
-
-  //     expect(usersQb.where).toHaveBeenCalledWith({ email: user.email });
-  //     expect(usersQb.first).toHaveBeenCalled();
-
-  //     expect(result).toEqual(user);
-  //   });
-  // });
+    expect(result).toBe(userFound);
+    expect(where).toHaveBeenCalledWith({ email: 'user@example.com' });
+  });
 });

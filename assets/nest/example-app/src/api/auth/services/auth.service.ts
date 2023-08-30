@@ -22,7 +22,7 @@ export class AuthService implements AuthServiceInterface {
     @Inject(JwtService)
     private readonly jwt: JwtServiceInterface,
     @Inject(PasswordService)
-    private readonly password: PasswordServiceInterface
+    private readonly password: PasswordServiceInterface,
   ) {}
 
   async register({ email, password }: Credentials): Promise<JwtToken> {
@@ -45,7 +45,7 @@ export class AuthService implements AuthServiceInterface {
 
     const passwordMatches = await this.password.compare(
       password,
-      user.password
+      user.password,
     );
 
     if (!passwordMatches) {

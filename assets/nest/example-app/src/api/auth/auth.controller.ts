@@ -14,7 +14,6 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { AuthServiceInterface } from './interfaces';
 import { CredentialsDto, JwtTokensDto } from './dtos';
 import { AuthService } from './services';
 import { ConflictDto, UnprocessableEntityDto } from '@utils/api/response';
@@ -25,7 +24,7 @@ import { Public } from '@utils/decorators/public.decorator';
 export class AuthController {
   constructor(
     @Inject(AuthService)
-    private readonly authService: AuthServiceInterface
+    private readonly authService: AuthService,
   ) {}
 
   @Post('register')
@@ -68,7 +67,7 @@ export class AuthController {
     type: UnprocessableEntityDto,
   })
   async login(
-    @Body() credentials: CredentialsDto
+    @Body() credentials: CredentialsDto,
   ): Promise<JwtTokensDto | undefined> {
     return this.authService.login(credentials);
   }

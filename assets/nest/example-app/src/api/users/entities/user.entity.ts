@@ -1,7 +1,10 @@
-export interface User {
+export interface GenericSchema {
   id: number;
-  email: string;
-  password: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface User extends GenericSchema {
+  email: string;
+  password: string;
 }
