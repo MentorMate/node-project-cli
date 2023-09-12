@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthModuleMetadata } from './auth.module';
-import { JwtTokensDto } from './dtos/jwt-tokens.dto';
+import { JwtTokensDto } from './dto/jwt-tokens.dto';
 import { Credentials } from './entities';
 import { AuthService } from './services';
 
@@ -17,7 +17,7 @@ describe('AuthController', () => {
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule(
-      AuthModuleMetadata,
+      AuthModuleMetadata
     ).compile();
 
     authController = app.get<AuthController>(AuthController);
@@ -31,7 +31,7 @@ describe('AuthController', () => {
         .mockImplementationOnce(async () => tokenResponse);
 
       expect(await authController.register(credentials)).toStrictEqual(
-        tokenResponse,
+        tokenResponse
       );
     });
   });
@@ -43,7 +43,7 @@ describe('AuthController', () => {
         .mockImplementationOnce(async () => tokenResponse);
 
       expect(await authController.login(credentials)).toStrictEqual(
-        tokenResponse,
+        tokenResponse
       );
     });
   });

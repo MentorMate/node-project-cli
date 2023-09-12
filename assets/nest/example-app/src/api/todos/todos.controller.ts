@@ -1,77 +1,74 @@
-import { Controller, Delete, Get, Patch, Post } from '@nestjs/common';
 import {
-  ApiBearerAuth,
-  ApiNoContentResponse,
-  ApiNotFoundResponse,
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Req,
+  ParseIntPipe,
+  Put,
+  Query,
+} from '@nestjs/common';
+import { TodosService } from './todos.service';
+import { CreateTodoDto } from './dto/create-todo.dto';
+import { UpdateTodoDto } from './dto/update-todo.dto';
+import { UserData } from '@api/auth/entities';
+import {
+  ApiBody,
+  ApiCreatedResponse,
   ApiOkResponse,
-  ApiOperation,
   ApiTags,
-  ApiUnauthorizedResponse,
-  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
+import { Todo } from './entities/todo.entity';
+import { ListTodosQuery } from './entities/list-todos-query.entity';
 
-@ApiBearerAuth()
-@ApiTags('v1', 'Todo')
-@Controller('/v1/todos')
+@ApiTags('Todos')
+@Controller('v1/todos')
 export class TodosController {
+  constructor(private readonly todosService: TodosService) {}
+
+  @ApiCreatedResponse({ type: Todo })
+  @ApiBody({ type: CreateTodoDto })
   @Post()
-  @ApiOperation({
-    summary: 'Create a To-Do',
-    description: 'Create a new To-Do item',
-  })
-  @ApiUnauthorizedResponse()
-  @ApiUnprocessableEntityResponse()
-  create() {
-    return 'OK';
+  create(
+    @Body() createTodoDto: CreateTodoDto,
+    @Req() { user: { sub } }: UserData,
+  ) {
+    return this.todosService.create({ createTodoDto, userId: Number(sub) });
   }
 
+  @ApiOkResponse({ type: Todo, isArray: true })
   @Get()
-  @ApiOperation({
-    summary: 'List To-Dos',
-    description: 'List To-Do items',
-  })
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
-  list() {
-    return 'OK';
+  findAll(@Req() { user: { sub } }: UserData, @Query() query: ListTodosQuery) {
+    return this.todosService.findAll({ userId: Number(sub), query });
   }
 
+  @ApiOkResponse({ type: Todo })
   @Get(':id')
-  @ApiOperation({
-    summary: 'Get a To-Do',
-    description: 'Get a To-Do item',
-  })
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @ApiUnprocessableEntityResponse()
-  get() {
-    return 'OK';
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() { user: { sub } }: UserData,
+  ) {
+    return this.todosService.findOne({ id, userId: Number(sub) });
   }
 
-  @Patch(':id')
-  @ApiOperation({
-    summary: 'Update a To-Do',
-    description: 'Update a To-Do item',
-  })
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @ApiUnprocessableEntityResponse()
-  update() {
-    return 'OK';
+  @ApiOkResponse({ type: Todo })
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() { user: { sub } }: UserData,
+    @Body() updateTodoDto: UpdateTodoDto,
+  ) {
+    return this.todosService.update({ id, userId: Number(sub), updateTodoDto });
   }
 
+  @ApiOkResponse({ type: Number })
   @Delete(':id')
-  @ApiOperation({
-    summary: 'Login a user',
-    description: 'Authenticate a user',
-  })
-  @ApiNoContentResponse()
-  @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @ApiUnprocessableEntityResponse()
-  delete() {
-    return 'OK';
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() { user: { sub } }: UserData,
+  ) {
+    return this.todosService.remove({ id, userId: Number(sub) });
   }
 }

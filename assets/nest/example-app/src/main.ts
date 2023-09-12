@@ -29,7 +29,7 @@ async function bootstrap() {
   app.register(compression);
 
   // enable validation globally
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   // map application level errors to http errors
   app.useGlobalInterceptors(new ServiceToHttpErrorsInterceptor());

@@ -1,17 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TodosController } from './todos.controller';
-import { TodosService } from './todos.service';
-import { TodosRepository } from './repositories/todos.repository';
-import { Todo } from './entities/todo.entity';
-import { Paginated } from '@utils/query/pagination';
 import { DatabaseModule } from '@database/database.module';
-import { UpdateTodoDto } from './dto/update-todo.dto';
-import { CreateTodoDto } from './dto/create-todo.dto';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TodosService } from './todos.service';
+import { TodosController } from './todos.controller';
+import { TodosRepository } from './repositories/todos.repository';
+import { CreateTodoInput } from './interfaces/todos.interface';
 import { exampleUser, todo } from './__mocks__/todos.mocks';
+import { Paginated } from '@utils/query/pagination';
+import { Todo } from './entities/todo.entity';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 
-describe('TodosController', () => {
-  let controller: TodosController;
+describe('TodosService', () => {
   let service: TodosService;
+  let repository: TodosRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,23 +20,24 @@ describe('TodosController', () => {
       providers: [TodosService, TodosRepository],
     }).compile();
 
-    controller = module.get<TodosController>(TodosController);
     service = module.get<TodosService>(TodosService);
+    repository = module.get<TodosRepository>(TodosRepository);
   });
 
   describe('create', () => {
     it('should return todos', async () => {
-      const todoInput: CreateTodoDto = {
-        name: todo.name,
-        completed: todo.completed,
-        note: todo.note,
+      const todoInput: CreateTodoInput = {
+        createTodoDto: {
+          name: todo.name,
+          completed: todo.completed,
+          note: todo.note,
+        },
+        userId: +exampleUser.user.sub,
       };
 
-      jest.spyOn(service, 'create').mockImplementationOnce(async () => todo);
+      jest.spyOn(repository, 'create').mockImplementationOnce(async () => todo);
 
-      expect(await controller.create(todoInput, exampleUser)).toStrictEqual(
-        todo,
-      );
+      expect(await service.create(todoInput)).toStrictEqual(todo);
     });
   });
 
@@ -47,22 +48,24 @@ describe('TodosController', () => {
         meta: { total: 1 },
       };
       jest
-        .spyOn(service, 'findAll')
+        .spyOn(repository, 'findAll')
         .mockImplementationOnce(async () => paginatedResponse);
 
-      expect(await controller.findAll(exampleUser, {})).toStrictEqual(
-        paginatedResponse,
-      );
+      expect(
+        await service.findAll({ userId: +exampleUser.user.sub, query: {} }),
+      ).toStrictEqual(paginatedResponse);
     });
   });
 
   describe('findOne', () => {
     it('should return single todo', async () => {
-      jest.spyOn(service, 'findOne').mockImplementationOnce(async () => todo);
+      jest
+        .spyOn(repository, 'findOne')
+        .mockImplementationOnce(async () => todo);
 
-      expect(await controller.findOne(todo.id, exampleUser)).toStrictEqual(
-        todo,
-      );
+      expect(
+        await service.findOne({ id: todo.id, userId: +exampleUser.user.sub }),
+      ).toStrictEqual(todo);
     });
   });
 
@@ -77,20 +80,26 @@ describe('TodosController', () => {
       const updatedTodo = { ...todo, ...inputData };
 
       jest
-        .spyOn(service, 'update')
+        .spyOn(repository, 'update')
         .mockImplementationOnce(async () => updatedTodo);
 
       expect(
-        await controller.update(todo.id, exampleUser, inputData),
+        await service.update({
+          id: todo.id,
+          userId: +exampleUser.user.sub,
+          updateTodoDto: inputData,
+        }),
       ).toStrictEqual(updatedTodo);
     });
   });
 
   describe('remove', () => {
     it('should delete single todo', async () => {
-      jest.spyOn(service, 'remove').mockImplementationOnce(async () => 1);
+      jest.spyOn(repository, 'remove').mockImplementationOnce(async () => 1);
 
-      expect(await controller.remove(1, exampleUser)).toBe(1);
+      expect(
+        await service.remove({ id: 1, userId: +exampleUser.user.sub }),
+      ).toBe(1);
     });
   });
 });
