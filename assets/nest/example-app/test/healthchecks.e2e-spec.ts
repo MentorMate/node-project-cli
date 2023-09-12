@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+import request from 'supertest';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { HealthchecksModule } from '../src/api/healthchecks/healthchecks.module';
+import { HealthchecksModule } from '@api/healthchecks/healthchecks.module';
 
 describe('HelloWorldController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -15,7 +15,7 @@ describe('HelloWorldController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     await app.init();

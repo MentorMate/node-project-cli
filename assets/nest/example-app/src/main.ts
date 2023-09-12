@@ -8,6 +8,7 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
 
 async function bootstrap() {
   // create the app
@@ -28,7 +29,10 @@ async function bootstrap() {
   app.register(compression);
 
   // enable validation globally
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+
+  // map application level errors to http errors
+  app.useGlobalInterceptors(new ServiceToHttpErrorsInterceptor());
 
   // setup graceful shutdown
   app.enableShutdownHooks();
