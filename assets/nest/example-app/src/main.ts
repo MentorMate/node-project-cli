@@ -14,7 +14,7 @@ async function bootstrap() {
   // create the app
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter()
+    new FastifyAdapter(),
   );
 
   // register global middleware
