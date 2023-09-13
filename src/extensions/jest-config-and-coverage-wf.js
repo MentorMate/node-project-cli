@@ -60,7 +60,7 @@ module.exports = (toolbox) => {
         test: 'jest',
         'test:cov': 'jest --coverage',
         'test:watch': 'jest --watch',
-        'test:e2e': `DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.config.js`,
+        'test:e2e': `DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/jest/bin/jest.js --config ./test/jest-e2e.config.js`,
         'test:e2e:cov': 'npm run test:e2e -- --coverage',
       });
 
@@ -84,7 +84,7 @@ module.exports = (toolbox) => {
 
         Object.assign(pkgJson.scripts, {
           'test:e2e':
-            'DOTENV_CONFIG_PATH=.env.test npm run test:e2e:db:recreate && DOTENV_CONFIG_PATH=.env.test npm run db:migrate:latest && DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.config.js',
+            'DOTENV_CONFIG_PATH=.env.test npm run test:e2e:db:recreate && DOTENV_CONFIG_PATH=.env.test npm run db:migrate:latest && DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/jest/bin/jest.js --config ./test/jest-e2e.config.js',
           'test:e2e:db:recreate':
             'DOTENV_CONFIG_PATH=.env.test ts-node -r dotenv/config ./test/utils/recreate-db',
         });
