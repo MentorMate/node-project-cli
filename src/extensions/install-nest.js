@@ -3,6 +3,7 @@
 module.exports = (toolbox) => {
   toolbox.installNest = async ({
     projectName,
+    authOption,
     framework,
     appDir,
     assetsPath,
@@ -14,7 +15,7 @@ module.exports = (toolbox) => {
     const {
       system: { run },
       print: { success, muted },
-      filesystem: { copyAsync, removeAsync },
+      filesystem: { copyAsync, removeAsync, renameAsync },
     } = toolbox;
 
     muted('Installing Nest...');
@@ -31,6 +32,17 @@ module.exports = (toolbox) => {
       await removeAsync(`${appDir}/src/`);
       await removeAsync(`${appDir}/test/`);
       await copyAsync(srcDir, `${appDir}/src/`);
+
+      if (isExampleApp) {
+        if (authOption === 'auth0') {
+          await removeAsync(`${appDir}/src/api/auth`);
+          await renameAsync(`${appDir}/src/api/auth0`, 'auth');
+        }
+
+        if (authOption === 'jwt') {
+          await removeAsync(`${appDir}/src/api/auth0`);
+        }
+      }
 
       Object.assign(envVars, {
         HTTP: {
@@ -60,9 +72,23 @@ module.exports = (toolbox) => {
           'class-validator': '^0.14.0',
         });
 
+        if (authOption === 'auth0') {
+          Object.assign(pkgJson.dependencies, {
+            '@nestjs/passport': '^10.0.1',
+            'passport-jwt': '^4.0.1',
+            'jwks-rsa': '^3.0.1',
+          });
+        }
+
         Object.assign(pkgJson.devDependencies, {
           '@nestjs/swagger': '^6.3.0',
         });
+
+        if (authOption === 'auth0') {
+          Object.assign(pkgJson.devDependencies, {
+            '@types/passport-jwt': '^3.0.9',
+          });
+        }
 
         Object.assign(pkgJson.scripts, {
           'openapi:g': 'ts-node scripts/generate-openapi',
