@@ -1,5 +1,4 @@
 .DS_Store
-mocha
 node_modules
 npm-debug.log
 coverage
