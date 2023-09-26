@@ -12,5 +12,5 @@ export class Todo extends GenericEntity {
   note: string | null;
 
   @ApiProperty({ default: false })
-  completed: boolean;
+  completed = false;
 }

@@ -1,6 +1,6 @@
 import { CreateTodoDto } from '../dto/create-todo.dto';
+import { FindAllTodosQueryDTO } from '../dto/find-all-todos-query.dto';
 import { UpdateTodoDto } from '../dto/update-todo.dto';
-import { ListTodosQuery } from '../entities/list-todos-query.entity';
 
 interface UserData {
   userId: number;
@@ -15,7 +15,7 @@ export interface CreateTodoInput extends UserData {
 }
 
 export interface FindAllTodosInput extends UserData {
-  query: ListTodosQuery;
+  query: FindAllTodosQueryDTO;
 }
 
 export interface FindOneTodoInput extends UserData, TodoId {}

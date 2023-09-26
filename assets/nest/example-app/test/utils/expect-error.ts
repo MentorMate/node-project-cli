@@ -1,12 +1,12 @@
 import { Response } from 'supertest';
 import {
   InvalidCredentials,
-  TodoNotFound,
   Unauthorized,
   UnprocessableEntity,
   UserConflict,
 } from './errors';
 import { HttpException } from './http-exception';
+import { TodoNotFound } from '../todos/utils/errors';
 
 const httpExceptionMap = {
   [Unauthorized.name]: Unauthorized(),

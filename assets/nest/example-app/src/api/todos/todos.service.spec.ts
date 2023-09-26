@@ -3,15 +3,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TodosService } from './todos.service';
 import { TodosController } from './todos.controller';
 import { TodosRepository } from './repositories/todos.repository';
-import { CreateTodoInput } from './interfaces/todos.interface';
-import { exampleUser, todo } from './__mocks__/todos.mocks';
-import { Paginated } from '@utils/query/pagination';
-import { Todo } from './entities/todo.entity';
-import { UpdateTodoDto } from './dto/update-todo.dto';
+import {
+  createTodoInput,
+  mockedUser,
+  getPaginatedResponse,
+  todo,
+  updateTodoInput,
+} from './__mocks__/todos.mocks';
 
 describe('TodosService', () => {
   let service: TodosService;
   let repository: TodosRepository;
+  const userId = mockedUser.user.sub;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,34 +29,23 @@ describe('TodosService', () => {
 
   describe('create', () => {
     it('should return todos', async () => {
-      const todoInput: CreateTodoInput = {
-        createTodoDto: {
-          name: todo.name,
-          completed: todo.completed,
-          note: todo.note,
-        },
-        userId: +exampleUser.user.sub,
-      };
-
       jest.spyOn(repository, 'create').mockImplementationOnce(async () => todo);
 
-      expect(await service.create(todoInput)).toStrictEqual(todo);
+      expect(await service.create(createTodoInput)).toStrictEqual(todo);
     });
   });
 
   describe('findAll', () => {
     it('should return todos', async () => {
-      const paginatedResponse: Paginated<Todo> = {
-        data: [todo],
-        meta: { total: 1 },
-      };
+      const paginatedResponse = getPaginatedResponse([todo]);
+
       jest
         .spyOn(repository, 'findAll')
         .mockImplementationOnce(async () => paginatedResponse);
 
-      expect(
-        await service.findAll({ userId: +exampleUser.user.sub, query: {} }),
-      ).toStrictEqual(paginatedResponse);
+      expect(await service.findAll({ userId, query: {} })).toStrictEqual(
+        paginatedResponse,
+      );
     });
   });
 
@@ -63,21 +55,15 @@ describe('TodosService', () => {
         .spyOn(repository, 'findOne')
         .mockImplementationOnce(async () => todo);
 
-      expect(
-        await service.findOne({ id: todo.id, userId: +exampleUser.user.sub }),
-      ).toStrictEqual(todo);
+      expect(await service.findOne({ id: todo.id, userId })).toStrictEqual(
+        todo,
+      );
     });
   });
 
   describe('update', () => {
     it('should update single todo', async () => {
-      const inputData: UpdateTodoDto = {
-        name: 'new name',
-        note: 'add note',
-        completed: true,
-      };
-
-      const updatedTodo = { ...todo, ...inputData };
+      const updatedTodo = { ...todo, ...updateTodoInput };
 
       jest
         .spyOn(repository, 'update')
@@ -86,10 +72,24 @@ describe('TodosService', () => {
       expect(
         await service.update({
           id: todo.id,
-          userId: +exampleUser.user.sub,
-          updateTodoDto: inputData,
+          userId,
+          updateTodoDto: updateTodoInput,
         }),
       ).toStrictEqual(updatedTodo);
+    });
+
+    it('should return todo if there is no data to update', async () => {
+      jest
+        .spyOn(repository, 'findOne')
+        .mockImplementationOnce(async () => todo);
+
+      expect(
+        await service.update({
+          id: todo.id,
+          userId,
+          updateTodoDto: {},
+        }),
+      ).toStrictEqual(todo);
     });
   });
 
@@ -97,9 +97,7 @@ describe('TodosService', () => {
     it('should delete single todo', async () => {
       jest.spyOn(repository, 'remove').mockImplementationOnce(async () => 1);
 
-      expect(
-        await service.remove({ id: 1, userId: +exampleUser.user.sub }),
-      ).toBe(1);
+      expect(await service.remove({ id: 1, userId })).toBe(1);
     });
   });
 });

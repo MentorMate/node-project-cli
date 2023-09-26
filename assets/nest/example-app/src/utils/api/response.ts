@@ -6,14 +6,33 @@ interface ErrorDto {
   error: string;
 }
 
-export class Unauthorized implements ErrorDto {
+export enum Errors {
+  BadRequest = 'Bad Request',
+  Unauthorized = 'Unauthorized',
+  NotFound = 'Not Found',
+  Conflict = 'Conflict',
+  UnprocessableEntity = 'Unprocessable Entity',
+}
+
+export class BadRequestDto implements ErrorDto {
+  @ApiProperty({ example: 400 })
+  statusCode: number;
+
+  @ApiProperty({ example: Errors.BadRequest })
+  message: string;
+
+  @ApiProperty({ example: Errors.BadRequest })
+  error: string;
+}
+
+export class UnauthorizedDto implements ErrorDto {
   @ApiProperty({ example: 401 })
   statusCode: number;
 
-  @ApiProperty({ example: 'Unauthorized' })
+  @ApiProperty({ example: Errors.Unauthorized })
   message: string;
 
-  @ApiProperty({ example: 'Unauthorized' })
+  @ApiProperty({ example: Errors.Unauthorized })
   error: string;
 }
 
@@ -24,7 +43,7 @@ export class NotFoundDto implements ErrorDto {
   @ApiProperty({ example: 'Record not found' })
   message: string;
 
-  @ApiProperty({ example: 'Not Found' })
+  @ApiProperty({ example: Errors.NotFound })
   error: string;
 }
 
@@ -35,7 +54,7 @@ export class ConflictDto implements ErrorDto {
   @ApiProperty({ example: 'Record already exists' })
   message: string;
 
-  @ApiProperty({ example: 'Conflict' })
+  @ApiProperty({ example: Errors.Conflict })
   error: string;
 }
 
@@ -46,6 +65,6 @@ export class UnprocessableEntityDto implements ErrorDto {
   @ApiProperty({ example: 'Invalid input' })
   message: string;
 
-  @ApiProperty({ example: 'Unprocessable Entity' })
+  @ApiProperty({ example: Errors.UnprocessableEntity })
   error: string;
 }

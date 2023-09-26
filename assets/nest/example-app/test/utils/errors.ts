@@ -6,9 +6,6 @@ export const Unauthorized = (message = 'No authorization token was found') =>
 export const UnprocessableEntity = (message = 'Bad Data') =>
   new HttpException(422, message);
 
-export const TodoNotFound = (message = 'To-Do not found') =>
-  new HttpException(404, message);
-
 export const UserConflict = (message = 'User email already taken') =>
   new HttpException(409, message);
 

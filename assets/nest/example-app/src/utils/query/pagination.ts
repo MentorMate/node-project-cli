@@ -1,3 +1,6 @@
+import { Transform } from 'class-transformer';
+import { IsNumber, IsOptional } from 'class-validator';
+
 export const paginationDefaults = {
   page: 1,
   items: 20,
@@ -5,6 +8,18 @@ export const paginationDefaults = {
 
 export interface Pagination {
   page?: number;
+  items?: number;
+}
+
+export class PaginationDTO {
+  @IsOptional()
+  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
+  page?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   items?: number;
 }
 

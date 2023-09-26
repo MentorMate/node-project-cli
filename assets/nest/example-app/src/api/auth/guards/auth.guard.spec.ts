@@ -26,7 +26,7 @@ describe('AuthenticatedGuard', () => {
 
   describe('canActivate', () => {
     const testClaims: JwtClaims = {
-      sub: '1',
+      sub: 1,
       email: 'admin@admin.com',
     };
 

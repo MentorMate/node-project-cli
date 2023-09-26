@@ -36,7 +36,7 @@ export class AuthGuard implements CanActivate {
         token,
         this.configService.get('JWT_SECRET') as string,
       ) as Partial<JwtClaims>;
-      request.user = { sub, email } as JwtClaims;
+      request.user = { sub: Number(sub), email } as JwtClaims;
     } catch {
       throw new UnauthorizedException();
     }

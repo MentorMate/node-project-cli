@@ -22,6 +22,8 @@ module.exports = {
     '<rootDir>/.*spec.ts$',
     '<rootDir>/.*module.ts$',
     '<rootDir>/src/.*/index.ts$',
+    '<rootDir>/src/.*dto.ts$',
+    '<rootDir>/src/.*entity.ts$',
   ],
   coverageThreshold: {
     global: {

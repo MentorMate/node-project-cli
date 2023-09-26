@@ -21,5 +21,5 @@ export class UpdateTodoDto extends PartialType(CreateTodoDto) {
   @ApiProperty({ required: false, default: false })
   @IsOptional()
   @IsBoolean()
-  completed?: boolean;
+  completed?: boolean = false;
 }

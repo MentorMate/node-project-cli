@@ -1,5 +1,4 @@
 import { rethrowError } from '@utils/error';
-import { TodoUserNotFound } from '../error-mappings';
 import { NestKnexService } from '@database/nest-knex.service';
 import { Paginated, extractPagination } from '@utils/query/pagination';
 import { Todo } from '../entities/todo.entity';
@@ -10,13 +9,15 @@ import {
   FindOneTodoInput,
   UpdateTodoInput,
 } from '../interfaces/todos.interface';
+import { parseCount } from '@utils/query';
+import { TodoUserNotFound } from '../error-mappings/todo-user-not-found.error-mapping';
 
 @Injectable()
 export class TodosRepository {
   constructor(private readonly knex: NestKnexService) {}
 
   async create(input: CreateTodoInput): Promise<Todo> {
-    return await this.knex
+    return this.knex
       .connection('todos')
       .insert({ ...input.createTodoDto, userId: input.userId })
       .returning('*')
@@ -25,7 +26,7 @@ export class TodosRepository {
   }
 
   async findOne(input: FindOneTodoInput): Promise<Todo | undefined> {
-    return await this.knex
+    return this.knex
       .connection('todos')
       .where({ ...input })
       .first();
@@ -34,11 +35,7 @@ export class TodosRepository {
   async update(input: UpdateTodoInput): Promise<Todo | undefined> {
     const { id, userId, updateTodoDto } = input;
 
-    if (Object.keys(updateTodoDto).length === 0) {
-      return this.findOne({ id, userId });
-    }
-
-    return await this.knex
+    return this.knex
       .connection('todos')
       .where({ id, userId })
       .update(updateTodoDto)
@@ -48,7 +45,7 @@ export class TodosRepository {
   }
 
   async remove(input: FindOneTodoInput): Promise<number> {
-    return await this.knex
+    return this.knex
       .connection('todos')
       .where({ ...input })
       .del();
@@ -56,35 +53,34 @@ export class TodosRepository {
 
   async findAll(input: FindAllTodosInput): Promise<Paginated<Todo>> {
     const { userId, query } = input;
-    const qb = await this.knex.connection('todos').where({ userId });
+    const qb = this.knex.connection('todos').where({ userId });
 
-    //TODO: implement pagination
-    // const data = await qb.clone()
-    // .filter(query.filters, {
-    //   name: (qb: any, name: string) => qb.whereILike('name', `%${name}%`),
-    //   completed: (qb: any, completed: boolean) => qb.where({ completed }),
-    // })
-    // .sort(query.sorts, {
-    //   name: (qb: any, order: string) => qb.orderBy('name', order),
-    //   createdAt: (qb: any, order: string) => qb.orderBy('createdAt', order),
-    // })
-    // .paginate(query.pagination);
+    const data = await qb
+      .clone()
+      .filter(query.filters, {
+        name: (qb: any, name: string) => qb.whereILike('name', `%${name}%`),
+        completed: (qb: any, completed: boolean) => qb.where({ completed }),
+      })
+      .sort(query.sorts, {
+        name: (qb: any, order: string) => qb.orderBy('name', order),
+        createdAt: (qb: any, order: string) => qb.orderBy('createdAt', order),
+      })
+      .paginate(query.pagination);
 
-    // const total = await qb
-    //   .clone()
-    //   // .filter(query.filters, {
-    //   //   name: (qb: any, name: string) => qb.whereILike('name', `%${name}%`),
-    //   //   completed: (qb: any, completed: boolean) => qb.where({ completed }),
-    //   // })
-    //   .count()
-    //   .then(parseCount);
+    const total = await qb
+      .clone()
+      .filter(query.filters, {
+        name: (qb: any, name: string) => qb.whereILike('name', `%${name}%`),
+        completed: (qb: any, completed: boolean) => qb.where({ completed }),
+      })
+      .count()
+      .then(parseCount);
 
     return {
-      data: qb,
+      data: data,
       meta: {
         ...extractPagination(query.pagination),
-        // TODO: To be fixed with pagination implementation
-        total: 0,
+        total,
       },
     };
   }

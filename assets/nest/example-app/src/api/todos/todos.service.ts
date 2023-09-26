@@ -8,6 +8,7 @@ import {
   FindOneTodoInput,
   UpdateTodoInput,
 } from './interfaces/todos.interface';
+import { definedOrNotFound, updatedOrNotFound } from '@utils/query';
 
 @Injectable()
 export class TodosService {
@@ -24,15 +25,21 @@ export class TodosService {
     return this.todos.findAll(input);
   }
 
-  findOne(input: FindOneTodoInput) {
-    return this.todos.findOne(input);
+  findOne(input: FindOneTodoInput): Promise<Todo> {
+    return this.todos.findOne(input).then(definedOrNotFound('To-Do not found'));
   }
 
-  update(input: UpdateTodoInput) {
-    return this.todos.update(input);
+  update(input: UpdateTodoInput): Promise<Todo> {
+    const { id, userId, updateTodoDto } = input;
+
+    if (Object.keys(updateTodoDto).length === 0) {
+      return this.findOne({ id, userId });
+    }
+
+    return this.todos.update(input).then(definedOrNotFound('To-Do not found'));
   }
 
-  remove(input: FindOneTodoInput) {
-    return this.todos.remove(input);
+  remove(input: FindOneTodoInput): Promise<number> {
+    return this.todos.remove(input).then(updatedOrNotFound('To-Do not found'));
   }
 }

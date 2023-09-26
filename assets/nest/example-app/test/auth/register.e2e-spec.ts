@@ -58,7 +58,9 @@ describe('POST /auth/login', () => {
             url: '/auth/register',
             payload: credentials,
           })
-          .then(expectError(UserConflict));
+          .then(() => {
+            expectError(UserConflict);
+          });
       });
     });
   });
@@ -74,7 +76,9 @@ describe('POST /auth/login', () => {
             password: 'test',
           },
         })
-        .then(expectError(UnprocessableEntity));
+        .then(() => {
+          expectError(UnprocessableEntity);
+        });
     });
   });
 });

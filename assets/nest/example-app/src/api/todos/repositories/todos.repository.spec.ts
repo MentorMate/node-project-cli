@@ -7,20 +7,35 @@ import {
   FindOneTodoInput,
   UpdateTodoInput,
 } from '../interfaces/todos.interface';
-import { exampleUser, todo } from '../__mocks__/todos.mocks';
+import { mockedUser, todo } from '../__mocks__/todos.mocks';
 
 describe('TodosRepository', () => {
   let todosRepository: TodosRepository;
 
   const first = jest.fn(() => Promise.resolve({}));
   const del = jest.fn(() => Promise.resolve({}));
-
   const returning = jest.fn().mockImplementation(() => Promise.resolve([]));
+  const paginate = jest.fn(() => Promise.resolve({}));
+  const count = jest.fn(() => Promise.resolve({}));
+
+  const sort = jest.fn().mockImplementation(() => ({
+    paginate,
+  }));
+
+  const filter = jest.fn().mockImplementation(() => ({
+    sort,
+    count,
+  }));
+
+  const clone = jest.fn().mockImplementation(() => ({
+    filter,
+  }));
 
   const where = jest.fn().mockImplementation(() => ({
     first,
     update,
     del,
+    clone,
   }));
 
   const insert = jest.fn().mockImplementation(() => ({
@@ -57,7 +72,7 @@ describe('TodosRepository', () => {
         note: todo.note,
         completed: todo.completed,
       },
-      userId: +exampleUser.user.sub,
+      userId: mockedUser.user.sub,
     };
 
     returning.mockImplementationOnce(() => Promise.resolve([todo]));
@@ -74,7 +89,7 @@ describe('TodosRepository', () => {
   it('findOne - find a todo', async () => {
     const todoInput: FindOneTodoInput = {
       id: todo.id,
-      userId: +exampleUser.user.sub,
+      userId: mockedUser.user.sub,
     };
 
     first.mockImplementationOnce(() => Promise.resolve([todo]));
@@ -92,7 +107,7 @@ describe('TodosRepository', () => {
         updateTodoDto: {
           name: 'New ToDo Name',
         },
-        userId: +exampleUser.user.sub,
+        userId: mockedUser.user.sub,
       };
 
       const updatedTodo = {
@@ -107,32 +122,16 @@ describe('TodosRepository', () => {
       expect(result).toStrictEqual(updatedTodo);
       expect(where).toHaveBeenCalledWith({
         id: todoInput.id,
-        userId: +exampleUser.user.sub,
+        userId: mockedUser.user.sub,
       });
       expect(update).toHaveBeenCalledWith(todoInput.updateTodoDto);
-    });
-
-    it('update - update a todo with empty input', async () => {
-      const todoInput: UpdateTodoInput = {
-        id: todo.id,
-        updateTodoDto: {},
-        userId: +exampleUser.user.sub,
-      };
-
-      jest
-        .spyOn(todosRepository, 'findOne')
-        .mockImplementationOnce(async () => todo);
-
-      const result = await todosRepository.update(todoInput);
-
-      expect(result).toStrictEqual(todo);
     });
   });
 
   it('remove - delete a todo', async () => {
     const todoInput: FindOneTodoInput = {
       id: todo.id,
-      userId: +exampleUser.user.sub,
+      userId: mockedUser.user.sub,
     };
 
     del.mockImplementationOnce(() => Promise.resolve(1));
@@ -143,13 +142,14 @@ describe('TodosRepository', () => {
     expect(where).toHaveBeenCalledWith(todoInput);
   });
 
-  it('findAll - delete a todo', async () => {
+  it('findAll - find all todos for the user', async () => {
     const todoInput: FindAllTodosInput = {
       query: {},
-      userId: +exampleUser.user.sub,
+      userId: mockedUser.user.sub,
     };
 
-    where.mockImplementationOnce(() => Promise.resolve([todo]));
+    paginate.mockImplementationOnce(() => Promise.resolve([todo]));
+    count.mockImplementationOnce(() => Promise.resolve([{ count: 1 }]));
 
     const result = await todosRepository.findAll(todoInput);
 
@@ -158,9 +158,8 @@ describe('TodosRepository', () => {
       meta: {
         page: 1,
         items: 20,
-        total: 0,
+        total: 1,
       },
     });
-    expect(where).toHaveBeenCalledWith({ userId: todoInput.userId });
   });
 });

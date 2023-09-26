@@ -4,6 +4,7 @@ import { AuthService, JwtService, PasswordService } from './services';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from '@api/users/users.module';
 import { AuthGuard } from './guards/auth.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 export const AuthModuleMetadata = {
   imports: [ConfigModule, UsersModule],
@@ -12,7 +13,7 @@ export const AuthModuleMetadata = {
     PasswordService,
     AuthService,
     {
-      provide: 'APP_GUARD',
+      provide: APP_GUARD,
       useClass: AuthGuard,
     },
   ],

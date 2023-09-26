@@ -1,5 +1,5 @@
 export interface JwtClaims {
-  sub: string;
+  sub: number;
   email: string;
 }
 

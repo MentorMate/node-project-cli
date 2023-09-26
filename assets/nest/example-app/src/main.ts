@@ -1,3 +1,4 @@
+import '@database/extensions/knex/register';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -9,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
+import { QueryParamsToJsonParser } from '@utils/interceptors/query-params-to-json-parser.interceptor';
 
 async function bootstrap() {
   // create the app
@@ -29,10 +31,13 @@ async function bootstrap() {
   app.register(compression);
 
   // enable validation globally
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   // map application level errors to http errors
-  app.useGlobalInterceptors(new ServiceToHttpErrorsInterceptor());
+  app.useGlobalInterceptors(
+    new ServiceToHttpErrorsInterceptor(),
+    new QueryParamsToJsonParser(),
+  );
 
   // setup graceful shutdown
   app.enableShutdownHooks();

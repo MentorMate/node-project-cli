@@ -32,7 +32,7 @@ export class AuthService implements AuthServiceInterface {
     });
 
     return {
-      idToken: this.jwt.sign({ sub: user.id.toString(), email }),
+      idToken: this.jwt.sign({ sub: user.id, email }),
     };
   }
 
@@ -52,14 +52,14 @@ export class AuthService implements AuthServiceInterface {
       return;
     }
 
-    const token = this.jwt.sign({ sub: user.id.toString(), email });
+    const token = this.jwt.sign({ sub: user.id, email });
 
     if (!token) {
       throw new UnprocessableEntityException('Invalid email or password');
     }
 
     return {
-      idToken: this.jwt.sign({ sub: user.id.toString(), email }),
+      idToken: this.jwt.sign({ sub: user.id, email }),
     };
   }
 }
