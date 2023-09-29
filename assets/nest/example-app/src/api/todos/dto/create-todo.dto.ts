@@ -9,7 +9,7 @@ export class CreateTodoDto {
   @MaxLength(255)
   name: string;
 
-  @ApiProperty({ required: false, nullable: true })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsOptional()
   @Trim()
   @MinLength(1)

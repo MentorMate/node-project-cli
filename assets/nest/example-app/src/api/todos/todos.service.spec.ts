@@ -8,9 +8,10 @@ import {
   mockedUser,
   getPaginatedResponse,
   todo,
-  updateTodoInput,
+  updateTodoDtoInput,
 } from './__mocks__/todos.mocks';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Errors } from '@utils/api/response';
 
 describe('TodosService', () => {
   let service: TodosService;
@@ -44,7 +45,7 @@ describe('TodosService', () => {
         .mockImplementationOnce(async () => todo);
 
       await expect(service.create(createTodoInput)).rejects.toThrowError(
-        new UnprocessableEntityException('Already exists'),
+        new UnprocessableEntityException(Errors.UnprocessableEntity),
       );
     });
   });
@@ -77,7 +78,7 @@ describe('TodosService', () => {
 
   describe('update', () => {
     it('should update single todo', async () => {
-      const updatedTodo = { ...todo, ...updateTodoInput };
+      const updatedTodo = { ...todo, ...updateTodoDtoInput };
 
       jest
         .spyOn(repository, 'update')
@@ -87,7 +88,7 @@ describe('TodosService', () => {
         await service.update({
           id: todo.id,
           userId,
-          updateTodoDto: updateTodoInput,
+          updateTodoDto: updateTodoDtoInput,
         }),
       ).toStrictEqual(updatedTodo);
     });

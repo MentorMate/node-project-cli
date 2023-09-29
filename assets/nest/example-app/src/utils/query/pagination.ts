@@ -11,7 +11,7 @@ export interface Pagination {
   items?: number;
 }
 
-export class PaginationDTO {
+export class PaginationDto {
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => parseInt(value))

@@ -72,12 +72,14 @@ describe('AuthService', () => {
   describe('login', () => {
     describe('when the email is not registered', () => {
       it('should return undefined', async () => {
-        expect(
-          await auth.login({
+        await expect(
+          auth.login({
             email: 'notregistered@email.com',
             password: '123',
           }),
-        ).toBeUndefined();
+        ).rejects.toThrowError(
+          new UnprocessableEntityException('Invalid email or password'),
+        );
       });
     });
 
@@ -90,12 +92,14 @@ describe('AuthService', () => {
 
       describe('and the password does not match', () => {
         it('should return undefined', async () => {
-          expect(
-            await auth.login({
+          await expect(
+            auth.login({
               email: creds.email,
               password: 'not-my-password',
             }),
-          ).toBeUndefined();
+          ).rejects.toThrowError(
+            new UnprocessableEntityException('Invalid email or password'),
+          );
         });
       });
 
@@ -103,16 +107,6 @@ describe('AuthService', () => {
         it('should return jwt tokens', async () => {
           expect(await auth.login(creds)).toEqual(
             expect.objectContaining({ idToken: expect.any(String) }),
-          );
-        });
-      });
-
-      describe('and the email or password are not valid', () => {
-        it('should throw an UnprocessableEntity error with message "Invalid email or password"', async () => {
-          jest.spyOn(jwt, 'sign').mockReturnValue('');
-
-          await expect(auth.login(creds)).rejects.toThrowError(
-            new UnprocessableEntityException('Invalid email or password'),
           );
         });
       });

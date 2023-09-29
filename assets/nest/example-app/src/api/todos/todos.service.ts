@@ -13,6 +13,7 @@ import {
   UpdateTodoInput,
 } from './interfaces/todos.interface';
 import { definedOrNotFound, updatedOrNotFound } from '@utils/query';
+import { Errors } from '@utils/api/response';
 
 @Injectable()
 export class TodosService {
@@ -30,7 +31,7 @@ export class TodosService {
     const todo = await this.todos.findOne({ userId, name });
 
     if (todo) {
-      throw new UnprocessableEntityException('Already exists');
+      throw new UnprocessableEntityException(Errors.UnprocessableEntity);
     }
 
     return this.todos.create(input);
@@ -51,10 +52,10 @@ export class TodosService {
       return this.findOne({ id, userId });
     }
 
-    return this.todos.update(input).then(definedOrNotFound('To-Do not found'));
+    return this.todos.update(input).then(definedOrNotFound(Errors.NotFound));
   }
 
   remove(input: FindOneTodoInput): Promise<number> {
-    return this.todos.remove(input).then(updatedOrNotFound('To-Do not found'));
+    return this.todos.remove(input).then(updatedOrNotFound(Errors.NotFound));
   }
 }

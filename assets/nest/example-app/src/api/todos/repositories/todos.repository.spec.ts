@@ -2,12 +2,13 @@ import { Test } from '@nestjs/testing';
 import { NestKnexService } from '@database/nest-knex.service';
 import { TodosRepository } from './todos.repository';
 import {
-  CreateTodoInput,
-  FindAllTodosInput,
-  FindOneTodoInput,
-  UpdateTodoInput,
-} from '../interfaces/todos.interface';
-import { mockedUser, todo } from '../__mocks__/todos.mocks';
+  createTodoInput,
+  findAllTodosInput,
+  findOneTodoInput,
+  mockedUser,
+  todo,
+  updateTodoInput,
+} from '../__mocks__/todos.mocks';
 
 describe('TodosRepository', () => {
   let todosRepository: TodosRepository;
@@ -66,106 +67,69 @@ describe('TodosRepository', () => {
   });
 
   it('create - create a todo', async () => {
-    const todoInput: CreateTodoInput = {
-      createTodoDto: {
-        name: todo.name,
-        note: todo.note,
-        completed: todo.completed,
-      },
-      userId: mockedUser.user.sub,
-    };
-
     returning.mockImplementationOnce(() => Promise.resolve([todo]));
 
-    const result = await todosRepository.create(todoInput);
+    const result = await todosRepository.create(createTodoInput);
 
     expect(result).toBe(todo);
     expect(insert).toHaveBeenCalledWith({
-      ...todoInput.createTodoDto,
-      userId: todoInput.userId,
+      ...createTodoInput.createTodoDto,
+      userId: createTodoInput.userId,
     });
   });
 
   it('findOne - find a todo', async () => {
-    const todoInput: FindOneTodoInput = {
-      id: todo.id,
-      userId: mockedUser.user.sub,
-    };
-
     first.mockImplementationOnce(() => Promise.resolve([todo]));
 
-    const result = await todosRepository.findOne(todoInput);
+    const result = await todosRepository.findOne(findOneTodoInput);
 
     expect(result).toStrictEqual([todo]);
-    expect(where).toHaveBeenCalledWith(todoInput);
+    expect(where).toHaveBeenCalledWith(findOneTodoInput);
   });
 
   it('findOneOrFail - find a todo', async () => {
-    const todoInput: FindOneTodoInput = {
-      id: todo.id,
-      userId: mockedUser.user.sub,
-    };
-
     first.mockImplementationOnce(() => Promise.resolve([todo]));
 
-    const result = await todosRepository.findOneOrFail(todoInput);
+    const result = await todosRepository.findOneOrFail(findOneTodoInput);
 
     expect(result).toStrictEqual([todo]);
-    expect(where).toHaveBeenCalledWith(todoInput);
+    expect(where).toHaveBeenCalledWith(findOneTodoInput);
   });
 
   describe('update', () => {
     it('update - update a todo', async () => {
-      const todoInput: UpdateTodoInput = {
-        id: todo.id,
-        updateTodoDto: {
-          name: 'New ToDo Name',
-        },
-        userId: mockedUser.user.sub,
-      };
-
       const updatedTodo = {
         ...todo,
-        name: todoInput.updateTodoDto.name,
+        name: updateTodoInput.updateTodoDto.name,
       };
 
       returning.mockImplementationOnce(() => Promise.resolve([updatedTodo]));
 
-      const result = await todosRepository.update(todoInput);
+      const result = await todosRepository.update(updateTodoInput);
 
       expect(result).toStrictEqual(updatedTodo);
       expect(where).toHaveBeenCalledWith({
-        id: todoInput.id,
+        id: updateTodoInput.id,
         userId: mockedUser.user.sub,
       });
-      expect(update).toHaveBeenCalledWith(todoInput.updateTodoDto);
+      expect(update).toHaveBeenCalledWith(updateTodoInput.updateTodoDto);
     });
   });
 
   it('remove - delete a todo', async () => {
-    const todoInput: FindOneTodoInput = {
-      id: todo.id,
-      userId: mockedUser.user.sub,
-    };
-
     del.mockImplementationOnce(() => Promise.resolve(1));
 
-    const result = await todosRepository.remove(todoInput);
+    const result = await todosRepository.remove(findOneTodoInput);
 
     expect(result).toBe(1);
-    expect(where).toHaveBeenCalledWith(todoInput);
+    expect(where).toHaveBeenCalledWith(findOneTodoInput);
   });
 
   it('findAll - find all todos for the user', async () => {
-    const todoInput: FindAllTodosInput = {
-      query: {},
-      userId: mockedUser.user.sub,
-    };
-
     paginate.mockImplementationOnce(() => Promise.resolve([todo]));
     count.mockImplementationOnce(() => Promise.resolve([{ count: 1 }]));
 
-    const result = await todosRepository.findAll(todoInput);
+    const result = await todosRepository.findAll(findAllTodosInput);
 
     expect(result).toStrictEqual({
       data: [todo],

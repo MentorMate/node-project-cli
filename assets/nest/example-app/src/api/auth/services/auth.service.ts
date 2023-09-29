@@ -40,7 +40,7 @@ export class AuthService implements AuthServiceInterface {
     const user = await this.users.findByEmail(email);
 
     if (!user) {
-      return;
+      throw new UnprocessableEntityException('Invalid email or password');
     }
 
     const passwordMatches = await this.password.compare(
@@ -49,17 +49,13 @@ export class AuthService implements AuthServiceInterface {
     );
 
     if (!passwordMatches) {
-      return;
+      throw new UnprocessableEntityException('Invalid email or password');
     }
 
     const token = this.jwt.sign({ sub: user.id, email });
 
-    if (!token) {
-      throw new UnprocessableEntityException('Invalid email or password');
-    }
-
     return {
-      idToken: this.jwt.sign({ sub: user.id, email }),
+      idToken: token,
     };
   }
 }

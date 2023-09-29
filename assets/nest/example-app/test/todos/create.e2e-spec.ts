@@ -10,6 +10,7 @@ import { JwtToken } from '@api/auth/entities';
 import { expectError } from '../utils/expect-error';
 import { Unauthorized, UnprocessableEntity } from '../utils/errors';
 import { getTodoPayload } from './utils/get-todo-payload';
+import { createTodo } from './utils/create-todo';
 
 describe('POST /v1/todos', () => {
   const credentials = getUserCredentials();
@@ -24,7 +25,7 @@ describe('POST /v1/todos', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     await app.init();
@@ -53,6 +54,26 @@ describe('POST /v1/todos', () => {
             expect(responseBody.name).toEqual(todoPayload.name);
             expect(responseBody.note).toEqual(todoPayload.note);
             expect(responseBody.completed).toEqual(todoPayload.completed);
+          });
+      });
+
+      it('should throw error if todo already exists', async () => {
+        const { name, note, completed } = await createTodo(
+          app,
+          jwtTokens.idToken
+        );
+
+        await app
+          .inject({
+            method: 'POST',
+            url: '/v1/todos',
+            headers: {
+              authorization: `Bearer ${jwtTokens.idToken}`,
+            },
+            payload: { name, note, completed },
+          })
+          .then(() => {
+            expect(expectError(UnprocessableEntity));
           });
       });
     });

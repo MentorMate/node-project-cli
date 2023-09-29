@@ -1,4 +1,4 @@
-import { PaginationDTO } from '@utils/query/pagination';
+import { PaginationDto } from '@utils/query/pagination';
 import { SortOrder } from '@utils/query';
 import {
   Allow,
@@ -11,8 +11,9 @@ import {
 } from 'class-validator';
 import { Transform, Type, plainToClass } from 'class-transformer';
 import { Trim } from '@utils/class-transformers';
+import { ApiProperty } from '@nestjs/swagger';
 
-class FiltersDTO {
+class FiltersDto {
   @IsOptional()
   @Trim()
   @MinLength(1)
@@ -23,10 +24,14 @@ class FiltersDTO {
   completed?: boolean;
 }
 
-class SortsDTO {
+enum TodosSortBy {
+  Name = 'name',
+  CreatedAt = 'createdAt',
+}
+class TodosSortByDto {
   @Trim()
-  @IsEnum(['name', 'createdAt'])
-  column: 'name' | 'createdAt';
+  @IsEnum(TodosSortBy)
+  column: TodosSortBy;
 
   @IsOptional()
   @IsEnum(SortOrder)
@@ -34,23 +39,39 @@ class SortsDTO {
   order?: SortOrder | undefined;
 }
 
-export class FindAllTodosQueryDTO {
-  @Type(() => FiltersDTO)
-  @Transform(({ value }) => plainToClass(FiltersDTO, JSON.parse(value)))
+export class FindAllTodosQueryDto {
+  @ApiProperty({
+    type: FiltersDto,
+    required: false,
+    example: { name: 'todoName', completed: true },
+  })
+  @Type(() => FiltersDto)
+  @Transform(({ value }) => plainToClass(FiltersDto, JSON.parse(value)))
   @ValidateNested()
   @IsOptional()
-  filters?: FiltersDTO;
+  filters?: FiltersDto;
 
-  @Type(() => SortsDTO)
-  @Transform(({ value }) => plainToClass(SortsDTO, JSON.parse(value)))
+  @ApiProperty({
+    type: TodosSortByDto,
+    required: false,
+    isArray: true,
+    example: [{ column: 'name', order: SortOrder.Asc }],
+  })
+  @Type(() => TodosSortByDto)
+  @Transform(({ value }) => plainToClass(TodosSortByDto, JSON.parse(value)))
   @ValidateNested({ each: true })
   @IsOptional()
   @IsArray()
-  sorts?: SortsDTO[];
+  sorts?: TodosSortByDto[];
 
-  @Type(() => PaginationDTO)
-  @Transform(({ value }) => plainToClass(PaginationDTO, JSON.parse(value)))
+  @ApiProperty({
+    type: PaginationDto,
+    required: false,
+    example: { page: 1, items: 2 },
+  })
+  @Type(() => PaginationDto)
+  @Transform(({ value }) => plainToClass(PaginationDto, JSON.parse(value)))
   @ValidateNested()
   @IsOptional()
-  pagination?: PaginationDTO;
+  pagination?: PaginationDto;
 }

@@ -1,6 +1,6 @@
 import { rethrowError } from '@utils/error';
 import { NestKnexService } from '@database/nest-knex.service';
-import { Paginated, extractPagination } from '@utils/query/pagination';
+import { Paginated } from '@utils/query/pagination';
 import { Todo } from '../entities/todo.entity';
 import { Injectable } from '@nestjs/common';
 import {
@@ -11,6 +11,7 @@ import {
 } from '../interfaces/todos.interface';
 import { definedOrNotFound, parseCount } from '@utils/query';
 import { TodoUserNotFound } from '../error-mappings/todo-user-not-found.error-mapping';
+import { Errors, paginatedResponse } from '@utils/api/response';
 
 @Injectable()
 export class TodosRepository {
@@ -37,7 +38,7 @@ export class TodosRepository {
       .connection('todos')
       .where({ ...input })
       .first()
-      .then(definedOrNotFound('To-Do not found'));
+      .then(definedOrNotFound(Errors.NotFound));
   }
 
   async update(input: UpdateTodoInput): Promise<Todo | undefined> {
@@ -84,12 +85,6 @@ export class TodosRepository {
       .count()
       .then(parseCount);
 
-    return {
-      data: data,
-      meta: {
-        ...extractPagination(query.pagination),
-        total,
-      },
-    };
+    return paginatedResponse(data, total, query.pagination);
   }
 }
