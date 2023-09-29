@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Paginated, Pagination, extractPagination } from '@utils/query';
 
-interface ErrorDTO {
+interface ErrorDto {
   statusCode: number;
   message: string;
   error: string;
@@ -18,12 +18,12 @@ export enum Errors {
 export const paginatedResponse = <T>(
   data: T[],
   total: number,
-  pagination?: Pagination,
+  pagination?: Pagination
 ): Paginated<T> => {
   return { data, meta: { ...extractPagination(pagination), total } };
 };
 
-export class BadRequestDto implements ErrorDTO {
+export class BadRequestDto implements ErrorDto {
   @ApiProperty({ example: 400 })
   statusCode: number;
 
@@ -34,7 +34,7 @@ export class BadRequestDto implements ErrorDTO {
   error: string;
 }
 
-export class UnauthorizedDto implements ErrorDTO {
+export class UnauthorizedDto implements ErrorDto {
   @ApiProperty({ example: 401 })
   statusCode: number;
 
@@ -45,7 +45,7 @@ export class UnauthorizedDto implements ErrorDTO {
   error: string;
 }
 
-export class NotFoundDto implements ErrorDTO {
+export class NotFoundDto implements ErrorDto {
   @ApiProperty({ example: 404 })
   statusCode: number;
 
@@ -56,7 +56,7 @@ export class NotFoundDto implements ErrorDTO {
   error: string;
 }
 
-export class ConflictDto implements ErrorDTO {
+export class ConflictDto implements ErrorDto {
   @ApiProperty({ example: 409 })
   statusCode: number;
 
@@ -67,7 +67,7 @@ export class ConflictDto implements ErrorDTO {
   error: string;
 }
 
-export class UnprocessableEntityDto implements ErrorDTO {
+export class UnprocessableEntityDto implements ErrorDto {
   @ApiProperty({ example: 422 })
   statusCode: number;
 
