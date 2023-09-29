@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "node",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -17,11 +18,17 @@
     "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
     "paths": {
+      "@api/*": ["src/api/*"],
+      "@database": ["src/database"],
+      "@database/*": ["src/database/*"],
+      "@extensions/*": ["src/extensions/*"],
+      "@middleware": ["src/middleware"],
       "@utils/*": ["src/utils/*"]
     }
   },
   "ts-node": {
-    "require": ["dotenv/config"]
+    "require": ["tsconfig-paths/register", "dotenv/config"]
   }
 }
