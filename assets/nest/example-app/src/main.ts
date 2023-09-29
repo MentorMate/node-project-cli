@@ -36,8 +36,8 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
-
-  if (configService.get('NODE_ENV') === 'development') {
+  
+  if (configService.get('NODE_ENV') !== 'production') {
     app.useGlobalInterceptors(new RequestLoggingInterceptor());
   }
 

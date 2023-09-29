@@ -12,20 +12,30 @@ export class RequestLoggingInterceptor implements NestInterceptor {
   private logger = new Logger('RequestLoggingInterceptor');
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const { id, url, body, ip, method, headers } = context
+    const timestamp = new Date().toISOString();
+    const startTime = process.hrtime();
+
+    const { url, body, method, headers, ip } = context
       .switchToHttp()
       .getRequest();
 
-    return next
-      .handle()
-      .pipe(
-        tap((response) =>
-          this.logger.log(
-            `${id} ${method} ${url} ${JSON.stringify(
-              body,
-            )} ${ip} ${JSON.stringify(headers)} ${JSON.stringify(response)}`,
-          ),
-        ),
-      );
+    return next.handle().pipe(
+      tap((response) => {
+        const endTime = process.hrtime(startTime);
+        const duration = endTime[0] * 1000 + endTime[1] / 1000000;
+        const logMsg = {
+          timestamp,
+          duration: `${duration}ms`,
+          ip,
+          headers,
+          method,
+          url,
+          body,
+          response,
+        };
+
+        this.logger.log(JSON.stringify(logMsg));
+      }),
+    );
   }
 }
