@@ -100,6 +100,20 @@ describe('TodosRepository', () => {
     expect(where).toHaveBeenCalledWith(todoInput);
   });
 
+  it('findOneOrFail - find a todo', async () => {
+    const todoInput: FindOneTodoInput = {
+      id: todo.id,
+      userId: mockedUser.user.sub,
+    };
+
+    first.mockImplementationOnce(() => Promise.resolve([todo]));
+
+    const result = await todosRepository.findOneOrFail(todoInput);
+
+    expect(result).toStrictEqual([todo]);
+    expect(where).toHaveBeenCalledWith(todoInput);
+  });
+
   describe('update', () => {
     it('update - update a todo', async () => {
       const todoInput: UpdateTodoInput = {

@@ -9,7 +9,7 @@ import {
   FindOneTodoInput,
   UpdateTodoInput,
 } from '../interfaces/todos.interface';
-import { parseCount } from '@utils/query';
+import { definedOrNotFound, parseCount } from '@utils/query';
 import { TodoUserNotFound } from '../error-mappings/todo-user-not-found.error-mapping';
 
 @Injectable()
@@ -30,6 +30,14 @@ export class TodosRepository {
       .connection('todos')
       .where({ ...input })
       .first();
+  }
+
+  async findOneOrFail(input: FindOneTodoInput): Promise<Todo> {
+    return this.knex
+      .connection('todos')
+      .where({ ...input })
+      .first()
+      .then(definedOrNotFound('To-Do not found'));
   }
 
   async update(input: UpdateTodoInput): Promise<Todo | undefined> {

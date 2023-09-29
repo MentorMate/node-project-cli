@@ -3,14 +3,13 @@ import { SortOrder } from '@utils/query';
 import {
   Allow,
   IsArray,
-  IsBoolean,
   IsEnum,
   IsOptional,
   MaxLength,
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Transform, Type, plainToClass } from 'class-transformer';
 import { Trim } from '@utils/class-transformers';
 
 class FiltersDTO {
@@ -21,8 +20,6 @@ class FiltersDTO {
   name?: string;
 
   @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true')
   completed?: boolean;
 }
 
@@ -39,18 +36,20 @@ class SortsDTO {
 
 export class FindAllTodosQueryDTO {
   @Type(() => FiltersDTO)
+  @Transform(({ value }) => plainToClass(FiltersDTO, JSON.parse(value)))
   @ValidateNested()
   @IsOptional()
   filters?: FiltersDTO;
 
   @Type(() => SortsDTO)
+  @Transform(({ value }) => plainToClass(SortsDTO, JSON.parse(value)))
   @ValidateNested({ each: true })
   @IsOptional()
   @IsArray()
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   sorts?: SortsDTO[];
 
   @Type(() => PaginationDTO)
+  @Transform(({ value }) => plainToClass(PaginationDTO, JSON.parse(value)))
   @ValidateNested()
   @IsOptional()
   pagination?: PaginationDTO;

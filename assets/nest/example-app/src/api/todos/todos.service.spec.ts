@@ -10,6 +10,7 @@ import {
   todo,
   updateTodoInput,
 } from './__mocks__/todos.mocks';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 describe('TodosService', () => {
   let service: TodosService;
@@ -28,10 +29,23 @@ describe('TodosService', () => {
   });
 
   describe('create', () => {
-    it('should return todos', async () => {
+    it('should return created todo', async () => {
+      jest
+        .spyOn(repository, 'findOne')
+        .mockImplementationOnce(async () => undefined);
       jest.spyOn(repository, 'create').mockImplementationOnce(async () => todo);
 
       expect(await service.create(createTodoInput)).toStrictEqual(todo);
+    });
+
+    it('should throw error if todo with the same name exists', async () => {
+      jest
+        .spyOn(repository, 'findOne')
+        .mockImplementationOnce(async () => todo);
+
+      await expect(service.create(createTodoInput)).rejects.toThrowError(
+        new UnprocessableEntityException('Already exists'),
+      );
     });
   });
 
@@ -52,7 +66,7 @@ describe('TodosService', () => {
   describe('findOne', () => {
     it('should return single todo', async () => {
       jest
-        .spyOn(repository, 'findOne')
+        .spyOn(repository, 'findOneOrFail')
         .mockImplementationOnce(async () => todo);
 
       expect(await service.findOne({ id: todo.id, userId })).toStrictEqual(
@@ -79,9 +93,7 @@ describe('TodosService', () => {
     });
 
     it('should return todo if there is no data to update', async () => {
-      jest
-        .spyOn(repository, 'findOne')
-        .mockImplementationOnce(async () => todo);
+      jest.spyOn(service, 'findOne').mockImplementationOnce(async () => todo);
 
       expect(
         await service.update({

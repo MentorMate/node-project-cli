@@ -66,8 +66,9 @@ export class TodosController {
   findOne(
     @Param('id', ParseIntPipe) id: number,
     @Req() { user: { sub } }: UserData,
+    @Query() query: UpdateTodoDto,
   ): Promise<Todo> {
-    return this.todosService.findOne({ id, userId: sub });
+    return this.todosService.findOne({ id, userId: sub, ...query });
   }
 
   @ApiBody({ type: UpdateTodoDto })

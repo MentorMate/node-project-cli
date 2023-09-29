@@ -12,7 +12,6 @@ module.exports = {
     '<rootDir>/src/.*/index.ts$',
     '<rootDir>/src/.*dto.ts$',
     '<rootDir>/src/.*entity.ts$',
-    '<rootDir>/src/.*repository.ts$',
     '<rootDir>/src/.*controller.ts$',
     '<rootDir>/src/utils/class-transformers/.*',
     '<rootDir>/src/.*interceptor.ts$',

@@ -7,7 +7,7 @@ interface UserData {
 }
 
 interface TodoId {
-  id: number;
+  id?: number;
 }
 
 export interface CreateTodoInput extends UserData {
@@ -18,7 +18,7 @@ export interface FindAllTodosInput extends UserData {
   query: FindAllTodosQueryDTO;
 }
 
-export interface FindOneTodoInput extends UserData, TodoId {}
+export interface FindOneTodoInput extends UserData, TodoId, UpdateTodoDto {}
 
 export interface UpdateTodoInput extends FindOneTodoInput {
   updateTodoDto: UpdateTodoDto;

@@ -1,4 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { TodosRepository } from './repositories/todos.repository';
 import { Paginated } from '@utils/query/pagination';
 import { Todo } from './entities/todo.entity';
@@ -17,7 +21,18 @@ export class TodosService {
     private readonly todos: TodosRepository,
   ) {}
 
-  create(input: CreateTodoInput): Promise<Todo> {
+  async create(input: CreateTodoInput): Promise<Todo> {
+    const {
+      userId,
+      createTodoDto: { name },
+    } = input;
+
+    const todo = await this.todos.findOne({ userId, name });
+
+    if (todo) {
+      throw new UnprocessableEntityException('Already exists');
+    }
+
     return this.todos.create(input);
   }
 
@@ -26,7 +41,7 @@ export class TodosService {
   }
 
   findOne(input: FindOneTodoInput): Promise<Todo> {
-    return this.todos.findOne(input).then(definedOrNotFound('To-Do not found'));
+    return this.todos.findOneOrFail(input);
   }
 
   update(input: UpdateTodoInput): Promise<Todo> {
