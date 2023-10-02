@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import Knex from 'knex';
-import { filter, sort, paginate } from '@database/query-builder';
+import { filter, sort } from '@database/query-builder';
 import { FilterMap, Pagination, Sort, SorterMap } from '@utils/query';
 
 declare module 'knex' {
@@ -83,9 +83,9 @@ export const register = () => {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  if (!Knex.paginate) {
-    Knex.QueryBuilder.extend('paginate', function (pagination) {
-      return paginate(this, pagination);
-    });
-  }
+  // if (!Knex.paginate) {
+  //   Knex.QueryBuilder.extend('paginate', function (pagination) {
+  //     return paginate(this, pagination);
+  //   });
+  // }
 };

@@ -39,11 +39,3 @@ export const sort = <Model extends {}, SortColumn extends string>(
     qb,
   );
 
-export const paginate = <QB extends Knex.QueryBuilder>(
-  qb: QB,
-  pagination?: Pagination,
-) => {
-  const { page, items } = extractPagination(pagination);
-
-  return qb.offset((page - 1) * items).limit(items);
-};

@@ -31,7 +31,7 @@ import { FindAllTodosQueryDto } from './dto/find-all-todos-query.dto';
 @ApiTags('Todos')
 @Controller('v1/todos')
 export class TodosController {
-  constructor(private readonly todosService: TodosService) {}
+  constructor(private readonly todosService: TodosService) { }
 
   @ApiBody({ type: CreateTodoDto })
   @ApiCreatedResponse({ type: Todo })
@@ -69,7 +69,7 @@ export class TodosController {
     @Param('id', ParseIntPipe) id: number,
     @Req() { user: { sub } }: UserData,
   ): Promise<Todo> {
-    return this.todosService.findOne({ id, userId: sub });
+    return this.todosService.findOneOrFail({ id, userId: sub });
   }
 
   @ApiBody({ type: UpdateTodoDto })

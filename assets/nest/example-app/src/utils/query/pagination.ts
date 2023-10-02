@@ -1,35 +1,18 @@
-import { Transform } from 'class-transformer';
-import { IsNumber, IsOptional } from 'class-validator';
-
 export const paginationDefaults = {
-  page: 1,
-  items: 20,
+  pageNumber: 1,
+  pageSize: 20,
 };
 
 export interface Pagination {
-  page?: number;
-  items?: number;
-}
-
-export class PaginationDto {
-  @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value))
-  page?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value))
-  items?: number;
-}
-
-export interface PaginationMeta extends Pagination {
-  total: number;
+  pageNumber?: number;
+  pageSize?: number;
 }
 
 export interface Paginated<Entity> {
-  data: Entity[];
-  meta: PaginationMeta;
+  items: Entity[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
 }
 
 export const extractPagination = (pagination?: Pagination) => ({

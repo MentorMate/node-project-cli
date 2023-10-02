@@ -1,12 +1,11 @@
 import { rethrowError } from '@utils/error';
 import { InsertUser, User } from '../entities';
 import { UserEmailTaken } from '../error-mappings';
-import { UsersRepositoryInterface } from '../interfaces';
 import { Injectable } from '@nestjs/common';
 import { NestKnexService } from '@database/nest-knex.service';
 
 @Injectable()
-export class UsersRepository implements UsersRepositoryInterface {
+export class UsersRepository {
   constructor(private readonly knex: NestKnexService) {}
 
   async insertOne(input: InsertUser): Promise<User> {

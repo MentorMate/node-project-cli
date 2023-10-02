@@ -26,7 +26,7 @@ describe('AuthService', () => {
   const auth = new AuthService(users, jwt, passwords);
 
   describe('register', () => {
-    describe('when the email is not regisered', () => {
+    describe('when the email is not registered', () => {
       const creds = { email: 'new-email@example.com', password: 'very-secret' };
       let result: JwtToken;
       let user: User | undefined;

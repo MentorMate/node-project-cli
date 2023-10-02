@@ -10,9 +10,10 @@ import { NestKnexService } from '@database/nest-knex.service';
 import { ValidationPipe, ExecutionContext, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
 
-describe('DELETE /v1/todos', () => {
+describe('GET /v1/todos/:id', () => {
   let app: NestFastifyApplication;
   let nestKnexService: NestKnexService;
+
   const canActivate = jest.fn();
 
   class AuthGuardMock {
@@ -59,30 +60,38 @@ describe('DELETE /v1/todos', () => {
     await app.close();
   });
 
-  it('should return 200 when todo is deleted', async () => {
+  it('should return the todo - given todo id in the query', async () => {
+    const todo = await nestKnexService.connection('todos').where({ id: 1 }).first();
+
     await app
       .inject({
-        method: 'DELETE',
+        method: 'GET',
         url: `/v1/todos/1`
       })
-      .then(async ({ statusCode }) => {
-        expect(statusCode).toBe(200);
-        const todo = await nestKnexService.connection('todos').where({ id: 1 }).first();
-        expect(todo).toBeUndefined();
+      .then((res) => {
+        const { id, name, note, completed } = res.json();
+        expect(res.statusCode).toBe(200);
+
+        expect(id).toEqual(todo.id);
+        expect(name).toEqual(todo.name);
+        expect(note).toEqual(todo.note);
+        expect(completed).toEqual(todo.completed);
       });
   });
 
-  it('should return 404 - non existing todo', async () => {
+  it('should return 404', async () => {
     await app
       .inject({
-        method: 'DELETE',
-        url: `/v1/todos/1000`
+        method: 'GET',
+        url: `/v1/todos/${Date.now()}`
       })
-      .then((res) => expectError(new NotFoundException(), res.json));
+      .then(res => {
+        expectError(new NotFoundException(), res.json)
+      });
   });
 });
 
-describe('DELETE /v1/todos - real AuthGuard', () => {
+describe('GET /v1/todos/:id - real AuthGuard', () => {
   let app: NestFastifyApplication;
   let nestKnexService: NestKnexService;
 
@@ -111,8 +120,8 @@ describe('DELETE /v1/todos - real AuthGuard', () => {
   it('should return 401 error', async () => {
     await app
       .inject({
-        method: 'DELETE',
-        url: `/v1/todos/1`,
+        method: 'GET',
+        url: '/v1/todos/1',
       })
       .then((res) => expectError(new UnauthorizedException(), res.json));
   });

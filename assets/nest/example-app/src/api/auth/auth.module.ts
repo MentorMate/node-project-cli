@@ -14,8 +14,9 @@ export const AuthModuleMetadata = {
     AuthService,
     {
       provide: APP_GUARD,
-      useClass: AuthGuard,
+      useExisting: AuthGuard,
     },
+    AuthGuard
   ],
   controllers: [AuthController],
 };

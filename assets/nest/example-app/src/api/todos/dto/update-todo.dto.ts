@@ -18,8 +18,8 @@ export class UpdateTodoDto extends PartialType(CreateTodoDto) {
   @MaxLength(255)
   note?: string | null;
 
-  @ApiProperty({ required: false, default: false })
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsBoolean()
-  completed?: boolean = false;
+  completed?: boolean;
 }

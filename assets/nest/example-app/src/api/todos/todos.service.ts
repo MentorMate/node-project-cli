@@ -14,6 +14,7 @@ import {
 } from './interfaces/todos.interface';
 import { definedOrNotFound, updatedOrNotFound } from '@utils/query';
 import { Errors } from '@utils/api/response';
+import { RecordNotFoundError } from '@database/errors';
 
 @Injectable()
 export class TodosService {
@@ -41,7 +42,11 @@ export class TodosService {
     return this.todos.findAll(input);
   }
 
-  findOne(input: FindOneTodoInput): Promise<Todo> {
+  findOne(input: Partial<FindOneTodoInput>): Promise<Todo | undefined> {
+    return this.todos.findOne(input);
+  }
+
+  findOneOrFail(input: Partial<FindOneTodoInput>): Promise<Todo> {
     return this.todos.findOneOrFail(input);
   }
 
@@ -49,13 +54,18 @@ export class TodosService {
     const { id, userId, updateTodoDto } = input;
 
     if (Object.keys(updateTodoDto).length === 0) {
-      return this.findOne({ id, userId });
+      return this.findOneOrFail({ id, userId });
     }
 
     return this.todos.update(input).then(definedOrNotFound(Errors.NotFound));
   }
 
-  remove(input: FindOneTodoInput): Promise<number> {
-    return this.todos.remove(input).then(updatedOrNotFound(Errors.NotFound));
+  async remove(input: FindOneTodoInput): Promise<number> {
+    const todo = await this.findOne({ id: input.id });
+    if (!todo) {
+      throw new RecordNotFoundError('Todo not found!');
+    }
+
+    return this.todos.remove(input);
   }
 }

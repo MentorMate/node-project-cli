@@ -1,9 +1,8 @@
 import { hash, compare, genSalt } from 'bcrypt';
-import { PasswordServiceInterface } from '../interfaces';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class PasswordService implements PasswordServiceInterface {
+export class PasswordService {
   async hash(password: string): Promise<string> {
     return hash(password, await genSalt());
   }

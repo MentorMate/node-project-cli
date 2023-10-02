@@ -15,14 +15,6 @@ export enum Errors {
   UnprocessableEntity = 'Unprocessable Entity',
 }
 
-export const paginatedResponse = <T>(
-  data: T[],
-  total: number,
-  pagination?: Pagination
-): Paginated<T> => {
-  return { data, meta: { ...extractPagination(pagination), total } };
-};
-
 export class BadRequestDto implements ErrorDto {
   @ApiProperty({ example: 400 })
   statusCode: number;

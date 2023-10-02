@@ -55,10 +55,18 @@ export const findOneTodoInput: FindOneTodoInput = {
 };
 
 export const findAllTodosInput: FindAllTodosInput = {
-  query: {},
+  query: {
+    pageNumber: 1,
+    pageSize: 20,
+  },
   userId,
 };
 
 export const getPaginatedResponse = <T>(data: T[]): Paginated<T> => {
-  return { data, meta: { total: data.length } };
+  return {
+    items: data,
+    total: data.length,
+    totalPages: 1,
+    currentPage: 1,
+  };
 };

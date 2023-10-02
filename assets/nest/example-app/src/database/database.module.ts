@@ -23,6 +23,9 @@ import { NestKnexService } from './nest-knex.service';
           password: configService.get('PGPASSWORD'),
           database: configService.get('PGDATABASE'),
         },
+        seeds: {
+          directory: `./src/database/seeds/${configService.get('NODE_ENV')}`
+        }
       }),
     },
     {

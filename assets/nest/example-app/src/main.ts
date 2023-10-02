@@ -18,8 +18,6 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  // register global middleware
-
   // enables CORS
   app.enableCors();
 
