@@ -10,7 +10,10 @@ import {
   todo,
   updateTodoDtoInput,
 } from './__mocks__/todos.mocks';
-import { UnprocessableEntityException } from '@nestjs/common';
+import {
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { Errors } from '@utils/api/response';
 
 describe('TodosService', () => {
@@ -67,12 +70,24 @@ describe('TodosService', () => {
   describe('findOne', () => {
     it('should return single todo', async () => {
       jest
-        .spyOn(repository, 'findOneOrFail')
+        .spyOn(repository, 'findOne')
         .mockImplementationOnce(async () => todo);
 
       expect(await service.findOne({ id: todo.id, userId })).toStrictEqual(
         todo,
       );
+    });
+  });
+
+  describe('findOneOrFail', () => {
+    it('should return single todo', async () => {
+      jest
+        .spyOn(repository, 'findOneOrFail')
+        .mockImplementationOnce(async () => todo);
+
+      expect(
+        await service.findOneOrFail({ id: todo.id, userId }),
+      ).toStrictEqual(todo);
     });
   });
 
@@ -94,7 +109,9 @@ describe('TodosService', () => {
     });
 
     it('should return todo if there is no data to update', async () => {
-      jest.spyOn(service, 'findOne').mockImplementationOnce(async () => todo);
+      jest
+        .spyOn(service, 'findOneOrFail')
+        .mockImplementationOnce(async () => todo);
 
       expect(
         await service.update({
@@ -108,9 +125,20 @@ describe('TodosService', () => {
 
   describe('remove', () => {
     it('should delete single todo', async () => {
+      jest.spyOn(service, 'findOne').mockImplementationOnce(async () => todo);
       jest.spyOn(repository, 'remove').mockImplementationOnce(async () => 1);
 
       expect(await service.remove({ id: 1, userId })).toBe(1);
+    });
+
+    it('should throw error if todo does not exist', async () => {
+      jest
+        .spyOn(service, 'findOne')
+        .mockImplementationOnce(async () => undefined);
+
+      await expect(service.remove({ id: 1, userId })).rejects.toThrowError(
+        new NotFoundException(Errors.NotFound),
+      );
     });
   });
 });

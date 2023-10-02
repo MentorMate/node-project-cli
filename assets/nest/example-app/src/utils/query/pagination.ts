@@ -8,11 +8,14 @@ export interface Pagination {
   pageSize?: number;
 }
 
-export interface Paginated<Entity> {
-  items: Entity[];
-  total: number;
+interface PaginationResponse {
   totalPages: number;
   currentPage: number;
+}
+
+export interface Paginated<Entity> extends PaginationResponse {
+  items: Entity[];
+  total: number;
 }
 
 export const extractPagination = (pagination?: Pagination) => ({

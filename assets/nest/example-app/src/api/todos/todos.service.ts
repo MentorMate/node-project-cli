@@ -1,6 +1,7 @@
 import {
   Inject,
   Injectable,
+  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { TodosRepository } from './repositories/todos.repository';
@@ -12,9 +13,8 @@ import {
   FindOneTodoInput,
   UpdateTodoInput,
 } from './interfaces/todos.interface';
-import { definedOrNotFound, updatedOrNotFound } from '@utils/query';
+import { definedOrNotFound } from '@utils/query';
 import { Errors } from '@utils/api/response';
-import { RecordNotFoundError } from '@database/errors';
 
 @Injectable()
 export class TodosService {
@@ -63,7 +63,7 @@ export class TodosService {
   async remove(input: FindOneTodoInput): Promise<number> {
     const todo = await this.findOne({ id: input.id });
     if (!todo) {
-      throw new RecordNotFoundError('Todo not found!');
+      throw new NotFoundException(Errors.NotFound);
     }
 
     return this.todos.remove(input);

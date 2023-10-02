@@ -25,9 +25,10 @@ export interface Sort<SortColumn extends string> {
  * ```
  */
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type Sorter<Model extends {}> = (
+export type Sorter<Model extends {}, SortColumn extends string> = (
   qb: Knex.QueryBuilder<Model>,
-  order?: SortOrder,
+  order: SortOrder,
+  column: SortColumn,
 ) => Knex.QueryBuilder<Model>;
 
 /**
@@ -52,4 +53,4 @@ export type SorterMap<
   // eslint-disable-next-line @typescript-eslint/ban-types
   Model extends {},
   SortColumn extends string,
-> = Record<SortColumn, Sorter<Model>>;
+> = Record<SortColumn, Sorter<Model, SortColumn>>;

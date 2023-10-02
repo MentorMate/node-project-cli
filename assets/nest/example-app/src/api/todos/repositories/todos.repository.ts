@@ -9,17 +9,20 @@ import {
   FindOneTodoInput,
   UpdateTodoInput,
 } from '../interfaces/todos.interface';
-import { definedOrNotFound } from '@utils/query';
+import { SortOrder, definedOrNotFound } from '@utils/query';
 import { TodoUserNotFound } from '../error-mappings/todo-user-not-found.error-mapping';
-import { Errors } from '@utils/api/response';
+import { Errors, paginatedResponse } from '@utils/api/response';
+import { BaseRepository } from '@database/base-repository.repository';
+import { Tables } from '@database/constants';
 
 @Injectable()
-export class TodosRepository {
-  constructor(private readonly knex: NestKnexService) { }
+export class TodosRepository extends BaseRepository<Todo> {
+  constructor(private readonly knex: NestKnexService) {
+    super(knex, Tables.Todos);
+  }
 
   async create(input: CreateTodoInput): Promise<Todo> {
-    return this.knex
-      .connection('todos')
+    return this.repository()
       .insert({ ...input.createTodoDto, userId: input.userId })
       .returning('*')
       .then(([todo]: Todo[]) => todo)
@@ -27,15 +30,13 @@ export class TodosRepository {
   }
 
   async findOne(input: Partial<FindOneTodoInput>): Promise<Todo | undefined> {
-    return this.knex
-      .connection('todos')
+    return this.repository()
       .where({ ...input })
       .first();
   }
 
   async findOneOrFail(input: Partial<FindOneTodoInput>): Promise<Todo> {
-    return this.knex
-      .connection('todos')
+    return this.repository()
       .where({ ...input })
       .first()
       .then(definedOrNotFound(Errors.NotFound));
@@ -44,8 +45,7 @@ export class TodosRepository {
   async update(input: UpdateTodoInput): Promise<Todo | undefined> {
     const { id, userId, updateTodoDto } = input;
 
-    return this.knex
-      .connection('todos')
+    return this.repository()
       .where({ id, userId })
       .update(updateTodoDto)
       .returning('*')
@@ -54,49 +54,29 @@ export class TodosRepository {
   }
 
   async remove(input: FindOneTodoInput): Promise<number> {
-    return this.knex
-      .connection('todos')
+    return this.repository()
       .where({ ...input })
       .del();
   }
 
   async findAll(input: FindAllTodosInput): Promise<Paginated<Todo>> {
-    const { userId, query: { pageNumber, pageSize, column, order } } = input;
+    const { userId, query } = input;
 
-    const offset = (pageNumber - 1) * pageSize;
-    const qb = this.knex.connection('todos').where({ userId });
-
-    if (input.query.name) {
-      qb.where({
-        name: input.query.name
-      })
-    }
-
-    if (typeof input.query.completed === 'boolean') {
-      qb.where({
-        completed: input.query.completed
-      })
-    }
-
-    const totalCount = await qb
-      .clone()
-      .count()
-      .first();
-
-    if (order && column) {
-      qb.orderBy(column, order)
-    }
+    const qb = this.repository().where({ userId }).filter(query.filters, {
+      name: this.whereLike,
+      completed: this.where,
+    });
 
     const items = await qb
       .clone()
-      .limit(pageSize)
-      .offset(offset);
+      .sort(query.sorts, {
+        name: this.orderBy,
+        createdAt: this.orderBy,
+      })
+      .paginate(query.pagination);
 
-    return {
-      items,
-      total: parseInt(totalCount.count),
-      totalPages: Math.ceil(parseInt(totalCount.count) / pageSize),
-      currentPage: pageNumber,
-    }
+    const count = await qb.clone().count().first();
+
+    return paginatedResponse(items, Number(count), query.pagination);
   }
 }

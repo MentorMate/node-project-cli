@@ -17,26 +17,29 @@ describe('TodosRepository', () => {
   const del = jest.fn(() => Promise.resolve({}));
   const returning = jest.fn().mockImplementation(() => Promise.resolve([]));
   const paginate = jest.fn(() => Promise.resolve({}));
-  const count = jest.fn(() => Promise.resolve({}));
 
   const sort = jest.fn().mockImplementation(() => ({
     paginate,
   }));
 
   const filter = jest.fn().mockImplementation(() => ({
+    clone,
+  }));
+
+  const clone = jest.fn().mockImplementation(() => ({
     sort,
     count,
   }));
 
-  const clone = jest.fn().mockImplementation(() => ({
-    filter,
+  const count = jest.fn().mockImplementation(() => ({
+    first,
   }));
 
   const where = jest.fn().mockImplementation(() => ({
     first,
     update,
     del,
-    clone,
+    filter,
   }));
 
   const insert = jest.fn().mockImplementation(() => ({
@@ -127,17 +130,15 @@ describe('TodosRepository', () => {
 
   it('findAll - find all todos for the user', async () => {
     paginate.mockImplementationOnce(() => Promise.resolve([todo]));
-    count.mockImplementationOnce(() => Promise.resolve([{ count: 1 }]));
+    first.mockImplementationOnce(() => Promise.resolve(1));
 
     const result = await todosRepository.findAll(findAllTodosInput);
 
     expect(result).toStrictEqual({
-      data: [todo],
-      meta: {
-        page: 1,
-        items: 20,
-        total: 1,
-      },
+      items: [todo],
+      total: 1,
+      currentPage: 1,
+      totalPages: 1,
     });
   });
 });

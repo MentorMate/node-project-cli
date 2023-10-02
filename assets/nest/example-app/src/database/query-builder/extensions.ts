@@ -15,7 +15,7 @@ export const filter = <
   // eslint-disable-next-line @typescript-eslint/ban-types
   Model extends {},
   Query extends Record<string, unknown>,
-  Filters extends FilterMap<Model, Query>,
+  Filters extends FilterMap<Model, Partial<Model>>,
 >(
   qb: Knex.QueryBuilder<Model>,
   filters: Query,
@@ -24,7 +24,7 @@ export const filter = <
   Object.entries(filters)
     .filter(([, v]) => v !== undefined)
     .reduce<Knex.QueryBuilder<Model>>(
-      (qb, [k, v]) => filterMap[k as keyof Filters](qb, v as never),
+      (qb, [k, v]) => filterMap[k as keyof Filters](qb, v as never, k as never),
       qb,
     );
 
@@ -35,7 +35,16 @@ export const sort = <Model extends {}, SortColumn extends string>(
   sorterMap: SorterMap<Model, SortColumn>,
 ): Knex.QueryBuilder<Model> =>
   sorts.reduce<Knex.QueryBuilder<Model>>(
-    (qb, sort) => sorterMap[sort.column](qb, sort.order || SortOrder.Asc),
+    (qb, sort) =>
+      sorterMap[sort.column](qb, sort.order || SortOrder.Asc, sort.column),
     qb,
   );
 
+export const paginate = <QB extends Knex.QueryBuilder>(
+  qb: QB,
+  pagination?: Pagination,
+) => {
+  const { pageNumber, pageSize } = extractPagination(pagination);
+
+  return qb.offset((pageNumber - 1) * pageSize).limit(pageSize);
+};

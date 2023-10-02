@@ -15,9 +15,10 @@ import { Knex } from 'knex';
  * ```
  */
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type Filter<Model extends {}, Value> = (
+export type Filter<Model extends {}, Value, Key> = (
   qb: Knex.QueryBuilder<Model>,
   value: Value,
+  key: Key,
 ) => Knex.QueryBuilder<Model>;
 
 /**
@@ -47,5 +48,5 @@ export type FilterMap<Model extends {}, Filters> = {
   // Since query params are usually optional,
   // we loop through the query params removing their optionality via `-?`,
   // then map them to a filter of their value excluding undefined.
-  [K in keyof Filters]-?: Filter<Model, Exclude<Filters[K], undefined>>;
+  [K in keyof Filters]-?: Filter<Model, Exclude<Partial<Model>, undefined>, K>;
 };

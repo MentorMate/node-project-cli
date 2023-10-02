@@ -1,73 +1,77 @@
 import { SortOrder } from '@utils/query';
 import {
   Allow,
+  IsArray,
   IsEnum,
-  IsNumber,
   IsOptional,
   MaxLength,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type, plainToClass } from 'class-transformer';
 import { Trim } from '@utils/class-transformers';
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationDto } from '@utils/dto/pagination.dto';
 
-enum TodosSortBy {
-  Name = 'name',
-  CreatedAt = 'createdAt',
-}
-
-export class FindAllTodosQueryDto {
-  @ApiProperty({
-    type: String,
-    required: false
-  })
+class FiltersDto {
   @IsOptional()
   @Trim()
   @MinLength(1)
   @MaxLength(255)
   name?: string;
 
-  @ApiProperty({
-    type: Boolean,
-    required: false
-  })
-  @Transform(({ value }) => value === 'true')
   @IsOptional()
   completed?: boolean;
+}
 
-  @ApiProperty({
-    type: String,
-    required: false,
-  })
-  @IsOptional()
+enum TodosSortBy {
+  Name = 'name',
+  CreatedAt = 'createdAt',
+}
+class TodosSortByDto {
   @Trim()
   @IsEnum(TodosSortBy)
-  column?: TodosSortBy;
+  column: TodosSortBy;
 
-  @ApiProperty({
-    type: String,
-    required: false,
-  })
   @IsOptional()
   @IsEnum(SortOrder)
   @Allow(undefined)
   order?: SortOrder | undefined;
+}
+
+export class FindAllTodosQueryDto {
+  @ApiProperty({
+    type: FiltersDto,
+    required: false,
+    example: { name: 'todoName', completed: true },
+  })
+  @Type(() => FiltersDto)
+  @Transform(({ value }) => plainToClass(FiltersDto, JSON.parse(value)))
+  @ValidateNested()
+  @IsOptional()
+  filters?: FiltersDto;
 
   @ApiProperty({
-    type: Number,
+    type: TodosSortByDto,
     required: false,
+    isArray: true,
+    example: [{ column: 'name', order: SortOrder.Asc }],
   })
+  @Type(() => TodosSortByDto)
+  @Transform(({ value }) => plainToClass(TodosSortByDto, JSON.parse(value)))
+  @ValidateNested({ each: true })
   @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value))
-  pageNumber: number = 1;
+  @IsArray()
+  sorts?: TodosSortByDto[];
 
   @ApiProperty({
-    type: Number,
+    type: PaginationDto,
     required: false,
+    example: { page: 1, items: 2 },
   })
+  @Type(() => PaginationDto)
+  @Transform(({ value }) => plainToClass(PaginationDto, JSON.parse(value)))
+  @ValidateNested()
   @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value))
-  pageSize: number = 20;
+  pagination?: PaginationDto;
 }

@@ -56,8 +56,10 @@ export const findOneTodoInput: FindOneTodoInput = {
 
 export const findAllTodosInput: FindAllTodosInput = {
   query: {
-    pageNumber: 1,
-    pageSize: 20,
+    pagination: {
+      pageNumber: 1,
+      pageSize: 20,
+    },
   },
   userId,
 };

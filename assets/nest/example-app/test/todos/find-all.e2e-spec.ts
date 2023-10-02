@@ -7,7 +7,11 @@ import { AppModule } from '../../src/app.module';
 import { expectError } from '../utils/expect-error';
 import { sortByField } from './utils/sortby-field-todos';
 import { SortOrder } from '@utils/query';
-import { ExecutionContext, UnauthorizedException, ValidationPipe } from '@nestjs/common';
+import {
+  ExecutionContext,
+  UnauthorizedException,
+  ValidationPipe,
+} from '@nestjs/common';
 import { NestKnexService } from '@database/nest-knex.service';
 import { AuthGuard } from '@api/auth/guards/auth.guard';
 
@@ -30,13 +34,15 @@ describe('GET /v1/todos', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true,
-      transform: true
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+      }),
+    );
 
     await app.init();
 
@@ -50,7 +56,7 @@ describe('GET /v1/todos', () => {
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
-      request.user = { sub: 1, email: 'hello@email' }
+      request.user = { sub: 1, email: 'hello@email' };
       return true;
     });
   });
@@ -63,9 +69,9 @@ describe('GET /v1/todos', () => {
     await app
       .inject({
         method: 'GET',
-        url: '/v1/todos'
+        url: '/v1/todos',
       })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(({ items }) => {
         expect(items.length).toEqual(3);
       });
@@ -80,7 +86,7 @@ describe('GET /v1/todos', () => {
           completed: 'true',
         },
       })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(({ items }) => {
         expect(items.length).toEqual(1);
       });
@@ -92,10 +98,10 @@ describe('GET /v1/todos', () => {
         method: 'GET',
         url: '/v1/todos',
         query: {
-          completed: 'false'
-        }
+          completed: 'false',
+        },
       })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(({ items }) => {
         expect(items.length).toEqual(2);
       });
@@ -107,10 +113,10 @@ describe('GET /v1/todos', () => {
         method: 'GET',
         url: '/v1/todos?filters[name]=Laundry',
         query: {
-          name: 'Laundry 1'
-        }
+          name: 'Laundry 1',
+        },
       })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(({ items }) => {
         expect(items.length).toEqual(1);
       });
@@ -122,10 +128,10 @@ describe('GET /v1/todos', () => {
         method: 'GET',
         url: '/v1/todos',
         query: {
-          pageSize: '2'
-        }
+          pageSize: '2',
+        },
       })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(({ items }) => {
         expect(items.length).toEqual(2);
       });
@@ -138,10 +144,10 @@ describe('GET /v1/todos', () => {
         url: '/v1/todos',
         query: {
           pageSize: '3',
-          pageNumber: '2'
-        }
+          pageNumber: '2',
+        },
       })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(({ items, total }) => {
         expect(items.length).toEqual(0);
         expect(total).toEqual(3);
@@ -149,19 +155,23 @@ describe('GET /v1/todos', () => {
   });
 
   it('should return desc ordered todo list - when sort by name desc', async () => {
-    const response = await app.inject({
-      method: 'GET',
-      url: '/v1/todos',
-    }).then(res => res.json());
+    const response = await app
+      .inject({
+        method: 'GET',
+        url: '/v1/todos',
+      })
+      .then((res) => res.json());
 
-    const sortedRes = await app.inject({
-      method: 'GET',
-      url: '/v1/todos',
-      query: {
-        column: 'name',
-        order: 'desc'
-      }
-    }).then(res => res.json());
+    const sortedRes = await app
+      .inject({
+        method: 'GET',
+        url: '/v1/todos',
+        query: {
+          column: 'name',
+          order: 'desc',
+        },
+      })
+      .then((res) => res.json());
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
@@ -170,19 +180,23 @@ describe('GET /v1/todos', () => {
   });
 
   it('should return asc ordered todo list - when sort by name asc', async () => {
-    const response = await app.inject({
-      method: 'GET',
-      url: '/v1/todos',
-    }).then(res => res.json());
+    const response = await app
+      .inject({
+        method: 'GET',
+        url: '/v1/todos',
+      })
+      .then((res) => res.json());
 
-    const sortedRes = await app.inject({
-      method: 'GET',
-      url: '/v1/todos',
-      query: {
-        column: 'name',
-        order: 'asc'
-      }
-    }).then(res => res.json());
+    const sortedRes = await app
+      .inject({
+        method: 'GET',
+        url: '/v1/todos',
+        query: {
+          column: 'name',
+          order: 'asc',
+        },
+      })
+      .then((res) => res.json());
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
@@ -191,19 +205,23 @@ describe('GET /v1/todos', () => {
   });
 
   it('should return desc ordered todo list - when sort by createdAt desc', async () => {
-    const response = await app.inject({
-      method: 'GET',
-      url: '/v1/todos',
-    }).then(res => res.json());
+    const response = await app
+      .inject({
+        method: 'GET',
+        url: '/v1/todos',
+      })
+      .then((res) => res.json());
 
-    const sortedRes = await app.inject({
-      method: 'GET',
-      url: '/v1/todos',
-      query: {
-        column: 'createdAt',
-        order: 'desc'
-      }
-    }).then(res => res.json());
+    const sortedRes = await app
+      .inject({
+        method: 'GET',
+        url: '/v1/todos',
+        query: {
+          column: 'createdAt',
+          order: 'desc',
+        },
+      })
+      .then((res) => res.json());
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
@@ -212,19 +230,23 @@ describe('GET /v1/todos', () => {
   });
 
   it('should return asc ordered todo list - when sort by createdAt asc', async () => {
-    const response = await app.inject({
-      method: 'GET',
-      url: '/v1/todos',
-    }).then(res => res.json());
+    const response = await app
+      .inject({
+        method: 'GET',
+        url: '/v1/todos',
+      })
+      .then((res) => res.json());
 
-    const sortedRes = await app.inject({
-      method: 'GET',
-      url: '/v1/todos',
-      query: {
-        column: 'createdAt',
-        order: 'asc'
-      }
-    }).then(res => res.json());
+    const sortedRes = await app
+      .inject({
+        method: 'GET',
+        url: '/v1/todos',
+        query: {
+          column: 'createdAt',
+          order: 'asc',
+        },
+      })
+      .then((res) => res.json());
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
@@ -241,10 +263,10 @@ describe('GET /v1/todos', () => {
           column: 'name',
           order: 'desc',
           pageNumber: '1',
-          pageSize: '2'
-        }
+          pageSize: '2',
+        },
       })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(({ items, total }) => {
         expect(items.length).toEqual(2);
         expect(total).toEqual(3);
@@ -262,7 +284,7 @@ describe('GET /v1/todos - real AuthGuard', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     await app.init();

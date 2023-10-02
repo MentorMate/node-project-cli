@@ -14,6 +14,7 @@ module.exports = {
     '<rootDir>/src/.*entity.ts$',
     '<rootDir>/src/.*controller.ts$',
     '<rootDir>/src/utils/class-transformers/.*',
+    '<rootDir>/src/database/seeds/.*',
     '<rootDir>/src/.*interceptor.ts$',
   ],
   coverageThreshold: {

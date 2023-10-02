@@ -3,14 +3,17 @@ import { InsertUser, User } from '../entities';
 import { UserEmailTaken } from '../error-mappings';
 import { Injectable } from '@nestjs/common';
 import { NestKnexService } from '@database/nest-knex.service';
+import { BaseRepository } from '@database/base-repository.repository';
+import { Tables } from '@database/constants';
 
 @Injectable()
-export class UsersRepository {
-  constructor(private readonly knex: NestKnexService) {}
+export class UsersRepository extends BaseRepository<User> {
+  constructor(private readonly knex: NestKnexService) {
+    super(knex, Tables.Users);
+  }
 
   async insertOne(input: InsertUser): Promise<User> {
-    return await this.knex
-      .connection('users')
+    return await this.repository()
       .insert(input)
       .returning('*')
       .then((data: any) => data[0])
@@ -18,6 +21,6 @@ export class UsersRepository {
   }
 
   async findByEmail(email: User['email']): Promise<User | undefined> {
-    return await this.knex.connection('users').where({ email }).first();
+    return await this.repository().where({ email }).first();
   }
 }

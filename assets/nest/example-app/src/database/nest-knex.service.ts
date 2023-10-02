@@ -4,7 +4,7 @@ import { knex, Knex } from 'knex';
 
 @Injectable()
 export class NestKnexService {
-  public connection: any;
+  public connection: Knex;
 
   constructor(
     @Inject(NEST_KNEX_OPTIONS) private _NestKnexOptions: Knex.Config,

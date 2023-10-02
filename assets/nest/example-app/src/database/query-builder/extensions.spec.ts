@@ -1,4 +1,4 @@
-import { Sort, SortOrder } from '@utils/query';
+import { Pagination, Sort, SortOrder } from '@utils/query';
 import { filter, sort, paginate } from './extensions';
 
 describe('filter', () => {
@@ -22,9 +22,17 @@ describe('filter', () => {
 
     filter(queryBuilder as never, filters, filterMap as never);
 
-    expect(filterMap.name).toHaveBeenCalledWith(queryBuilder, filters.name);
+    expect(filterMap.name).toHaveBeenCalledWith(
+      queryBuilder,
+      filters.name,
+      Object.keys(filterMap)[0],
+    );
     expect(filterMap.height).not.toHaveBeenCalled();
-    expect(filterMap.age).toHaveBeenCalledWith(queryBuilder, filters.age);
+    expect(filterMap.age).toHaveBeenCalledWith(
+      queryBuilder,
+      filters.age,
+      Object.keys(filterMap)[1],
+    );
   });
 });
 
@@ -46,8 +54,16 @@ describe('sort', () => {
 
     sort(queryBuilder as never, sorts, sorterMap);
 
-    expect(sorterMap.name).toHaveBeenCalledWith(queryBuilder, SortOrder.Asc);
-    expect(sorterMap.age).toHaveBeenCalledWith(queryBuilder, SortOrder.Desc);
+    expect(sorterMap.name).toHaveBeenCalledWith(
+      queryBuilder,
+      SortOrder.Asc,
+      Object.keys(sorterMap)[0],
+    );
+    expect(sorterMap.age).toHaveBeenCalledWith(
+      queryBuilder,
+      SortOrder.Desc,
+      Object.keys(sorterMap)[1],
+    );
   });
 });
 
@@ -65,9 +81,9 @@ describe('paginate', () => {
     jest.spyOn(queryBuilder, 'offset');
     jest.spyOn(queryBuilder, 'limit');
 
-    const pagination = {
-      page: 3,
-      items: 15,
+    const pagination: Pagination = {
+      pageNumber: 3,
+      pageSize: 15,
     };
 
     paginate(queryBuilder as never, pagination);
