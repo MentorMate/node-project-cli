@@ -60,7 +60,7 @@ module.exports = (toolbox) => {
         test: 'jest',
         'test:cov': 'jest --coverage',
         'test:e2e': `DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.config.js`,
-        'test:e2e:cov': 'npm run test:e2e --coverage',
+        'test:e2e:cov': 'npm run test:e2e -- --coverage',
       });
 
       Object.assign(pkgJson.devDependencies, {

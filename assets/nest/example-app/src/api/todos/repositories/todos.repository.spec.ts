@@ -8,12 +8,12 @@ import {
   mockedUser,
   todo,
   updateTodoInput,
-} from '../__mocks__/todos.mocks';
+} from '../__mocks__';
 
 describe('TodosRepository', () => {
   let todosRepository: TodosRepository;
 
-  const first = jest.fn(() => Promise.resolve({}));
+  const first = jest.fn((): Promise<unknown> => Promise.resolve());
   const del = jest.fn(() => Promise.resolve({}));
   const returning = jest.fn().mockImplementation(() => Promise.resolve([]));
   const paginate = jest.fn(() => Promise.resolve({}));
@@ -28,11 +28,7 @@ describe('TodosRepository', () => {
 
   const clone = jest.fn().mockImplementation(() => ({
     sort,
-    count,
-  }));
-
-  const count = jest.fn().mockImplementation(() => ({
-    first,
+    paginate,
   }));
 
   const where = jest.fn().mockImplementation(() => ({
@@ -128,17 +124,19 @@ describe('TodosRepository', () => {
     expect(where).toHaveBeenCalledWith(findOneTodoInput);
   });
 
-  it('findAll - find all todos for the user', async () => {
-    paginate.mockImplementationOnce(() => Promise.resolve([todo]));
-    first.mockImplementationOnce(() => Promise.resolve(1));
+  describe('findAll', () => {
+    it('find all todos for the user', async () => {
+      paginate.mockImplementationOnce(() => Promise.resolve([todo]));
+      jest.spyOn(todosRepository, 'count').mockResolvedValueOnce(1);
 
-    const result = await todosRepository.findAll(findAllTodosInput);
+      const result = await todosRepository.findAll(findAllTodosInput);
 
-    expect(result).toStrictEqual({
-      items: [todo],
-      total: 1,
-      currentPage: 1,
-      totalPages: 1,
+      expect(result).toStrictEqual({
+        items: [todo],
+        total: 1,
+        currentPage: 1,
+        totalPages: 1,
+      });
     });
   });
 });

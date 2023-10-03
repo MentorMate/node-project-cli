@@ -1,5 +1,3 @@
-import { UserData } from '@api/auth/entities';
-import { Todo } from '../entities/todo.entity';
 import {
   CreateTodoInput,
   FindAllTodosInput,
@@ -7,7 +5,9 @@ import {
   UpdateTodoInput,
 } from '../interfaces/todos.interface';
 import { Paginated } from '@utils/query';
-import { UpdateTodoDto } from '../dto/update-todo.dto';
+import { Todo } from '../entities';
+import { TodosSortBy, UpdateTodoDto } from '../dto';
+import { UserData } from '@api/auth/interfaces';
 
 export const mockedUser: UserData = {
   user: {
@@ -56,10 +56,9 @@ export const findOneTodoInput: FindOneTodoInput = {
 
 export const findAllTodosInput: FindAllTodosInput = {
   query: {
-    pagination: {
-      pageNumber: 1,
-      pageSize: 20,
-    },
+    pageNumber: 1,
+    pageSize: 20,
+    column: TodosSortBy.CreatedAt,
   },
   userId,
 };

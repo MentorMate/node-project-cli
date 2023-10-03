@@ -4,11 +4,16 @@ import {
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
-import { expectError } from '../utils/expect-error';
 import { getTodoPayload } from './utils/get-todo-payload';
 import { AuthGuard } from '@api/auth/guards/auth.guard';
-import { BadRequestException, ExecutionContext, UnauthorizedException, ValidationPipe } from '@nestjs/common';
+import {
+  BadRequestException,
+  ExecutionContext,
+  UnauthorizedException,
+  ValidationPipe,
+} from '@nestjs/common';
 import { NestKnexService } from '@database/nest-knex.service';
+import { expectError } from '../utils/expect-error';
 
 describe('POST /v1/todos', () => {
   const todoPayload = getTodoPayload();
@@ -30,13 +35,15 @@ describe('POST /v1/todos', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
-    app.useGlobalPipes(new ValidationPipe({
-      transform: true,
-      whitelist: true,
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+      }),
+    );
 
     await app.init();
 
@@ -50,10 +57,10 @@ describe('POST /v1/todos', () => {
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
-      request.user = { sub: 1, email: 'hello@email' }
+      request.user = { sub: 1, email: 'hello@email' };
       return true;
     });
-  })
+  });
 
   afterAll(async () => {
     await app.close();
@@ -75,11 +82,13 @@ describe('POST /v1/todos', () => {
   });
 
   it('should throw error if a todo with the same name already exists', async () => {
-    const { name, note, completed } = await app.inject({
-      method: 'POST',
-      url: '/v1/todos',
-      payload: getTodoPayload(false),
-    }).then(res => res.json());
+    const { name, note, completed } = await app
+      .inject({
+        method: 'POST',
+        url: '/v1/todos',
+        payload: getTodoPayload(false),
+      })
+      .then((res) => res.json());
 
     await app
       .inject({
@@ -87,7 +96,7 @@ describe('POST /v1/todos', () => {
         url: '/v1/todos',
         payload: { name, note, completed },
       })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((response) => {
         expect(response).toEqual({
           statusCode: 422,
@@ -120,7 +129,7 @@ describe('POST /v1/todos - real AuthGuard', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     await app.init();

@@ -6,3 +6,8 @@ export interface JwtClaims {
 export interface UserData {
   user: JwtClaims;
 }
+
+export interface Credentials {
+  email: string;
+  password: string;
+}

@@ -3,8 +3,8 @@ import { AuthController } from './auth.controller';
 import { AuthService, JwtService, PasswordService } from './services';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from '@api/users/users.module';
-import { AuthGuard } from './guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './guards';
 
 export const AuthModuleMetadata = {
   imports: [ConfigModule, UsersModule],
@@ -16,7 +16,7 @@ export const AuthModuleMetadata = {
       provide: APP_GUARD,
       useExisting: AuthGuard,
     },
-    AuthGuard
+    AuthGuard,
   ],
   controllers: [AuthController],
 };

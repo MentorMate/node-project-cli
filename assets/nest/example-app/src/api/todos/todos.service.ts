@@ -4,17 +4,16 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { TodosRepository } from './repositories/todos.repository';
-import { Paginated } from '@utils/query/pagination';
+import { TodosRepository } from './repositories';
+import { Paginated, definedOrNotFound } from '@utils/query';
 import { Todo } from './entities/todo.entity';
 import {
   CreateTodoInput,
   FindAllTodosInput,
   FindOneTodoInput,
   UpdateTodoInput,
-} from './interfaces/todos.interface';
-import { definedOrNotFound } from '@utils/query';
-import { Errors } from '@utils/api/response';
+} from './interfaces';
+import { Errors } from '@utils/enums';
 
 @Injectable()
 export class TodosService {

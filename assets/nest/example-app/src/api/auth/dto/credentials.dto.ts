@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Credentials } from '../entities';
 import {
   IsEmail,
   IsNotEmpty,
@@ -9,7 +8,7 @@ import {
 } from 'class-validator';
 import { LowerCase, Trim } from '@utils/class-transformers';
 
-export class CredentialsDto implements Credentials {
+export class CredentialsDto {
   @ApiProperty({ example: 'john@mail.com' })
   @Trim()
   @LowerCase()

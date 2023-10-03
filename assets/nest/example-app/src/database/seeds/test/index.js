@@ -5,7 +5,9 @@
 exports.seed = async function (knex) {
   // Deletes ALL existing entries
   await knex('users').del();
-  await knex('users').insert([{ email: 'hello@email', password: 'pass@ord' }]);
+  await knex('users').insert([
+    { email: 'hello@email.com', password: 'pass@ord' },
+  ]);
 
   await knex('todos').insert([
     {

@@ -1,115 +1,115 @@
-import { DuplicateRecordError } from '@database/errors';
 import { User } from '@api/users/entities';
 import { UsersRepository } from '@api/users/repositories';
-import { JwtToken } from '../entities';
 import { JwtService } from './jwt.service';
 import { PasswordService } from './password.service';
 import { AuthService } from './auth.service';
-import { ConfigService } from '@nestjs/config';
-import { Environment } from '@utils/environment';
-import { UnprocessableEntityException } from '@nestjs/common';
+import {
+  ConflictException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AuthModuleMetadata } from '../auth.module';
+import { Credentials } from '../interfaces';
 
-jest.mock('../../users/repositories/users.repository');
+const registeredUser: User = {
+  id: 1,
+  createdAt: Date.now().toString(),
+  updatedAt: Date.now().toString(),
+  email: 'registered-email@example.com',
+  password: 'very-secret',
+};
+
+const unregisteredCreds: Credentials = {
+  email: 'new-email@example.com',
+  password: 'very-secret',
+};
+
+const registeredCreds: Credentials = {
+  email: 'registered@email.com',
+  password: 'very-secret',
+};
 
 describe('AuthService', () => {
-  const env = {
-    JWT_SECRET: 'very-secret',
-    JWT_EXPIRATION: '1d',
-  };
+  let authService: AuthService;
+  let jwtService: JwtService;
+  let passwordService: PasswordService;
+  let usersRepository: UsersRepository;
 
-  const config = {
-    get: (key: keyof typeof env) => env[key],
-  } as never as ConfigService<Environment>;
-  const jwt = new JwtService(config);
-  const passwords = new PasswordService();
-  const users = new UsersRepository({} as never);
-  const auth = new AuthService(users, jwt, passwords);
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule(
+      AuthModuleMetadata,
+    ).compile();
+
+    authService = module.get<AuthService>(AuthService);
+    jwtService = module.get<JwtService>(JwtService);
+    passwordService = module.get<PasswordService>(PasswordService);
+    usersRepository = module.get<UsersRepository>(UsersRepository);
+  });
 
   describe('register', () => {
-    describe('when the email is not registered', () => {
-      const creds = { email: 'new-email@example.com', password: 'very-secret' };
-      let result: JwtToken;
-      let user: User | undefined;
+    it('when the email is not registered should register the user', async () => {
+      jest
+        .spyOn(usersRepository, 'findByEmail')
+        .mockResolvedValueOnce(undefined);
+      jest
+        .spyOn(usersRepository, 'insertOne')
+        .mockResolvedValueOnce({ ...registeredUser, ...unregisteredCreds });
+      jest.spyOn(jwtService, 'sign').mockReturnValueOnce('jwtTokenValue');
 
-      beforeAll(async () => {
-        result = await auth.register(creds);
-        user = await users.findByEmail(creds.email);
-      });
+      const response = await authService.register(unregisteredCreds);
 
-      it('should register the email', async () => {
-        expect(user).toBeDefined();
-      });
-
-      it('should hash the user password', async () => {
-        expect(user?.password).not.toBe(creds.password);
-      });
-
-      it('should return jwt tokens', () => {
-        expect(result).toEqual(
-          expect.objectContaining({ idToken: expect.any(String) }),
-        );
-      });
+      expect(response.idToken).toBe('jwtTokenValue');
     });
 
-    describe('when the email is already registered', () => {
-      const creds = {
-        email: 'registered-email@example.com',
-        password: 'very-secret',
-      };
+    it('when the email is already registered should throw an error', async () => {
+      jest
+        .spyOn(usersRepository, 'findByEmail')
+        .mockResolvedValueOnce(registeredUser);
 
-      beforeAll(async () => {
-        await auth.register(creds);
-      });
-
-      it('should throw an error', async () => {
-        await expect(auth.register(creds)).rejects.toThrowError(
-          DuplicateRecordError,
-        );
-      });
+      await expect(
+        authService.register({
+          email: registeredUser.email,
+          password: registeredUser.password,
+        }),
+      ).rejects.toThrowError(new ConflictException('User email already taken'));
     });
   });
 
   describe('login', () => {
-    describe('when the email is not registered', () => {
-      it('should return undefined', async () => {
-        await expect(
-          auth.login({
-            email: 'notregistered@email.com',
-            password: '123',
-          }),
-        ).rejects.toThrowError(
-          new UnprocessableEntityException('Invalid email or password'),
-        );
-      });
+    it('when the email is not registered should throw an error', async () => {
+      jest
+        .spyOn(usersRepository, 'findByEmail')
+        .mockResolvedValueOnce(undefined);
+
+      await expect(authService.login(unregisteredCreds)).rejects.toThrowError(
+        new UnprocessableEntityException('Invalid email or password'),
+      );
     });
 
-    describe('when the email is registered', () => {
-      const creds = { email: 'registered@email.com', password: 'very-secret' };
+    it('when the email is registered and the password does not match should return an error', async () => {
+      jest
+        .spyOn(usersRepository, 'findByEmail')
+        .mockResolvedValueOnce(registeredUser);
 
-      beforeAll(async () => {
-        await auth.register(creds);
-      });
+      jest.spyOn(passwordService, 'compare').mockResolvedValueOnce(false);
 
-      describe('and the password does not match', () => {
-        it('should return undefined', async () => {
-          await expect(
-            auth.login({
-              email: creds.email,
-              password: 'not-my-password',
-            }),
-          ).rejects.toThrowError(
-            new UnprocessableEntityException('Invalid email or password'),
-          );
-        });
-      });
+      await expect(authService.login(registeredCreds)).rejects.toThrowError(
+        new UnprocessableEntityException('Invalid email or password'),
+      );
+    });
 
-      describe('and the email and password are valid', () => {
-        it('should return jwt tokens', async () => {
-          expect(await auth.login(creds)).toEqual(
-            expect.objectContaining({ idToken: expect.any(String) }),
-          );
-        });
-      });
+    it('when the email is registered and the email and password are valid should log the user', async () => {
+      jest
+        .spyOn(usersRepository, 'findByEmail')
+        .mockResolvedValueOnce(registeredUser);
+
+      jest.spyOn(passwordService, 'compare').mockResolvedValueOnce(true);
+
+      jest.spyOn(jwtService, 'sign').mockReturnValueOnce('jwtTokenValue');
+
+      const response = await authService.login(registeredCreds);
+
+      expect(response.idToken).toBe('jwtTokenValue');
     });
   });
 });

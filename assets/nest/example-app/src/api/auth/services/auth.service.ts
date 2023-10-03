@@ -1,5 +1,6 @@
-import { Credentials, JwtToken } from '../entities';
+import { JwtToken } from '../entities';
 import {
+  ConflictException,
   Inject,
   Injectable,
   UnprocessableEntityException,
@@ -7,6 +8,7 @@ import {
 import { UsersRepository } from '@api/users/repositories';
 import { JwtService } from './jwt.service';
 import { PasswordService } from './password.service';
+import { Credentials } from '../interfaces';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +22,12 @@ export class AuthService {
   ) {}
 
   async register({ email, password }: Credentials): Promise<JwtToken> {
+    const existingUser = await this.users.findByEmail(email);
+
+    if (existingUser) {
+      throw new ConflictException('User email already taken');
+    }
+
     const user = await this.users.insertOne({
       email,
       password: await this.password.hash(password),
@@ -30,7 +38,7 @@ export class AuthService {
     };
   }
 
-  async login({ email, password }: Credentials): Promise<JwtToken | undefined> {
+  async login({ email, password }: Credentials): Promise<JwtToken> {
     const user = await this.users.findByEmail(email);
 
     if (!user) {

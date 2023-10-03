@@ -1,6 +1,4 @@
-import { CreateTodoDto } from '../dto/create-todo.dto';
-import { FindAllTodosQueryDto } from '../dto/find-all-todos-query.dto';
-import { UpdateTodoDto } from '../dto/update-todo.dto';
+import { CreateTodoDto, FindAllTodosQueryDto, UpdateTodoDto } from '../dto';
 
 interface UserData {
   userId: number;

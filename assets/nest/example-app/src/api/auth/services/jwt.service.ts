@@ -1,8 +1,8 @@
 import { sign } from 'jsonwebtoken';
 import { Environment } from '@utils/environment';
-import { JwtClaims } from '../entities';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
+import { JwtClaims } from '../interfaces';
 
 @Injectable()
 export class JwtService {

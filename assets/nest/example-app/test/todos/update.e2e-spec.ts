@@ -4,12 +4,17 @@ import {
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
-import { expectError } from '../utils/expect-error';
 import { getTodoPayload } from './utils/get-todo-payload';
 import { AuthGuard } from '@api/auth/guards/auth.guard';
 import { NestKnexService } from '@database/nest-knex.service';
-import { ValidationPipe, ExecutionContext, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+  ValidationPipe,
+  ExecutionContext,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
+import { expectError } from '../utils/expect-error';
 
 describe('PUT /v1/todos/:id', () => {
   let app: NestFastifyApplication;
@@ -29,13 +34,15 @@ describe('PUT /v1/todos/:id', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
-    app.useGlobalPipes(new ValidationPipe({
-      transform: true,
-      whitelist: true,
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+      }),
+    );
 
     app.useGlobalInterceptors(new ServiceToHttpErrorsInterceptor());
 
@@ -51,7 +58,7 @@ describe('PUT /v1/todos/:id', () => {
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
-      request.user = { sub: 1, email: 'hello@email' }
+      request.user = { sub: 1, email: 'hello@email' };
       return true;
     });
   });
@@ -68,7 +75,7 @@ describe('PUT /v1/todos/:id', () => {
         payload: {
           name: 'updated',
           completed: true,
-          note: 'updated'
+          note: 'updated',
         },
       })
       .then((res) => {
@@ -82,7 +89,10 @@ describe('PUT /v1/todos/:id', () => {
   });
 
   it('should return the not updated todo', async () => {
-    const todo = await nestKnexService.connection('todos').where({ id: 1 }).first();
+    const todo = await nestKnexService
+      .connection('todos')
+      .where({ id: 1 })
+      .first();
 
     await app
       .inject({
@@ -109,8 +119,8 @@ describe('PUT /v1/todos/:id', () => {
         url: `/v1/todos/32131`,
         payload: getTodoPayload(),
       })
-      .then(res => {
-        expectError(new NotFoundException(), res.json)
+      .then((res) => {
+        expectError(new NotFoundException(), res.json);
       });
   });
 });
@@ -125,7 +135,7 @@ describe('PUT /v1/todos/:id - real AuthGuard', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     await app.init();

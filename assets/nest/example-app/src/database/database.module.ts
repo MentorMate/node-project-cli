@@ -24,8 +24,8 @@ import { NestKnexService } from './nest-knex.service';
           database: configService.get('PGDATABASE'),
         },
         seeds: {
-          directory: `./src/database/seeds/${configService.get('NODE_ENV')}`
-        }
+          directory: `./src/database/seeds/${configService.get('NODE_ENV')}`,
+        },
       }),
     },
     {

@@ -1,7 +1,7 @@
 import { UsersRepository } from './users.repository';
 import { Test } from '@nestjs/testing';
 import { NestKnexService } from '@database/nest-knex.service';
-import { InsertUser } from '../entities';
+import { Credentials } from '@api/auth/interfaces';
 
 describe('UsersRepository', () => {
   let usersRepository: UsersRepository;
@@ -37,7 +37,7 @@ describe('UsersRepository', () => {
   });
 
   it('insertOne - create a user', async () => {
-    const insertUser: InsertUser = {
+    const insertUser: Credentials = {
       email: 'user@example.com',
       password: 'password',
     };

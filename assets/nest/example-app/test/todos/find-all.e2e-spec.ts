@@ -4,7 +4,6 @@ import {
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
-import { expectError } from '../utils/expect-error';
 import { sortByField } from './utils/sortby-field-todos';
 import { SortOrder } from '@utils/query';
 import {
@@ -14,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { NestKnexService } from '@database/nest-knex.service';
 import { AuthGuard } from '@api/auth/guards/auth.guard';
+import { expectError } from '../utils/expect-error';
 
 describe('GET /v1/todos', () => {
   let app: NestFastifyApplication;

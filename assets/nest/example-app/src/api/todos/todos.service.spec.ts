@@ -2,19 +2,19 @@ import { DatabaseModule } from '@database/database.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TodosService } from './todos.service';
 import { TodosController } from './todos.controller';
-import { TodosRepository } from './repositories/todos.repository';
+import { TodosRepository } from './repositories';
 import {
   createTodoInput,
   mockedUser,
   getPaginatedResponse,
   todo,
   updateTodoDtoInput,
-} from './__mocks__/todos.mocks';
+} from './__mocks__';
 import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { Errors } from '@utils/api/response';
+import { Errors } from '@utils/enums';
 
 describe('TodosService', () => {
   let service: TodosService;

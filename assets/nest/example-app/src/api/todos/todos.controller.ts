@@ -11,9 +11,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { TodosService } from './todos.service';
-import { CreateTodoDto } from './dto/create-todo.dto';
-import { UpdateTodoDto } from './dto/update-todo.dto';
-import { UserData } from '@api/auth/entities';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -21,12 +18,18 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
-  ApiQuery,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Todo } from './entities/todo.entity';
-import { Paginated } from '@utils/query/pagination';
-import { BadRequestDto, Errors, NotFoundDto } from '@utils/api/response';
-import { FindAllTodosQueryDto } from './dto/find-all-todos-query.dto';
+import { Todo } from './entities';
+import { Paginated } from '@utils/query';
+import { CreateTodoDto, FindAllTodosQueryDto, UpdateTodoDto } from './dto';
+import { UserData } from '@api/auth/interfaces';
+import {
+  BadRequestDto,
+  NotFoundDto,
+  UnprocessableEntityDto,
+} from '@utils/dtos';
+import { Errors } from '@utils/enums';
 
 @ApiTags('Todos')
 @Controller('v1/todos')
@@ -40,6 +43,10 @@ export class TodosController {
     description: Errors.BadRequest,
   })
   @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
+  @ApiUnprocessableEntityResponse({
+    type: UnprocessableEntityDto,
+    description: Errors.UnprocessableEntity,
+  })
   @Post()
   create(
     @Body() createTodoDto: CreateTodoDto,
@@ -53,7 +60,6 @@ export class TodosController {
     type: BadRequestDto,
     description: Errors.BadRequest,
   })
-  @ApiQuery({ name: 'Filters', type: FindAllTodosQueryDto, required: false })
   @Get()
   findAll(
     @Req() { user: { sub } }: UserData,

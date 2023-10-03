@@ -1,10 +1,11 @@
 import { rethrowError } from '@utils/error';
-import { InsertUser, User } from '../entities';
+import { User } from '../entities';
 import { UserEmailTaken } from '../error-mappings';
 import { Injectable } from '@nestjs/common';
 import { NestKnexService } from '@database/nest-knex.service';
 import { BaseRepository } from '@database/base-repository.repository';
 import { Tables } from '@database/constants';
+import { Credentials } from '@api/auth/interfaces';
 
 @Injectable()
 export class UsersRepository extends BaseRepository<User> {
@@ -12,7 +13,7 @@ export class UsersRepository extends BaseRepository<User> {
     super(knex, Tables.Users);
   }
 
-  async insertOne(input: InsertUser): Promise<User> {
+  async insertOne(input: Credentials): Promise<User> {
     return await this.repository()
       .insert(input)
       .returning('*')

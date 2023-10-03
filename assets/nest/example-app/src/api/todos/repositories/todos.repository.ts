@@ -1,7 +1,7 @@
 import { rethrowError } from '@utils/error';
 import { NestKnexService } from '@database/nest-knex.service';
 import { Paginated } from '@utils/query/pagination';
-import { Todo } from '../entities/todo.entity';
+import { Todo } from '../entities';
 import { Injectable } from '@nestjs/common';
 import {
   CreateTodoInput,
@@ -9,11 +9,12 @@ import {
   FindOneTodoInput,
   UpdateTodoInput,
 } from '../interfaces/todos.interface';
-import { SortOrder, definedOrNotFound } from '@utils/query';
-import { TodoUserNotFound } from '../error-mappings/todo-user-not-found.error-mapping';
-import { Errors, paginatedResponse } from '@utils/api/response';
+import { definedOrNotFound } from '@utils/query';
+import { TodoUserNotFound } from '../error-mappings';
+import { paginatedResponse } from '@utils/api/response';
 import { BaseRepository } from '@database/base-repository.repository';
 import { Tables } from '@database/constants';
+import { Errors } from '@utils/enums';
 
 @Injectable()
 export class TodosRepository extends BaseRepository<Todo> {
@@ -60,23 +61,32 @@ export class TodosRepository extends BaseRepository<Todo> {
   }
 
   async findAll(input: FindAllTodosInput): Promise<Paginated<Todo>> {
-    const { userId, query } = input;
+    const {
+      userId,
+      query: { pageNumber, pageSize, name, completed, column, order },
+    } = input;
 
-    const qb = this.repository().where({ userId }).filter(query.filters, {
+    const pagination = { pageNumber, pageSize };
+    const filters = { name, completed };
+
+    const qb = this.repository().where({ userId }).filter(filters, {
       name: this.whereLike,
       completed: this.where,
     });
 
-    const items = await qb
-      .clone()
-      .sort(query.sorts, {
+    const itemsQuery = qb.clone();
+
+    if (column) {
+      itemsQuery.sort([{ column, order }], {
         name: this.orderBy,
         createdAt: this.orderBy,
-      })
-      .paginate(query.pagination);
+      });
+    }
 
-    const count = await qb.clone().count().first();
+    const items = await itemsQuery.paginate(pagination);
 
-    return paginatedResponse(items, Number(count), query.pagination);
+    const count = await this.count(qb);
+
+    return paginatedResponse(items, count, pagination);
   }
 }

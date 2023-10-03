@@ -14,6 +14,12 @@ export class BaseRepository<Entity extends {}> {
     return this.knexService.connection<Entity>(this.tableName);
   }
 
+  async count(qb: Knex.QueryBuilder<Entity>): Promise<number> {
+    const totalCount = await qb.clone().count().first();
+
+    return +totalCount.count;
+  }
+
   where(qb: Knex.QueryBuilder<Entity>, value: Partial<Entity>, column: string) {
     return qb.where({ [column]: value });
   }
