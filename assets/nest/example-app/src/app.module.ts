@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { HelloWorldModule } from './api/hello-world/hello-world.module';
-import { HealthchecksModule } from './api/healthchecks/healthchecks.module';
-import { validateConfig } from './utils/environment';
+import { validateConfig } from '@utils/environment';
+import { DatabaseModule } from '@database/database.module';
+import { HealthchecksModule } from '@api/healthchecks/healthchecks.module';
+import { AuthModule } from '@api/auth/auth.module';
+import { UsersModule } from '@api/users/users.module';
+import { TodosModule } from '@api/todos/todos.module';
 
 @Module({
   imports: [
@@ -11,8 +14,11 @@ import { validateConfig } from './utils/environment';
       cache: true,
       ignoreEnvFile: true,
     }),
-    HelloWorldModule,
+    DatabaseModule,
     HealthchecksModule,
+    UsersModule,
+    AuthModule,
+    TodosModule,
   ],
 })
 export class AppModule {}

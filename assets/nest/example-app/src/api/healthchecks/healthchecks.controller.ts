@@ -1,10 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Public } from '@utils/decorators';
 
 @ApiTags('Healthchecks')
-@Controller('/healthz')
+@Controller('healthz')
 export class HealthchecksController {
-  @Get('/live')
+  @Public()
+  @Get('live')
   @ApiOperation({
     summary: 'Liveness endpoint',
     description: 'Used to check whether the application is alive.',
@@ -24,7 +26,8 @@ export class HealthchecksController {
     return 'OK';
   }
 
-  @Get('/ready')
+  @Public()
+  @Get('ready')
   @ApiOperation({
     summary: 'Readiness endpoint',
     description:
