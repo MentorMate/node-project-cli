@@ -2,12 +2,12 @@ import { createMock } from '@golevelup/ts-jest';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
-import { AuthGuard } from './auth.guard';
 import jwt from 'jsonwebtoken';
-import { JwtClaims } from '../entities';
 import { Test } from '@nestjs/testing';
+import { AuthGuard } from './auth.guard';
+import { JwtClaims } from '../interfaces';
 
-describe('AuthenticatedGuard', () => {
+describe('Auth Guard', () => {
   let authGuard: AuthGuard;
   let reflector: Reflector;
 
@@ -26,7 +26,7 @@ describe('AuthenticatedGuard', () => {
 
   describe('canActivate', () => {
     const testClaims: JwtClaims = {
-      sub: '1',
+      sub: 1,
       email: 'admin@admin.com',
     };
 

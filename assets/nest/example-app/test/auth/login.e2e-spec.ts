@@ -1,32 +1,55 @@
-import request from 'supertest';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
-import { getUserCredentials } from '../utils/get-user-credentials';
-import { registerUser } from '../utils/register-user';
 import { expectError } from '../utils/expect-error';
-import { InvalidCredentials, UnprocessableEntity } from '../utils/errors';
+import { NestKnexService } from '@database/nest-knex.service';
+import {
+  BadRequestException,
+  UnprocessableEntityException,
+  ValidationPipe,
+} from '@nestjs/common';
+import { PasswordService } from '@api/auth/services';
 
 describe('POST /auth/login', () => {
-  const credentials = getUserCredentials();
+  const credentials = { email: 'hello@email.com', password: 'pass@ord' };
 
   let app: NestFastifyApplication;
+  let nestKnexService: NestKnexService;
+
+  class PasswordServiceMock {
+    compare = jest.fn().mockImplementation((a, b) => a === b);
+  }
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(PasswordService)
+      .useClass(PasswordServiceMock)
+      .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
       new FastifyAdapter(),
     );
 
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+      }),
+    );
+
     await app.init();
-    await app.getHttpAdapter().getInstance().ready();
-    await registerUser(app, credentials);
+    nestKnexService = app.get(NestKnexService);
+  });
+
+  beforeEach(async () => {
+    await nestKnexService.connection.migrate.rollback();
+    await nestKnexService.connection.migrate.latest();
+    await nestKnexService.connection.seed.run();
   });
 
   afterAll(async () => {
@@ -35,42 +58,62 @@ describe('POST /auth/login', () => {
 
   describe('given the email and password are valid', () => {
     it('should login the user and return a jwt token', async () => {
-      const res = await request(app)
-        .post('/auth/login')
-        .send(credentials)
-        .expect(200);
-      expect(typeof res.body.idToken).toBe('string');
+      await app
+        .inject({
+          method: 'POST',
+          url: '/auth/login',
+          payload: credentials,
+        })
+        .then((res) => {
+          expect(res.statusCode).toBe(201);
+          expect(typeof res.json().idToken).toBe('string');
+        });
     });
 
     describe('when there are empty credentials', () => {
-      it('should return 422', async () => {
-        await request(app)
-          .post('/auth/login')
-          .send({})
-          .expect('content-type', /json/)
-          .expect(expectError(UnprocessableEntity));
+      it('should return 400', async () => {
+        await app
+          .inject({
+            method: 'POST',
+            url: '/auth/login',
+          })
+          .then((res) => {
+            expect(expectError(new BadRequestException(), res.json));
+          });
       });
     });
 
     describe('when the email does not exist in db', () => {
       it('should return 422', async () => {
-        const newCredentials = getUserCredentials();
-        await request(app)
-          .post('/auth/login')
-          .send(newCredentials)
-          .expect('content-type', /json/)
-          .expect(expectError(InvalidCredentials));
+        const newCredentials = {
+          email: 'unregistered@user.com',
+          password: credentials.password,
+        };
+
+        await app
+          .inject({
+            method: 'POST',
+            url: '/auth/login',
+            payload: newCredentials,
+          })
+          .then((res) => {
+            expectError(new UnprocessableEntityException(), res.json);
+          });
       });
     });
   });
 
   describe('when the password does not match in db', () => {
     it('should return 422', async () => {
-      await request(app)
-        .post('/auth/login')
-        .send({ email: credentials.email, password: 'wrong password' })
-        .expect('content-type', /json/)
-        .expect(expectError(InvalidCredentials));
+      await app
+        .inject({
+          method: 'POST',
+          url: '/auth/login',
+          payload: { email: credentials.email, password: 'wrongPassword' },
+        })
+        .then((res) => {
+          expectError(new UnprocessableEntityException(), res.json);
+        });
     });
   });
 });

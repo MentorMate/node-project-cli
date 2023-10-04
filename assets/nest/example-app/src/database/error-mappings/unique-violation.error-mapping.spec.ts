@@ -1,7 +1,7 @@
 import { DatabaseError } from 'pg';
 import { PostgresError } from 'pg-error-enum';
-import { DuplicateRecordError } from '../errors';
 import { uniqueViolation } from './unique-violation.error-mapping';
+import { DuplicateRecordError } from '@database/errors';
 
 describe('uniqueViolation', () => {
   it('should return an error mapping', () => {

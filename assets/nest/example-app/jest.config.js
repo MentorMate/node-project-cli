@@ -11,7 +11,10 @@ module.exports = {
     '<rootDir>/src/.*module.ts$',
     '<rootDir>/src/.*/index.ts$',
     '<rootDir>/src/.*dto.ts$',
+    '<rootDir>/src/.*entity.ts$',
+    '<rootDir>/src/.*controller.ts$',
     '<rootDir>/src/utils/class-transformers/.*',
+    '<rootDir>/src/database/seeds/.*',
     '<rootDir>/src/.*interceptor.ts$',
   ],
   coverageThreshold: {

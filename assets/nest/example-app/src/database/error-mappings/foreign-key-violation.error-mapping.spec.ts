@@ -1,7 +1,7 @@
 import { DatabaseError } from 'pg';
 import { PostgresError } from 'pg-error-enum';
-import { RecordNotFoundError } from '../errors';
 import { foreignKeyViolation } from './foreign-key-violation.error-mapping';
+import { RecordNotFoundError } from '@database/errors';
 
 describe('foreignKeyViolation', () => {
   it('should return an error mapping', () => {

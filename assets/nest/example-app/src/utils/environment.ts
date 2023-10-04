@@ -87,9 +87,7 @@ export const validateConfig = (
   });
 
   if (errors.length > 0) {
-    console.log(errors);
-
-    throw new Error('Config validation failed!');
+    throw new Error(errors.toString());
   }
   return validatedConfig;
 };

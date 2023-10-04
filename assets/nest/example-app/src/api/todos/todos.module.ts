@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
+import { TodosService } from './todos.service';
 import { TodosController } from './todos.controller';
+import { DatabaseModule } from '@database/database.module';
+import { TodosRepository } from './repositories/todos.repository';
 
-export const todosModuleMetadata = {
+@Module({
+  imports: [DatabaseModule],
   controllers: [TodosController],
-};
-
-@Module(todosModuleMetadata)
+  providers: [TodosService, TodosRepository],
+})
 export class TodosModule {}

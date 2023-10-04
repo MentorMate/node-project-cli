@@ -1,12 +1,11 @@
 import { sign } from 'jsonwebtoken';
 import { Environment } from '@utils/environment';
-import { JwtClaims } from '../entities';
-import { JwtServiceInterface } from '../interfaces';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
+import { JwtClaims } from '../interfaces';
 
 @Injectable()
-export class JwtService implements JwtServiceInterface {
+export class JwtService {
   constructor(private readonly configService: ConfigService<Environment>) {}
 
   sign(claims: JwtClaims): string {

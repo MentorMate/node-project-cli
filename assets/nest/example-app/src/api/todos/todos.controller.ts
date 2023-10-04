@@ -1,77 +1,106 @@
-import { Controller, Delete, Get, Patch, Post } from '@nestjs/common';
 import {
-  ApiBearerAuth,
-  ApiNoContentResponse,
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Req,
+  ParseIntPipe,
+  Put,
+  Query,
+} from '@nestjs/common';
+import { TodosService } from './todos.service';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
-  ApiOperation,
   ApiTags,
-  ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
+import { Todo } from './entities';
+import { Paginated } from '@utils/query';
+import { CreateTodoDto, FindAllTodosQueryDto, UpdateTodoDto } from './dto';
+import { UserData } from '@api/auth/interfaces';
+import {
+  BadRequestDto,
+  NotFoundDto,
+  UnprocessableEntityDto,
+} from '@utils/dtos';
+import { Errors } from '@utils/enums';
 
-@ApiBearerAuth()
-@ApiTags('v1', 'Todo')
-@Controller('/v1/todos')
+@ApiTags('Todos')
+@Controller('v1/todos')
 export class TodosController {
+  constructor(private readonly todosService: TodosService) {}
+
+  @ApiBody({ type: CreateTodoDto })
+  @ApiCreatedResponse({ type: Todo })
+  @ApiBadRequestResponse({
+    type: BadRequestDto,
+    description: Errors.BadRequest,
+  })
+  @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
+  @ApiUnprocessableEntityResponse({
+    type: UnprocessableEntityDto,
+    description: Errors.UnprocessableEntity,
+  })
   @Post()
-  @ApiOperation({
-    summary: 'Create a To-Do',
-    description: 'Create a new To-Do item',
-  })
-  @ApiUnauthorizedResponse()
-  @ApiUnprocessableEntityResponse()
-  create() {
-    return 'OK';
+  create(
+    @Body() createTodoDto: CreateTodoDto,
+    @Req() { user: { sub } }: UserData,
+  ): Promise<Todo> {
+    return this.todosService.create({ createTodoDto, userId: sub });
   }
 
+  @ApiOkResponse({ type: Todo, isArray: true })
+  @ApiBadRequestResponse({
+    type: BadRequestDto,
+    description: Errors.BadRequest,
+  })
   @Get()
-  @ApiOperation({
-    summary: 'List To-Dos',
-    description: 'List To-Do items',
-  })
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
-  list() {
-    return 'OK';
+  findAll(
+    @Req() { user: { sub } }: UserData,
+    @Query() query: FindAllTodosQueryDto,
+  ): Promise<Paginated<Todo>> {
+    return this.todosService.findAll({ userId: sub, query });
   }
 
+  @ApiOkResponse({ type: Todo })
+  @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
   @Get(':id')
-  @ApiOperation({
-    summary: 'Get a To-Do',
-    description: 'Get a To-Do item',
-  })
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @ApiUnprocessableEntityResponse()
-  get() {
-    return 'OK';
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() { user: { sub } }: UserData,
+  ): Promise<Todo> {
+    return this.todosService.findOneOrFail({ id, userId: sub });
   }
 
-  @Patch(':id')
-  @ApiOperation({
-    summary: 'Update a To-Do',
-    description: 'Update a To-Do item',
+  @ApiBody({ type: UpdateTodoDto })
+  @ApiOkResponse({ type: Todo })
+  @ApiBadRequestResponse({
+    type: BadRequestDto,
+    description: Errors.BadRequest,
   })
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @ApiUnprocessableEntityResponse()
-  update() {
-    return 'OK';
+  @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() { user: { sub } }: UserData,
+    @Body() updateTodoDto: UpdateTodoDto,
+  ): Promise<Todo> {
+    return this.todosService.update({ id, userId: sub, updateTodoDto });
   }
 
+  @ApiOkResponse({ type: Number })
+  @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
   @Delete(':id')
-  @ApiOperation({
-    summary: 'Login a user',
-    description: 'Authenticate a user',
-  })
-  @ApiNoContentResponse()
-  @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @ApiUnprocessableEntityResponse()
-  delete() {
-    return 'OK';
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() { user: { sub } }: UserData,
+  ): Promise<number> {
+    return this.todosService.remove({ id, userId: sub });
   }
 }

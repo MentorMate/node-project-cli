@@ -7,10 +7,12 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { CredentialsDto, JwtTokensDto } from './dtos';
+import { CredentialsDto } from './dto';
 import { AuthService } from './services';
-import { ConflictDto, UnprocessableEntityDto } from '@utils/api/response';
-import { Public } from '@utils/decorators/public.decorator';
+import { Public } from '@utils/decorators';
+import { JwtToken } from './entities';
+import { Errors } from '@utils/enums';
+import { ConflictDto, UnprocessableEntityDto } from '@utils/dtos';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -30,17 +32,17 @@ export class AuthController {
   @ApiBody({ type: CredentialsDto })
   @ApiOkResponse({
     description: 'OK',
-    type: JwtTokensDto,
+    type: JwtToken,
   })
   @ApiConflictResponse({
-    description: 'Conflict',
+    description: Errors.Conflict,
     type: ConflictDto,
   })
   @ApiUnprocessableEntityResponse({
-    description: 'UnprocessableEntity',
+    description: Errors.UnprocessableEntity,
     type: UnprocessableEntityDto,
   })
-  register(@Body() credentials: CredentialsDto): Promise<JwtTokensDto> {
+  register(@Body() credentials: CredentialsDto): Promise<JwtToken> {
     return this.authService.register(credentials);
   }
 
@@ -53,15 +55,13 @@ export class AuthController {
   @ApiBody({ type: CredentialsDto })
   @ApiOkResponse({
     description: 'OK',
-    type: JwtTokensDto,
+    type: JwtToken,
   })
   @ApiUnprocessableEntityResponse({
-    description: 'UnprocessableEntity',
+    description: Errors.UnprocessableEntity,
     type: UnprocessableEntityDto,
   })
-  async login(
-    @Body() credentials: CredentialsDto,
-  ): Promise<JwtTokensDto | undefined> {
+  async login(@Body() credentials: CredentialsDto): Promise<JwtToken> {
     return this.authService.login(credentials);
   }
 }

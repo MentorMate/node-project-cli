@@ -1,24 +1,33 @@
 import { UsersRepository } from './users.repository';
 import { Test } from '@nestjs/testing';
 import { NestKnexService } from '@database/nest-knex.service';
-import { InsertUser } from '../entities';
-import {
-  mockKnexService,
-  returning,
-  insert,
-  first,
-  where,
-} from '../../../utils/test/knex';
+import { Credentials } from '@api/auth/interfaces';
 
 describe('UsersRepository', () => {
   let usersRepository: UsersRepository;
+
+  const first = jest.fn(() => Promise.resolve({}));
+  const returning = jest.fn().mockImplementation(() => Promise.resolve([]));
+
+  const where = jest.fn().mockImplementation(() => ({
+    first,
+  }));
+
+  const insert = jest.fn().mockImplementation(() => ({
+    returning,
+  }));
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         {
           provide: NestKnexService,
-          useFactory: () => mockKnexService,
+          useFactory: () => ({
+            connection: () => ({
+              insert,
+              where,
+            }),
+          }),
         },
         UsersRepository,
       ],
@@ -28,7 +37,7 @@ describe('UsersRepository', () => {
   });
 
   it('insertOne - create a user', async () => {
-    const insertUser: InsertUser = {
+    const insertUser: Credentials = {
       email: 'user@example.com',
       password: 'password',
     };

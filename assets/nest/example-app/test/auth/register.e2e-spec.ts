@@ -4,15 +4,19 @@ import {
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
-import { getUserCredentials } from '../utils/get-user-credentials';
-import { registerUser } from '../utils/register-user';
+import { NestKnexService } from '@database/nest-knex.service';
+import {
+  BadRequestException,
+  ConflictException,
+  ValidationPipe,
+} from '@nestjs/common';
 import { expectError } from '../utils/expect-error';
-import { UnprocessableEntity, UserConflict } from '../utils/errors';
 
 describe('POST /auth/login', () => {
-  const credentials = getUserCredentials();
+  const credentials = { email: 'user@email.com', password: 'pass@ord' };
 
   let app: NestFastifyApplication;
+  let nestKnexService: NestKnexService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -23,9 +27,21 @@ describe('POST /auth/login', () => {
       new FastifyAdapter(),
     );
 
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+      }),
+    );
+
     await app.init();
-    await app.getHttpAdapter().getInstance().ready();
-    await registerUser(app, credentials);
+    nestKnexService = app.get(NestKnexService);
+  });
+
+  beforeEach(async () => {
+    await nestKnexService.connection.migrate.rollback();
+    await nestKnexService.connection.migrate.latest();
+    await nestKnexService.connection.seed.run();
   });
 
   afterAll(async () => {
@@ -38,7 +54,7 @@ describe('POST /auth/login', () => {
         .inject({
           method: 'POST',
           url: '/auth/register',
-          payload: getUserCredentials(),
+          payload: credentials,
         })
         .then((res) => {
           expect(res.statusCode).toBe(200);
@@ -48,23 +64,26 @@ describe('POST /auth/login', () => {
 
     describe('when there is an existing user', () => {
       it('should return 409 error', async () => {
-        const credentials = getUserCredentials();
-
-        await registerUser(app, credentials);
+        const newCredentials = {
+          email: 'hello@email.com',
+          password: credentials.password,
+        };
 
         await app
           .inject({
             method: 'POST',
             url: '/auth/register',
-            payload: credentials,
+            payload: newCredentials,
           })
-          .then(expectError(UserConflict));
+          .then((res) => {
+            expectError(new ConflictException(), res.json);
+          });
       });
     });
   });
 
   describe('when there is invalid payload', () => {
-    it('should return 422 error', async () => {
+    it('should return 400 error', async () => {
       await app
         .inject({
           method: 'POST',
@@ -74,7 +93,9 @@ describe('POST /auth/login', () => {
             password: 'test',
           },
         })
-        .then(expectError(UnprocessableEntity));
+        .then((res) => {
+          expectError(new BadRequestException(), res.json);
+        });
     });
   });
 });

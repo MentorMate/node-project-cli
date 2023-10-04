@@ -22,6 +22,10 @@ module.exports = {
     '<rootDir>/.*spec.ts$',
     '<rootDir>/.*module.ts$',
     '<rootDir>/src/.*/index.ts$',
+    '<rootDir>/src/.*dto.ts$',
+    '<rootDir>/src/.*entity.ts$',
+    '<rootDir>/src/.*repository.ts$',
+    '<rootDir>/src/.*guard.ts$',
   ],
   coverageThreshold: {
     global: {

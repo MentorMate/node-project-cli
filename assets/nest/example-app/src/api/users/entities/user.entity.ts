@@ -1,10 +1,10 @@
-export interface GenericSchema {
-  id: number;
-  createdAt: string;
-  updatedAt: string;
-}
+import { ApiProperty } from '@nestjs/swagger';
+import { GenericEntity } from '@utils/entities';
 
-export interface User extends GenericSchema {
+export class User extends GenericEntity {
+  @ApiProperty()
   email: string;
+
+  @ApiProperty()
   password: string;
 }

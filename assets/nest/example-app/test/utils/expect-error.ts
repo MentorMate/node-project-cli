@@ -1,25 +1,11 @@
-import { Response } from 'supertest';
-import {
-  InvalidCredentials,
-  TodoNotFound,
-  Unauthorized,
-  UnprocessableEntity,
-  UserConflict,
-} from './errors';
-import { HttpException } from './http-exception';
+import { HttpException } from '@nestjs/common';
 
-const httpExceptionMap = {
-  [Unauthorized.name]: Unauthorized(),
-  [UnprocessableEntity.name]: UnprocessableEntity(),
-  [TodoNotFound.name]: TodoNotFound(),
-  [UserConflict.name]: UserConflict(),
-  [InvalidCredentials.name]: InvalidCredentials(),
+export const expectError = async <T extends HttpException>(
+  ex: T,
+  jsonResponse: Response['json'],
+) => {
+  const response = await jsonResponse();
+
+  expect(ex.message).toEqual(response.error || response.message);
+  expect(ex.getStatus()).toEqual(response.statusCode);
 };
-
-export const expectError =
-  (ex: (message?: string) => HttpException) => (res: Response) => {
-    const error = httpExceptionMap[ex.name];
-    expect(res.error).toBeDefined();
-    expect(res.body.message).toEqual(error.message);
-    expect(res.status).toEqual(error.status);
-  };

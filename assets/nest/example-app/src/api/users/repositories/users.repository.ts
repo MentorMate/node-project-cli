@@ -1,17 +1,20 @@
 import { rethrowError } from '@utils/error';
-import { InsertUser, User } from '../entities';
+import { User } from '../entities';
 import { UserEmailTaken } from '../error-mappings';
-import { UsersRepositoryInterface } from '../interfaces';
 import { Injectable } from '@nestjs/common';
 import { NestKnexService } from '@database/nest-knex.service';
+import { BaseRepository } from '@database/base-repository.repository';
+import { Tables } from '@database/constants';
+import { Credentials } from '@api/auth/interfaces';
 
 @Injectable()
-export class UsersRepository implements UsersRepositoryInterface {
-  constructor(private readonly knex: NestKnexService) {}
+export class UsersRepository extends BaseRepository<User> {
+  constructor(private readonly knex: NestKnexService) {
+    super(knex, Tables.Users);
+  }
 
-  async insertOne(input: InsertUser): Promise<User> {
-    return await this.knex
-      .connection('users')
+  async insertOne(input: Credentials): Promise<User> {
+    return await this.repository()
       .insert(input)
       .returning('*')
       .then((data: any) => data[0])
@@ -19,6 +22,6 @@ export class UsersRepository implements UsersRepositoryInterface {
   }
 
   async findByEmail(email: User['email']): Promise<User | undefined> {
-    return await this.knex.connection('users').where({ email }).first();
+    return await this.repository().where({ email }).first();
   }
 }

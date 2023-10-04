@@ -1,12 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import request from 'supertest';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { HealthchecksModule } from '@api/healthchecks/healthchecks.module';
 
-describe('HelloWorldController (e2e)', () => {
+describe('GET /healthz', () => {
   let app: NestFastifyApplication;
 
   beforeEach(async () => {
@@ -22,17 +21,27 @@ describe('HelloWorldController (e2e)', () => {
     await app.getHttpAdapter().getInstance().ready();
   });
 
-  it('/healthz/live (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/healthz/live')
-      .expect(200)
-      .expect('OK');
+  it('/live', async () => {
+    await app
+      .inject({
+        method: 'GET',
+        url: '/healthz/live',
+      })
+      .then(({ statusCode, body }) => {
+        expect(statusCode).toBe(200);
+        expect(body).toBe('OK');
+      });
   });
 
-  it('/healthz/ready (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/healthz/ready')
-      .expect(200)
-      .expect('OK');
+  it('/ready', async () => {
+    await app
+      .inject({
+        method: 'GET',
+        url: '/healthz/ready',
+      })
+      .then(({ statusCode, body }) => {
+        expect(statusCode).toBe(200);
+        expect(body).toBe('OK');
+      });
   });
 });
