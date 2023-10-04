@@ -9,6 +9,7 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { RequestLoggingInterceptor } from '@utils/interceptors/request-logging.interceptor';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -46,6 +47,10 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
+  
+  if (configService.get('NODE_ENV') !== 'production') {
+    app.useGlobalInterceptors(new RequestLoggingInterceptor());
+  }
 
   // start server
   await app.listen(port, () => {
