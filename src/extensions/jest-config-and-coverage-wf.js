@@ -83,13 +83,7 @@ module.exports = (toolbox) => {
 
         Object.assign(pkgJson.scripts, {
           'test:e2e':
-<<<<<<< HEAD
-            'DOTENV_CONFIG_PATH=.env.test npm run test:e2e:db:recreate && DOTENV_CONFIG_PATH=.env.test npm run db:migrate:latest && DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/jest/bin/jest.js --config ./test/jest-e2e.config.js',
-          'test:e2e:db:recreate':
-            'DOTENV_CONFIG_PATH=.env.test ts-node -r dotenv/config ./test/utils/recreate-db',
-=======
-            'DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.config.js --runInBand',
->>>>>>> 2e3b5f9c75efc6ae5716a9828f42fd846d706a3d
+            'DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/jest/bin/jest.js --config ./test/jest-e2e.config.js --runInBand',
         });
       }
     }
