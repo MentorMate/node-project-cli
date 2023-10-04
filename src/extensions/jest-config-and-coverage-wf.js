@@ -59,7 +59,7 @@ module.exports = (toolbox) => {
       Object.assign(pkgJson.scripts, {
         test: 'jest',
         'test:cov': 'jest --coverage',
-        'test:e2e': `DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.config.js`,
+        'test:e2e': `DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/jest/bin/jest.js --config ./test/jest-e2e.config.js`,
         'test:e2e:cov': 'npm run test:e2e -- --coverage',
       });
 
@@ -83,7 +83,7 @@ module.exports = (toolbox) => {
 
         Object.assign(pkgJson.scripts, {
           'test:e2e':
-            'DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest --config ./test/jest-e2e.config.js --runInBand',
+            'DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/jest/bin/jest.js --config ./test/jest-e2e.config.js --runInBand',
         });
       }
     }
