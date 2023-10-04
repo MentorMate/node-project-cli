@@ -25,6 +25,7 @@ async function run() {
     .setTitle('To-Do')
     .setDescription('TA To-Do application API')
     .setVersion('1.0.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

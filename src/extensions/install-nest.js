@@ -59,10 +59,19 @@ module.exports = (toolbox) => {
         Object.assign(pkgJson.dependencies, {
           'class-transformer': '^0.5.1',
           'class-validator': '^0.14.0',
+          statuses: '^2.0.1',
+          bcrypt: '^5.1.0',
         });
 
         Object.assign(pkgJson.devDependencies, {
           '@nestjs/swagger': '^6.3.0',
+          '@fastify/static': '^6.10.2',
+          '@golevelup/ts-jest': '^0.4.0',
+          typescript: '^4.9.5',
+          '@types/statuses': '^2.0.1',
+          '@types/bcrypt': '^5.0.0',
+          '@types/uuid': '^9.0.1',
+          uuid: '^9.0.0',
         });
 
         Object.assign(pkgJson.scripts, {
@@ -89,6 +98,11 @@ module.exports = (toolbox) => {
           copyAsync(
             `${assetsPath}/nest/example-app/migrations`,
             `${appDir}/migrations`
+          ),
+          copyAsync(
+            `${assetsPath}/${framework}/example-app/tsconfig.build.json`,
+            `${appDir}/tsconfig.build.json`,
+            { overwrite: true }
           ),
           copyAsync(
             `${assetsPath}/nest/example-app/tsconfig.json`,

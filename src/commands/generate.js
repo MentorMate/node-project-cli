@@ -231,7 +231,7 @@ module.exports = {
       write(`${userInput.appDir}/package.json`, packageJson);
     } catch (err) {
       throw new Error(
-        `An error occured while writing the new package.json file: ${err}`
+        `An error occurred while writing the new package.json file: ${err}`
       );
     }
 
@@ -268,7 +268,7 @@ module.exports = {
       'Use "git add . && git commit -m "feat: initial commit" && git push -u origin main" to push your initial local repository contents to your remote one.'
     );
     success(
-      'You can then procede managing your repositories according to your usual pracitces.'
+      'You can then proceed managing your repositories according to your usual practices.'
     );
   },
 };

@@ -20,7 +20,12 @@ module.exports = {
   coveragePathIgnorePatterns: [
     '<rootDir>/src/main.ts$',
     '<rootDir>/.*spec.ts$',
-    '<rootDir>/.*module.ts$'
+    '<rootDir>/.*module.ts$',
+    '<rootDir>/src/.*/index.ts$',
+    '<rootDir>/src/.*dto.ts$',
+    '<rootDir>/src/.*entity.ts$',
+    '<rootDir>/src/.*repository.ts$',
+    '<rootDir>/src/.*guard.ts$',
   ],
   coverageThreshold: {
     global: {
@@ -33,4 +38,13 @@ module.exports = {
   setupFiles: [
     '<rootDir>/jest.setup.ts'
   ],
+  // path aliases from tsconfig.json
+  moduleNameMapper: {
+    '^@api/(.*)$': '<rootDir>/src/api/$1',
+    '^@database$': '<rootDir>/src/database',
+    '^@database/(.*)$': '<rootDir>/src/database/$1',
+    '^@extensions/(.*)$': '<rootDir>/src/extensions/$1',
+    '^@middleware$': '<rootDir>/src/middleware',
+    '^@utils/(.*)$': '<rootDir>/src/utils/$1',
+  },
 }
