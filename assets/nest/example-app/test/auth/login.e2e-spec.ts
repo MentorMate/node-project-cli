@@ -11,7 +11,6 @@ import {
   UnprocessableEntityException,
   ValidationPipe,
 } from '@nestjs/common';
-import { PasswordService } from '@api/auth/services';
 
 describe('POST /auth/login', () => {
   const credentials = { email: 'hello@email.com', password: 'pass@ord' };
@@ -19,17 +18,10 @@ describe('POST /auth/login', () => {
   let app: NestFastifyApplication;
   let nestKnexService: NestKnexService;
 
-  class PasswordServiceMock {
-    compare = jest.fn().mockImplementation((a, b) => a === b);
-  }
-
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    })
-      .overrideProvider(PasswordService)
-      .useClass(PasswordServiceMock)
-      .compile();
+    }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
       new FastifyAdapter(),

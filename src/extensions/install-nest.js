@@ -74,15 +74,7 @@ module.exports = (toolbox) => {
           uuid: '^9.0.0',
         });
 
-        Object.assign(pkgJson.scripts, {
-          'openapi:g': 'ts-node scripts/generate-openapi',
-        });
-
         await Promise.all([
-          copyAsync(
-            `${assetsPath}/nest/example-app/scripts/generate-openapi.ts`,
-            `${appDir}/scripts/generate-openapi.ts`
-          ),
           copyAsync(
             `${assetsPath}/nest/example-app/.openapi/gitignorefile`,
             `${appDir}/.openapi/.gitignore`

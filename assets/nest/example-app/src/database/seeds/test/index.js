@@ -6,7 +6,11 @@ exports.seed = async function (knex) {
   // Deletes ALL existing entries
   await knex('users').del();
   await knex('users').insert([
-    { email: 'hello@email.com', password: 'pass@ord' },
+    // The original password for this hash is 'pass@ord'
+    {
+      email: 'hello@email.com',
+      password: '$2b$10$Mxur7NOiTlm22yuldEMZgOCbIV7bxDCcUbBLFbzrJ1MrnIczZB.92', // pragma: allowlist secret
+    },
   ]);
 
   await knex('todos').insert([
