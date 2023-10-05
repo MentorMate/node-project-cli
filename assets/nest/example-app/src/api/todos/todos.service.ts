@@ -60,7 +60,7 @@ export class TodosService {
   }
 
   async remove(input: FindOneTodoInput): Promise<number> {
-    const todo = await this.findOne({ id: input.id });
+    const todo = await this.findOne(input);
     if (!todo) {
       throw new NotFoundException(Errors.NotFound);
     }

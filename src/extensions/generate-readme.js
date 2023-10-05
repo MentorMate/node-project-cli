@@ -8,6 +8,7 @@ module.exports = (toolbox) => {
     appDir,
     db,
     isExampleApp,
+    framework,
   }) => {
     const {
       template: { generate },
@@ -36,7 +37,12 @@ module.exports = (toolbox) => {
                 knex: isExampleApp,
               },
             },
-            openApi: isExampleApp,
+            ...(isExampleApp && {
+              openApi: {
+                express: framework === 'express',
+                nest: framework === 'nest',
+              },
+            }),
             licenseChecks: features.includes('licenseChecks'),
           },
           run: {
@@ -51,7 +57,9 @@ module.exports = (toolbox) => {
           },
           ...(isExampleApp && {
             troubleshooting: {
-              openApi: true,
+              openApi: {
+                express: framework === 'express',
+              },
             },
           }),
         },
