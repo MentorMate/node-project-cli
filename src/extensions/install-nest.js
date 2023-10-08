@@ -85,16 +85,6 @@ module.exports = (toolbox) => {
 
         Object.assign(pkgJson.devDependencies, {
           '@nestjs/swagger': '^6.3.0',
-        });
-
-        if (authOption === 'auth0') {
-          Object.assign(pkgJson.devDependencies, {
-            '@types/passport-jwt': '^3.0.9',
-          });
-        }
-
-        Object.assign(pkgJson.scripts, {
-          'openapi:g': 'ts-node scripts/generate-openapi',
           '@fastify/static': '^6.10.2',
           '@golevelup/ts-jest': '^0.4.0',
           typescript: '^4.9.5',
@@ -103,6 +93,12 @@ module.exports = (toolbox) => {
           '@types/uuid': '^9.0.1',
           uuid: '^9.0.0',
         });
+
+        if (authOption === 'auth0') {
+          Object.assign(pkgJson.devDependencies, {
+            '@types/passport-jwt': '^3.0.9',
+          });
+        }
 
         await Promise.all([
           copyAsync(
