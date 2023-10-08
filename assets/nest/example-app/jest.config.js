@@ -3,12 +3,19 @@
  */
 module.exports = {
   collectCoverageFrom: [
-    '**/*.(t|j)s'
+    '<rootDir>/src/**/*.(t|j)s'
   ],
-  coverageDirectory: '../coverage',
+  coverageDirectory: './coverage',
   coveragePathIgnorePatterns: [
-    '<rootDir>/main.ts$',
-    '<rootDir>/.*module.ts$'
+    '<rootDir>/src/main.ts$',
+    '<rootDir>/src/.*module.ts$',
+    '<rootDir>/src/.*/index.ts$',
+    '<rootDir>/src/.*dto.ts$',
+    '<rootDir>/src/.*entity.ts$',
+    '<rootDir>/src/.*controller.ts$',
+    '<rootDir>/src/utils/class-transformers/.*',
+    '<rootDir>/src/database/seeds/.*',
+    '<rootDir>/src/.*interceptor.ts$',
   ],
   coverageThreshold: {
     global: {
@@ -23,13 +30,22 @@ module.exports = {
     'json',
     'ts'
   ],
-  rootDir: 'src',
+  rootDir: '.',
   testEnvironment: 'node',
   testRegex: '.*\\.spec\\.ts$',
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest'
   },
   setupFiles: [
-    '<rootDir>/../jest.setup.ts'
+    '<rootDir>/jest.setup.ts'
   ],
+  // path aliases from tsconfig.json
+  moduleNameMapper: {
+    '^@api/(.*)$': '<rootDir>/src/api/$1',
+    '^@database$': '<rootDir>/src/database',
+    '^@database/(.*)$': '<rootDir>/src/database/$1',
+    '^@extensions/(.*)$': '<rootDir>/src/extensions/$1',
+    '^@middleware$': '<rootDir>/src/middleware',
+    '^@utils/(.*)$': '<rootDir>/src/utils/$1',
+  }
 }

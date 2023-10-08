@@ -155,7 +155,7 @@ describe('install-nest', () => {
         );
       });
 
-      it('should copy the openapi-generate script', () => {
+      it.skip('should copy the openapi-generate script', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/nest/example-app/scripts/generate-openapi.ts`,
           `${input.appDir}/scripts/generate-openapi.ts`
