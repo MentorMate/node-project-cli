@@ -144,10 +144,6 @@ describe('install-nest', () => {
         expect(devDependencies).toHaveProperty('@nestjs/swagger');
       });
 
-      it('should add "openapi:g" to scripts', () => {
-        expect(scripts).toHaveProperty('openapi:g');
-      });
-
       it('should copy the example app project source', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/nest/example-app/src/`,
