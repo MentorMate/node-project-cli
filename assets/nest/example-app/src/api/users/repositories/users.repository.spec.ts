@@ -50,10 +50,10 @@ describe('UsersRepository', () => {
 
     returning.mockImplementationOnce(() => Promise.resolve([createdUser]));
 
-    const result = await usersRepository.insertOne(insertUser);
+    const result = await usersRepository.insertOne(insertUser.email, insertUser.password, null);
 
     expect(result).toBe(createdUser);
-    expect(insert).toHaveBeenCalledWith(insertUser);
+    expect(insert).toHaveBeenCalledWith({ email: insertUser.email, password: insertUser.password, userId: null});
   });
 
   it('findByEmail - find a user', async () => {
