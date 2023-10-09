@@ -33,6 +33,12 @@ export interface Environment {
   // JWT
   JWT_SECRET: string;
   JWT_EXPIRATION: number;
+
+  // Auth0
+  AUTH0_ISSUER_URL?: string;
+  AUTH0_CLIENT_ID?: string;
+  AUTH0_AUDIENCE?: string;
+  AUTH0_CLIENT_SECRET?: string;
 }
 
 class EnvironmentVariablesValidator implements Environment {

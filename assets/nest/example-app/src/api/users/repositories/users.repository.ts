@@ -5,7 +5,6 @@ import { Injectable } from '@nestjs/common';
 import { NestKnexService } from '@database/nest-knex.service';
 import { BaseRepository } from '@database/base-repository.repository';
 import { Tables } from '@database/constants';
-import { Credentials } from '@api/auth/interfaces';
 
 @Injectable()
 export class UsersRepository extends BaseRepository<User> {
@@ -13,9 +12,9 @@ export class UsersRepository extends BaseRepository<User> {
     super(knex, Tables.Users);
   }
 
-  async insertOne(input: Credentials): Promise<User> {
+  async insertOne(email: string, password: string | null, userId: string | null): Promise<User> {
     return await this.repository()
-      .insert(input)
+      .insert({ email: email, password, userId })
       .returning('*')
       .then((data: any) => data[0])
       .catch(rethrowError(UserEmailTaken));

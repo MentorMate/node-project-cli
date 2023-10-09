@@ -28,10 +28,11 @@ export class AuthService {
       throw new ConflictException('User email already taken');
     }
 
-    const user = await this.users.insertOne({
+    const user = await this.users.insertOne(
       email,
-      password: await this.password.hash(password),
-    });
+      await this.password.hash(password),
+      null,
+    );
 
     return {
       idToken: this.jwt.sign({ sub: user.id, email }),
@@ -47,7 +48,7 @@ export class AuthService {
 
     const passwordMatches = await this.password.compare(
       password,
-      user.password,
+      user.password!,
     );
 
     if (!passwordMatches) {

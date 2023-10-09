@@ -6,5 +6,8 @@ export class User extends GenericEntity {
   email: string;
 
   @ApiProperty()
-  password: string;
+  password?: string | null;
+
+  @ApiProperty()
+  userId: string | null;
 }
