@@ -115,7 +115,6 @@ module.exports = (toolbox) => {
         });
 
         Object.assign(pkgJson.scripts, {
-          'db:connection:print': 'ts-node scripts/db-connection',
           'db:migrate:make':
             'knex migrate:make -x ts --migrations-directory ./migrations',
           'db:migrate:up':
