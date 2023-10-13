@@ -27,7 +27,12 @@ module.exports = (toolbox) => {
       ]);
 
       if (framework === 'nest') {
-        await patching.replace(`${appDir}/Dockerfile`, '/index.js', '/main.js');
+        const entryPointPath = isExampleApp ? '/src/main.js' : '/main.js';
+        await patching.replace(
+          `${appDir}/Dockerfile`,
+          '/index.js',
+          entryPointPath
+        );
       }
 
       success(
