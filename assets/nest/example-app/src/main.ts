@@ -12,6 +12,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { RequestLoggingInterceptor } from '@utils/interceptors/request-logging.interceptor';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NodeEnvironment } from '@utils/environment';
 
 async function bootstrap() {
   // create the app
@@ -19,13 +20,6 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
-
-  // Swagger setup
-  const config = new DocumentBuilder().setTitle('To-Do Example API').build();
-
-  const document = SwaggerModule.createDocument(app, config);
-
-  SwaggerModule.setup('/swagger', app, document);
 
   // enables CORS
   app.enableCors();
@@ -47,9 +41,18 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
-  
-  if (configService.get('NODE_ENV') !== 'production') {
+
+  if (configService.get('NODE_ENV') !== NodeEnvironment.Production) {
     app.useGlobalInterceptors(new RequestLoggingInterceptor());
+  }
+
+  if (configService.get('NODE_ENV') !== NodeEnvironment.Production) {
+    // Swagger setup
+    const config = new DocumentBuilder().setTitle('To-Do Example API').build();
+
+    const document = SwaggerModule.createDocument(app, config);
+
+    SwaggerModule.setup('/swagger', app, document);
   }
 
   // start server
