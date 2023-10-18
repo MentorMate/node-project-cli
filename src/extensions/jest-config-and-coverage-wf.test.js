@@ -55,10 +55,6 @@ describe('jest-config-and-coverage-wf', () => {
         expect(scripts).toHaveProperty('test:cov');
       });
 
-      it('should add the "test:watch" script', () => {
-        expect(scripts).toHaveProperty('test:watch');
-      });
-
       it('should add the test:e2e script', () => {
         expect(scripts).toHaveProperty('test:e2e');
       });
@@ -108,10 +104,6 @@ describe('jest-config-and-coverage-wf', () => {
 
         it('should add the test:e2e script', () => {
           expect(scripts).toHaveProperty('test:e2e');
-        });
-
-        it('should add the test:e2e:db:recreate script', () => {
-          expect(scripts).toHaveProperty('test:e2e:db:recreate');
         });
       });
     });

@@ -57,6 +57,7 @@ module.exports = (toolbox) => {
       // Example Nest app
       if (isExampleApp) {
         Object.assign(pkgJson.dependencies, {
+          '@nestjs/swagger': '^6.3.0',
           'class-transformer': '^0.5.1',
           'class-validator': '^0.14.0',
           statuses: '^2.0.1',
@@ -64,7 +65,6 @@ module.exports = (toolbox) => {
         });
 
         Object.assign(pkgJson.devDependencies, {
-          '@nestjs/swagger': '^6.3.0',
           '@fastify/static': '^6.10.2',
           '@golevelup/ts-jest': '^0.4.0',
           typescript: '^4.9.5',
@@ -115,7 +115,6 @@ module.exports = (toolbox) => {
         });
 
         Object.assign(pkgJson.scripts, {
-          'db:connection:print': 'ts-node scripts/db-connection',
           'db:migrate:make':
             'knex migrate:make -x ts --migrations-directory ./migrations',
           'db:migrate:up':

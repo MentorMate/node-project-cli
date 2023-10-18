@@ -45,7 +45,7 @@ Follow the instructions [here](https://docs.docker.com/engine/install/linux-post
 <% if (props.prerequisites.dockerCompose) { -%>
 **Docker Compose:**
 
-In case `docker compose` isn't setup with the docker intallation follow the
+In case `docker compose` isn't setup with the docker installation follow the
 instructions [here](https://docs.docker.com/compose/install/).
 <% } -%>
 <% } -%>
@@ -102,7 +102,7 @@ cp docker-compose.override.example.yml docker-compose.override.yml
 ```
 
 <% if (props.setup.openApi.express) { -%>
-You can open the `docker-compose.override.yml` and addjust the port Swagger UI
+You can open the `docker-compose.override.yml` and adjust the port Swagger UI
 is being served on (default is 3001).
 
 If you're on Apple M1, uncomment the `platform: linux/amd64` line:
@@ -117,8 +117,8 @@ If you're on Apple M1, uncomment the `platform: linux/amd64` line:
 <% } -%>
 
 <% if (props.setup.openApi.nest) { -%>
-You can open the `docker-compose.override.yml` and addjust the volumes path
-for the databse.
+You can open the `docker-compose.override.yml` and adjust the volumes path
+for the database.
 <% } -%>
 
 ### Provision the services
@@ -197,7 +197,7 @@ npm run test:e2e:cov
 <% if (props.setup.migrations) { -%>
 ## Working with migrations
 
-The underlying library is `knex`. You can find their guide on migraions [here](http://knexjs.org/guide/migrations.html).
+The underlying library is `knex`. You can find their guide on migrations [here](http://knexjs.org/guide/migrations.html).
 
 ```bash
 # check what is the last applied migration
@@ -302,7 +302,7 @@ npm run license:check
 
 If the script succeeds, that means that the license is either a included
 in the OSI list, or it was already reviewed and passed the review. When
-the script fails it will print the first license that neeeds a review.
+the script fails it will print the first license that needs a review.
 In order to list all licenses that need a review run the following:
 
 ```bash
@@ -310,7 +310,7 @@ npm run license:for-review
 ```
 
 In order to verify that a license suits your case, you can use a website like
-[SOOS](https://app.soos.io/research/licenses). Find the licesnce and inspect
+[SOOS](https://app.soos.io/research/licenses). Find the license and inspect
 the `Usage` and `Requirements` sections. You need to verify that the license
 is `permissive`. Look for things like whether the license allows for
 `Commercial Use` and `Private Use`.
