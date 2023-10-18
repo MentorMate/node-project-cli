@@ -25,7 +25,6 @@ describe('install-nest', () => {
     let envVars;
     let scripts;
     let dependencies;
-    let devDependencies;
 
     beforeAll(() => {
       input.projectLanguage = 'TS';
@@ -43,7 +42,6 @@ describe('install-nest', () => {
       envVars = input.envVars;
       scripts = input.pkgJson.scripts;
       dependencies = input.pkgJson.dependencies;
-      devDependencies = input.pkgJson.devDependencies;
     });
 
     it('should print a muted and a success message', async () => {
@@ -140,25 +138,14 @@ describe('install-nest', () => {
         expect(dependencies).toHaveProperty('class-validator');
       });
 
-      it('should add @nestjs/swagger to devDependencies', () => {
-        expect(devDependencies).toHaveProperty('@nestjs/swagger');
-      });
-
-      it('should add "openapi:g" to scripts', () => {
-        expect(scripts).toHaveProperty('openapi:g');
+      it('should add @nestjs/swagger to dependencies', () => {
+        expect(dependencies).toHaveProperty('@nestjs/swagger');
       });
 
       it('should copy the example app project source', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/nest/example-app/src/`,
           `${input.appDir}/src/`
-        );
-      });
-
-      it('should copy the openapi-generate script', () => {
-        expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/example-app/scripts/generate-openapi.ts`,
-          `${input.appDir}/scripts/generate-openapi.ts`
         );
       });
 
@@ -214,7 +201,6 @@ describe('install-nest', () => {
       it('shoudl add knex migration scripts', () => {
         expect(Object.keys(scripts)).toEqual(
           expect.arrayContaining([
-            'db:connection:print',
             'db:migrate:make',
             'db:migrate:up',
             'db:migrate:down',
