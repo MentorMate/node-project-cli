@@ -35,6 +35,7 @@ module.exports = (toolbox) => {
 
       if (isExampleApp) {
         if (authOption === 'auth0') {
+          await removeAsync(`${appDir}/test/auth`);
           await removeAsync(`${appDir}/src/api/auth`);
           await renameAsync(`${appDir}/src/api/auth0`, 'auth');
         }
@@ -49,6 +50,12 @@ module.exports = (toolbox) => {
           PORT: 3000,
         },
       });
+
+      if (isExampleApp && authOption === 'auth0') {
+        Object.assign(pkgJson.dependencies, {
+          '@nestjs/axios': '^3.0.0',
+        });
+      }
 
       Object.assign(pkgJson.dependencies, {
         '@nestjs/platform-fastify': '^9.0.0',
