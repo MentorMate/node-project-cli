@@ -27,12 +27,12 @@ export class Auth0Service {
   private async getAuth0AccessToken() {
     const response = await this.httpService.axiosRef
       .post<{ access_token: string }>(
-        `${this.baseURL}/oauth/token`,
+        `${this.baseURL}oauth/token`,
         new URLSearchParams({
           grant_type: 'client_credentials',
           client_id: this.AUTH0_CLIENT_ID!,
           client_secret: this.AUTH0_CLIENT_SECRET!,
-          audience: `${this.baseURL}/api/v2/`,
+          audience: `${this.baseURL}api/v2/`,
         }),
         {
           headers: {
@@ -69,7 +69,7 @@ export class Auth0Service {
 
     return this.httpService.axiosRef
       .post<Auth0User>(
-        `${process.env.AUTH0_ISSUER_URL}/api/v2/users`,
+        `${process.env.AUTH0_ISSUER_URL}api/v2/users`,
         {
           email,
           user_metadata: {},
@@ -91,7 +91,7 @@ export class Auth0Service {
     metadata: Auth0User['user_metadata']
   ) {
     return this.httpService.axiosRef.patch<Auth0User>(
-      `${process.env.AUTH0_ISSUER_URL}/api/v2/users/${userId}`,
+      `${process.env.AUTH0_ISSUER_URL}api/v2/users/${userId}`,
       {
         user_metadata: metadata,
       },
@@ -102,7 +102,7 @@ export class Auth0Service {
   public searchUsersByEmail(email: string) {
     return this.httpService.axiosRef
       .get<Auth0User>(
-        `${process.env.AUTH0_ISSUER_URL}/api/v2/users-by-email`,
+        `${process.env.AUTH0_ISSUER_URL}api/v2/users-by-email`,
         {
           params: { email },
           headers: this.buildHeaders()
@@ -118,7 +118,7 @@ export class Auth0Service {
   public deleteUser(userId: string) {
     return this.httpService.axiosRef
     .delete<Auth0User>(
-      `${process.env.AUTH0_ISSUER_URL}/api/v2/users/${userId}`,
+      `${process.env.AUTH0_ISSUER_URL}api/v2/users/${userId}`,
       {
         headers: this.buildHeaders()
       }
