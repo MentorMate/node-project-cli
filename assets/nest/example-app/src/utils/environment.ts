@@ -1,3 +1,4 @@
+import util from 'node:util';
 import { Transform, plainToClass } from 'class-transformer';
 import {
   IsEnum,
@@ -113,9 +114,7 @@ export const validateConfig = (
   });
 
   if (errors.length > 0) {
-    console.log(errors);
-
-    process.exit(1);
+    throw new Error(util.inspect(errors))
   }
 
   return validatedConfig;

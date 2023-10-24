@@ -35,7 +35,6 @@ module.exports = (toolbox) => {
 
       if (isExampleApp) {
         if (authOption === 'auth0') {
-          await removeAsync(`${appDir}/test/auth`);
           await removeAsync(`${appDir}/src/api/auth`);
           await renameAsync(`${appDir}/src/api/auth0`, 'auth');
         }

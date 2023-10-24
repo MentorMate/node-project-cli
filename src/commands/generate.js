@@ -175,7 +175,7 @@ module.exports = {
       stepsOfExecution.push(toolbox.setupPostgreSQL(userInput));
     }
 
-    if (userInput.isExampleApp) {
+    if (userInput.isExampleAp && userInput.authOption == 'jwt') {
       stepsOfExecution.push(toolbox.setupJwt(userInput));
     }
 
