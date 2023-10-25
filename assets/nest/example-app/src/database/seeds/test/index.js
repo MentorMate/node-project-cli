@@ -10,6 +10,7 @@ exports.seed = async function (knex) {
     {
       email: 'hello@email.com',
       password: '$2b$10$Mxur7NOiTlm22yuldEMZgOCbIV7bxDCcUbBLFbzrJ1MrnIczZB.92', // pragma: allowlist secret
+      userId: 'tz4a98xxat96iws9zmbrgj3a',
     },
   ]);
 
@@ -18,19 +19,19 @@ exports.seed = async function (knex) {
       name: 'Laundry 1',
       note: 'Buy detergent 1',
       completed: false,
-      userId: 1,
+      userId: 'tz4a98xxat96iws9zmbrgj3a',
     },
     {
       name: 'Laundry 2',
       note: 'Buy detergent 2',
       completed: false,
-      userId: 1,
+      userId: 'tz4a98xxat96iws9zmbrgj3a',
     },
     {
       name: 'Laundry 3',
       note: 'Buy detergent 3',
       completed: true,
-      userId: 1,
+      userId: 'tz4a98xxat96iws9zmbrgj3a',
     },
   ]);
 };
