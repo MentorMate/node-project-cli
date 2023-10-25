@@ -1,11 +1,11 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Environment } from '@utils/environment';
 import { Auth0User } from '../interfaces';
 
 @Injectable()
-export class Auth0Service {
+export class Auth0Service implements OnModuleInit {
   private logger = new Logger('Auth0Service');
 
   private accessToken: string = '';
@@ -18,7 +18,9 @@ export class Auth0Service {
   constructor(
     private httpService: HttpService,
     private configService: ConfigService<Environment>
-  ) {
+  ) {}
+
+  onModuleInit() {
     this.getAuth0AccessToken().then((token) => {
       this.accessToken = token;
     });
