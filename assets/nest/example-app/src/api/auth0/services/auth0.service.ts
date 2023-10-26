@@ -11,7 +11,7 @@ import { Auth0User } from '../interfaces';
 
 @Injectable()
 export class Auth0Service implements OnModuleInit {
-  private logger = new Logger('Auth0Service');
+  public logger = new Logger('Auth0Service');
 
   private accessToken = '';
   private baseURL = this.configService.get<string>('AUTH0_ISSUER_URL');

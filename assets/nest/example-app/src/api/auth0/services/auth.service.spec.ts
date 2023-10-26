@@ -48,6 +48,9 @@ describe('AuthService', () => {
     authService = module.get<AuthService>(AuthService);
     auth0Service = module.get<Auth0Service>(Auth0Service);
     usersRepository = module.get<UsersRepository>(UsersRepository);
+
+    authService.logger.warn = jest.fn();
+    authService.logger.error = jest.fn();
   });
 
   describe('register', () => {

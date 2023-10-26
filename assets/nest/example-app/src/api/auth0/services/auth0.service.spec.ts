@@ -35,6 +35,9 @@ describe('Auth0Service', () => {
 
     auth0Service = module.get<Auth0Service>(Auth0Service);
     httpService = module.get<HttpService>(HttpService);
+
+    auth0Service.logger.warn = jest.fn();
+    auth0Service.logger.error = jest.fn();
   });
 
   describe('createUser', () => {

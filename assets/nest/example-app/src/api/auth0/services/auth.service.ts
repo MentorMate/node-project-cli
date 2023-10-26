@@ -5,7 +5,7 @@ import { Auth0Service } from './auth0.service';
 
 @Injectable()
 export class AuthService {
-  private logger = new Logger('AuthService');
+  public logger = new Logger('AuthService');
 
   constructor(
     private usersRepository: UsersRepository,
