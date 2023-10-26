@@ -9,5 +9,5 @@ export class User extends GenericEntity {
   password?: string | null;
 
   @ApiProperty()
-  userId: string | null;
+  userId: string;
 }

@@ -11,7 +11,7 @@ import { UserData } from '@api/auth/interfaces';
 
 export const mockedUser: UserData = {
   user: {
-    sub: 1,
+    sub: 'tz4a98xxat96iws9zmbrgj3a',
     email: 'example@email.com',
   },
 };

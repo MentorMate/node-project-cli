@@ -29,7 +29,7 @@ describe('JwtService', () => {
 
   describe('sign', () => {
     it('should sign the claims returning a JWT token', () => {
-      const claims = { sub: 1, email: 'email@example.com' };
+      const claims = { sub: '1', email: 'email@example.com' };
       const token = jwtService.sign(claims);
       const payload = verify(token, env.JWT_SECRET);
       expect(payload).toEqual(expect.objectContaining(claims));

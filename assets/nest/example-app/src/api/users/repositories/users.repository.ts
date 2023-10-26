@@ -12,15 +12,23 @@ export class UsersRepository extends BaseRepository<User> {
     super(knex, Tables.Users);
   }
 
-  async insertOne(email: string, password: string | null, userId: string | null): Promise<User> {
-    return await this.repository()
-      .insert({ email: email, password, userId })
+  insertOne(payload: Partial<User>): Promise<User> {
+    return this.repository()
+      .insert(payload)
       .returning('*')
       .then((data: any) => data[0])
       .catch(rethrowError(UserEmailTaken));
   }
 
-  async findByEmail(email: User['email']): Promise<User | undefined> {
-    return await this.repository().where({ email }).first();
+  findByEmail(email: User['email']): Promise<User | undefined> {
+    return this.repository().where({ email }).first();
+  }
+
+  updateOne(id: number, payload: Partial<User>): Promise<User> {
+    return this.repository()
+      .where({ id })
+      .update(payload)
+      .returning('*')
+      .then((data: any) => data[0])
   }
 }

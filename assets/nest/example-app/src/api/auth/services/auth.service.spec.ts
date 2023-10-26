@@ -13,6 +13,7 @@ import { Credentials } from '../interfaces';
 
 const registeredUser: User = {
   id: 1,
+  userId: 'tz4a98xxat96iws9zmbrgj3a',
   createdAt: Date.now().toString(),
   updatedAt: Date.now().toString(),
   email: 'registered-email@example.com',
@@ -54,6 +55,9 @@ describe('AuthService', () => {
       jest
         .spyOn(usersRepository, 'insertOne')
         .mockResolvedValueOnce({ ...registeredUser, ...unregisteredCreds });
+      jest
+        .spyOn(usersRepository, 'updateOne')
+        .mockResolvedValueOnce({ ...registeredUser, ...unregisteredCreds });
       jest.spyOn(jwtService, 'sign').mockReturnValueOnce('jwtTokenValue');
 
       const response = await authService.register(unregisteredCreds);
@@ -69,7 +73,7 @@ describe('AuthService', () => {
       await expect(
         authService.register({
           email: registeredUser.email,
-          password: registeredUser.password,
+          password: registeredUser.password!,
         }),
       ).rejects.toThrowError(new ConflictException('User email already taken'));
     });
