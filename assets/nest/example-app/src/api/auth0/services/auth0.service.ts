@@ -1,5 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Environment } from '@utils/environment';
 import { Auth0User } from '../interfaces';
@@ -8,22 +13,26 @@ import { Auth0User } from '../interfaces';
 export class Auth0Service implements OnModuleInit {
   private logger = new Logger('Auth0Service');
 
-  private accessToken: string = '';
+  private accessToken = '';
   private baseURL = this.configService.get<string>('AUTH0_ISSUER_URL');
   private AUTH0_CLIENT_ID = this.configService.get<string>('AUTH0_CLIENT_ID');
   private AUTH0_CLIENT_SECRET = this.configService.get<string>(
-    'AUTH0_CLIENT_SECRET'
+    'AUTH0_CLIENT_SECRET',
   );
 
   constructor(
     private httpService: HttpService,
-    private configService: ConfigService<Environment>
+    private configService: ConfigService<Environment>,
   ) {}
 
   onModuleInit() {
-    this.getAuth0AccessToken().then((token) => {
-      this.accessToken = token;
-    });
+    return this.getAuth0AccessToken()
+      .then((token) => {
+        this.accessToken = token;
+      })
+      .catch((err) => {
+        throw err;
+      });
   }
 
   private async getAuth0AccessToken() {
@@ -40,16 +49,16 @@ export class Auth0Service implements OnModuleInit {
           headers: {
             'content-type': 'application/x-www-form-urlencoded',
           },
-        }
+        },
       )
       .catch((error) => {
         this.logger.error(error.response.data);
-        throw new Error('Something went wrong!')
+        throw new Error('Something went wrong!');
       });
 
     if (!response?.data?.access_token) {
       this.logger.error('Access token is missing in the response data');
-      throw new Error('Access token is missing!')
+      throw new Error('Access token is missing!');
     }
 
     return response.data.access_token;
@@ -79,7 +88,7 @@ export class Auth0Service implements OnModuleInit {
           password,
           verify_email: true,
         },
-        { headers: this.buildHeaders() }
+        { headers: this.buildHeaders() },
       )
       .then(({ data }) => data)
       .catch((error) => {
@@ -90,26 +99,23 @@ export class Auth0Service implements OnModuleInit {
 
   public updateUserMetadata(
     userId: string,
-    metadata: Auth0User['user_metadata']
+    metadata: Auth0User['user_metadata'],
   ) {
     return this.httpService.axiosRef.patch<Auth0User>(
       `${process.env.AUTH0_ISSUER_URL}api/v2/users/${userId}`,
       {
         user_metadata: metadata,
       },
-      { headers: this.buildHeaders() }
+      { headers: this.buildHeaders() },
     );
   }
 
   public searchUsersByEmail(email: string) {
     return this.httpService.axiosRef
-      .get<Auth0User>(
-        `${process.env.AUTH0_ISSUER_URL}api/v2/users-by-email`,
-        {
-          params: { email },
-          headers: this.buildHeaders()
-        }
-      )
+      .get<Auth0User>(`${process.env.AUTH0_ISSUER_URL}api/v2/users-by-email`, {
+        params: { email },
+        headers: this.buildHeaders(),
+      })
       .then(({ data }) => data)
       .catch((error) => {
         this.logger.error(error.response.data);
@@ -119,15 +125,15 @@ export class Auth0Service implements OnModuleInit {
 
   public deleteUser(userId: string) {
     return this.httpService.axiosRef
-    .delete<Auth0User>(
-      `${process.env.AUTH0_ISSUER_URL}api/v2/users/${userId}`,
-      {
-        headers: this.buildHeaders()
-      }
-    )
-    .catch((error) => {
-      this.logger.error(error.response.data);
-      throw new BadRequestException();
-    });
+      .delete<Auth0User>(
+        `${process.env.AUTH0_ISSUER_URL}api/v2/users/${userId}`,
+        {
+          headers: this.buildHeaders(),
+        },
+      )
+      .catch((error) => {
+        this.logger.error(error.response.data);
+        throw new BadRequestException();
+      });
   }
 }

@@ -147,25 +147,25 @@ describe('Auth0Service', () => {
       expect(onModuleInit).toHaveBeenCalled();
     });
 
-    // it('throws error accessToken is missing', async () => {
-    //   const tokenResponse = { data: {} };
-    //   jest
-    //     .spyOn(httpService.axiosRef, 'post')
-    //     .mockResolvedValueOnce(tokenResponse);
+    it('throws error accessToken is missing', async () => {
+      const tokenResponse = { data: {} };
+      jest
+        .spyOn(httpService.axiosRef, 'post')
+        .mockResolvedValueOnce(tokenResponse);
 
-    //   await expect(auth0Service.onModuleInit()).rejects.toThrowError(
-    //     new Error('Access token is missing!'),
-    //   );
-    // });
+      await expect(auth0Service.onModuleInit()).rejects.toThrowError(
+        new Error('Access token is missing!'),
+      );
+    });
 
-    // it('throws error when auth0 token request fails', async () => {
-    //   jest
-    //     .spyOn(httpService.axiosRef, 'post')
-    //     .mockRejectedValueOnce({ response: { data: {} } });
+    it('throws error when auth0 token request fails', async () => {
+      jest
+        .spyOn(httpService.axiosRef, 'post')
+        .mockRejectedValueOnce({ response: { data: {} } });
 
-    //   await expect(auth0Service.onModuleInit()).rejects.toThrowError(
-    //     new Error('Something went wrong!'),
-    //   );
-    // });
+      await expect(auth0Service.onModuleInit()).rejects.toThrowError(
+        new Error('Something went wrong!'),
+      );
+    });
   });
 });
