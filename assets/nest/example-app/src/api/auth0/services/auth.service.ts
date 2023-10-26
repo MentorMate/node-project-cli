@@ -15,11 +15,10 @@ export class AuthService {
   async register({ email, password }: CredentialsDto) {
     const userAuth0 = await this.auth0Service.createUser(email, password);
 
-    const user = await this.usersRepository.insertOne(
+    const user = await this.usersRepository.insertOne({
       email,
-      null,
-      userAuth0.user_id
-    ).catch(async (error) => {
+      userId: userAuth0.user_id
+     }).catch(async (error) => {
       this.logger.warn('Creating a user in the database failed. Proceeding with deleting it in Auth0.');
       this.logger.error(error);
 
