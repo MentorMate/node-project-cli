@@ -37,12 +37,10 @@ module.exports = (toolbox) => {
                 knex: isExampleApp,
               },
             },
-            ...(isExampleApp && {
-              openApi: {
-                express: framework === 'express',
-                nest: framework === 'nest',
-              },
-            }),
+            openApi: {
+              express: isExampleApp && framework === 'express',
+              nest: isExampleApp && framework === 'nest',
+            },
             licenseChecks: features.includes('licenseChecks'),
           },
           run: {
@@ -55,13 +53,11 @@ module.exports = (toolbox) => {
           debug: {
             vscode: true,
           },
-          ...(isExampleApp && {
-            troubleshooting: {
-              openApi: {
-                express: framework === 'express',
-              },
+          troubleshooting: {
+            openApi: {
+              express: isExampleApp && framework === 'express',
             },
-          }),
+          },
         },
       });
     }

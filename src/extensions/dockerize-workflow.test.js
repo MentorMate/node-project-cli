@@ -137,6 +137,20 @@ describe('dockerize-workflow', () => {
             '/main.js'
           );
         });
+
+        describe('and is example app', () => {
+          beforeAll(() => {
+            input.isExampleApp = true;
+          });
+
+          it('should update the entry point script in Dockefile for example app', () => {
+            expect(toolbox.patching.replace).toHaveBeenCalledWith(
+              `${input.appDir}/Dockerfile`,
+              '/index.js',
+              '/src/main.js'
+            );
+          });
+        });
       });
     });
   });
