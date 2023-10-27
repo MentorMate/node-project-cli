@@ -4,6 +4,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
+import { getTodoPayload } from './utils/get-todo-payload';
 import { AuthGuard } from '@api/auth/guards/auth.guard';
 import { NestKnexService } from '@database/nest-knex.service';
 import {
@@ -14,16 +15,18 @@ import {
 } from '@nestjs/common';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
 import { expectError } from '../utils/expect-error';
+import { Auth0Service } from '@api/auth/services';
 
-describe('GET /v1/todos/:id', () => {
+describe('PUT /v1/todos/:id', () => {
   let app: NestFastifyApplication;
   let nestKnexService: NestKnexService;
-
   const canActivate = jest.fn();
 
   class AuthGuardMock {
     canActivate = canActivate;
   }
+
+  class Auth0ServiceMock {}
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -31,6 +34,8 @@ describe('GET /v1/todos/:id', () => {
     })
       .overrideProvider(AuthGuard)
       .useClass(AuthGuardMock)
+      .overrideProvider(Auth0Service)
+      .useClass(Auth0ServiceMock)
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
@@ -67,7 +72,28 @@ describe('GET /v1/todos/:id', () => {
     await app.close();
   });
 
-  it('should return the todo - given todo id in the query', async () => {
+  it('should return the updated todo', async () => {
+    await app
+      .inject({
+        method: 'PUT',
+        url: '/v1/todos/1',
+        payload: {
+          name: 'updated',
+          completed: true,
+          note: 'updated',
+        },
+      })
+      .then((res) => {
+        const responseBody = res.json();
+        expect(res.statusCode).toBe(200);
+
+        expect(responseBody.name).toEqual('updated');
+        expect(responseBody.note).toEqual('updated');
+        expect(responseBody.completed).toEqual(true);
+      });
+  });
+
+  it('should return the not updated todo', async () => {
     const todo = await nestKnexService
       .connection('todos')
       .where({ id: 1 })
@@ -75,25 +101,28 @@ describe('GET /v1/todos/:id', () => {
 
     await app
       .inject({
-        method: 'GET',
+        method: 'PUT',
         url: `/v1/todos/1`,
+        payload: {},
       })
       .then((res) => {
-        const { id, name, note, completed } = res.json();
+        const responseBody = res.json();
         expect(res.statusCode).toBe(200);
 
-        expect(id).toEqual(todo.id);
-        expect(name).toEqual(todo.name);
-        expect(note).toEqual(todo.note);
-        expect(completed).toEqual(todo.completed);
+        expect(responseBody.id).toEqual(todo.id);
+        expect(responseBody.name).toEqual(todo.name);
+        expect(responseBody.note).toEqual(todo.note);
+        expect(responseBody.completed).toEqual(todo.completed);
+        expect(responseBody.userId).toEqual(todo.userId);
       });
   });
 
   it('should return 404', async () => {
     await app
       .inject({
-        method: 'GET',
-        url: `/v1/todos/${Date.now()}`,
+        method: 'PUT',
+        url: `/v1/todos/32131`,
+        payload: getTodoPayload(),
       })
       .then((res) => {
         expectError(new NotFoundException(), res.json);
@@ -101,14 +130,19 @@ describe('GET /v1/todos/:id', () => {
   });
 });
 
-describe('GET /v1/todos/:id - real AuthGuard', () => {
+describe('PUT /v1/todos/:id - real AuthGuard', () => {
   let app: NestFastifyApplication;
   let nestKnexService: NestKnexService;
+
+  class Auth0ServiceMock {}
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(Auth0Service)
+      .useClass(Auth0ServiceMock)
+      .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
       new FastifyAdapter(),
@@ -130,7 +164,7 @@ describe('GET /v1/todos/:id - real AuthGuard', () => {
   it('should return 401 error', async () => {
     await app
       .inject({
-        method: 'GET',
+        method: 'PUT',
         url: '/v1/todos/1',
       })
       .then((res) => expectError(new UnauthorizedException(), res.json));

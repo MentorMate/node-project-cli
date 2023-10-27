@@ -14,6 +14,7 @@ import {
 import { NestKnexService } from '@database/nest-knex.service';
 import { AuthGuard } from '@api/auth/guards/auth.guard';
 import { expectError } from '../utils/expect-error';
+import { Auth0Service } from '@api/auth/services';
 
 describe('GET /v1/todos', () => {
   let app: NestFastifyApplication;
@@ -25,23 +26,27 @@ describe('GET /v1/todos', () => {
     canActivate = canActivate;
   }
 
+  class Auth0ServiceMock {}
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
       .overrideProvider(AuthGuard)
       .useClass(AuthGuardMock)
+      .overrideProvider(Auth0Service)
+      .useClass(Auth0ServiceMock)
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
         transform: true,
-      }),
+      })
     );
 
     await app.init();
@@ -175,7 +180,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'name', SortOrder.Desc),
+      sortByField(response.items, 'name', SortOrder.Desc)
     );
   });
 
@@ -200,7 +205,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'name', SortOrder.Asc),
+      sortByField(response.items, 'name', SortOrder.Asc)
     );
   });
 
@@ -225,7 +230,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'createdAt', SortOrder.Desc),
+      sortByField(response.items, 'createdAt', SortOrder.Desc)
     );
   });
 
@@ -250,7 +255,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'createdAt', SortOrder.Asc),
+      sortByField(response.items, 'createdAt', SortOrder.Asc)
     );
   });
 
@@ -278,13 +283,18 @@ describe('GET /v1/todos - real AuthGuard', () => {
   let app: NestFastifyApplication;
   let nestKnexService: NestKnexService;
 
+  class Auth0ServiceMock {}
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(Auth0Service)
+      .useClass(Auth0ServiceMock)
+      .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     await app.init();

@@ -14,16 +14,18 @@ import {
 } from '@nestjs/common';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
 import { expectError } from '../utils/expect-error';
+import { Auth0Service } from '@api/auth/services';
 
-describe('GET /v1/todos/:id', () => {
+describe('DELETE /v1/todos', () => {
   let app: NestFastifyApplication;
   let nestKnexService: NestKnexService;
-
   const canActivate = jest.fn();
 
   class AuthGuardMock {
     canActivate = canActivate;
   }
+
+  class Auth0ServiceMock {}
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -31,6 +33,8 @@ describe('GET /v1/todos/:id', () => {
     })
       .overrideProvider(AuthGuard)
       .useClass(AuthGuardMock)
+      .overrideProvider(Auth0Service)
+      .useClass(Auth0ServiceMock)
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
@@ -67,48 +71,45 @@ describe('GET /v1/todos/:id', () => {
     await app.close();
   });
 
-  it('should return the todo - given todo id in the query', async () => {
-    const todo = await nestKnexService
-      .connection('todos')
-      .where({ id: 1 })
-      .first();
-
+  it('should return 200 when todo is deleted', async () => {
     await app
       .inject({
-        method: 'GET',
+        method: 'DELETE',
         url: `/v1/todos/1`,
       })
-      .then((res) => {
-        const { id, name, note, completed } = res.json();
-        expect(res.statusCode).toBe(200);
-
-        expect(id).toEqual(todo.id);
-        expect(name).toEqual(todo.name);
-        expect(note).toEqual(todo.note);
-        expect(completed).toEqual(todo.completed);
+      .then(async ({ statusCode }) => {
+        expect(statusCode).toBe(200);
+        const todo = await nestKnexService
+          .connection('todos')
+          .where({ id: 1 })
+          .first();
+        expect(todo).toBeUndefined();
       });
   });
 
-  it('should return 404', async () => {
+  it('should return 404 - non existing todo', async () => {
     await app
       .inject({
-        method: 'GET',
-        url: `/v1/todos/${Date.now()}`,
+        method: 'DELETE',
+        url: `/v1/todos/1000`,
       })
-      .then((res) => {
-        expectError(new NotFoundException(), res.json);
-      });
+      .then((res) => expectError(new NotFoundException(), res.json));
   });
 });
 
-describe('GET /v1/todos/:id - real AuthGuard', () => {
+describe('DELETE /v1/todos - real AuthGuard', () => {
   let app: NestFastifyApplication;
   let nestKnexService: NestKnexService;
+
+  class Auth0ServiceMock {}
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(Auth0Service)
+      .useClass(Auth0ServiceMock)
+      .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
       new FastifyAdapter(),
@@ -130,8 +131,8 @@ describe('GET /v1/todos/:id - real AuthGuard', () => {
   it('should return 401 error', async () => {
     await app
       .inject({
-        method: 'GET',
-        url: '/v1/todos/1',
+        method: 'DELETE',
+        url: `/v1/todos/1`,
       })
       .then((res) => expectError(new UnauthorizedException(), res.json));
   });

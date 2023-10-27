@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
 import { expectError } from '../utils/expect-error';
+import { Auth0Service } from '@api/auth/services';
 
 describe('GET /v1/todos/:id', () => {
   let app: NestFastifyApplication;
@@ -25,12 +26,16 @@ describe('GET /v1/todos/:id', () => {
     canActivate = canActivate;
   }
 
+  class Auth0ServiceMock {}
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
       .overrideProvider(AuthGuard)
       .useClass(AuthGuardMock)
+      .overrideProvider(Auth0Service)
+      .useClass(Auth0ServiceMock)
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
@@ -105,10 +110,15 @@ describe('GET /v1/todos/:id - real AuthGuard', () => {
   let app: NestFastifyApplication;
   let nestKnexService: NestKnexService;
 
+  class Auth0ServiceMock {}
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(Auth0Service)
+      .useClass(Auth0ServiceMock)
+      .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
       new FastifyAdapter(),

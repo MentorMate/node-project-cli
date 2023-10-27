@@ -9,10 +9,11 @@ module.exports = (toolbox) => {
     assetsPath,
     framework,
     isExampleApp,
+    authOption,
   }) => {
     const {
       print: { success, muted },
-      filesystem: { copyAsync },
+      filesystem: { copyAsync, removeAsync, renameAsync },
     } = toolbox;
 
     async function asyncOperations() {
@@ -38,6 +39,16 @@ module.exports = (toolbox) => {
       );
 
       await copyAsync(`${assetsAppDir}/test/`, `${appDir}/test/`);
+
+      if (isExampleApp && authOption === 'auth0') {
+        await removeAsync(`${appDir}/test/auth`);
+        await removeAsync(`${appDir}/test/todos`);
+        await renameAsync(`${appDir}/test/todos-auth0`, 'todos');
+      }
+
+      if (isExampleApp && authOption === 'jwt') {
+        await removeAsync(`${appDir}/test/todos-auth0`);
+      }
 
       if (isExampleApp) {
         await copyAsync(

@@ -5,7 +5,6 @@ import { Injectable } from '@nestjs/common';
 import { NestKnexService } from '@database/nest-knex.service';
 import { BaseRepository } from '@database/base-repository.repository';
 import { Tables } from '@database/constants';
-import { Credentials } from '@api/auth/interfaces';
 
 @Injectable()
 export class UsersRepository extends BaseRepository<User> {
@@ -13,15 +12,23 @@ export class UsersRepository extends BaseRepository<User> {
     super(knex, Tables.Users);
   }
 
-  async insertOne(input: Credentials): Promise<User> {
-    return await this.repository()
-      .insert(input)
+  insertOne(payload: Partial<User>): Promise<User> {
+    return this.repository()
+      .insert(payload)
       .returning('*')
       .then((data: any) => data[0])
       .catch(rethrowError(UserEmailTaken));
   }
 
-  async findByEmail(email: User['email']): Promise<User | undefined> {
-    return await this.repository().where({ email }).first();
+  findByEmail(email: User['email']): Promise<User | undefined> {
+    return this.repository().where({ email }).first();
+  }
+
+  updateOne(id: number, payload: Partial<User>): Promise<User> {
+    return this.repository()
+      .where({ id })
+      .update(payload)
+      .returning('*')
+      .then((data: any) => data[0])
   }
 }

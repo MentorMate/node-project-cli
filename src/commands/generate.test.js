@@ -77,10 +77,11 @@ describe('generate', () => {
       it('should ask for the project language and app features', async () => {
         const questions = toolbox.prompt.ask.mock.calls[1][0];
 
-        expect(questions).toHaveLength(3);
-        expect(questions[0].name).toBe('projectLanguage');
-        expect(questions[1].name).toBe('features');
-        expect(questions[2].name).toBe('db');
+        expect(questions).toHaveLength(4);
+        expect(questions[0].name).toBe('authOption');
+        expect(questions[1].name).toBe('projectLanguage');
+        expect(questions[2].name).toBe('features');
+        expect(questions[3].name).toBe('db');
 
         const answers = await toolbox.prompt.ask.mock.results[1].value;
         const { projectLanguage, features, db } = userInput;

@@ -3,6 +3,7 @@
 module.exports = (toolbox) => {
   toolbox.installNest = async ({
     projectName,
+    authOption,
     framework,
     appDir,
     assetsPath,
@@ -14,7 +15,7 @@ module.exports = (toolbox) => {
     const {
       system: { run },
       print: { success, muted },
-      filesystem: { copyAsync, removeAsync },
+      filesystem: { copyAsync, removeAsync, renameAsync },
     } = toolbox;
 
     muted('Installing Nest...');
@@ -32,11 +33,28 @@ module.exports = (toolbox) => {
       await removeAsync(`${appDir}/test/`);
       await copyAsync(srcDir, `${appDir}/src/`);
 
+      if (isExampleApp) {
+        if (authOption === 'auth0') {
+          await removeAsync(`${appDir}/src/api/auth`);
+          await renameAsync(`${appDir}/src/api/auth0`, 'auth');
+        }
+
+        if (authOption === 'jwt') {
+          await removeAsync(`${appDir}/src/api/auth0`);
+        }
+      }
+
       Object.assign(envVars, {
         HTTP: {
           PORT: 3000,
         },
       });
+
+      if (isExampleApp && authOption === 'auth0') {
+        Object.assign(pkgJson.dependencies, {
+          '@nestjs/axios': '^3.0.0',
+        });
+      }
 
       Object.assign(pkgJson.dependencies, {
         '@nestjs/platform-fastify': '^9.0.0',
@@ -64,6 +82,14 @@ module.exports = (toolbox) => {
           bcrypt: '^5.1.0',
         });
 
+        if (authOption === 'auth0') {
+          Object.assign(pkgJson.dependencies, {
+            '@nestjs/passport': '^10.0.1',
+            'passport-jwt': '^4.0.1',
+            'jwks-rsa': '^3.0.1',
+          });
+        }
+
         Object.assign(pkgJson.devDependencies, {
           '@fastify/static': '^6.10.2',
           '@golevelup/ts-jest': '^0.4.0',
@@ -73,6 +99,12 @@ module.exports = (toolbox) => {
           '@types/uuid': '^9.0.1',
           uuid: '^9.0.0',
         });
+
+        if (authOption === 'auth0') {
+          Object.assign(pkgJson.devDependencies, {
+            '@types/passport-jwt': '^3.0.9',
+          });
+        }
 
         await Promise.all([
           copyAsync(

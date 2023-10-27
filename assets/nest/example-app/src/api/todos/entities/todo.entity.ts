@@ -3,7 +3,7 @@ import { GenericEntity } from '@utils/entities/generic-entity';
 
 export class Todo extends GenericEntity {
   @ApiProperty()
-  userId: number;
+  userId: string;
 
   @ApiProperty()
   name: string;

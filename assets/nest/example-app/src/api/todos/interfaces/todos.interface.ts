@@ -1,7 +1,7 @@
 import { CreateTodoDto, FindAllTodosQueryDto, UpdateTodoDto } from '../dto';
 
 interface UserData {
-  userId: number;
+  userId: string;
 }
 
 interface TodoId {

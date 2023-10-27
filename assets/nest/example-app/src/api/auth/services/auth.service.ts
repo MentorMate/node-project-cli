@@ -23,18 +23,19 @@ export class AuthService {
 
   async register({ email, password }: Credentials): Promise<JwtToken> {
     const existingUser = await this.users.findByEmail(email);
-
     if (existingUser) {
       throw new ConflictException('User email already taken');
     }
 
-    const user = await this.users.insertOne({
+    const { id } = await this.users.insertOne({
       email,
-      password: await this.password.hash(password),
+      password: await this.password.hash(password)
     });
 
+    const user = await this.users.updateOne(id, { userId: id.toString() });
+
     return {
-      idToken: this.jwt.sign({ sub: user.id, email }),
+      idToken: this.jwt.sign({ sub: user.userId, email }),
     };
   }
 
@@ -47,14 +48,14 @@ export class AuthService {
 
     const passwordMatches = await this.password.compare(
       password,
-      user.password,
+      user.password!,
     );
 
     if (!passwordMatches) {
       throw new UnprocessableEntityException('Invalid email or password');
     }
 
-    const token = this.jwt.sign({ sub: user.id, email });
+    const token = this.jwt.sign({ sub: user.userId, email });
 
     return {
       idToken: token,

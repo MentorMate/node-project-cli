@@ -48,9 +48,15 @@ const getQuestions = ({ projectName, framework }, isPip3Available) => [
       },
     ],
     initial: framework,
-    result(v) {
-      return v;
-    },
+  },
+  {
+    type: 'select',
+    name: 'authOption',
+    message: 'Select authentication option',
+    choices: [
+      { message: 'JWT', value: 'jwt' },
+      { message: 'Auth0', value: 'auth0' },
+    ],
   },
   {
     type: 'select',

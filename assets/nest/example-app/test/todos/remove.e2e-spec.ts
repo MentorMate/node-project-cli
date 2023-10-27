@@ -57,7 +57,7 @@ describe('DELETE /v1/todos', () => {
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
-      request.user = { sub: 1, email: 'hello@email' };
+      request.user = { sub: 'tz4a98xxat96iws9zmbrgj3a', email: 'hello@email' };
       return true;
     });
   });
