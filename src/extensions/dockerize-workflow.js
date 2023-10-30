@@ -22,8 +22,10 @@ module.exports = (toolbox) => {
         : `${assetsPath}/docker/${projectLanguage.toLowerCase()}/Dockerfile`;
 
       await Promise.all([
-        copyAsync(dockerfile, `${appDir}/Dockerfile`),
-        copyAsync(`${assetsPath}/.dockerignore`, `${appDir}/.dockerignore`),
+        copyAsync(dockerfile, `${appDir}/Dockerfile`, { overwrite: true }),
+        copyAsync(`${assetsPath}/.dockerignore`, `${appDir}/.dockerignore`, {
+          overwrite: true,
+        }),
       ]);
 
       if (framework === 'nest') {

@@ -8,7 +8,7 @@ const command = {
   name: 'setup-dev',
   description: 'Setup dev enviroment for contribution to the project',
   usage: 'node-cli setup-dev [...options]',
-  aliases: ['g'],
+  aliases: ['sd'],
   options: [
     {
       name: 'framework',
@@ -36,7 +36,7 @@ module.exports = {
     const {
       parameters: { options },
       system: { which },
-      filesystem: { path, write, read },
+      filesystem: { path, write, remove, symlink },
       print: { warning, highlight, error },
       prompt,
       meta,
@@ -163,7 +163,80 @@ module.exports = {
 
     await Promise.all(asyncOperations);
 
-    const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`));
+    // const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`));
+    const expressPackageJson = {
+      name: 'dev-app',
+      version: '1.0.0',
+      main: 'index.js',
+      scripts: {},
+      keywords: [],
+      license: 'ISC',
+    };
+
+    const nestPackageJson = {
+      name: 'dev-app',
+      version: '1.0.0',
+      license: 'ISC',
+      scripts: {
+        build: 'nest build',
+        format: 'prettier --write "src/**/*.ts" "test/**/*.ts"',
+        start: 'nest start',
+        'start:dev': 'nest start --watch',
+        'start:debug': 'nest start --debug --watch',
+        'start:prod': 'node dist/main',
+        lint: 'eslint "{src,apps,libs,test}/**/*.ts" --fix',
+        test: 'jest',
+        'test:watch': 'jest --watch',
+        'test:cov': 'jest --coverage',
+        'test:debug':
+          'node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand',
+        'test:e2e': 'jest --config ./test/jest-e2e.json',
+      },
+      dependencies: {
+        '@nestjs/common': '^9.0.0',
+        '@nestjs/core': '^9.0.0',
+        '@nestjs/platform-express': '^9.0.0',
+        'reflect-metadata': '^0.1.13',
+        rxjs: '^7.2.0',
+      },
+      devDependencies: {
+        '@nestjs/cli': '^9.0.0',
+        '@nestjs/schematics': '^9.0.0',
+        '@nestjs/testing': '^9.0.0',
+        '@types/express': '^4.17.13',
+        '@types/jest': '29.5.1',
+        '@types/node': '18.16.12',
+        '@types/supertest': '^2.0.11',
+        '@typescript-eslint/eslint-plugin': '^5.0.0',
+        '@typescript-eslint/parser': '^5.0.0',
+        eslint: '^8.0.1',
+        'eslint-config-prettier': '^8.3.0',
+        'eslint-plugin-prettier': '^4.0.0',
+        jest: '29.5.0',
+        prettier: '^2.3.2',
+        'source-map-support': '^0.5.20',
+        supertest: '^6.1.3',
+        'ts-jest': '29.1.0',
+        'ts-loader': '^9.2.3',
+        'ts-node': '^10.0.0',
+        'tsconfig-paths': '4.2.0',
+        typescript: '^5.0.0',
+      },
+      jest: {
+        moduleFileExtensions: ['js', 'json', 'ts'],
+        rootDir: 'src',
+        testRegex: '.*\\.spec\\.ts$',
+        transform: {
+          '^.+\\.(t|j)s$': 'ts-jest',
+        },
+        collectCoverageFrom: ['**/*.(t|j)s'],
+        coverageDirectory: '../coverage',
+        testEnvironment: 'node',
+      },
+    };
+
+    const packageJson =
+      userInput.framework === 'nest' ? nestPackageJson : expressPackageJson;
 
     Object.assign(packageJson, {
       private: true,
@@ -193,8 +266,48 @@ module.exports = {
       delete packageJson.devDependencies['@types/express'];
     }
 
+    const symlinkFiles = [
+      {
+        origPath: `${userInput.assetsPath}/db/${userInput.db}/scripts`,
+        linkPath: `${userInput.appDir}/scripts`,
+      },
+      {
+        origPath: `${userInput.assetsPath}/.eslintignore`,
+        linkPath: `${userInput.appDir}/.eslintignore`,
+      },
+      {
+        origPath: `${userInput.assetsPath}/.prettierignore`,
+        linkPath: `${userInput.appDir}/.prettierignore`,
+      },
+      {
+        origPath: `${userInput.assetsPath}/.prettierrc.js`,
+        linkPath: `${userInput.appDir}/.prettierrc.js`,
+      },
+      userInput.framework !== 'nest' &&
+        userInput.projectLanguage === 'TS' &&
+        !isExampleApp && {
+          origPath: `${userInput.assetsPath}/tsconfig.json`,
+          linkPath: `${userInput.appDir}/tsconfig.json`,
+        },
+      userInput.framework !== 'nest' &&
+        userInput.projectLanguage === 'TS' &&
+        !isExampleApp && {
+          origPath: `${userInput.assetsPath}/tsconfig.build.json`,
+          linkPath: `${userInput.appDir}/tsconfig.build.json`,
+        },
+      userInput.framework == 'nest' && {
+        origPath: `${userInput.assetsPath}/nest/multiple-choice-features/authorization/${userInput.authOption}`,
+        linkPath: `${userInput.appDir}/src/api/auth`,
+      },
+    ].filter(Boolean);
+
     try {
-      write(`${userInput.appPath}/package.json`, packageJson);
+      remove(`${userInput.appDir}/package.json`);
+      write(`${userInput.appDir}/package.json`, packageJson);
+      for (const file of symlinkFiles) {
+        remove(file.linkPath);
+        await symlink(file.origPath, file.linkPath);
+      }
     } catch (err) {
       throw new Error(
         `An error occurred while writing the new package.json file: ${err}`

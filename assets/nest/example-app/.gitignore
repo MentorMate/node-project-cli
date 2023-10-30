@@ -1,3 +1,13 @@
+.dockerignore
+.env
+.eslintignore
+.prettierignore
+.prettierrc.js
+Dockerfile
+package*.json
+
+scripts
+src/api/auth
 
 
 

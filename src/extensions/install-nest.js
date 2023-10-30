@@ -36,17 +36,10 @@ module.exports = (toolbox) => {
         await copyAsync(srcDir, `${appDir}/src/`);
 
         if (isExampleApp) {
-          if (authOption === 'auth0') {
-            await copyAsync(
-              `${assetsPath}/${framework}/multiple-choice-features/auth0/`,
-              `${appDir}/src/api/auth`
-            );
-          } else {
-            await copyAsync(
-              `${assetsPath}/${framework}/multiple-choice-features/auth/`,
-              `${appDir}/src/api/auth`
-            );
-          }
+          await copyAsync(
+            `${assetsPath}/${framework}/multiple-choice-features/authorization/${authOption}`,
+            `${appDir}/src/api/auth`
+          );
         }
       }
 
