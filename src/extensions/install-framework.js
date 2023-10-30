@@ -2,6 +2,7 @@
 
 module.exports = (toolbox) => {
   toolbox.installFramework = async ({
+    devSetup,
     projectLanguage,
     framework,
     appDir,
@@ -72,7 +73,9 @@ module.exports = (toolbox) => {
       ? `${assetsPath}/${framework}/example-app/src/`
       : `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}/src/`;
 
-    await copyAsync(srcDir, `${appDir}/src/`);
+    if (!devSetup) {
+      await copyAsync(srcDir, `${appDir}/src/`);
+    }
 
     // Example Express app
     if (isExampleApp) {
@@ -101,28 +104,33 @@ module.exports = (toolbox) => {
         'openapi:g': 'ts-node scripts/generate-openapi',
       });
 
-      await Promise.all([
-        copyAsync(
-          `${assetsPath}/express/example-app/scripts/generate-openapi.ts`,
-          `${appDir}/scripts/generate-openapi.ts`
-        ),
-        copyAsync(
-          `${assetsPath}/express/example-app/.openapi/gitignorefile`,
-          `${appDir}/.openapi/.gitignore`
-        ),
-        copyAsync(
-          `${assetsPath}/express/example-app/docker-compose.yml`,
-          `${appDir}/docker-compose.yml`
-        ),
-        copyAsync(
-          `${assetsPath}/express/example-app/docker-compose.override.example.yml`,
-          `${appDir}/docker-compose.override.example.yml`
-        ),
-        copyAsync(
-          `${assetsPath}/express/example-app/migrations`,
-          `${appDir}/migrations`
-        ),
-      ]);
+      if (!devSetup) {
+        await Promise.all([
+          copyAsync(
+            `${assetsPath}/express/example-app/scripts/generate-openapi.ts`,
+            `${appDir}/scripts/generate-openapi.ts`
+          ),
+          copyAsync(
+            `${assetsPath}/express/example-app/.openapi/gitignorefile`,
+            `${appDir}/.openapi/.gitignore`
+          ),
+          copyAsync(
+            `${assetsPath}/express/example-app/docker-compose.yml`,
+            `${appDir}/docker-compose.yml`
+          ),
+          copyAsync(
+            `${assetsPath}/express/example-app/docker-compose.override.example.yml`,
+            `${appDir}/docker-compose.override.example.yml`
+          ),
+          copyAsync(
+            `${assetsPath}/express/example-app/migrations`,
+            `${appDir}/migrations`
+          ),
+          copyAsync(`${assetsPath}/db/pg/scripts`, `${appDir}/scripts`, {
+            overwrite: true,
+          }),
+        ]);
+      }
 
       Object.assign(envVars, {
         Knex: {
@@ -153,10 +161,6 @@ module.exports = (toolbox) => {
           'ts-node node_modules/.bin/knex migrate:status --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
         'db:migrate:reset':
           'npm run db:migrate:rollback --all && npm run db:migrate:latest',
-      });
-
-      await copyAsync(`${assetsPath}/db/pg/scripts`, `${appDir}/scripts`, {
-        overwrite: true,
       });
     }
 

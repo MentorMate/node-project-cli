@@ -40,6 +40,8 @@ module.exports = (toolbox) => {
       );
     }
 
+    asyncOperations.requiredForDevSetup = true;
+
     function syncOperations() {
       Object.assign(pkgJson.scripts, {
         'image:build': `DOCKER_BUILDKIT=1 docker build -t ${projectName} .`,
