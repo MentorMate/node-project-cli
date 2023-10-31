@@ -163,7 +163,6 @@ module.exports = {
 
     await Promise.all(asyncOperations);
 
-    // const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`));
     const expressPackageJson = {
       name: 'dev-app',
       version: '1.0.0',
@@ -279,6 +278,10 @@ module.exports = {
     const symlinkFiles = [
       isExampleApp && dbScriptLinkPaths,
       {
+        origPath: `${userInput.assetsPath}/vscode`,
+        linkPath: `${userInput.appDir}/.vscode`,
+      },
+      {
         origPath: `${userInput.assetsPath}/.eslintignore`,
         linkPath: `${userInput.appDir}/.eslintignore`,
       },
@@ -307,13 +310,17 @@ module.exports = {
           origPath: `${userInput.assetsPath}/nest/multiple-choice-features/authorization/${userInput.authOption}`,
           linkPath: `${userInput.appDir}/src/api/auth`,
         },
+      userInput.framework == 'nest' &&
+        isExampleApp && {
+          origPath: `${userInput.assetsPath}/nest/multiple-choice-features/authorization/test/${userInput.authOption}/todos`,
+          linkPath: `${userInput.appDir}/test/todos`,
+        },
     ].filter(Boolean);
 
     try {
       remove(`${userInput.appDir}/package.json`);
       write(`${userInput.appDir}/package.json`, packageJson);
       for (const file of symlinkFiles) {
-        console.log({ file });
         remove(file.linkPath);
         await symlink(file.origPath, file.linkPath);
       }

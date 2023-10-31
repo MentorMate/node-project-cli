@@ -1,10 +1,13 @@
 Dockerfile
 .dockerignore
 .env
+.env.test
 .eslintignore
 .prettierignore
 .prettierrc.js
 nodemon.json
 package*.json
 
-scripts
+coverage-e2e
+.vscode
+

@@ -1,9 +1,13 @@
 .dockerignore
 .env
+.env.test
 .eslintignore
 .prettierignore
 .prettierrc.js
 nodemon.json
 package*.json
+scripts/db-connection.ts
 
-scripts
+coverage-e2e
+.vscode
+

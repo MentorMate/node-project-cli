@@ -112,7 +112,7 @@ describe('jest-config-and-coverage-wf', () => {
       let assetsAppDir;
 
       beforeAll(() => {
-        input.framework = 'nest';
+        input.framework = 'express';
         assetsAppDir = input.isExampleApp
           ? `${input.assetsPath}/${input.framework}/example-app`
           : `${input.assetsPath}/${

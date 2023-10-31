@@ -25,21 +25,48 @@ module.exports = (toolbox) => {
       const srcDir = isExampleApp
         ? `${assetsPath}/${framework}/example-app/src/`
         : `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}/src/`;
+      const testDir = isExampleApp
+        ? `${assetsPath}/${framework}/example-app/test/`
+        : `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}/test/`;
 
       if (!devSetup) {
         await run(
           `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --strict --skip-git --skip-install --package-manager npm`
         );
 
-        await removeAsync(`${appDir}/src/`);
-        await removeAsync(`${appDir}/test/`);
-        await copyAsync(srcDir, `${appDir}/src/`);
+        await Promise.all([
+          removeAsync(`${appDir}/src/`),
+          removeAsync(`${appDir}/test/`),
+        ]);
+
+        await Promise.all([
+          copyAsync(srcDir, `${appDir}/src/`),
+          copyAsync(testDir, `${appDir}/test/`),
+        ]);
 
         if (isExampleApp) {
-          await copyAsync(
-            `${assetsPath}/${framework}/multiple-choice-features/authorization/${authOption}`,
-            `${appDir}/src/api/auth`
-          );
+          await Promise.all([
+            removeAsync(`${appDir}/src/api/auth`),
+            removeAsync(`${appDir}/test/auth`),
+            removeAsync(`${appDir}/test/todos`),
+          ]);
+
+          await Promise.all([
+            await copyAsync(
+              `${assetsPath}/${framework}/multiple-choice-features/authorization/${authOption}`,
+              `${appDir}/src/api/auth`
+            ),
+            await copyAsync(
+              `${assetsPath}/${framework}/multiple-choice-features/authorization/test/${authOption}/todos`,
+              `${appDir}/test/todos`
+            ),
+
+            authOption === 'jwt' &&
+              (await copyAsync(
+                `${assetsPath}/${framework}/multiple-choice-features/authorization/test/${authOption}/auth`,
+                `${appDir}/test/auth`
+              )),
+          ]);
         }
       }
 

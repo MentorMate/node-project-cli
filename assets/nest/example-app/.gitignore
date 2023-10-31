@@ -1,5 +1,6 @@
 .dockerignore
 .env
+.env.test
 .eslintignore
 .prettierignore
 .prettierrc.js
@@ -7,7 +8,8 @@ Dockerfile
 package*.json
 
 scripts
+coverage-e2e
 src/api/auth
-
-
+test/todos
+.vscode
 

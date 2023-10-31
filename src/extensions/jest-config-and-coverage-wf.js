@@ -9,11 +9,10 @@ module.exports = (toolbox) => {
     assetsPath,
     framework,
     isExampleApp,
-    authOption,
   }) => {
     const {
       print: { success, muted },
-      filesystem: { copyAsync, removeAsync, renameAsync },
+      filesystem: { copyAsync },
     } = toolbox;
 
     async function asyncOperations() {
@@ -38,16 +37,8 @@ module.exports = (toolbox) => {
         `${appDir}/jest.config.js`
       );
 
-      await copyAsync(`${assetsAppDir}/test/`, `${appDir}/test/`);
-
-      if (isExampleApp && authOption === 'auth0') {
-        await removeAsync(`${appDir}/test/auth`);
-        await removeAsync(`${appDir}/test/todos`);
-        await renameAsync(`${appDir}/test/todos-auth0`, 'todos');
-      }
-
-      if (isExampleApp && authOption === 'jwt') {
-        await removeAsync(`${appDir}/test/todos-auth0`);
+      if (framework === 'express') {
+        await copyAsync(`${assetsAppDir}/test/`, `${appDir}/test/`);
       }
 
       if (isExampleApp) {
