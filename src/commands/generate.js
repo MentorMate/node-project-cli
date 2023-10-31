@@ -85,7 +85,9 @@ module.exports = {
       userInput = Object.assign(
         {},
         userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2))
+        await prompt.ask(
+          getQuestions(userInput, isPip3Avaialble, isInteractiveMode).slice(2)
+        )
       );
     }
 
