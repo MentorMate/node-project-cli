@@ -266,11 +266,18 @@ module.exports = {
       delete packageJson.devDependencies['@types/express'];
     }
 
+    const dbScriptLinkPaths =
+      userInput.framework === 'nest'
+        ? {
+            origPath: `${userInput.assetsPath}/db/${userInput.db}/scripts`,
+            linkPath: `${userInput.appDir}/scripts`,
+          }
+        : {
+            origPath: `${userInput.assetsPath}/db/${userInput.db}/scripts/db-connection.ts`,
+            linkPath: `${userInput.appDir}/scripts/db-connection.ts`,
+          };
     const symlinkFiles = [
-      isExampleApp && {
-        origPath: `${userInput.assetsPath}/db/${userInput.db}/scripts/db-connection.ts`,
-        linkPath: `${userInput.appDir}/scripts/db-connection.ts`,
-      },
+      isExampleApp && dbScriptLinkPaths,
       {
         origPath: `${userInput.assetsPath}/.eslintignore`,
         linkPath: `${userInput.appDir}/.eslintignore`,
@@ -306,6 +313,7 @@ module.exports = {
       remove(`${userInput.appDir}/package.json`);
       write(`${userInput.appDir}/package.json`, packageJson);
       for (const file of symlinkFiles) {
+        console.log({ file });
         remove(file.linkPath);
         await symlink(file.origPath, file.linkPath);
       }
