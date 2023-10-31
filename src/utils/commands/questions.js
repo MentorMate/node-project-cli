@@ -61,7 +61,7 @@ const getQuestions = (
       { message: 'JWT', value: 'jwt' },
       { message: 'Auth0', value: 'auth0' },
     ],
-    skip: framework !== 'nest' && isInteractiveMode,
+    skip: !(framework === 'nest' && isInteractiveMode),
   },
   {
     type: 'select',
