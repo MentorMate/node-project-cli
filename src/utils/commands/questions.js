@@ -27,7 +27,10 @@ const getFeatureChoices = (isPip3Available) => [
 const getInitialFeatureChoices = (isPip3Available) =>
   isPip3Available ? [0, 1, 5, 6, 7] : [0, 1, 2, 3];
 
-const getQuestions = ({ projectName, framework }, isPip3Available) => [
+const getQuestions = (
+  { projectName, framework, isExampleApp },
+  isPip3Available
+) => [
   {
     type: 'input',
     name: 'projectName',
@@ -57,6 +60,7 @@ const getQuestions = ({ projectName, framework }, isPip3Available) => [
       { message: 'JWT', value: 'jwt' },
       { message: 'Auth0', value: 'auth0' },
     ],
+    skip: !(framework === 'nest' && isExampleApp),
   },
   {
     type: 'select',
