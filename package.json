@@ -1,6 +1,6 @@
 {
   "name": "@mentormate/node-cli",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Node CLI",
   "repository": {
     "url": "https://github.com/MentorMate/node-project-cli"
