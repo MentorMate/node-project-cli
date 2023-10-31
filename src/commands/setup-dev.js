@@ -267,9 +267,9 @@ module.exports = {
     }
 
     const symlinkFiles = [
-      {
-        origPath: `${userInput.assetsPath}/db/${userInput.db}/scripts`,
-        linkPath: `${userInput.appDir}/scripts`,
+      isExampleApp && {
+        origPath: `${userInput.assetsPath}/db/${userInput.db}/scripts/db-connection.ts`,
+        linkPath: `${userInput.appDir}/scripts/db-connection.ts`,
       },
       {
         origPath: `${userInput.assetsPath}/.eslintignore`,
@@ -295,10 +295,11 @@ module.exports = {
           origPath: `${userInput.assetsPath}/tsconfig.build.json`,
           linkPath: `${userInput.appDir}/tsconfig.build.json`,
         },
-      userInput.framework == 'nest' && {
-        origPath: `${userInput.assetsPath}/nest/multiple-choice-features/authorization/${userInput.authOption}`,
-        linkPath: `${userInput.appDir}/src/api/auth`,
-      },
+      userInput.framework == 'nest' &&
+        isExampleApp && {
+          origPath: `${userInput.assetsPath}/nest/multiple-choice-features/authorization/${userInput.authOption}`,
+          linkPath: `${userInput.appDir}/src/api/auth`,
+        },
     ].filter(Boolean);
 
     try {

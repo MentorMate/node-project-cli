@@ -1,0 +1,9 @@
+.dockerignore
+.env
+.eslintignore
+.prettierignore
+.prettierrc.js
+nodemon.json
+package*.json
+
+scripts

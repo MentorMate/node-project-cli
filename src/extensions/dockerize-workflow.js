@@ -1,5 +1,6 @@
 module.exports = (toolbox) => {
   toolbox.dockerizeWorkflow = ({
+    devSetup,
     projectName,
     appDir,
     assetsPath,
@@ -21,8 +22,14 @@ module.exports = (toolbox) => {
         ? `${assetsPath}/express/example-app/Dockerfile`
         : `${assetsPath}/docker/${projectLanguage.toLowerCase()}/Dockerfile`;
 
+      const skipCopyOfDockerfile =
+        devSetup && framework === 'express' && isExampleApp;
+
       await Promise.all([
-        copyAsync(dockerfile, `${appDir}/Dockerfile`, { overwrite: true }),
+        !skipCopyOfDockerfile &&
+          copyAsync(dockerfile, `${appDir}/Dockerfile`, {
+            overwrite: true,
+          }),
         copyAsync(`${assetsPath}/.dockerignore`, `${appDir}/.dockerignore`, {
           overwrite: true,
         }),
