@@ -11,5 +11,6 @@ scripts
 coverage-e2e
 src/api/auth
 test/todos
+test/auth
 .vscode
 

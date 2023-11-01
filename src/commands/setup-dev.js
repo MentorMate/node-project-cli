@@ -35,7 +35,7 @@ module.exports = {
   run: async (toolbox) => {
     const {
       parameters: { options },
-      system: { which },
+      system: { which, run },
       filesystem: { path, write, remove, symlink },
       print: { warning, highlight, error },
       prompt,
@@ -305,18 +305,29 @@ module.exports = {
           origPath: `${userInput.assetsPath}/tsconfig.build.json`,
           linkPath: `${userInput.appDir}/tsconfig.build.json`,
         },
-      userInput.framework == 'nest' &&
-        isExampleApp && {
-          origPath: `${userInput.assetsPath}/nest/multiple-choice-features/authorization/${userInput.authOption}`,
-          linkPath: `${userInput.appDir}/src/api/auth`,
-        },
-      userInput.framework == 'nest' &&
-        isExampleApp && {
-          origPath: `${userInput.assetsPath}/nest/multiple-choice-features/authorization/test/${userInput.authOption}/todos`,
-          linkPath: `${userInput.appDir}/test/todos`,
-        },
+      // userInput.framework == 'nest' &&
+      //   isExampleApp && {
+      //     origPath: `${userInput.assetsPath}/nest/multiple-choice-features/authorization/${userInput.authOption}`,
+      //     linkPath: `${userInput.appDir}/src/api/auth`,
+      //   },
+      // userInput.framework == 'nest' &&
+      //   isExampleApp && {
+      //     origPath: `${userInput.assetsPath}/nest/multiple-choice-features/authorization/test/${userInput.authOption}/todos`,
+      //     linkPath: `${userInput.appDir}/test/todos`,
+      //   },
     ].filter(Boolean);
 
+    try {
+      remove(`${userInput.appDir}/src/api/auth`);
+      remove(`${userInput.appDir}/test/todos`);
+      remove(`${userInput.appDir}/test/auth`);
+      const res = await run(
+        `bash ${userInput.assetsPath}/link-script.sh ${userInput.assetsPath} ${userInput.authOption}`
+      );
+      console.log({ res });
+    } catch (err) {
+      console.log({ err });
+    }
     try {
       remove(`${userInput.appDir}/package.json`);
       write(`${userInput.appDir}/package.json`, packageJson);
