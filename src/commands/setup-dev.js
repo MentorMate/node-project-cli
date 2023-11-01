@@ -305,29 +305,23 @@ module.exports = {
           origPath: `${userInput.assetsPath}/tsconfig.build.json`,
           linkPath: `${userInput.appDir}/tsconfig.build.json`,
         },
-      // userInput.framework == 'nest' &&
-      //   isExampleApp && {
-      //     origPath: `${userInput.assetsPath}/nest/multiple-choice-features/authorization/${userInput.authOption}`,
-      //     linkPath: `${userInput.appDir}/src/api/auth`,
-      //   },
-      // userInput.framework == 'nest' &&
-      //   isExampleApp && {
-      //     origPath: `${userInput.assetsPath}/nest/multiple-choice-features/authorization/test/${userInput.authOption}/todos`,
-      //     linkPath: `${userInput.appDir}/test/todos`,
-      //   },
     ].filter(Boolean);
 
-    try {
-      remove(`${userInput.appDir}/src/api/auth`);
-      remove(`${userInput.appDir}/test/todos`);
-      remove(`${userInput.appDir}/test/auth`);
-      const res = await run(
-        `bash ${userInput.assetsPath}/link-script.sh ${userInput.assetsPath} ${userInput.authOption}`
-      );
-      console.log({ res });
-    } catch (err) {
-      console.log({ err });
+    if (userInput.framework === 'nest' && isExampleApp) {
+      try {
+        remove(`${userInput.appDir}/src/api/auth`);
+        remove(`${userInput.appDir}/test/todos`);
+        remove(`${userInput.appDir}/test/auth`);
+        await run(
+          `bash ${userInput.assetsPath}/nest/link-script.sh ${userInput.assetsPath} ${userInput.authOption}`
+        );
+      } catch (err) {
+        throw new Error(
+          `An error occurred while hard linking features files: ${err}`
+        );
+      }
     }
+
     try {
       remove(`${userInput.appDir}/package.json`);
       write(`${userInput.appDir}/package.json`, packageJson);
@@ -337,7 +331,7 @@ module.exports = {
       }
     } catch (err) {
       throw new Error(
-        `An error occurred while writing the new package.json file: ${err}`
+        `An error occurred while writing the package.json file and linking config files: ${err}`
       );
     }
 

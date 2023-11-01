@@ -10,12 +10,10 @@ echo $files
 for file in $files; do
   if [[ $file == *: ]]; then
     dir=$(echo $file | sed "s/^.*${auth_type}//" | sed "s/:$/\//")
-    echo "DIR: $dir"
     mkdir "${assets_dir}/nest/example-app/src/api/auth${dir}"
   fi
 
   if [[ $file == *.ts ]]; then
-    echo "FILE: $file"
     ln "${full_auth_dir}${dir}${file}" "${assets_dir}/nest/example-app/src/api/auth${dir}${file}"
   fi
 done
@@ -24,12 +22,10 @@ files=$(ls -R "${full_test_dir}/")
 for file in $files; do
   if [[ $file == *: ]]; then
     dir=$(echo $file | sed "s/^.*${auth_type}//" | sed "s/:$/\//")
-    echo "DIR: $dir"
     mkdir "${assets_dir}/nest/example-app/test${dir}"
   fi
 
   if [[ $file == *.ts ]]; then
-    echo "FILE: $file"
     ln "${full_test_dir}${dir}${file}" "${assets_dir}/nest/example-app/test${dir}${file}"
   fi
 done
