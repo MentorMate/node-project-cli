@@ -11,13 +11,13 @@ import {
   UnauthorizedException,
   ValidationPipe,
 } from '@nestjs/common';
-import { NestKnexService } from '@database/nest-knex.service';
 import { AuthGuard } from '@api/auth/guards/auth.guard';
 import { expectError } from '../utils/expect-error';
+import { DatabaseService } from '@database/database.service';
 
 describe('GET /v1/todos', () => {
   let app: NestFastifyApplication;
-  let nestKnexService: NestKnexService;
+  let databaseService: DatabaseService;
 
   const canActivate = jest.fn();
 
@@ -34,25 +34,25 @@ describe('GET /v1/todos', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
         transform: true,
-      }),
+      })
     );
 
     await app.init();
 
-    nestKnexService = app.get(NestKnexService);
+    databaseService = app.get(DatabaseService);
   });
 
   beforeEach(async () => {
-    await nestKnexService.connection.migrate.rollback();
-    await nestKnexService.connection.migrate.latest();
-    await nestKnexService.connection.seed.run();
+    await databaseService.migrate.rollback();
+    await databaseService.migrate.latest();
+    await databaseService.seed.run();
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
@@ -175,7 +175,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'name', SortOrder.Desc),
+      sortByField(response.items, 'name', SortOrder.Desc)
     );
   });
 
@@ -200,7 +200,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'name', SortOrder.Asc),
+      sortByField(response.items, 'name', SortOrder.Asc)
     );
   });
 
@@ -225,7 +225,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'createdAt', SortOrder.Desc),
+      sortByField(response.items, 'createdAt', SortOrder.Desc)
     );
   });
 
@@ -250,7 +250,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'createdAt', SortOrder.Asc),
+      sortByField(response.items, 'createdAt', SortOrder.Asc)
     );
   });
 
@@ -276,7 +276,7 @@ describe('GET /v1/todos', () => {
 
 describe('GET /v1/todos - real AuthGuard', () => {
   let app: NestFastifyApplication;
-  let nestKnexService: NestKnexService;
+  let databaseService: DatabaseService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -284,16 +284,16 @@ describe('GET /v1/todos - real AuthGuard', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     await app.init();
 
-    nestKnexService = app.get(NestKnexService);
+    databaseService = app.get(DatabaseService);
 
-    await nestKnexService.connection.migrate.rollback();
-    await nestKnexService.connection.migrate.latest();
-    await nestKnexService.connection.seed.run();
+    await databaseService.migrate.rollback();
+    await databaseService.migrate.latest();
+    await databaseService.seed.run();
   });
 
   afterAll(async () => {

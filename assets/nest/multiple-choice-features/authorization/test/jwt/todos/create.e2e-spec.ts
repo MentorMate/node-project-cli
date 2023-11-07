@@ -12,14 +12,14 @@ import {
   UnauthorizedException,
   ValidationPipe,
 } from '@nestjs/common';
-import { NestKnexService } from '@database/nest-knex.service';
 import { expectError } from '../utils/expect-error';
+import { DatabaseService } from '@database/database.service';
 
 describe('POST /v1/todos', () => {
   const todoPayload = getTodoPayload();
 
   let app: NestFastifyApplication;
-  let nestKnexService: NestKnexService;
+  let databaseService: DatabaseService;
   const canActivate = jest.fn();
 
   class AuthGuardMock {
@@ -35,25 +35,25 @@ describe('POST /v1/todos', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
         whitelist: true,
-      }),
+      })
     );
 
     await app.init();
 
-    nestKnexService = app.get(NestKnexService);
+    databaseService = app.get(DatabaseService);
   });
 
   beforeEach(async () => {
-    await nestKnexService.connection.migrate.rollback();
-    await nestKnexService.connection.migrate.latest();
-    await nestKnexService.connection.seed.run();
+    await databaseService.migrate.rollback();
+    await databaseService.migrate.latest();
+    await databaseService.seed.run();
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
@@ -73,22 +73,24 @@ describe('POST /v1/todos', () => {
         url: '/v1/todos',
         payload: todoPayload,
       })
-      .then((res) => {
-        const responseBody = res.json();
-        expect(responseBody.name).toEqual(todoPayload.name);
-        expect(responseBody.note).toEqual(todoPayload.note);
-        expect(responseBody.completed).toEqual(todoPayload.completed);
+      .then(async (res) => {
+        const todo = await databaseService.connection
+          .collection('todos')
+          .findOne({ name: todoPayload.name });
+        expect(res.statusCode).toEqual(201);
+        expect(res.payload).toEqual(`"${todo?._id}"`);
+        expect(todo?.note).toEqual(todoPayload.note);
+        expect(todo?.completed).toEqual(todoPayload.completed);
       });
   });
 
   it('should throw error if a todo with the same name already exists', async () => {
-    const { name, note, completed } = await app
-      .inject({
-        method: 'POST',
-        url: '/v1/todos',
-        payload: getTodoPayload(false),
-      })
-      .then((res) => res.json());
+    const { name, note, completed } = getTodoPayload(false);
+    await app.inject({
+      method: 'POST',
+      url: '/v1/todos',
+      payload: { name, note, completed },
+    });
 
     await app
       .inject({
@@ -121,7 +123,7 @@ describe('POST /v1/todos - real AuthGuard', () => {
   const todoPayload = getTodoPayload();
 
   let app: NestFastifyApplication;
-  let nestKnexService: NestKnexService;
+  let databaseService: DatabaseService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -129,16 +131,16 @@ describe('POST /v1/todos - real AuthGuard', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     await app.init();
 
-    nestKnexService = app.get(NestKnexService);
+    databaseService = app.get(DatabaseService);
 
-    await nestKnexService.connection.migrate.rollback();
-    await nestKnexService.connection.migrate.latest();
-    await nestKnexService.connection.seed.run();
+    await databaseService.migrate.rollback();
+    await databaseService.migrate.latest();
+    await databaseService.seed.run();
   });
 
   afterAll(async () => {

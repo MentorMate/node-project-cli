@@ -19,7 +19,7 @@ import { ConflictDto, UnprocessableEntityDto } from '@utils/dtos';
 export class AuthController {
   constructor(
     @Inject(AuthService)
-    private readonly authService: AuthService,
+    private readonly authService: AuthService
   ) {}
 
   @Post('register')

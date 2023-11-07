@@ -6,12 +6,21 @@ type ListTodoSortColumn = 'name' | 'createdAt';
 export const sortByField: (
   list: Todo[],
   field: ListTodoSortColumn,
-  order?: SortOrder,
+  order?: SortOrder
 ) => Todo[] = (list, field, order) => {
   return list.sort((a, b) => {
     if (order === 'desc') {
-      return b[field].localeCompare(a[field]);
+      if (field === 'name') {
+        return b[field].localeCompare(a[field]);
+      } else {
+        return b[field] - a[field];
+      }
     }
-    return a[field].localeCompare(b[field]);
+
+    if (field === 'name') {
+      return a[field].localeCompare(b[field]);
+    } else {
+      return a[field] - b[field];
+    }
   });
 };

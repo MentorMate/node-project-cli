@@ -5,7 +5,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
 import { expectError } from '../utils/expect-error';
-import { NestKnexService } from '@database/nest-knex.service';
+import { DatabaseService } from '@database/database.service';
 import {
   BadRequestException,
   UnprocessableEntityException,
@@ -16,7 +16,7 @@ describe('POST /auth/login', () => {
   const credentials = { email: 'hello@email.com', password: 'pass@ord' };
 
   let app: NestFastifyApplication;
-  let nestKnexService: NestKnexService;
+  let databaseService: DatabaseService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -35,13 +35,13 @@ describe('POST /auth/login', () => {
     );
 
     await app.init();
-    nestKnexService = app.get(NestKnexService);
+    databaseService = app.get(DatabaseService);
   });
 
   beforeEach(async () => {
-    await nestKnexService.connection.migrate.rollback();
-    await nestKnexService.connection.migrate.latest();
-    await nestKnexService.connection.seed.run();
+    await databaseService.migrate.rollback();
+    await databaseService.migrate.latest();
+    await databaseService.seed.run();
   });
 
   afterAll(async () => {

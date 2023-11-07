@@ -5,7 +5,6 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
 import { AuthGuard } from '@api/auth/guards/auth.guard';
-import { NestKnexService } from '@database/nest-knex.service';
 import {
   ValidationPipe,
   ExecutionContext,
@@ -14,10 +13,12 @@ import {
 } from '@nestjs/common';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
 import { expectError } from '../utils/expect-error';
+import { DatabaseService } from '@database/database.service';
+import { ObjectId } from 'mongodb';
 
 describe('GET /v1/todos/:id', () => {
   let app: NestFastifyApplication;
-  let nestKnexService: NestKnexService;
+  let databaseService: DatabaseService;
 
   const canActivate = jest.fn();
 
@@ -34,27 +35,27 @@ describe('GET /v1/todos/:id', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
         whitelist: true,
-      }),
+      })
     );
 
     app.useGlobalInterceptors(new ServiceToHttpErrorsInterceptor());
 
     await app.init();
 
-    nestKnexService = app.get(NestKnexService);
+    databaseService = app.get(DatabaseService);
   });
 
   beforeEach(async () => {
-    await nestKnexService.connection.migrate.rollback();
-    await nestKnexService.connection.migrate.latest();
-    await nestKnexService.connection.seed.run();
+    await databaseService.migrate.rollback();
+    await databaseService.migrate.latest();
+    await databaseService.seed.run();
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
@@ -68,15 +69,14 @@ describe('GET /v1/todos/:id', () => {
   });
 
   it('should return the todo - given todo id in the query', async () => {
-    const todo = await nestKnexService
-      .connection('todos')
-      .where({ id: 1 })
-      .first();
+    const todo = (
+      await databaseService.connection.collection('todos').find().toArray()
+    )[0];
 
     await app
       .inject({
         method: 'GET',
-        url: `/v1/todos/1`,
+        url: `/v1/todos/${todo._id}`,
       })
       .then((res) => {
         const { id, name, note, completed } = res.json();
@@ -90,10 +90,11 @@ describe('GET /v1/todos/:id', () => {
   });
 
   it('should return 404', async () => {
+    const objId = new ObjectId(1000);
     await app
       .inject({
         method: 'GET',
-        url: `/v1/todos/${Date.now()}`,
+        url: `/v1/todos/${objId}`,
       })
       .then((res) => {
         expectError(new NotFoundException(), res.json);
@@ -103,7 +104,7 @@ describe('GET /v1/todos/:id', () => {
 
 describe('GET /v1/todos/:id - real AuthGuard', () => {
   let app: NestFastifyApplication;
-  let nestKnexService: NestKnexService;
+  let databaseService: DatabaseService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -111,16 +112,16 @@ describe('GET /v1/todos/:id - real AuthGuard', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     await app.init();
 
-    nestKnexService = app.get(NestKnexService);
+    databaseService = app.get(DatabaseService);
 
-    await nestKnexService.connection.migrate.rollback();
-    await nestKnexService.connection.migrate.latest();
-    await nestKnexService.connection.seed.run();
+    await databaseService.migrate.rollback();
+    await databaseService.migrate.latest();
+    await databaseService.seed.run();
   });
 
   afterAll(async () => {
@@ -128,10 +129,11 @@ describe('GET /v1/todos/:id - real AuthGuard', () => {
   });
 
   it('should return 401 error', async () => {
+    const objId = new ObjectId(1000);
     await app
       .inject({
         method: 'GET',
-        url: '/v1/todos/1',
+        url: `/v1/todos/${objId}`,
       })
       .then((res) => expectError(new UnauthorizedException(), res.json));
   });

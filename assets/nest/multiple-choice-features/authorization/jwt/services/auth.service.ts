@@ -27,15 +27,13 @@ export class AuthService {
       throw new ConflictException('User email already taken');
     }
 
-    const { id } = await this.users.insertOne({
+    const userId = await this.users.insertOne({
       email,
       password: await this.password.hash(password),
     });
 
-    const user = await this.users.updateOne(id, { userId: id.toString() });
-
     return {
-      idToken: this.jwt.sign({ sub: user.userId, email }),
+      idToken: this.jwt.sign({ sub: userId, email }),
     };
   }
 

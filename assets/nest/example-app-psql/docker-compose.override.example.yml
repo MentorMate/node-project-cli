@@ -1,0 +1,6 @@
+services:
+
+  # uncomment the lines below and adjust the volume if desired
+  # db:
+  #   volumes:
+  #     - /path/to/volume:/var/lib/postgresql/data

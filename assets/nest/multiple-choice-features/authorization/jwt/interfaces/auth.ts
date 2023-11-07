@@ -1,5 +1,7 @@
+import { ObjectId } from 'mongodb';
+
 export interface JwtClaims {
-  sub: string;
+  sub: ObjectId;
   email: string;
 }
 

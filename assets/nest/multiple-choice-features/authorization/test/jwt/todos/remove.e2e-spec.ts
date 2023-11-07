@@ -5,7 +5,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
 import { AuthGuard } from '@api/auth/guards/auth.guard';
-import { NestKnexService } from '@database/nest-knex.service';
+import { DatabaseService } from '@database/database.service';
 import {
   ValidationPipe,
   ExecutionContext,
@@ -14,10 +14,11 @@ import {
 } from '@nestjs/common';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
 import { expectError } from '../utils/expect-error';
+import { ObjectId } from 'mongodb';
 
 describe('DELETE /v1/todos', () => {
   let app: NestFastifyApplication;
-  let nestKnexService: NestKnexService;
+  let databaseService: DatabaseService;
   const canActivate = jest.fn();
 
   class AuthGuardMock {
@@ -33,27 +34,27 @@ describe('DELETE /v1/todos', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
         whitelist: true,
-      }),
+      })
     );
 
     app.useGlobalInterceptors(new ServiceToHttpErrorsInterceptor());
 
     await app.init();
 
-    nestKnexService = app.get(NestKnexService);
+    databaseService = app.get(DatabaseService);
   });
 
   beforeEach(async () => {
-    await nestKnexService.connection.migrate.rollback();
-    await nestKnexService.connection.migrate.latest();
-    await nestKnexService.connection.seed.run();
+    await databaseService.migrate.rollback();
+    await databaseService.migrate.latest();
+    await databaseService.seed.run();
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
@@ -67,26 +68,30 @@ describe('DELETE /v1/todos', () => {
   });
 
   it('should return 200 when todo is deleted', async () => {
+    const todos = await databaseService.connection
+      .collection('todos')
+      .find()
+      .toArray();
     await app
       .inject({
         method: 'DELETE',
-        url: `/v1/todos/1`,
+        url: `/v1/todos/${todos[0]._id}`,
       })
       .then(async ({ statusCode }) => {
         expect(statusCode).toBe(200);
-        const todo = await nestKnexService
-          .connection('todos')
-          .where({ id: 1 })
-          .first();
-        expect(todo).toBeUndefined();
+        const todo = await databaseService.connection
+          .collection('todos')
+          .findOne({ _id: todos[0]._id });
+        expect(todo).toBeNull();
       });
   });
 
   it('should return 404 - non existing todo', async () => {
+    const objId = new ObjectId(1000);
     await app
       .inject({
         method: 'DELETE',
-        url: `/v1/todos/1000`,
+        url: `/v1/todos/${objId}`,
       })
       .then((res) => expectError(new NotFoundException(), res.json));
   });
@@ -94,7 +99,7 @@ describe('DELETE /v1/todos', () => {
 
 describe('DELETE /v1/todos - real AuthGuard', () => {
   let app: NestFastifyApplication;
-  let nestKnexService: NestKnexService;
+  let databaseService: DatabaseService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -102,16 +107,16 @@ describe('DELETE /v1/todos - real AuthGuard', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     await app.init();
 
-    nestKnexService = app.get(NestKnexService);
+    databaseService = app.get(DatabaseService);
 
-    await nestKnexService.connection.migrate.rollback();
-    await nestKnexService.connection.migrate.latest();
-    await nestKnexService.connection.seed.run();
+    await databaseService.migrate.rollback();
+    await databaseService.migrate.latest();
+    await databaseService.seed.run();
   });
 
   afterAll(async () => {
