@@ -41,6 +41,7 @@ module.exports = {
       prompt,
       meta,
       commandHelp,
+      os,
     } = toolbox;
 
     if (commandHelp.shouldPrint()) {
@@ -309,12 +310,18 @@ module.exports = {
 
     if (userInput.framework === 'nest' && isExampleApp) {
       try {
+        console.log('TRYING');
         remove(`${userInput.appDir}/src/api/auth`);
+        console.log('REMOVED!!!');
         remove(`${userInput.appDir}/test/todos`);
         remove(`${userInput.appDir}/test/auth`);
-        await run(
-          `bash ${userInput.assetsPath}/nest/link-script.sh ${userInput.assetsPath} ${userInput.authOption}`
+        const scr = await run(
+          `bash ${userInput.assetsPath}/nest/link-script.sh ${
+            userInput.assetsPath
+          } ${userInput.authOption} ${os.isMac()}`
         );
+
+        console.log({ scr });
       } catch (err) {
         throw new Error(
           `An error occurred while hard linking features files: ${err}`
