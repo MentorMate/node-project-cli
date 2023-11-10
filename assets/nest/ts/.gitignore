@@ -1,0 +1,12 @@
+.dockerignore
+.env
+.env.test
+.eslintignore
+.prettierignore
+.prettierrc.js
+Dockerfile
+package*.json
+
+coverage-e2e
+.vscode
+

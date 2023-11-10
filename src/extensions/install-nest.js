@@ -2,6 +2,7 @@
 
 module.exports = (toolbox) => {
   toolbox.installNest = async ({
+    devSetup,
     projectName,
     authOption,
     framework,
@@ -15,32 +16,57 @@ module.exports = (toolbox) => {
     const {
       system: { run },
       print: { success, muted },
-      filesystem: { copyAsync, removeAsync, renameAsync },
+      filesystem: { copyAsync, removeAsync },
     } = toolbox;
 
     muted('Installing Nest...');
 
     try {
-      await run(
-        `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --strict --skip-git --skip-install --package-manager npm`
-      );
-
       const srcDir = isExampleApp
         ? `${assetsPath}/${framework}/example-app/src/`
         : `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}/src/`;
+      const testDir = isExampleApp
+        ? `${assetsPath}/${framework}/example-app/test/`
+        : `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}/test/`;
 
-      await removeAsync(`${appDir}/src/`);
-      await removeAsync(`${appDir}/test/`);
-      await copyAsync(srcDir, `${appDir}/src/`);
+      if (!devSetup) {
+        await run(
+          `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --strict --skip-git --skip-install --package-manager npm`
+        );
 
-      if (isExampleApp) {
-        if (authOption === 'auth0') {
-          await removeAsync(`${appDir}/src/api/auth`);
-          await renameAsync(`${appDir}/src/api/auth0`, 'auth');
-        }
+        await Promise.all([
+          removeAsync(`${appDir}/src/`),
+          removeAsync(`${appDir}/test/`),
+        ]);
 
-        if (authOption === 'jwt') {
-          await removeAsync(`${appDir}/src/api/auth0`);
+        await Promise.all([
+          copyAsync(srcDir, `${appDir}/src/`),
+          copyAsync(testDir, `${appDir}/test/`),
+        ]);
+
+        if (isExampleApp) {
+          await Promise.all([
+            removeAsync(`${appDir}/src/api/auth`),
+            removeAsync(`${appDir}/test/auth`),
+            removeAsync(`${appDir}/test/todos`),
+          ]);
+
+          await Promise.all([
+            await copyAsync(
+              `${assetsPath}/${framework}/multiple-choice-features/authorization/${authOption}`,
+              `${appDir}/src/api/auth`
+            ),
+            await copyAsync(
+              `${assetsPath}/${framework}/multiple-choice-features/authorization/test/${authOption}/todos`,
+              `${appDir}/test/todos`
+            ),
+
+            authOption === 'jwt' &&
+              (await copyAsync(
+                `${assetsPath}/${framework}/multiple-choice-features/authorization/test/${authOption}/auth`,
+                `${appDir}/test/auth`
+              )),
+          ]);
         }
       }
 
@@ -106,34 +132,39 @@ module.exports = (toolbox) => {
           });
         }
 
-        await Promise.all([
-          copyAsync(
-            `${assetsPath}/nest/example-app/.openapi/gitignorefile`,
-            `${appDir}/.openapi/.gitignore`
-          ),
-          copyAsync(
-            `${assetsPath}/nest/example-app/docker-compose.yml`,
-            `${appDir}/docker-compose.yml`
-          ),
-          copyAsync(
-            `${assetsPath}/nest/example-app/docker-compose.override.example.yml`,
-            `${appDir}/docker-compose.override.example.yml`
-          ),
-          copyAsync(
-            `${assetsPath}/nest/example-app/migrations`,
-            `${appDir}/migrations`
-          ),
-          copyAsync(
-            `${assetsPath}/${framework}/example-app/tsconfig.build.json`,
-            `${appDir}/tsconfig.build.json`,
-            { overwrite: true }
-          ),
-          copyAsync(
-            `${assetsPath}/nest/example-app/tsconfig.json`,
-            `${appDir}/tsconfig.json`,
-            { overwrite: true }
-          ),
-        ]);
+        if (!devSetup) {
+          await Promise.all([
+            copyAsync(
+              `${assetsPath}/nest/example-app/.openapi/gitignorefile`,
+              `${appDir}/.openapi/.gitignore`
+            ),
+            copyAsync(
+              `${assetsPath}/nest/example-app/docker-compose.yml`,
+              `${appDir}/docker-compose.yml`
+            ),
+            copyAsync(
+              `${assetsPath}/nest/example-app/docker-compose.override.example.yml`,
+              `${appDir}/docker-compose.override.example.yml`
+            ),
+            copyAsync(
+              `${assetsPath}/nest/example-app/migrations`,
+              `${appDir}/migrations`
+            ),
+            copyAsync(
+              `${assetsPath}/${framework}/example-app/tsconfig.build.json`,
+              `${appDir}/tsconfig.build.json`,
+              { overwrite: true }
+            ),
+            copyAsync(
+              `${assetsPath}/nest/example-app/tsconfig.json`,
+              `${appDir}/tsconfig.json`,
+              { overwrite: true }
+            ),
+            copyAsync(`${assetsPath}/db/pg/scripts`, `${appDir}/scripts`, {
+              overwrite: true,
+            }),
+          ]);
+        }
 
         Object.assign(envVars, {
           Knex: {
@@ -163,10 +194,6 @@ module.exports = (toolbox) => {
             'ts-node node_modules/knex/bin/cli.js migrate:status --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
           'db:migrate:reset':
             'npm run db:migrate:rollback --all && npm run db:migrate:latest',
-        });
-
-        await copyAsync(`${assetsPath}/db/pg/scripts`, `${appDir}/scripts`, {
-          overwrite: true,
         });
       }
     } catch (err) {
