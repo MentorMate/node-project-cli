@@ -139,6 +139,13 @@ module.exports = (toolbox) => {
           Knex: {
             DEBUG: 'knex:query',
           },
+          Logging: {
+            ERROR_LOGGING: true,
+            REQUEST_LOGGING: true,
+          },
+          Swagger: {
+            SWAGGER: true,
+          },
         });
 
         Object.assign(pkgJson.dependencies, {

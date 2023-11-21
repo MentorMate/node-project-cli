@@ -25,6 +25,12 @@ export interface Environment {
   // HTTP
   PORT: number;
 
+  // LOGGING
+  ERROR_LOGGING: boolean;
+  REQUEST_LOGGING: boolean;
+
+  SWAGGER: boolean;
+
   // PostgreSQL
   // TODO: this limits your options, should be revisited
   PGHOST: string;
@@ -52,6 +58,15 @@ class EnvironmentVariablesValidator implements Environment {
   @Min(1024)
   @Max(65535)
   PORT: number;
+
+  @Transform(({ value }) => Boolean(value))
+  ERROR_LOGGING: boolean;
+
+  @Transform(({ value }) => Boolean(value))
+  REQUEST_LOGGING: boolean;
+
+  @Transform(({ value }) => Boolean(value))
+  SWAGGER: boolean;
 
   @IsString()
   @IsNotEmpty()
@@ -85,7 +100,7 @@ class EnvironmentVariablesValidator implements Environment {
   @IsString()
   @IsOptional()
   @IsUrl()
-  @Transform(({ value }) => value.endsWith('/') ? value : `${value}/`)
+  @Transform(({ value }) => (value.endsWith('/') ? value : `${value}/`))
   AUTH0_ISSUER_URL?: string;
 
   @IsString()
@@ -114,7 +129,7 @@ export const validateConfig = (
   });
 
   if (errors.length > 0) {
-    throw new Error(util.inspect(errors))
+    throw new Error(util.inspect(errors));
   }
 
   return validatedConfig;
