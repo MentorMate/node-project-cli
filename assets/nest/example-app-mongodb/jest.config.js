@@ -36,9 +36,6 @@ module.exports = {
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest'
   },
-  setupFiles: [
-    '<rootDir>/jest.setup.ts'
-  ],
   // path aliases from tsconfig.json
   moduleNameMapper: {
     '^@api/(.*)$': '<rootDir>/src/api/$1',

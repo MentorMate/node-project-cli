@@ -8,7 +8,7 @@ describe('definedOrNotFound', () => {
 
   describe('returned function', () => {
     it('should return the value it is called with when the value is not undefined', () => {
-      expect(definedOrNotFound('message')(null)).toBe(null);
+      expect(definedOrNotFound('message')(undefined)).toBe(undefined);
       expect(definedOrNotFound('message')(false)).toBe(false);
       expect(definedOrNotFound('message')(0)).toBe(0);
       expect(definedOrNotFound('message')('')).toBe('');
@@ -19,8 +19,8 @@ describe('definedOrNotFound', () => {
     });
 
     it('should throw RecordNotFound when the value it is called with is undefined', () => {
-      expect(() => definedOrNotFound('message')(undefined)).toThrowError(
-        new RecordNotFoundError('message'),
+      expect(() => definedOrNotFound('message')(null)).toThrowError(
+        new RecordNotFoundError('message')
       );
     });
   });
@@ -40,7 +40,7 @@ describe('updatedOrNotFound', () => {
 
     it('should throw RecordNotFound when the value it is called with is zero', () => {
       expect(() => updatedOrNotFound('message')(0)).toThrowError(
-        new RecordNotFoundError('message'),
+        new RecordNotFoundError('message')
       );
     });
   });

@@ -8,10 +8,11 @@ import { Paginated } from '@utils/query';
 import { Todo } from '../entities';
 import { TodosSortBy, UpdateTodoDto } from '../dto';
 import { UserData } from '@api/auth/interfaces';
+import { ObjectId } from 'mongodb';
 
 export const mockedUser: UserData = {
   user: {
-    sub: 'tz4a98xxat96iws9zmbrgj3a',
+    sub: new ObjectId(100),
     email: 'example@email.com',
   },
 };
@@ -19,12 +20,12 @@ export const mockedUser: UserData = {
 const userId = mockedUser.user.sub;
 
 export const todo: Todo = {
-  id: 1,
+  _id: new ObjectId(1),
   name: 'todo',
   note: null,
   completed: false,
-  createdAt: '2023-09-01T09:44:15.515Z',
-  updatedAt: '2023-09-01T09:44:15.515Z',
+  createdAt: new Date('2023-09-01T09:44:15.515Z').getTime(),
+  updatedAt: new Date('2023-09-01T09:44:15.515Z').getTime(),
   userId,
 };
 
@@ -44,13 +45,13 @@ export const updateTodoDtoInput: UpdateTodoDto = {
 };
 
 export const updateTodoInput: UpdateTodoInput = {
-  id: todo.id,
+  _id: todo._id,
   updateTodoDto: updateTodoDtoInput,
   userId,
 };
 
 export const findOneTodoInput: FindOneTodoInput = {
-  id: todo.id,
+  _id: todo._id,
   userId,
 };
 

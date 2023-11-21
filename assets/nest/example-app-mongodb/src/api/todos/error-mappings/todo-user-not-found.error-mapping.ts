@@ -1,6 +1,3 @@
-import { foreignKeyViolation } from '@database/error-mappings';
+import { recordNotFoundErrorMapping } from '@database/error-mappings';
 
-export const TodoUserNotFound = foreignKeyViolation(
-  'fk_todos_user_id',
-  'User not found',
-);
+export const TodoUserNotFound = recordNotFoundErrorMapping('User not found');

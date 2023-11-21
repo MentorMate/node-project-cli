@@ -18,20 +18,17 @@ export enum NodeEnvironment {
   Test = 'test',
 }
 
+export enum MongoProtocol {
+  onPremises = 'mongodb',
+  atlasCloud = 'mongodb+srv',
+}
+
 export interface Environment {
   // Node
   NODE_ENV: NodeEnvironment;
 
   // HTTP
   PORT: number;
-
-  // PostgreSQL
-  // TODO: this limits your options, should be revisited
-  PGHOST: string;
-  PGPORT: number;
-  PGUSER: string;
-  PGPASSWORD: string;
-  PGDATABASE: string;
 
   // JWT
   JWT_SECRET: string;
@@ -46,7 +43,7 @@ export interface Environment {
   // MongoDB
   MONGO_PROTOCOL?: string;
   MONGO_HOST?: string;
-  MONGO_PORT?: string;
+  MONGO_PORT?: number;
   MONGO_USER?: string;
   MONGO_PASSWORD?: string;
   MONGO_DATABASE_NAME?: string;
@@ -61,26 +58,29 @@ class EnvironmentVariablesValidator implements Environment {
   @Max(65535)
   PORT: number;
 
+  @IsEnum(MongoProtocol)
+  MONGO_PROTOCOL: string;
+
   @IsString()
   @IsNotEmpty()
-  PGHOST: string;
+  MONGO_HOST: string;
 
   @IsInt()
   @Min(1024)
   @Max(65535)
-  PGPORT: number;
+  MONGO_PORT: number;
 
   @IsString()
   @IsNotEmpty()
-  PGUSER: string;
+  MONGO_USER: string;
 
   @IsString()
   @IsNotEmpty()
-  PGPASSWORD: string;
+  MONGO_PASSWORD: string;
 
   @IsString()
   @IsNotEmpty()
-  PGDATABASE: string;
+  MONGO_DATABASE_NAME: string;
 
   @IsString()
   @IsOptional()

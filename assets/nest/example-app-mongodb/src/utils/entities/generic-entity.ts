@@ -5,7 +5,7 @@ import { ObjectId } from 'mongodb';
 export class GenericEntity {
   @ApiProperty()
   @ToObjectId()
-  id: ObjectId;
+  _id: ObjectId;
 
   @ApiProperty()
   createdAt: number;

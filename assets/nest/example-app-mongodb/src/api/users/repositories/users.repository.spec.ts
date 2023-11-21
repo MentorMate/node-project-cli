@@ -1,32 +1,33 @@
 import { UsersRepository } from './users.repository';
 import { Test } from '@nestjs/testing';
-import { NestKnexService } from '@database/nest-knex.service';
 import { Credentials } from '@api/auth/interfaces';
+import { DatabaseService } from '@database/database.service';
+import { ObjectId } from 'mongodb';
 
 describe('UsersRepository', () => {
   let usersRepository: UsersRepository;
 
-  const first = jest.fn(() => Promise.resolve({}));
-  const returning = jest.fn().mockImplementation(() => Promise.resolve([]));
+  const mockFn = jest.fn().mockImplementation(() => Promise.resolve([]));
 
-  const where = jest.fn().mockImplementation(() => ({
-    first,
-  }));
-
-  const insert = jest.fn().mockImplementation(() => ({
-    returning,
-  }));
+  const insertOne = jest.fn().mockImplementation(async () => mockFn());
+  const findOne = jest.fn().mockImplementation(() => mockFn());
+  const findOneAndUpdate = jest.fn().mockImplementation(() => mockFn());
+  const findOneAndDelete = jest.fn().mockImplementation(() => mockFn());
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         {
-          provide: NestKnexService,
+          provide: DatabaseService,
           useFactory: () => ({
-            connection: () => ({
-              insert,
-              where,
-            }),
+            connection: {
+              collection: () => ({
+                insertOne,
+                findOne,
+                findOneAndUpdate,
+                findOneAndDelete,
+              }),
+            },
           }),
         },
         UsersRepository,
@@ -43,17 +44,27 @@ describe('UsersRepository', () => {
     };
 
     const createdUser = {
-      id: 1,
+      _id: new ObjectId(100),
       email: 'user@example.com',
       password: 'password',
     };
 
-    returning.mockImplementationOnce(() => Promise.resolve([createdUser]));
+    mockFn.mockImplementationOnce(() =>
+      Promise.resolve({ insertedId: createdUser._id })
+    );
 
-    const result = await usersRepository.insertOne({ email: insertUser.email, password: insertUser.password });
+    const result = await usersRepository.insertOne({
+      email: insertUser.email,
+      password: insertUser.password,
+    });
 
-    expect(result).toBe(createdUser);
-    expect(insert).toHaveBeenCalledWith({ email: insertUser.email, password: insertUser.password });
+    expect(result).toBe(createdUser._id);
+    expect(insertOne).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: insertUser.email,
+        password: insertUser.password,
+      })
+    );
   });
 
   it('findByEmail - find a user', async () => {
@@ -63,11 +74,11 @@ describe('UsersRepository', () => {
       password: 'password',
     };
 
-    first.mockImplementationOnce(() => Promise.resolve(userFound));
+    mockFn.mockImplementationOnce(() => Promise.resolve(userFound));
 
     const result = await usersRepository.findByEmail('user@example.com');
 
     expect(result).toBe(userFound);
-    expect(where).toHaveBeenCalledWith({ email: 'user@example.com' });
+    expect(findOne).toHaveBeenCalledWith({ email: 'user@example.com' });
   });
 });

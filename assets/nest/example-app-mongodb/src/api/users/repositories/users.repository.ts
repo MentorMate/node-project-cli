@@ -17,11 +17,11 @@ export class UsersRepository extends BaseRepository<User> {
   insertOne(
     payload: NullableKeysPartial<Pick<User, 'email' | 'password'>>
   ): Promise<ObjectId> {
-    const id = new ObjectId();
+    const _id = new ObjectId();
     const user = {
-      id,
+      _id,
       ...payload,
-      userId: id,
+      userId: _id,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };

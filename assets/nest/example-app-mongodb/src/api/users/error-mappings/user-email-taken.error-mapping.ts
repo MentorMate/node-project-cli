@@ -1,6 +1,3 @@
 import { uniqueViolation } from '@database/error-mappings';
 
-export const UserEmailTaken = uniqueViolation(
-  'unq_users_email',
-  'User email already taken',
-);
+export const UserEmailTaken = uniqueViolation('User email already taken');

@@ -109,7 +109,7 @@ describe('PUT /v1/todos/:id', () => {
         const responseBody = res.json();
         expect(res.statusCode).toBe(200);
 
-        expect(responseBody.id).toEqual(todo.id);
+        expect(responseBody._id).toEqual(todo._id.toString());
         expect(responseBody.name).toEqual(todo.name);
         expect(responseBody.note).toEqual(todo.note);
         expect(responseBody.completed).toEqual(todo.completed);

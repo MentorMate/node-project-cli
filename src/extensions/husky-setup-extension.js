@@ -9,6 +9,7 @@ module.exports = (toolbox) => {
     projectLanguage,
     isExampleApp,
     framework,
+    db,
   }) => {
     const {
       filesystem: { dir, copyAsync, read, writeAsync },
@@ -45,19 +46,19 @@ module.exports = (toolbox) => {
 
         await copyAsync(
           `${assetHuskyPath}/gitignorefile`,
-          `${appHuskyPath}/.gitignore`
+          `${appHuskyPath}/.gitignore`,
         );
 
         if (features.includes('commitMsgLint')) {
           await Promise.all([
             copyAsync(
               `${assetsPath}/.commitlintrc.js`,
-              `${appDir}/.commitlintrc.js`
+              `${appDir}/.commitlintrc.js`,
             ),
             copyAsync(`${assetsPath}/.czrc`, `${appDir}/.czrc`),
             copyAsync(
               `${assetHuskyPath}/commit-msg`,
-              `${appHuskyPath}/commit-msg`
+              `${appHuskyPath}/commit-msg`,
             ),
           ]);
         }
@@ -84,21 +85,23 @@ module.exports = (toolbox) => {
             writeAsync(`${appDir}/.lintstagedrc`, lintstagedrc),
             copyAsync(
               isExampleApp
-                ? `${assetsPath}/${framework}/example-app/.ls-lint.yml`
+                ? framework === 'express'
+                  ? `${assetsPath}/${framework}/example-app/.ls-lint.yml`
+                  : `${assetsPath}/${framework}/example-app-${db}/.ls-lint.yml`
                 : `${assetsPath}/.ls-lint.yml`,
-              `${appDir}/.ls-lint.yml`
+              `${appDir}/.ls-lint.yml`,
             ),
             copyAsync(
               `${assetsPath}/.pre-commit-config.yaml`,
-              `${appDir}/.pre-commit-config.yaml`
+              `${appDir}/.pre-commit-config.yaml`,
             ),
             copyAsync(
               `${assetsPath}/detect-secrets.sh`,
-              `${appDir}/scripts/detect-secrets.sh`
+              `${appDir}/scripts/detect-secrets.sh`,
             ),
             copyAsync(
               `${assetsPath}/.secrets.baseline`,
-              `${appDir}/.secrets.baseline`
+              `${appDir}/.secrets.baseline`,
             ),
           ]);
         }
@@ -106,17 +109,17 @@ module.exports = (toolbox) => {
         if (features.includes('prePush')) {
           await copyAsync(
             `${assetHuskyPath}/pre-push`,
-            `${appHuskyPath}/pre-push`
+            `${appHuskyPath}/pre-push`,
           );
         }
       } catch (err) {
         throw new Error(
-          `An error has occurred while creating husky hooks: ${err}`
+          `An error has occurred while creating husky hooks: ${err}`,
         );
       }
 
       success(
-        'Husky hooks created successfully. Please wait for the other steps to be completed...'
+        'Husky hooks created successfully. Please wait for the other steps to be completed...',
       );
     }
 

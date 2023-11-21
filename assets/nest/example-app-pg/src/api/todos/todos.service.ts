@@ -68,7 +68,6 @@ export class TodosService {
   }
 
   async remove(input: FindOneTodoInput): Promise<boolean> {
-    console.log({ input });
     input._id = new ObjectId(input._id);
 
     const deletedTodo = await this.todos.remove(input);

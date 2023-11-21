@@ -101,7 +101,7 @@ export class TodosController {
   @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
   @Delete(':id')
   remove(
-    @Param('id', toObjectIdPipe) _id: GenericEntity['id'],
+    @Param('id', toObjectIdPipe) _id: GenericEntity['_id'],
     @Req() { user: { sub } }: UserData
   ): Promise<boolean> {
     return this.todosService.remove({ _id, userId: sub });

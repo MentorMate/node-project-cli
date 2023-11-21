@@ -52,7 +52,7 @@ module.exports = {
 
     if (!isPip3Avaialble) {
       warning(
-        "No `pip3` found on your system, some of the offered functionalities won't be available"
+        "No `pip3` found on your system, some of the offered functionalities won't be available",
       );
     }
 
@@ -62,7 +62,7 @@ module.exports = {
 
     if (isInteractiveMode && isExampleApp) {
       return error(
-        'Flags `--interactive` and `--example-app` cannot be used at the same time'
+        'Flags `--interactive` and `--example-app` cannot be used at the same time',
       );
     }
 
@@ -74,13 +74,13 @@ module.exports = {
 
     if (isInteractiveMode) {
       userInput = await prompt.ask(
-        getQuestions(userInput, isPip3Avaialble).slice(0, 2)
+        getQuestions(userInput, isPip3Avaialble).slice(0, 2),
       );
 
       userInput = Object.assign(
         {},
         userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2))
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2)),
       );
     }
 
@@ -88,12 +88,12 @@ module.exports = {
       userInput = Object.assign(
         {},
         userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(1, 3))
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(1, 5)),
       );
 
       Object.assign(
         userInput,
-        exampleAppConfig(userInput.framework, isPip3Avaialble)
+        exampleAppConfig(userInput.framework, isPip3Avaialble),
       );
     }
 
@@ -105,7 +105,9 @@ module.exports = {
     userInput.assetsPath = path(meta.src, '..', 'assets');
 
     const appPathSegment = isExampleApp
-      ? 'example-app'
+      ? userInput.framework === 'express'
+        ? 'example-app'
+        : `example-app-${userInput.db}`
       : userInput.projectLanguage.toLowerCase();
 
     userInput.appDir = `${userInput.assetsPath}/${userInput.framework}/${appPathSegment}`;
@@ -149,6 +151,8 @@ module.exports = {
 
     if (userInput.db === 'pg') {
       stepsOfExecution.push(toolbox.setupPostgreSQL(userInput));
+    } else if (userInput.db === 'mongodb') {
+      stepsOfExecution.push(toolbox.setupMongoDB(userInput));
     }
 
     if (userInput.isExampleApp && userInput.authOption == 'jwt') {
@@ -313,11 +317,11 @@ module.exports = {
         remove(`${userInput.appDir}/test/todos`);
         remove(`${userInput.appDir}/test/auth`);
         await run(
-          `bash ${userInput.assetsPath}/nest/link-script.sh ${userInput.assetsPath} ${userInput.authOption}`
+          `bash ${userInput.assetsPath}/nest/link-script.sh ${userInput.assetsPath} ${userInput.authOption} ${userInput.db}`,
         );
       } catch (err) {
         throw new Error(
-          `An error occurred while hard linking features files: ${err}`
+          `An error occurred while hard linking features files: ${err}`,
         );
       }
     }
@@ -331,7 +335,7 @@ module.exports = {
       }
     } catch (err) {
       throw new Error(
-        `An error occurred while writing the package.json file and linking config files: ${err}`
+        `An error occurred while writing the package.json file and linking config files: ${err}`,
       );
     }
 

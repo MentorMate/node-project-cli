@@ -26,7 +26,7 @@ export class TodosRepository extends BaseRepository<Todo> {
 
   async create(input: CreateTodoInput): Promise<ObjectId> {
     const todo = {
-      id: new ObjectId(),
+      _id: new ObjectId(),
       userId: input.userId,
       ...input.createTodoDto,
       // Why do we need it in the input?

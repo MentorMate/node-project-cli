@@ -9,6 +9,7 @@ module.exports = (toolbox) => {
     assetsPath,
     framework,
     isExampleApp,
+    db,
   }) => {
     const {
       print: { success, muted },
@@ -20,21 +21,23 @@ module.exports = (toolbox) => {
 
       await copyAsync(
         `${assetsPath}/.github/workflows/coverage.yaml`,
-        `${workflowsFolder}/coverage.yaml`
+        `${workflowsFolder}/coverage.yaml`,
       );
 
       await copyAsync(
         `${assetsPath}/.github/workflows/coverage-e2e.yaml`,
-        `${workflowsFolder}/coverage-e2e.yaml`
+        `${workflowsFolder}/coverage-e2e.yaml`,
       );
 
       const assetsAppDir = isExampleApp
-        ? `${assetsPath}/${framework}/example-app`
+        ? framework === 'express'
+          ? `${assetsPath}/${framework}/example-app`
+          : `${assetsPath}/${framework}/example-app-${db}`
         : `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}`;
 
       await copyAsync(
         `${assetsAppDir}/jest.config.js`,
-        `${appDir}/jest.config.js`
+        `${appDir}/jest.config.js`,
       );
 
       if (framework === 'express') {
@@ -44,7 +47,7 @@ module.exports = (toolbox) => {
       if (isExampleApp) {
         await copyAsync(
           `${assetsAppDir}/jest.setup.ts`,
-          `${appDir}/jest.setup.ts`
+          `${appDir}/jest.setup.ts`,
         );
 
         if (framework === 'express') {
@@ -53,7 +56,7 @@ module.exports = (toolbox) => {
       }
 
       success(
-        'Jest configured successfully. Please wait for the other steps to be completed...'
+        'Jest configured successfully. Please wait for the other steps to be completed...',
       );
     }
 

@@ -1,23 +1,21 @@
-import { DatabaseError } from 'pg';
-import { PostgresError } from 'pg-error-enum';
 import { uniqueViolation } from './unique-violation.error-mapping';
 import { DuplicateRecordError } from '@database/errors';
+import { MongoError } from 'mongodb';
 
 describe('uniqueViolation', () => {
   it('should return an error mapping', () => {
-    expect(uniqueViolation('constraint-name', 'error-message')).toEqual({
+    expect(uniqueViolation('error-message')).toEqual({
       isError: expect.any(Function),
       newError: expect.any(Function),
     });
   });
 
   describe('isError', () => {
-    const isError = uniqueViolation('constraint-name', 'error-message').isError;
+    const isError = uniqueViolation('error-message').isError;
 
     it('should return true when the error is a unique constraint violation error', () => {
-      const error = new DatabaseError('error', 1, 'error');
-      error.code = PostgresError.UNIQUE_VIOLATION;
-      error.constraint = 'constraint-name';
+      const error = new MongoError('error');
+      error.code = 11000;
       expect(isError(error)).toBe(true);
     });
 
@@ -29,10 +27,7 @@ describe('uniqueViolation', () => {
   });
 
   describe('newError', () => {
-    const newError = uniqueViolation(
-      'constraint-name',
-      'error-message',
-    ).newError;
+    const newError = uniqueViolation('error-message').newError;
 
     it('should return an instance of DuplicateRecord with the provided error message', () => {
       const error = newError();

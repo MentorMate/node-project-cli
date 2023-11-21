@@ -1,4 +1,3 @@
-import '@database/extensions/knex/register';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -18,7 +17,7 @@ async function bootstrap() {
   // create the app
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    new FastifyAdapter()
   );
 
   // enables CORS

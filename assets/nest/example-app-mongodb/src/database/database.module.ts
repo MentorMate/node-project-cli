@@ -13,7 +13,7 @@ import { DatabaseService } from './database.service';
       provide: NEST_MONGO_OPTIONS,
       inject: [ConfigService],
       useFactory: (configService: ConfigService<Environment>) => {
-        const protocol = configService.get('MONGO_PROTOCOL');
+        const protocol = configService.get('MONGO_PROTOCOL') || 'mongodb';
         const host = configService.get('MONGO_HOST');
         const port = configService.get('MONGO_PORT');
         const user = configService.get('MONGO_USER') || '';
@@ -24,7 +24,6 @@ import { DatabaseService } from './database.service';
 
         const urlString = `${protocol}://${user}${delimiter}${password}${at}${host}:${port}`;
 
-        console.log({ urlString });
         return {
           urlString,
           databaseName,

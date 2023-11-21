@@ -8,14 +8,20 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthModuleMetadata } from '../auth.module';
 import { Credentials } from '../interfaces';
+import { ObjectId } from 'mongodb';
+import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from '../guards';
+import { AuthController } from '../auth.controller';
+import { NEST_MONGO_OPTIONS } from '@database/constants';
+import { DatabaseService } from '@database/database.service';
 
 const registeredUser: User = {
-  id: 1,
-  userId: 'tz4a98xxat96iws9zmbrgj3a',
-  createdAt: Date.now().toString(),
-  updatedAt: Date.now().toString(),
+  _id: new ObjectId(100),
+  userId: new ObjectId(100),
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
   email: 'registered-email@example.com',
   password: 'very-secret',
 };
@@ -37,9 +43,32 @@ describe('AuthService', () => {
   let usersRepository: UsersRepository;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule(
-      AuthModuleMetadata,
-    ).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule],
+      providers: [
+        JwtService,
+        PasswordService,
+        AuthService,
+        {
+          provide: APP_GUARD,
+          useExisting: AuthGuard,
+        },
+        AuthGuard,
+        {
+          provide: NEST_MONGO_OPTIONS,
+          useValue: {
+            urlString: 'mongodb://mock-host',
+            databaseName: 'test',
+            clientOptions: {},
+            migrationsDir: '../../migrations',
+            seedsDir: './seeds/test',
+          },
+        },
+        DatabaseService,
+        UsersRepository,
+      ],
+      controllers: [AuthController],
+    }).compile();
 
     authService = module.get<AuthService>(AuthService);
     jwtService = module.get<JwtService>(JwtService);
@@ -49,12 +78,10 @@ describe('AuthService', () => {
 
   describe('register', () => {
     it('when the email is not registered should register the user', async () => {
-      jest
-        .spyOn(usersRepository, 'findByEmail')
-        .mockResolvedValueOnce(undefined);
+      jest.spyOn(usersRepository, 'findByEmail').mockResolvedValueOnce(null);
       jest
         .spyOn(usersRepository, 'insertOne')
-        .mockResolvedValueOnce({ ...registeredUser, ...unregisteredCreds });
+        .mockResolvedValueOnce(registeredUser._id);
       jest
         .spyOn(usersRepository, 'updateOne')
         .mockResolvedValueOnce({ ...registeredUser, ...unregisteredCreds });
@@ -74,19 +101,17 @@ describe('AuthService', () => {
         authService.register({
           email: registeredUser.email,
           password: registeredUser.password!,
-        }),
+        })
       ).rejects.toThrowError(new ConflictException('User email already taken'));
     });
   });
 
   describe('login', () => {
     it('when the email is not registered should throw an error', async () => {
-      jest
-        .spyOn(usersRepository, 'findByEmail')
-        .mockResolvedValueOnce(undefined);
+      jest.spyOn(usersRepository, 'findByEmail').mockResolvedValueOnce(null);
 
       await expect(authService.login(unregisteredCreds)).rejects.toThrowError(
-        new UnprocessableEntityException('Invalid email or password'),
+        new UnprocessableEntityException('Invalid email or password')
       );
     });
 
@@ -98,7 +123,7 @@ describe('AuthService', () => {
       jest.spyOn(passwordService, 'compare').mockResolvedValueOnce(false);
 
       await expect(authService.login(registeredCreds)).rejects.toThrowError(
-        new UnprocessableEntityException('Invalid email or password'),
+        new UnprocessableEntityException('Invalid email or password')
       );
     });
 
