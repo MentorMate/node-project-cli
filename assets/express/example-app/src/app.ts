@@ -67,9 +67,7 @@ export function create(env: Environment) {
   // create the app
   const app = express();
 
-  // register global middleware
-  if (env.NODE_ENV === 'development') {
-    // logs the request verb and url
+  if (env['REQUEST_LOGGING']) {
     app.use(logRequest(logger));
   }
 
@@ -130,7 +128,7 @@ export function create(env: Environment) {
       [DuplicateRecordError.name]: Conflict,
       [UnauthorizedError.name]: Unauthorized,
     }),
-    handleError(logger)
+    handleError(logger, env['ERROR_LOGGING'])
   );
 
   // define an app tear down function
