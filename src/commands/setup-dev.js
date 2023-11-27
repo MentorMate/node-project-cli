@@ -6,7 +6,7 @@ const getFeatures = require('../utils/commands/features');
 
 const command = {
   name: 'setup-dev',
-  description: 'Setup dev enviroment for contribution to the project',
+  description: 'Setup dev environment for contribution to the project',
   usage: 'node-cli setup-dev [...options]',
   aliases: ['sd'],
   options: [

@@ -1,3 +1,4 @@
+#!/bin/sh
 assets_dir=$1
 auth_type=$2
 database=$3
@@ -14,7 +15,9 @@ mkdir "${assets_dir}/nest/example-app-${database}/src/api/auth"
 mkdir "${assets_dir}/nest/example-app-${database}/src/api/users"
 
 files=$(ls -R "${full_auth_dir}/")
-echo $files
+
+mkdir "${assets_dir}/nest/example-app/src/api/auth"
+
 for file in $files; do
   if [[ $file == *: ]]; then
     dir=$(echo $file | sed "s/^.*${auth_type}\///" | sed "s/:$/\//")
