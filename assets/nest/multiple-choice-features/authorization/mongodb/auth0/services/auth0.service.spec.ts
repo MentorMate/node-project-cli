@@ -3,7 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthModuleMetadata } from '../auth.module';
 import { Auth0User, Credentials } from '../interfaces';
 import { Auth0Service } from './auth0.service';
-import { HttpService } from '@nestjs/axios';
+import { HttpModule, HttpService } from '@nestjs/axios';
+import { PassportModule } from '@nestjs/passport';
+import { ConfigModule } from '@nestjs/config';
+import { DatabaseService } from '@database/database.service';
+import { UsersRepository } from '@api/users/repositories';
+import { NEST_MONGO_OPTIONS } from '@database/constants';
 
 const userCreds: Credentials = {
   email: 'new-email@example.com',
@@ -29,9 +34,29 @@ describe('Auth0Service', () => {
   let auth0Service: Auth0Service;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule(
-      AuthModuleMetadata,
-    ).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [...AuthModuleMetadata.controllers],
+      imports: [
+        HttpModule,
+        PassportModule.register({ defaultStrategy: 'jwt' }),
+        ConfigModule,
+      ],
+      providers: [
+        ...AuthModuleMetadata.providers,
+        {
+          provide: NEST_MONGO_OPTIONS,
+          useValue: {
+            urlString: 'mongodb://mock-host',
+            databaseName: 'test',
+            clientOptions: {},
+            migrationsDir: '../../migrations',
+            seedsDir: './seeds/test',
+          },
+        },
+        DatabaseService,
+        UsersRepository,
+      ],
+    }).compile();
 
     auth0Service = module.get<Auth0Service>(Auth0Service);
     httpService = module.get<HttpService>(HttpService);
@@ -51,7 +76,7 @@ describe('Auth0Service', () => {
 
       const user = await auth0Service.createUser(
         userCreds.email,
-        userCreds.password,
+        userCreds.password
       );
 
       expect(user).toEqual(auth0User);
@@ -63,9 +88,9 @@ describe('Auth0Service', () => {
         .mockResolvedValueOnce([auth0User] as unknown as Auth0User);
 
       await expect(
-        auth0Service.createUser(userCreds.email, userCreds.password),
+        auth0Service.createUser(userCreds.email, userCreds.password)
       ).rejects.toThrowError(
-        new BadRequestException('A user with this email already exists.'),
+        new BadRequestException('A user with this email already exists.')
       );
     });
 
@@ -78,7 +103,7 @@ describe('Auth0Service', () => {
         .mockRejectedValueOnce({ response: { data: {} } });
 
       await expect(
-        auth0Service.createUser(userCreds.email, userCreds.password),
+        auth0Service.createUser(userCreds.email, userCreds.password)
       ).rejects.toThrowError(new BadRequestException());
     });
   });
@@ -111,7 +136,7 @@ describe('Auth0Service', () => {
         .mockRejectedValueOnce({ response: { data: {} } });
 
       await expect(
-        auth0Service.searchUsersByEmail(auth0User.email),
+        auth0Service.searchUsersByEmail(auth0User.email)
       ).rejects.toThrowError(new BadRequestException());
     });
   });
@@ -131,7 +156,7 @@ describe('Auth0Service', () => {
         .mockRejectedValueOnce({ response: { data: {} } });
 
       await expect(
-        auth0Service.deleteUser(auth0User.user_id),
+        auth0Service.deleteUser(auth0User.user_id)
       ).rejects.toThrowError(new BadRequestException());
     });
   });
@@ -157,7 +182,7 @@ describe('Auth0Service', () => {
         .mockResolvedValueOnce(tokenResponse);
 
       await expect(auth0Service.onModuleInit()).rejects.toThrowError(
-        new Error('Access token is missing!'),
+        new Error('Access token is missing!')
       );
     });
 
@@ -167,7 +192,7 @@ describe('Auth0Service', () => {
         .mockRejectedValueOnce({ response: { data: {} } });
 
       await expect(auth0Service.onModuleInit()).rejects.toThrowError(
-        new Error('Something went wrong!'),
+        new Error('Something went wrong!')
       );
     });
   });

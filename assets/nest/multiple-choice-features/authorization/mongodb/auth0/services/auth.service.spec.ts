@@ -6,6 +6,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthModuleMetadata } from '../auth.module';
 import { Auth0User, Credentials } from '../interfaces';
 import { Auth0Service } from './auth0.service';
+import { ObjectId } from 'mongodb';
+import { DatabaseService } from '@database/database.service';
+import { NEST_MONGO_OPTIONS } from '@database/constants';
+import { HttpModule } from '@nestjs/axios';
+import { PassportModule } from '@nestjs/passport';
+import { ConfigModule } from '@nestjs/config';
 
 const userCreds: Credentials = {
   email: 'new-email@example.com',
@@ -13,11 +19,10 @@ const userCreds: Credentials = {
 };
 
 const registeredUser: User = {
-  id: 1,
-  createdAt: Date.now().toString(),
-  updatedAt: Date.now().toString(),
+  _id: new ObjectId(1),
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
   email: userCreds.email,
-  password: 'very-secret',
   userId: '1',
 };
 
@@ -41,9 +46,29 @@ describe('AuthService', () => {
   let usersRepository: UsersRepository;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule(
-      AuthModuleMetadata,
-    ).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [...AuthModuleMetadata.controllers],
+      imports: [
+        HttpModule,
+        PassportModule.register({ defaultStrategy: 'jwt' }),
+        ConfigModule,
+      ],
+      providers: [
+        ...AuthModuleMetadata.providers,
+        {
+          provide: NEST_MONGO_OPTIONS,
+          useValue: {
+            urlString: 'mongodb://mock-host',
+            databaseName: 'test',
+            clientOptions: {},
+            migrationsDir: '../../migrations',
+            seedsDir: './seeds/test',
+          },
+        },
+        DatabaseService,
+        UsersRepository,
+      ],
+    }).compile();
 
     authService = module.get<AuthService>(AuthService);
     auth0Service = module.get<Auth0Service>(Auth0Service);
@@ -59,14 +84,14 @@ describe('AuthService', () => {
       jest.spyOn(auth0Service, 'createUser').mockResolvedValueOnce(auth0User);
       jest
         .spyOn(usersRepository, 'insertOne')
-        .mockResolvedValueOnce(createdUser);
+        .mockResolvedValueOnce(createdUser._id);
       jest
         .spyOn(auth0Service, 'updateUserMetadata')
         .mockResolvedValueOnce(auth0User as any);
 
-      const user = await authService.register(userCreds);
+      const userId = await authService.register(userCreds);
 
-      expect(user).toEqual(createdUser);
+      expect(userId).toEqual(createdUser._id);
     });
 
     it('throws error when creating a user in the database fails', async () => {
@@ -77,7 +102,7 @@ describe('AuthService', () => {
         .mockResolvedValueOnce(auth0User as any);
 
       await expect(authService.register(userCreds)).rejects.toThrowError(
-        new BadRequestException('Something went wrong!'),
+        new BadRequestException('Something went wrong!')
       );
     });
   });

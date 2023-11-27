@@ -35,7 +35,7 @@ export class RequestLoggingInterceptor implements NestInterceptor {
         };
 
         this.logger.log(JSON.stringify(logMsg));
-      }),
+      })
     );
   }
 }

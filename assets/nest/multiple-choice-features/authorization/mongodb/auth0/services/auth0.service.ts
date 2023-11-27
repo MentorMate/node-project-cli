@@ -17,12 +17,12 @@ export class Auth0Service implements OnModuleInit {
   private baseURL = this.configService.get<string>('AUTH0_ISSUER_URL');
   private AUTH0_CLIENT_ID = this.configService.get<string>('AUTH0_CLIENT_ID');
   private AUTH0_CLIENT_SECRET = this.configService.get<string>(
-    'AUTH0_CLIENT_SECRET',
+    'AUTH0_CLIENT_SECRET'
   );
 
   constructor(
     private httpService: HttpService,
-    private configService: ConfigService<Environment>,
+    private configService: ConfigService<Environment>
   ) {}
 
   onModuleInit() {
@@ -49,7 +49,7 @@ export class Auth0Service implements OnModuleInit {
           headers: {
             'content-type': 'application/x-www-form-urlencoded',
           },
-        },
+        }
       )
       .catch((error) => {
         this.logger.error(error.response.data);
@@ -88,7 +88,7 @@ export class Auth0Service implements OnModuleInit {
           password,
           verify_email: true,
         },
-        { headers: this.buildHeaders() },
+        { headers: this.buildHeaders() }
       )
       .then(({ data }) => data)
       .catch((error) => {
@@ -99,14 +99,14 @@ export class Auth0Service implements OnModuleInit {
 
   public updateUserMetadata(
     userId: string,
-    metadata: Auth0User['user_metadata'],
+    metadata: Auth0User['user_metadata']
   ) {
     return this.httpService.axiosRef.patch<Auth0User>(
       `${process.env.AUTH0_ISSUER_URL}api/v2/users/${userId}`,
       {
         user_metadata: metadata,
       },
-      { headers: this.buildHeaders() },
+      { headers: this.buildHeaders() }
     );
   }
 
@@ -129,7 +129,7 @@ export class Auth0Service implements OnModuleInit {
         `${process.env.AUTH0_ISSUER_URL}api/v2/users/${userId}`,
         {
           headers: this.buildHeaders(),
-        },
+        }
       )
       .catch((error) => {
         this.logger.error(error.response.data);

@@ -9,8 +9,8 @@ import { Public } from '@utils/decorators';
 export class AuthController {
   constructor(
     @Inject(AuthService)
-    private readonly authService: AuthService,
-  ) { }
+    private readonly authService: AuthService
+  ) {}
 
   @Public()
   @Post('register')

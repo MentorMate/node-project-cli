@@ -9,14 +9,12 @@ import { ConfigModule } from '@nestjs/config';
 import { Auth0Service, AuthService, JwtStrategy } from './services';
 
 export const AuthModuleMetadata = {
-  controllers: [
-    AuthController
-  ],
+  controllers: [AuthController],
   imports: [
     HttpModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     UsersModule,
-    ConfigModule
+    ConfigModule,
   ],
   providers: [
     JwtStrategy,

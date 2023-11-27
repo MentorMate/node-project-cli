@@ -55,7 +55,10 @@ export class TodosController {
     @Body() createTodoDto: CreateTodoDto,
     @Req() { user: { sub } }: UserData
   ): Promise<ObjectId> {
-    return this.todosService.create({ createTodoDto, userId: sub });
+    return this.todosService.create({
+      createTodoDto,
+      userId: new ObjectId(sub),
+    });
   }
 
   @ApiOkResponse({ type: Todo, isArray: true })
@@ -68,7 +71,7 @@ export class TodosController {
     @Req() { user: { sub } }: UserData,
     @Query() query: FindAllTodosQueryDto
   ): Promise<Paginated<NullableKeysPartial<Todo>>> {
-    return this.todosService.findAll({ userId: sub, query });
+    return this.todosService.findAll({ userId: new ObjectId(sub), query });
   }
 
   @ApiOkResponse({ type: Todo })
@@ -78,7 +81,7 @@ export class TodosController {
     @Param('id', toObjectIdPipe) _id: ObjectId,
     @Req() { user: { sub } }: UserData
   ): Promise<NullableKeysPartial<Todo>> {
-    return this.todosService.findOneOrFail({ _id, userId: sub });
+    return this.todosService.findOneOrFail({ _id, userId: new ObjectId(sub) });
   }
 
   @ApiBody({ type: UpdateTodoDto })
@@ -94,7 +97,11 @@ export class TodosController {
     @Req() { user: { sub } }: UserData,
     @Body() updateTodoDto: UpdateTodoDto
   ): Promise<NullableKeysPartial<Todo>> {
-    return await this.todosService.update({ _id, userId: sub, updateTodoDto });
+    return await this.todosService.update({
+      _id,
+      userId: new ObjectId(sub),
+      updateTodoDto,
+    });
   }
 
   @ApiOkResponse({ type: Number })
@@ -104,6 +111,6 @@ export class TodosController {
     @Param('id', toObjectIdPipe) _id: GenericEntity['_id'],
     @Req() { user: { sub } }: UserData
   ): Promise<boolean> {
-    return this.todosService.remove({ _id, userId: sub });
+    return this.todosService.remove({ _id, userId: new ObjectId(sub) });
   }
 }

@@ -3,7 +3,7 @@ import { Paginated, Pagination, extractPagination } from '@utils/query';
 export const paginatedResponse = <T>(
   items: T[],
   total: number,
-  pagination?: Pagination,
+  pagination?: Pagination
 ): Paginated<T> => {
   const { pageNumber, pageSize } = extractPagination(pagination);
 

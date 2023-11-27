@@ -9,6 +9,7 @@ import {
   updateTodoInput,
 } from '../__mocks__';
 import { DatabaseService } from '@database/database.service';
+import { ObjectId } from 'mongodb';
 
 describe('TodosRepository', () => {
   let todosRepository: TodosRepository;
@@ -101,7 +102,7 @@ describe('TodosRepository', () => {
       expect(findOneAndUpdate).toHaveBeenCalledWith(
         {
           _id: updateTodoInput._id,
-          userId: mockedUser.user.sub,
+          userId: new ObjectId(mockedUser.user.sub),
         },
         {
           $set: {

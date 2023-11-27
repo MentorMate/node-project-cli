@@ -52,7 +52,7 @@ describe('rethrowError', () => {
     it('should rethrow the matched error when a mapping matched it', () => {
       const error = new Error('some-message');
       expect(() => rethrowError(mapping)(error)).toThrowError(
-        new TypeError('type-error'),
+        new TypeError('type-error')
       );
     });
   });

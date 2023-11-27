@@ -201,11 +201,10 @@ module.exports = (toolbox) => {
               'npm run db:migrate:rollback --all && npm run db:migrate:latest',
           });
         } else if (db === 'mongodb') {
+          // TODO: Think of a way to call the migrations with a npm script command
           Object.assign(pkgJson.scripts, {
-            'db:migrate:latest':
-              'echo \'import { latest } from "migrations/latest"; latest()\' | ts-node',
-            'db:migrate:rollback':
-              'echo \'import { latest } from "migrations/latest"; latest()\' | ts-node',
+            'db:migrate:latest': 'echo "TODO"',
+            'db:migrate:rollback': 'echo "TODO"',
           });
         }
       }

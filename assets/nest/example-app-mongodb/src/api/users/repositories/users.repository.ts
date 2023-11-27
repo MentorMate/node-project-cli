@@ -15,13 +15,12 @@ export class UsersRepository extends BaseRepository<User> {
   }
 
   insertOne(
-    payload: NullableKeysPartial<Pick<User, 'email' | 'password'>>
+    payload: NullableKeysPartial<Pick<User, 'email' | 'userId'>>
   ): Promise<ObjectId> {
     const _id = new ObjectId();
     const user = {
       _id,
       ...payload,
-      userId: _id,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };

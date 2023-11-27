@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { NEST_MONGO_OPTIONS } from './constants';
-import { MongoClient, MongoClientOptions, Db } from 'mongodb';
+import { MongoClient, MongoClientOptions, Db, ObjectId } from 'mongodb';
 
 type mongodbFn = (mongodb: Db) => Promise<void>;
 
@@ -13,7 +13,7 @@ export class DatabaseService {
     latest: () => Promise<void>;
   };
   public seed: {
-    run: () => Promise<void>;
+    run: () => Promise<ObjectId>;
   };
 
   constructor(
@@ -34,7 +34,7 @@ export class DatabaseService {
 
     let rollbackMigrationsFn: { rollback: mongodbFn };
     let latestMigrationFn: { latest: mongodbFn };
-    let seedDbFn: { seedDb: mongodbFn };
+    let seedDbFn: { seedDb: (mongdb: Db) => Promise<ObjectId> };
 
     this.connection = client.db(databaseName);
     this.client = client;
@@ -53,7 +53,7 @@ export class DatabaseService {
     this.seed = {
       run: async () => {
         seedDbFn = seedDbFn || (await import(`${seedsDir}`));
-        await seedDbFn.seedDb(this.connection);
+        return await seedDbFn.seedDb(this.connection);
       },
     };
   }

@@ -12,5 +12,5 @@ export const LowerCase = () =>
         : params.value,
     {
       toClassOnly: true,
-    },
+    }
   );

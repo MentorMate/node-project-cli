@@ -1,4 +1,3 @@
-import { DatabaseModule } from '@database/database.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TodosService } from './todos.service';
 import { TodosController } from './todos.controller';
@@ -22,7 +21,7 @@ import { NEST_MONGO_OPTIONS } from '@database/constants';
 describe('TodosService', () => {
   let service: TodosService;
   let repository: TodosRepository;
-  const userId = mockedUser.user.sub;
+  const userId = new ObjectId(mockedUser.user.sub);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

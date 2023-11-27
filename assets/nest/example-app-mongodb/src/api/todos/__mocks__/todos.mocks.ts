@@ -12,12 +12,12 @@ import { ObjectId } from 'mongodb';
 
 export const mockedUser: UserData = {
   user: {
-    sub: new ObjectId(100),
+    sub: new ObjectId(100).toString(),
     email: 'example@email.com',
   },
 };
 
-const userId = mockedUser.user.sub;
+const userId = new ObjectId(mockedUser.user.sub);
 
 export const todo: Todo = {
   _id: new ObjectId(1),

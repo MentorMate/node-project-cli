@@ -1,6 +1,5 @@
 import { UsersRepository } from './users.repository';
 import { Test } from '@nestjs/testing';
-import { Credentials } from '@api/auth/interfaces';
 import { DatabaseService } from '@database/database.service';
 import { ObjectId } from 'mongodb';
 
@@ -38,15 +37,15 @@ describe('UsersRepository', () => {
   });
 
   it('insertOne - create a user', async () => {
-    const insertUser: Credentials = {
+    const insertUser = {
       email: 'user@example.com',
-      password: 'password',
+      userId: 'auth0-user-id',
     };
 
     const createdUser = {
       _id: new ObjectId(100),
       email: 'user@example.com',
-      password: 'password',
+      userId: 'auth0-user-id',
     };
 
     mockFn.mockImplementationOnce(() =>
@@ -55,14 +54,14 @@ describe('UsersRepository', () => {
 
     const result = await usersRepository.insertOne({
       email: insertUser.email,
-      password: insertUser.password,
+      userId: insertUser.userId,
     });
 
     expect(result).toBe(createdUser._id);
     expect(insertOne).toHaveBeenCalledWith(
       expect.objectContaining({
         email: insertUser.email,
-        password: insertUser.password,
+        userId: insertUser.userId,
       })
     );
   });

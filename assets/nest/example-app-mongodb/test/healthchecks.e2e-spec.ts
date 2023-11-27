@@ -14,7 +14,7 @@ describe('GET /healthz', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter(),
+      new FastifyAdapter()
     );
 
     await app.init();

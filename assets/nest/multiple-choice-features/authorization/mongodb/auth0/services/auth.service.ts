@@ -15,22 +15,26 @@ export class AuthService {
   async register({ email, password }: CredentialsDto) {
     const userAuth0 = await this.auth0Service.createUser(email, password);
 
-    const user = await this.usersRepository.insertOne({
-      email,
-      userId: userAuth0.user_id
-     }).catch(async (error) => {
-      this.logger.warn('Creating a user in the database failed. Proceeding with deleting it in Auth0.');
-      this.logger.error(error);
+    const userMongObjectId = await this.usersRepository
+      .insertOne({
+        email,
+        userId: userAuth0.user_id,
+      })
+      .catch(async (error) => {
+        this.logger.warn(
+          'Creating a user in the database failed. Proceeding with deleting it in Auth0.'
+        );
+        this.logger.error(error);
 
-      await this.auth0Service.deleteUser(userAuth0.user_id);
+        await this.auth0Service.deleteUser(userAuth0.user_id);
 
-      throw new BadRequestException('Something went wrong!');
-    });
+        throw new BadRequestException('Something went wrong!');
+      });
 
     await this.auth0Service.updateUserMetadata(userAuth0.user_id, {
-      id: user.id,
+      id: userMongObjectId,
     });
 
-    return user;
+    return userMongObjectId;
   }
 }
