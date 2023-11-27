@@ -67,6 +67,11 @@ module.exports = (toolbox) => {
                 `${assetsPath}/${framework}/multiple-choice-features/authorization/${db}/test/${authOption}/auth`,
                 `${appDir}/test/auth`,
               )),
+            db === 'mongodb' &&
+              (await copyAsync(
+                `${assetsPath}/${framework}/multiple-choice-features/users/${db}/${authOption}`,
+                `${appDir}/src/api/users`,
+              )),
           ]);
         }
       }
