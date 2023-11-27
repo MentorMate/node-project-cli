@@ -19,6 +19,7 @@ import { ObjectId } from 'mongodb';
 describe('GET /v1/todos/:id', () => {
   let app: NestFastifyApplication;
   let databaseService: DatabaseService;
+  let userId: ObjectId;
 
   const canActivate = jest.fn();
 
@@ -55,11 +56,11 @@ describe('GET /v1/todos/:id', () => {
   beforeEach(async () => {
     await databaseService.migrate.rollback();
     await databaseService.migrate.latest();
-    await databaseService.seed.run();
+    userId = await databaseService.seed.run();
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
-      request.user = { sub: 'tz4a98xxat96iws9zmbrgj3a', email: 'hello@email' };
+      request.user = { sub: userId.toString(), email: 'hello@email' };
       return true;
     });
   });

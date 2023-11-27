@@ -27,7 +27,7 @@ describe('Auth Guard', () => {
 
   describe('canActivate', () => {
     const testClaims: JwtClaims = {
-      sub: new ObjectId(100),
+      sub: new ObjectId(100).toString(),
       email: 'admin@admin.com',
     };
 

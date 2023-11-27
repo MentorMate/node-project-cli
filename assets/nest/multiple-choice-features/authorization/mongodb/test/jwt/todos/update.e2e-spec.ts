@@ -21,6 +21,7 @@ import { ObjectId, WithId } from 'mongodb';
 describe('PUT /v1/todos/:id', () => {
   let app: NestFastifyApplication;
   let databaseService: DatabaseService;
+  let userId: ObjectId;
   let todo: WithId<Todo>;
   const canActivate = jest.fn();
 
@@ -57,11 +58,11 @@ describe('PUT /v1/todos/:id', () => {
   beforeEach(async () => {
     await databaseService.migrate.rollback();
     await databaseService.migrate.latest();
-    await databaseService.seed.run();
+    userId = await databaseService.seed.run();
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
-      request.user = { sub: 'tz4a98xxat96iws9zmbrgj3a', email: 'hello@email' };
+      request.user = { sub: userId.toString(), email: 'hello@email' };
       return true;
     });
 
@@ -113,7 +114,7 @@ describe('PUT /v1/todos/:id', () => {
         expect(responseBody.name).toEqual(todo.name);
         expect(responseBody.note).toEqual(todo.note);
         expect(responseBody.completed).toEqual(todo.completed);
-        expect(responseBody.userId).toEqual(todo.userId);
+        expect(responseBody.userId).toEqual(todo.userId.toString());
       });
   });
 

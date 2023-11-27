@@ -33,7 +33,7 @@ export class AuthService {
     });
 
     return {
-      idToken: this.jwt.sign({ sub: userId, email }),
+      idToken: this.jwt.sign({ sub: userId.toString(), email }),
     };
   }
 
@@ -53,7 +53,7 @@ export class AuthService {
       throw new UnprocessableEntityException('Invalid email or password');
     }
 
-    const token = this.jwt.sign({ sub: user.userId, email });
+    const token = this.jwt.sign({ sub: user._id.toString(), email });
 
     return {
       idToken: token,

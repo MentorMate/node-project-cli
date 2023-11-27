@@ -41,6 +41,7 @@ module.exports = {
       prompt,
       meta,
       commandHelp,
+      os,
     } = toolbox;
 
     if (commandHelp.shouldPrint()) {
@@ -314,10 +315,14 @@ module.exports = {
     if (userInput.framework === 'nest' && isExampleApp) {
       try {
         remove(`${userInput.appDir}/src/api/auth`);
+        userInput.db === 'mongodb' &&
+          remove(`${userInput.appDir}/src/api/users`);
         remove(`${userInput.appDir}/test/todos`);
         remove(`${userInput.appDir}/test/auth`);
         await run(
-          `bash ${userInput.assetsPath}/nest/link-script.sh ${userInput.assetsPath} ${userInput.authOption} ${userInput.db}`,
+          `bash ${userInput.assetsPath}/nest/link-script.sh ${
+            userInput.assetsPath
+          } ${userInput.authOption} ${userInput.db} ${os.isMac()}`,
         );
       } catch (err) {
         throw new Error(
