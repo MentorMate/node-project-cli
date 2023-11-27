@@ -1,12 +1,12 @@
+import { NestKnexService } from '@database/nest-knex.service';
 import { SortOrder } from '@utils/query';
 import { Knex } from 'knex';
-import { DatabaseService } from './database.service';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export class BaseRepository<Entity extends {}> {
   private knexService;
 
-  constructor(knex: DatabaseService, private readonly tableName: string) {
+  constructor(knex: NestKnexService, private readonly tableName: string) {
     this.knexService = knex;
   }
 
@@ -27,7 +27,7 @@ export class BaseRepository<Entity extends {}> {
   whereLike(
     qb: Knex.QueryBuilder<Entity>,
     value: Partial<Entity>,
-    column: string
+    column: string,
   ) {
     return qb.whereILike(column, `%${value}%`);
   }

@@ -2,44 +2,33 @@ import { rethrowError } from '@utils/error';
 import { User } from '../entities';
 import { UserEmailTaken } from '../error-mappings';
 import { Injectable } from '@nestjs/common';
+import { NestKnexService } from '@database/nest-knex.service';
 import { BaseRepository } from '@database/base-repository.repository';
 import { Tables } from '@database/constants';
-import { DatabaseService } from '@database/database.service';
-import { NullableKeysPartial } from '@utils/interfaces';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class UsersRepository extends BaseRepository<User> {
-  constructor(private readonly mongodb: DatabaseService) {
-    super(mongodb, Tables.Users);
+  constructor(private readonly knex: NestKnexService) {
+    super(knex, Tables.Users);
   }
 
-  insertOne(
-    payload: NullableKeysPartial<Pick<User, 'email' | 'password'>>
-  ): Promise<ObjectId> {
-    const id = new ObjectId();
-    const user = {
-      id,
-      ...payload,
-      userId: id,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-
+  insertOne(payload: Partial<User>): Promise<User> {
     return this.repository()
-      .insertOne(user)
-      .then((value) => value.insertedId)
+      .insert(payload)
+      .returning('*')
+      .then((data: any) => data[0])
       .catch(rethrowError(UserEmailTaken));
   }
 
-  findByEmail(email: User['email']): Promise<NullableKeysPartial<User> | null> {
-    return this.repository().findOne({ email });
+  findByEmail(email: User['email']): Promise<User | undefined> {
+    return this.repository().where({ email }).first();
   }
 
-  updateOne(
-    id: ObjectId,
-    payload: NullableKeysPartial<User>
-  ): Promise<NullableKeysPartial<User> | null> {
-    return this.repository().findOneAndUpdate({ id }, payload);
+  updateOne(id: number, payload: Partial<User>): Promise<User> {
+    return this.repository()
+      .where({ id })
+      .update(payload)
+      .returning('*')
+      .then((data: any) => data[0])
   }
 }

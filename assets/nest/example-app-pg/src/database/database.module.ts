@@ -4,12 +4,12 @@ import * as pg from 'pg';
 
 import { Environment } from '@utils/environment';
 import { KNEX_CONNECTION, NEST_KNEX_OPTIONS } from './constants';
-import { DatabaseService } from './database.service';
+import { NestKnexService } from './nest-knex.service';
 
 @Module({
   imports: [ConfigModule],
   providers: [
-    DatabaseService,
+    NestKnexService,
     {
       provide: NEST_KNEX_OPTIONS,
       inject: [ConfigService],
@@ -30,15 +30,15 @@ import { DatabaseService } from './database.service';
     },
     {
       provide: KNEX_CONNECTION,
-      useFactory: async (databaseService: DatabaseService) =>
-        databaseService.connection,
-      inject: [DatabaseService],
+      useFactory: async (nestKnexService: NestKnexService) =>
+        nestKnexService.connection,
+      inject: [NestKnexService],
     },
   ],
-  exports: [DatabaseService],
+  exports: [NestKnexService],
 })
 export class DatabaseModule implements OnModuleInit, OnApplicationShutdown {
-  constructor(private readonly knex: DatabaseService) {}
+  constructor(private readonly knex: NestKnexService) {}
 
   onModuleInit() {
     // https://github.com/brianc/node-pg-types/blob/master/lib/builtins.js

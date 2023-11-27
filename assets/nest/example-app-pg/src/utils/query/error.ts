@@ -1,8 +1,8 @@
 import { RecordNotFoundError } from '@database/errors';
 
 const definedOrThrow = <T>(errorFactory: () => Error) => {
-  return (result: T | null): T => {
-    if (result === null) {
+  return (result: T | undefined): T => {
+    if (result === undefined) {
       throw errorFactory();
     }
     return result;

@@ -42,14 +42,6 @@ export interface Environment {
   AUTH0_CLIENT_ID?: string;
   AUTH0_AUDIENCE?: string;
   AUTH0_CLIENT_SECRET?: string;
-
-  // MongoDB
-  MONGO_PROTOCOL?: string;
-  MONGO_HOST?: string;
-  MONGO_PORT?: string;
-  MONGO_USER?: string;
-  MONGO_PASSWORD?: string;
-  MONGO_DATABASE_NAME?: string;
 }
 
 class EnvironmentVariablesValidator implements Environment {
@@ -93,7 +85,7 @@ class EnvironmentVariablesValidator implements Environment {
   @IsString()
   @IsOptional()
   @IsUrl()
-  @Transform(({ value }) => (value.endsWith('/') ? value : `${value}/`))
+  @Transform(({ value }) => value.endsWith('/') ? value : `${value}/`)
   AUTH0_ISSUER_URL?: string;
 
   @IsString()
@@ -110,7 +102,7 @@ class EnvironmentVariablesValidator implements Environment {
 }
 
 export const validateConfig = (
-  config: Record<string, unknown>
+  config: Record<string, unknown>,
 ): Environment => {
   const validatedConfig = plainToClass(EnvironmentVariablesValidator, config, {
     enableImplicitConversion: true,
@@ -122,7 +114,7 @@ export const validateConfig = (
   });
 
   if (errors.length > 0) {
-    throw new Error(util.inspect(errors));
+    throw new Error(util.inspect(errors))
   }
 
   return validatedConfig;

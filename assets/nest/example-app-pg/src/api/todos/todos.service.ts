@@ -14,17 +14,15 @@ import {
   UpdateTodoInput,
 } from './interfaces';
 import { Errors } from '@utils/enums';
-import { NullableKeysPartial } from '@utils/interfaces';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class TodosService {
   constructor(
     @Inject(TodosRepository)
-    private readonly todos: TodosRepository
+    private readonly todos: TodosRepository,
   ) {}
 
-  async create(input: CreateTodoInput): Promise<ObjectId> {
+  async create(input: CreateTodoInput): Promise<Todo> {
     const {
       userId,
       createTodoDto: { name },
@@ -39,42 +37,34 @@ export class TodosService {
     return this.todos.create(input);
   }
 
-  findAll(
-    input: FindAllTodosInput
-  ): Promise<Paginated<NullableKeysPartial<Todo>>> {
+  findAll(input: FindAllTodosInput): Promise<Paginated<Todo>> {
     return this.todos.findAll(input);
   }
 
-  findOne(
-    input: Partial<FindOneTodoInput>
-  ): Promise<NullableKeysPartial<Todo> | null> {
+  findOne(input: Partial<FindOneTodoInput>): Promise<Todo | undefined> {
     return this.todos.findOne(input);
   }
 
-  findOneOrFail(
-    input: Partial<FindOneTodoInput>
-  ): Promise<NullableKeysPartial<Todo>> {
+  findOneOrFail(input: Partial<FindOneTodoInput>): Promise<Todo> {
     return this.todos.findOneOrFail(input);
   }
 
-  update(input: UpdateTodoInput): Promise<NullableKeysPartial<Todo>> {
-    const { _id, userId, updateTodoDto } = input;
+  update(input: UpdateTodoInput): Promise<Todo> {
+    const { id, userId, updateTodoDto } = input;
 
     if (Object.keys(updateTodoDto).length === 0) {
-      return this.findOneOrFail({ _id, userId });
+      return this.findOneOrFail({ id, userId });
     }
 
     return this.todos.update(input).then(definedOrNotFound(Errors.NotFound));
   }
 
-  async remove(input: FindOneTodoInput): Promise<boolean> {
-    input._id = new ObjectId(input._id);
-
-    const deletedTodo = await this.todos.remove(input);
-    if (!deletedTodo) {
+  async remove(input: FindOneTodoInput): Promise<number> {
+    const todo = await this.findOne(input);
+    if (!todo) {
       throw new NotFoundException(Errors.NotFound);
     }
 
-    return true;
+    return this.todos.remove(input);
   }
 }

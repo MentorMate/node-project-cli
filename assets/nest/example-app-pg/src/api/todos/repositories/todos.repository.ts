@@ -1,4 +1,5 @@
 import { rethrowError } from '@utils/error';
+import { NestKnexService } from '@database/nest-knex.service';
 import { Paginated } from '@utils/query/pagination';
 import { Todo } from '../entities';
 import { Injectable } from '@nestjs/common';
@@ -14,12 +15,11 @@ import { paginatedResponse } from '@utils/api/response';
 import { BaseRepository } from '@database/base-repository.repository';
 import { Tables } from '@database/constants';
 import { Errors } from '@utils/enums';
-import { DatabaseService } from '@database/database.service';
 
 @Injectable()
 export class TodosRepository extends BaseRepository<Todo> {
-  constructor(private readonly dbService: DatabaseService) {
-    super(dbService, Tables.Todos);
+  constructor(private readonly knex: NestKnexService) {
+    super(knex, Tables.Todos);
   }
 
   async create(input: CreateTodoInput): Promise<Todo> {

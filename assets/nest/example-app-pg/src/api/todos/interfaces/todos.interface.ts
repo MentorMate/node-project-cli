@@ -1,12 +1,11 @@
-import { ObjectId } from 'mongodb';
 import { CreateTodoDto, FindAllTodosQueryDto, UpdateTodoDto } from '../dto';
 
 interface UserData {
-  userId: ObjectId;
+  userId: string;
 }
 
 interface TodoId {
-  _id?: ObjectId;
+  id?: number;
 }
 
 export interface CreateTodoInput extends UserData {

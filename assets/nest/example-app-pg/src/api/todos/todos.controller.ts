@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Req,
+  ParseIntPipe,
   Put,
   Query,
 } from '@nestjs/common';
@@ -29,10 +30,6 @@ import {
   UnprocessableEntityDto,
 } from '@utils/dtos';
 import { Errors } from '@utils/enums';
-import { ObjectId } from 'mongodb';
-import { NullableKeysPartial } from '@utils/interfaces';
-import { GenericEntity } from '@utils/entities';
-import { toObjectIdPipe } from '@utils/pipes';
 
 @ApiTags('Todos')
 @Controller('v1/todos')
@@ -53,8 +50,8 @@ export class TodosController {
   @Post()
   create(
     @Body() createTodoDto: CreateTodoDto,
-    @Req() { user: { sub } }: UserData
-  ): Promise<ObjectId> {
+    @Req() { user: { sub } }: UserData,
+  ): Promise<Todo> {
     return this.todosService.create({ createTodoDto, userId: sub });
   }
 
@@ -66,8 +63,8 @@ export class TodosController {
   @Get()
   findAll(
     @Req() { user: { sub } }: UserData,
-    @Query() query: FindAllTodosQueryDto
-  ): Promise<Paginated<NullableKeysPartial<Todo>>> {
+    @Query() query: FindAllTodosQueryDto,
+  ): Promise<Paginated<Todo>> {
     return this.todosService.findAll({ userId: sub, query });
   }
 
@@ -75,10 +72,10 @@ export class TodosController {
   @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
   @Get(':id')
   findOne(
-    @Param('id', toObjectIdPipe) _id: ObjectId,
-    @Req() { user: { sub } }: UserData
-  ): Promise<NullableKeysPartial<Todo>> {
-    return this.todosService.findOneOrFail({ _id, userId: sub });
+    @Param('id', ParseIntPipe) id: number,
+    @Req() { user: { sub } }: UserData,
+  ): Promise<Todo> {
+    return this.todosService.findOneOrFail({ id, userId: sub });
   }
 
   @ApiBody({ type: UpdateTodoDto })
@@ -89,21 +86,21 @@ export class TodosController {
   })
   @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
   @Put(':id')
-  async update(
-    @Param('id', toObjectIdPipe) _id: ObjectId,
+  update(
+    @Param('id', ParseIntPipe) id: number,
     @Req() { user: { sub } }: UserData,
-    @Body() updateTodoDto: UpdateTodoDto
-  ): Promise<NullableKeysPartial<Todo>> {
-    return await this.todosService.update({ _id, userId: sub, updateTodoDto });
+    @Body() updateTodoDto: UpdateTodoDto,
+  ): Promise<Todo> {
+    return this.todosService.update({ id, userId: sub, updateTodoDto });
   }
 
   @ApiOkResponse({ type: Number })
   @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
   @Delete(':id')
   remove(
-    @Param('id', toObjectIdPipe) _id: GenericEntity['id'],
-    @Req() { user: { sub } }: UserData
-  ): Promise<boolean> {
-    return this.todosService.remove({ _id, userId: sub });
+    @Param('id', ParseIntPipe) id: number,
+    @Req() { user: { sub } }: UserData,
+  ): Promise<number> {
+    return this.todosService.remove({ id, userId: sub });
   }
 }
