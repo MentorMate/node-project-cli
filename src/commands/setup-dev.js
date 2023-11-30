@@ -89,7 +89,12 @@ module.exports = {
       userInput = Object.assign(
         {},
         userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(1, 5)),
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble)[1]),
+      );
+      userInput = Object.assign(
+        {},
+        userInput,
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2, 5)),
       );
 
       Object.assign(
@@ -264,7 +269,6 @@ module.exports = {
     });
 
     if (userInput.framework === 'nest') {
-      Object.assign(packageJson.jest, userInput.pkgJson.jest);
       delete packageJson.jest;
       delete packageJson.dependencies['@nestjs/platform-express'];
       delete packageJson.devDependencies['@types/express'];
@@ -281,7 +285,7 @@ module.exports = {
             linkPath: `${userInput.appDir}/scripts/db-connection.ts`,
           };
     const symlinkFiles = [
-      isExampleApp && dbScriptLinkPaths,
+      isExampleApp && userInput.db === 'pg' && dbScriptLinkPaths,
       {
         origPath: `${userInput.assetsPath}/vscode`,
         linkPath: `${userInput.appDir}/.vscode`,

@@ -228,7 +228,6 @@ module.exports = {
     });
 
     if (userInput.framework === 'nest') {
-      Object.assign(packageJson.jest, userInput.pkgJson.jest);
       delete packageJson.jest;
       delete packageJson.dependencies['@nestjs/platform-express'];
       delete packageJson.devDependencies['@types/express'];

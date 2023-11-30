@@ -13,7 +13,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
-import { expectError } from '../utils/expect-error';
+import { expectError, MongoDBTestSetup } from '@test/utils';
 import { Auth0Service } from '@api/auth/services';
 import { DatabaseService } from '@database/database.service';
 import { ObjectId, WithId } from 'mongodb';
@@ -22,7 +22,7 @@ import { Todo } from '@api/todos/entities';
 describe('PUT /v1/todos/:id', () => {
   let app: NestFastifyApplication;
   let databaseService: DatabaseService;
-  let userId: ObjectId;
+  let databaseTestSetup: MongoDBTestSetup;
   let todo: WithId<Todo>;
   const canActivate = jest.fn();
 
@@ -58,16 +58,16 @@ describe('PUT /v1/todos/:id', () => {
     await app.init();
 
     databaseService = app.get(DatabaseService);
+    databaseTestSetup = new MongoDBTestSetup(databaseService.connection);
   });
 
   beforeEach(async () => {
-    await databaseService.migrate.rollback();
-    await databaseService.migrate.latest();
-    userId = await databaseService.seed.run();
+    await databaseTestSetup.removeSeededData();
+    await databaseTestSetup.seedData();
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
-      request.user = { sub: userId, email: 'hello@email' };
+      request.user = { sub: databaseTestSetup.userId, email: 'hello@email' };
       return true;
     });
 
@@ -143,6 +143,7 @@ describe('PUT /v1/todos/:id - real AuthGuard', () => {
   let app: NestFastifyApplication;
   let todo: WithId<Todo>;
   let databaseService: DatabaseService;
+  let databaseTestSetup: MongoDBTestSetup;
 
   class Auth0ServiceMock {}
 
@@ -161,10 +162,10 @@ describe('PUT /v1/todos/:id - real AuthGuard', () => {
     await app.init();
 
     databaseService = app.get(DatabaseService);
+    databaseTestSetup = new MongoDBTestSetup(databaseService.connection);
 
-    await databaseService.migrate.rollback();
-    await databaseService.migrate.latest();
-    await databaseService.seed.run();
+    await databaseTestSetup.removeSeededData();
+    await databaseTestSetup.seedData();
 
     todo = (
       await databaseService.connection

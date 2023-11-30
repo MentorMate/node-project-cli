@@ -43,5 +43,6 @@ module.exports = {
     '^@extensions/(.*)$': '<rootDir>/src/extensions/$1',
     '^@middleware$': '<rootDir>/src/middleware',
     '^@utils/(.*)$': '<rootDir>/src/utils/$1',
+    '^@test/(.*)$': '<rootDir>/test/$1',
   },
 }

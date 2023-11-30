@@ -1,13 +1,28 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/no-empty-function */
-const { ObjectId } = require('mongodb');
+import { Collections } from '@database/constants';
+import { Db, ObjectId } from 'mongodb';
 
-/**
- * @param mongodb { import("mongodb").Db } mongodb
- * @returns { Promise<void> }
- */
-async function seedDb(mongodb) {
-  const userId = new ObjectId();
+export class MongoDBTestSetup {
+  public readonly userId: ObjectId;
+
+  constructor(private readonly mongodb: Db) {
+    this.userId = new ObjectId();
+    this.mongodb = mongodb;
+  }
+
+  async seedData() {
+    await this.mongodb.createCollection(Collections.Users);
+    await this.mongodb.createCollection(Collections.Todos);
+    await this.mongodb.createIndex(Collections.Todos, 'user_id');
+    await seedDb(this.mongodb, this.userId);
+  }
+
+  async removeSeededData() {
+    await this.mongodb.dropCollection(Collections.Todos);
+    await this.mongodb.dropCollection(Collections.Users);
+  }
+}
+
+async function seedDb(mongodb: Db, userId: ObjectId) {
   await mongodb.collection('users').deleteMany();
   await mongodb.collection('users').insertOne(
     // The original password for this hash is 'pass@ord'
@@ -15,7 +30,7 @@ async function seedDb(mongodb) {
       email: 'hello@email.com',
       password: '$2b$10$Mxur7NOiTlm22yuldEMZgOCbIV7bxDCcUbBLFbzrJ1MrnIczZB.92', // pragma: allowlist secret
       userId,
-    },
+    }
   );
   await mongodb.collection('todos').deleteMany();
   await mongodb.collection('todos').insertMany([
@@ -38,8 +53,4 @@ async function seedDb(mongodb) {
       userId,
     },
   ]);
-
-  return userId;
 }
-
-module.exports = { seedDb };

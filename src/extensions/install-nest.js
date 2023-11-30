@@ -48,6 +48,7 @@ module.exports = (toolbox) => {
         if (isExampleApp) {
           await Promise.all([
             removeAsync(`${appDir}/src/api/auth`),
+            db === 'mongodb' && removeAsync(`${appDir}/src/api/users`),
             removeAsync(`${appDir}/test/auth`),
             removeAsync(`${appDir}/test/todos`),
           ]);
@@ -204,12 +205,6 @@ module.exports = (toolbox) => {
               'ts-node node_modules/knex/bin/cli.js migrate:status --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
             'db:migrate:reset':
               'npm run db:migrate:rollback --all && npm run db:migrate:latest',
-          });
-        } else if (db === 'mongodb') {
-          // TODO: Think of a way to call the migrations with a npm script command
-          Object.assign(pkgJson.scripts, {
-            'db:migrate:latest': 'echo "TODO"',
-            'db:migrate:rollback': 'echo "TODO"',
           });
         }
       }

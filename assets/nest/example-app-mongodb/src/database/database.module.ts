@@ -28,8 +28,6 @@ import { DatabaseService } from './database.service';
           urlString,
           databaseName,
           clientOptions: {},
-          migrationsDir: '../../migrations',
-          seedsDir: `./seeds/${configService.get('NODE_ENV')}`,
         };
       },
     },

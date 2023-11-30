@@ -12,15 +12,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@api/auth/guards/auth.guard';
-import { expectError } from '../utils/expect-error';
+import { expectError, MongoDBTestSetup } from '@test/utils';
 import { Auth0Service } from '@api/auth/services';
 import { DatabaseService } from '@database/database.service';
-import { ObjectId } from 'mongodb';
 
 describe('GET /v1/todos', () => {
   let app: NestFastifyApplication;
   let databaseService: DatabaseService;
-  let userId: ObjectId;
+  let databaseTestSetup: MongoDBTestSetup;
 
   const canActivate = jest.fn();
 
@@ -54,16 +53,16 @@ describe('GET /v1/todos', () => {
     await app.init();
 
     databaseService = app.get(DatabaseService);
+    databaseTestSetup = new MongoDBTestSetup(databaseService.connection);
   });
 
   beforeEach(async () => {
-    await databaseService.migrate.rollback();
-    await databaseService.migrate.latest();
-    userId = await databaseService.seed.run();
+    await databaseTestSetup.removeSeededData();
+    await databaseTestSetup.seedData();
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
-      request.user = { sub: userId, email: 'hello@email' };
+      request.user = { sub: databaseTestSetup.userId, email: 'hello@email' };
       return true;
     });
   });
@@ -284,6 +283,7 @@ describe('GET /v1/todos', () => {
 describe('GET /v1/todos - real AuthGuard', () => {
   let app: NestFastifyApplication;
   let databaseService: DatabaseService;
+  let databaseTestSetup: MongoDBTestSetup;
 
   class Auth0ServiceMock {}
 
@@ -302,10 +302,10 @@ describe('GET /v1/todos - real AuthGuard', () => {
     await app.init();
 
     databaseService = app.get(DatabaseService);
+    databaseTestSetup = new MongoDBTestSetup(databaseService.connection);
 
-    await databaseService.migrate.rollback();
-    await databaseService.migrate.latest();
-    await databaseService.seed.run();
+    await databaseTestSetup.removeSeededData();
+    await databaseTestSetup.seedData();
   });
 
   afterAll(async () => {

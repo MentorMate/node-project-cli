@@ -25,7 +25,8 @@
       "@database/*": ["src/database/*"],
       "@extensions/*": ["src/extensions/*"],
       "@middleware": ["src/middleware"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@test/*": ["test/*"]
     }
   },
   "ts-node": {

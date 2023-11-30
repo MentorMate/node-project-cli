@@ -44,7 +44,7 @@ module.exports = (toolbox) => {
         await copyAsync(`${assetsAppDir}/test/`, `${appDir}/test/`);
       }
 
-      if (isExampleApp) {
+      if (isExampleApp && db === 'pg') {
         await copyAsync(
           `${assetsAppDir}/jest.setup.ts`,
           `${appDir}/jest.setup.ts`,
