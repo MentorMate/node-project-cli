@@ -29,6 +29,7 @@ describe('install-nest', () => {
     beforeAll(() => {
       input.projectLanguage = 'TS';
       input.framework = 'nest';
+      input.db = 'pg';
     });
 
     beforeEach(async () => {
@@ -52,26 +53,26 @@ describe('install-nest', () => {
 
     it('should init a new project', () => {
       expect(toolbox.system.run).toHaveBeenCalledWith(
-        `npx @nestjs/cli@9.4.2 new ${input.projectName} --directory ${input.projectName} --strict --skip-git --skip-install --package-manager npm`
+        `npx @nestjs/cli@9.4.2 new ${input.projectName} --directory ${input.projectName} --strict --skip-git --skip-install --package-manager npm`,
       );
     });
 
     it('should remove the src/ dir', () => {
       expect(toolbox.filesystem.removeAsync).toHaveBeenCalledWith(
-        `${input.appDir}/src/`
+        `${input.appDir}/src/`,
       );
     });
 
     it('should remove the test/ dir', () => {
       expect(toolbox.filesystem.removeAsync).toHaveBeenCalledWith(
-        `${input.appDir}/test/`
+        `${input.appDir}/test/`,
       );
     });
 
     it('should copy the project source', () => {
       expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
         `${input.assetsPath}/nest/ts/src/`,
-        `${input.appDir}/src/`
+        `${input.appDir}/src/`,
       );
     });
 
@@ -98,19 +99,19 @@ describe('install-nest', () => {
 
     it('should update the start script', () => {
       expect(scripts['start']).toEqual(
-        expect.stringContaining('-r dotenv/config')
+        expect.stringContaining('-r dotenv/config'),
       );
     });
 
     it('should update the start:dev script', () => {
       expect(scripts['start:dev']).toEqual(
-        expect.stringContaining('-r dotenv/config')
+        expect.stringContaining('-r dotenv/config'),
       );
     });
 
     it('should update the start:debug script', () => {
       expect(scripts['start:debug']).toEqual(
-        expect.stringContaining('-r dotenv/config')
+        expect.stringContaining('-r dotenv/config'),
       );
     });
 
@@ -125,8 +126,8 @@ describe('install-nest', () => {
 
       it('should copy the example app project source', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/example-app/src/`,
-          `${input.appDir}/src/`
+          `${input.assetsPath}/nest/example-app-pg/src/`,
+          `${input.appDir}/src/`,
         );
       });
 
@@ -144,44 +145,44 @@ describe('install-nest', () => {
 
       it('should copy the example app project source', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/example-app/src/`,
-          `${input.appDir}/src/`
+          `${input.assetsPath}/nest/example-app-pg/src/`,
+          `${input.appDir}/src/`,
         );
       });
 
       it('should copy the .openapi dir', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/example-app/.openapi/gitignorefile`,
-          `${input.appDir}/.openapi/.gitignore`
+          `${input.assetsPath}/nest/example-app-pg/.openapi/gitignorefile`,
+          `${input.appDir}/.openapi/.gitignore`,
         );
       });
 
       it('should copy the docker-compose config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/example-app/docker-compose.yml`,
-          `${input.appDir}/docker-compose.yml`
+          `${input.assetsPath}/nest/example-app-pg/docker-compose.yml`,
+          `${input.appDir}/docker-compose.yml`,
         );
       });
 
       it('should copy the docker-compose override config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/example-app/docker-compose.override.example.yml`,
-          `${input.appDir}/docker-compose.override.example.yml`
+          `${input.assetsPath}/nest/example-app-pg/docker-compose.override.example.yml`,
+          `${input.appDir}/docker-compose.override.example.yml`,
         );
       });
 
       it('should copy the database migrations', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/example-app/migrations`,
-          `${input.appDir}/migrations`
+          `${input.assetsPath}/nest/example-app-pg/migrations`,
+          `${input.appDir}/migrations`,
         );
       });
 
       it('should copy the ts config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-          `${input.assetsPath}/nest/example-app/tsconfig.json`,
+          `${input.assetsPath}/nest/example-app-pg/tsconfig.json`,
           `${input.appDir}/tsconfig.json`,
-          { overwrite: true }
+          { overwrite: true },
         );
       });
 
@@ -209,7 +210,7 @@ describe('install-nest', () => {
             'db:migrate:version',
             'db:migrate:status',
             'db:migrate:reset',
-          ])
+          ]),
         );
       });
 
@@ -217,7 +218,7 @@ describe('install-nest', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/db/pg/scripts`,
           `${input.appDir}/scripts`,
-          { overwrite: true }
+          { overwrite: true },
         );
       });
     });
@@ -233,7 +234,7 @@ describe('install-nest', () => {
 
       it('should rethrow the error with an added user-friendly message', () => {
         expect(toolbox.installNest(input)).rejects.toThrow(
-          `An error has occurred while installing Nest: ${error}`
+          `An error has occurred while installing Nest: ${error}`,
         );
       });
     });

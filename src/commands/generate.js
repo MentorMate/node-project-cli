@@ -55,7 +55,7 @@ module.exports = {
 
     if (!isPip3Avaialble) {
       warning(
-        "No `pip3` found on your system, some of the offered functionalities won't be available"
+        "No `pip3` found on your system, some of the offered functionalities won't be available",
       );
     }
 
@@ -67,7 +67,7 @@ module.exports = {
 
     if (isInteractiveMode && isExampleApp) {
       return error(
-        'Flags `--interactive` and `--example-app` cannot be used at the same time'
+        'Flags `--interactive` and `--example-app` cannot be used at the same time',
       );
     }
 
@@ -79,13 +79,13 @@ module.exports = {
 
     if (isInteractiveMode) {
       userInput = await prompt.ask(
-        getQuestions(userInput, isPip3Avaialble).slice(0, 2)
+        getQuestions(userInput, isPip3Avaialble).slice(0, 2),
       );
 
       userInput = Object.assign(
         {},
         userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2))
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2)),
       );
     }
 
@@ -93,17 +93,17 @@ module.exports = {
       userInput = Object.assign(
         {},
         userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble)[1])
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble)[1]),
       );
-
       userInput = Object.assign(
+        {},
         userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2, 3))
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2, 5)),
       );
 
       Object.assign(
         userInput,
-        exampleAppConfig(userInput.framework, isPip3Avaialble)
+        exampleAppConfig(userInput.framework, isPip3Avaialble),
       );
     }
 
@@ -178,6 +178,8 @@ module.exports = {
 
     if (userInput.db === 'pg') {
       stepsOfExecution.push(toolbox.setupPostgreSQL(userInput));
+    } else if (userInput.db === 'mongodb') {
+      stepsOfExecution.push(toolbox.setupMongoDB(userInput));
     }
 
     if (userInput.isExampleApp && userInput.authOption == 'jwt') {
@@ -197,7 +199,7 @@ module.exports = {
         template: 'dotenv/.env.example.ejs',
         target: `${userInput.appDir}/.env.example`,
         props: { groups: userInput.envVars },
-      })
+      }),
     );
 
     await Promise.all(asyncOperations);
@@ -226,7 +228,6 @@ module.exports = {
     });
 
     if (userInput.framework === 'nest') {
-      Object.assign(packageJson.jest, userInput.pkgJson.jest);
       delete packageJson.jest;
       delete packageJson.dependencies['@nestjs/platform-express'];
       delete packageJson.devDependencies['@types/express'];
@@ -236,7 +237,7 @@ module.exports = {
       write(`${userInput.appDir}/package.json`, packageJson);
     } catch (err) {
       throw new Error(
-        `An error occurred while writing the new package.json file: ${err}`
+        `An error occurred while writing the new package.json file: ${err}`,
       );
     }
 
@@ -259,7 +260,7 @@ module.exports = {
         await run(script);
       } catch (err) {
         throw new Error(
-          `An error has occurred while setting up husky and relevant hooks ${err}`
+          `An error has occurred while setting up husky and relevant hooks ${err}`,
         );
       }
     }
@@ -267,13 +268,13 @@ module.exports = {
     highlight('\nProject generation completed!\n');
     success(`Run "cd ${userInput.appDir}" to enter your project's folder.`);
     success(
-      'Use "git remote add origin [your remote repository address]" to link your local and remote repositories.'
+      'Use "git remote add origin [your remote repository address]" to link your local and remote repositories.',
     );
     success(
-      'Use "git add . && git commit -m "feat: initial commit" && git push -u origin main" to push your initial local repository contents to your remote one.'
+      'Use "git add . && git commit -m "feat: initial commit" && git push -u origin main" to push your initial local repository contents to your remote one.',
     );
     success(
-      'You can then proceed managing your repositories according to your usual practices.'
+      'You can then proceed managing your repositories according to your usual practices.',
     );
   },
 };
