@@ -10,6 +10,8 @@ package*.json
 coverage-e2e
 src/api/auth
 src/api/users
+src/utils/environment.ts
+src/utils/environment.spec.ts
 test/todos
 test/auth
 .vscode
