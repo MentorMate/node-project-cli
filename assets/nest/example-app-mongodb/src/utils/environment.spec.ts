@@ -16,8 +16,6 @@ describe('validateConfig', () => {
       MONGO_USER: 'user',
       MONGO_PASSWORD: 'password',
       MONGO_DATABASE_NAME: 'database',
-      JWT_SECRET: 'some-random-symbols',
-      JWT_EXPIRATION: '7200',
       THIS_SHOULD_NOT_BE_INCLUDED: 'some-value',
     });
 

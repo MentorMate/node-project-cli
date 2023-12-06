@@ -1,12 +1,10 @@
 import util from 'node:util';
-import { Transform, plainToClass } from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
   IsNotEmpty,
-  IsOptional,
   IsString,
-  IsUrl,
   Max,
   Min,
   validateSync,
@@ -29,16 +27,6 @@ export interface Environment {
 
   // HTTP
   PORT: number;
-
-  // JWT
-  JWT_SECRET: string;
-  JWT_EXPIRATION: number;
-
-  // Auth0
-  AUTH0_ISSUER_URL?: string;
-  AUTH0_CLIENT_ID?: string;
-  AUTH0_AUDIENCE?: string;
-  AUTH0_CLIENT_SECRET?: string;
 
   // MongoDB
   MONGO_PROTOCOL?: string;
@@ -81,32 +69,6 @@ class EnvironmentVariablesValidator implements Environment {
   @IsString()
   @IsNotEmpty()
   MONGO_DATABASE_NAME: string;
-
-  @IsString()
-  @IsOptional()
-  JWT_SECRET: string;
-
-  @IsInt()
-  @IsOptional()
-  JWT_EXPIRATION: number;
-
-  @IsString()
-  @IsOptional()
-  @IsUrl()
-  @Transform(({ value }) => (value.endsWith('/') ? value : `${value}/`))
-  AUTH0_ISSUER_URL?: string;
-
-  @IsString()
-  @IsOptional()
-  AUTH0_CLIENT_ID?: string;
-
-  @IsString()
-  @IsOptional()
-  AUTH0_AUDIENCE?: string;
-
-  @IsString()
-  @IsOptional()
-  AUTH0_CLIENT_SECRET?: string;
 }
 
 export const validateConfig = (

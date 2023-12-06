@@ -14,8 +14,6 @@ describe('validateConfig', () => {
       PGUSER: 'user',
       PGPASSWORD: 'password',
       PGDATABASE: 'database',
-      JWT_SECRET: 'some-random-symbols',
-      JWT_EXPIRATION: '7200',
       THIS_SHOULD_NOT_BE_INCLUDED: 'some-value',
     });
 
