@@ -12,6 +12,7 @@ import { NEST_MONGO_OPTIONS } from '@database/constants';
 import { HttpModule } from '@nestjs/axios';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
+import { authConfig, dbConfig, nodeConfig } from '@utils/environment';
 
 const userCreds: Credentials = {
   email: 'new-email@example.com',
@@ -45,13 +46,22 @@ describe('AuthService', () => {
   let auth0Service: Auth0Service;
   let usersRepository: UsersRepository;
 
+  beforeAll(() => {
+    jest.spyOn(process, 'exit').mockImplementation(() => true as never);
+    jest.spyOn(console, 'log').mockImplementation(() => true as never);
+  });
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [...AuthModuleMetadata.controllers],
       imports: [
         HttpModule,
         PassportModule.register({ defaultStrategy: 'jwt' }),
-        ConfigModule,
+        ConfigModule.forRoot({
+          load: [nodeConfig, dbConfig, authConfig],
+          isGlobal: true,
+          ignoreEnvFile: true,
+        }),
       ],
       providers: [
         ...AuthModuleMetadata.providers,
@@ -78,6 +88,11 @@ describe('AuthService', () => {
     authService.logger.error = jest.fn();
   });
 
+  afterAll(() => {
+    jest.spyOn(process, 'exit').mockRestore();
+    jest.spyOn(console, 'log').mockRestore();
+  });
+
   describe('register', () => {
     it('when the email is not registered should register the user', async () => {
       const createdUser = { ...registeredUser, ...userCreds };
@@ -101,8 +116,8 @@ describe('AuthService', () => {
         .spyOn(auth0Service, 'deleteUser')
         .mockResolvedValueOnce(auth0User as any);
 
-      await expect(authService.register(userCreds)).rejects.toThrowError(
-        new BadRequestException('Something went wrong!')
+      await expect(authService.register(userCreds)).rejects.toThrow(
+        new BadRequestException('Something went wrong!'),
       );
     });
   });

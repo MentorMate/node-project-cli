@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseService } from '@database/database.service';
 import { UsersRepository } from '@api/users/repositories';
 import { NEST_MONGO_OPTIONS } from '@database/constants';
+import { authConfig, dbConfig, nodeConfig } from '@utils/environment';
 
 const userCreds: Credentials = {
   email: 'new-email@example.com',
@@ -33,13 +34,22 @@ describe('Auth0Service', () => {
   let httpService: HttpService;
   let auth0Service: Auth0Service;
 
+  beforeAll(() => {
+    jest.spyOn(process, 'exit').mockImplementation(() => true as never);
+    jest.spyOn(console, 'log').mockImplementation(() => true as never);
+  });
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [...AuthModuleMetadata.controllers],
       imports: [
         HttpModule,
         PassportModule.register({ defaultStrategy: 'jwt' }),
-        ConfigModule,
+        ConfigModule.forRoot({
+          load: [nodeConfig, dbConfig, authConfig],
+          isGlobal: true,
+          ignoreEnvFile: true,
+        }),
       ],
       providers: [
         ...AuthModuleMetadata.providers,
@@ -65,6 +75,11 @@ describe('Auth0Service', () => {
     auth0Service.logger.error = jest.fn();
   });
 
+  afterAll(() => {
+    jest.spyOn(process, 'exit').mockRestore();
+    jest.spyOn(console, 'log').mockRestore();
+  });
+
   describe('createUser', () => {
     it('when the email is not registered should register the user', async () => {
       jest
@@ -76,7 +91,7 @@ describe('Auth0Service', () => {
 
       const user = await auth0Service.createUser(
         userCreds.email,
-        userCreds.password
+        userCreds.password,
       );
 
       expect(user).toEqual(auth0User);
@@ -88,9 +103,9 @@ describe('Auth0Service', () => {
         .mockResolvedValueOnce([auth0User] as unknown as Auth0User);
 
       await expect(
-        auth0Service.createUser(userCreds.email, userCreds.password)
-      ).rejects.toThrowError(
-        new BadRequestException('A user with this email already exists.')
+        auth0Service.createUser(userCreds.email, userCreds.password),
+      ).rejects.toThrow(
+        new BadRequestException('A user with this email already exists.'),
       );
     });
 
@@ -103,8 +118,8 @@ describe('Auth0Service', () => {
         .mockRejectedValueOnce({ response: { data: {} } });
 
       await expect(
-        auth0Service.createUser(userCreds.email, userCreds.password)
-      ).rejects.toThrowError(new BadRequestException());
+        auth0Service.createUser(userCreds.email, userCreds.password),
+      ).rejects.toThrow(new BadRequestException());
     });
   });
 
@@ -136,8 +151,8 @@ describe('Auth0Service', () => {
         .mockRejectedValueOnce({ response: { data: {} } });
 
       await expect(
-        auth0Service.searchUsersByEmail(auth0User.email)
-      ).rejects.toThrowError(new BadRequestException());
+        auth0Service.searchUsersByEmail(auth0User.email),
+      ).rejects.toThrow(new BadRequestException());
     });
   });
 
@@ -156,8 +171,8 @@ describe('Auth0Service', () => {
         .mockRejectedValueOnce({ response: { data: {} } });
 
       await expect(
-        auth0Service.deleteUser(auth0User.user_id)
-      ).rejects.toThrowError(new BadRequestException());
+        auth0Service.deleteUser(auth0User.user_id),
+      ).rejects.toThrow(new BadRequestException());
     });
   });
 
@@ -181,8 +196,8 @@ describe('Auth0Service', () => {
         .spyOn(httpService.axiosRef, 'post')
         .mockResolvedValueOnce(tokenResponse);
 
-      await expect(auth0Service.onModuleInit()).rejects.toThrowError(
-        new Error('Access token is missing!')
+      await expect(auth0Service.onModuleInit()).rejects.toThrow(
+        new Error('Access token is missing!'),
       );
     });
 
@@ -191,8 +206,8 @@ describe('Auth0Service', () => {
         .spyOn(httpService.axiosRef, 'post')
         .mockRejectedValueOnce({ response: { data: {} } });
 
-      await expect(auth0Service.onModuleInit()).rejects.toThrowError(
-        new Error('Something went wrong!')
+      await expect(auth0Service.onModuleInit()).rejects.toThrow(
+        new Error('Something went wrong!'),
       );
     });
   });

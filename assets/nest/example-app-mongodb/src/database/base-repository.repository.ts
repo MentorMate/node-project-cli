@@ -6,14 +6,14 @@ export class BaseRepository<Entity extends Record<string, any>> {
 
   constructor(
     mongodb: DatabaseService,
-    private readonly collectionName: string
+    private readonly collectionName: string,
   ) {
     this.dbService = mongodb;
   }
 
   repository() {
     return this.dbService.connection.collection<NullableKeysPartial<Entity>>(
-      this.collectionName
+      this.collectionName,
     );
   }
 

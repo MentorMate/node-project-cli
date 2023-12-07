@@ -1,4 +1,3 @@
-import util from 'node:util';
 import { Transform, plainToClass } from 'class-transformer';
 import {
   IsEnum,
@@ -10,6 +9,7 @@ import {
   Min,
   validateSync,
 } from 'class-validator';
+import { registerAs } from '@nestjs/config';
 
 export enum NodeEnvironment {
   Development = 'development',
@@ -22,37 +22,17 @@ export enum MongoProtocol {
   atlasCloud = 'mongodb+srv',
 }
 
-export interface Environment {
-  // Node
-  NODE_ENV: NodeEnvironment;
-
-  // HTTP
-  PORT: number;
-
-  // MongoDB
-  MONGO_PROTOCOL: string;
-  MONGO_HOST: string;
-  MONGO_PORT: number;
-  MONGO_USER: string;
-  MONGO_PASSWORD: string;
-  MONGO_DATABASE_NAME: string;
-
-  // Auth0
-  AUTH0_ISSUER_URL: string;
-  AUTH0_CLIENT_ID: string;
-  AUTH0_AUDIENCE: string;
-  AUTH0_CLIENT_SECRET: string;
-}
-
-class EnvironmentVariablesValidator implements Environment {
+class NodeEnvironmentValidator {
   @IsEnum(NodeEnvironment)
   NODE_ENV: NodeEnvironment;
 
-  @IsInt()
   @Min(1024)
   @Max(65535)
+  @Transform(({ value }) => +value)
   PORT: number;
+}
 
+class DatabaseEnvironmentValidator {
   @IsEnum(MongoProtocol)
   MONGO_PROTOCOL: string;
 
@@ -76,10 +56,12 @@ class EnvironmentVariablesValidator implements Environment {
   @IsString()
   @IsNotEmpty()
   MONGO_DATABASE_NAME: string;
+}
 
+class AuthEnvironmentValidator {
   @IsString()
   @IsUrl()
-  @Transform(({ value }) => (value.endsWith('/') ? value : `${value}/`))
+  @Transform(({ value = '' }) => (value.endsWith('/') ? value : `${value}/`))
   AUTH0_ISSUER_URL: string;
 
   @IsString()
@@ -92,21 +74,50 @@ class EnvironmentVariablesValidator implements Environment {
   AUTH0_CLIENT_SECRET: string;
 }
 
-export const validateConfig = (
-  config: Record<string, unknown>,
-): Environment => {
-  const validatedConfig = plainToClass(EnvironmentVariablesValidator, config, {
-    enableImplicitConversion: true,
-  });
-
+const validate = <T extends object>(validatedConfig: T): T => {
   const errors = validateSync(validatedConfig, {
     skipMissingProperties: false,
     whitelist: true,
+    stopAtFirstError: true,
+  });
+
+  let errorMessage = '';
+  errors.forEach((error) => {
+    for (const constraint in error.constraints) {
+      errorMessage += `${error.constraints[constraint]}\n`;
+    }
   });
 
   if (errors.length > 0) {
-    throw new Error(util.inspect(errors));
+    console.log('\x1b[4m%s\x1b[0m', 'Environment validation errors:');
+    console.log('\x1b[31m%s\x1b[0m', errorMessage);
+
+    process.exit(0);
   }
 
   return validatedConfig;
 };
+
+export const nodeConfig = registerAs('node', () =>
+  validate(
+    plainToClass(NodeEnvironmentValidator, process.env, {
+      enableImplicitConversion: true,
+    }),
+  ),
+);
+
+export const dbConfig = registerAs('dbConfig', () =>
+  validate(
+    plainToClass(DatabaseEnvironmentValidator, process.env, {
+      enableImplicitConversion: true,
+    }),
+  ),
+);
+
+export const authConfig = registerAs('authConfig', () =>
+  validate(
+    plainToClass(AuthEnvironmentValidator, process.env, {
+      enableImplicitConversion: true,
+    }),
+  ),
+);
