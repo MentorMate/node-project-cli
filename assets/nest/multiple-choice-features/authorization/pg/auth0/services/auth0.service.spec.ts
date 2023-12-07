@@ -1,9 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthModuleMetadata } from '../auth.module';
+import { AuthModule } from '../auth.module';
 import { Auth0User, Credentials } from '../interfaces';
 import { Auth0Service } from './auth0.service';
 import { HttpService } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
+import { authConfig, dbConfig, nodeConfig } from '@utils/environment';
 
 const userCreds: Credentials = {
   email: 'new-email@example.com',
@@ -28,16 +30,33 @@ describe('Auth0Service', () => {
   let httpService: HttpService;
   let auth0Service: Auth0Service;
 
+  beforeAll(() => {
+    jest.spyOn(process, 'exit').mockImplementation(() => true as never);
+    jest.spyOn(console, 'log').mockImplementation(() => true as never);
+  });
+
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule(
-      AuthModuleMetadata,
-    ).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          load: [authConfig, dbConfig, nodeConfig],
+          isGlobal: true,
+          ignoreEnvFile: true,
+        }),
+        AuthModule,
+      ],
+    }).compile();
 
     auth0Service = module.get<Auth0Service>(Auth0Service);
     httpService = module.get<HttpService>(HttpService);
 
     auth0Service.logger.warn = jest.fn();
     auth0Service.logger.error = jest.fn();
+  });
+
+  afterAll(() => {
+    jest.spyOn(process, 'exit').mockRestore();
+    jest.spyOn(console, 'log').mockRestore();
   });
 
   describe('createUser', () => {

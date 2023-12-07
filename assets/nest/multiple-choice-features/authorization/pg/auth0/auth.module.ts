@@ -5,18 +5,14 @@ import { AuthGuard } from './guards';
 import { HttpModule } from '@nestjs/axios';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '@api/users/users.module';
-import { ConfigModule } from '@nestjs/config';
 import { Auth0Service, AuthService, JwtStrategy } from './services';
 
 export const AuthModuleMetadata = {
-  controllers: [
-    AuthController
-  ],
+  controllers: [AuthController],
   imports: [
     HttpModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     UsersModule,
-    ConfigModule
   ],
   providers: [
     JwtStrategy,

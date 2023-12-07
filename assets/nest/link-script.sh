@@ -72,7 +72,7 @@ done
 utils_path="${assets_dir}/nest/example-app-${database}/src/utils"
 full_enviroment_dir="${assets_dir}/nest/multiple-choice-features/environment/${database}-${auth_type}"
 
-for file in environment.ts environment.spec.ts
+for file in environment.ts
 do
   rm -rf "${utils_path}/${file}"
   ln "${full_enviroment_dir}/${file}" "${utils_path}"

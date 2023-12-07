@@ -1,4 +1,3 @@
-import util from 'node:util';
 import { Transform, plainToClass } from 'class-transformer';
 import {
   IsEnum,
@@ -10,6 +9,7 @@ import {
   Min,
   validateSync,
 } from 'class-validator';
+import { registerAs } from '@nestjs/config';
 
 export enum NodeEnvironment {
   Development = 'development',
@@ -17,87 +17,123 @@ export enum NodeEnvironment {
   Test = 'test',
 }
 
-export interface Environment {
-  // Node
-  NODE_ENV: NodeEnvironment;
+class NodeEnvironmentValidator {
+  @IsEnum(NodeEnvironment)
+  env: NodeEnvironment;
 
-  // HTTP
-  PORT: number;
-
-  // PostgreSQL
-  PGHOST: string;
-  PGPORT: number;
-  PGUSER: string;
-  PGPASSWORD: string;
-  PGDATABASE: string;
-
-  // Auth0
-  AUTH0_ISSUER_URL: string;
-  AUTH0_CLIENT_ID: string;
-  AUTH0_AUDIENCE: string;
-  AUTH0_CLIENT_SECRET: string;
+  @Min(1024)
+  @Max(65535)
+  @Transform(({ value }) => +value)
+  port: number;
 }
 
-class EnvironmentVariablesValidator implements Environment {
-  @IsEnum(NodeEnvironment)
-  NODE_ENV: NodeEnvironment;
+class DatabaseEnvironmentValidator {
+  @IsString()
+  @IsNotEmpty()
+  host: string;
 
   @IsInt()
   @Min(1024)
   @Max(65535)
-  PORT: number;
+  port: number;
 
   @IsString()
   @IsNotEmpty()
-  PGHOST: string;
-
-  @IsInt()
-  @Min(1024)
-  @Max(65535)
-  PGPORT: number;
+  user: string;
 
   @IsString()
   @IsNotEmpty()
-  PGUSER: string;
+  password: string;
 
   @IsString()
   @IsNotEmpty()
-  PGPASSWORD: string;
+  database: string;
+}
 
-  @IsString()
-  @IsNotEmpty()
-  PGDATABASE: string;
-
+class AuthEnvironmentValidator {
   @IsString()
   @IsUrl()
-  @Transform(({ value }) => (value.endsWith('/') ? value : `${value}/`))
-  AUTH0_ISSUER_URL: string;
+  @Transform(({ value = '' }) => (value.endsWith('/') ? value : `${value}/`))
+  issuerUrl: string;
 
   @IsString()
-  AUTH0_CLIENT_ID: string;
+  clientId: string;
 
   @IsString()
-  AUTH0_AUDIENCE: string;
+  audience: string;
 
   @IsString()
-  AUTH0_CLIENT_SECRET: string;
+  clientSecret: string;
 }
 
-export const validateConfig = (
-  config: Record<string, unknown>,
-): Environment => {
-  const validatedConfig = plainToClass(EnvironmentVariablesValidator, config, {
-    enableImplicitConversion: true,
-  });
-
+const validate = <T extends object>(validatedConfig: T): T => {
   const errors = validateSync(validatedConfig, {
     skipMissingProperties: false,
     whitelist: true,
+    stopAtFirstError: true,
   });
 
-  if (errors.length > 0) {
-    throw new Error(util.inspect(errors));
+  let errorMessage = '';
+  errors.forEach((error) => {
+    for (const constraint in error.constraints) {
+      errorMessage += `${error.property} - ${error.constraints[constraint]}\n`;
+    }
+  });
+
+  if (errorMessage) {
+    console.log(errorMessage);
+    process.exit(1);
   }
 
   return validatedConfig;
 };
+
+export const nodeConfig = registerAs('node', () =>
+  validate(
+    plainToClass(
+      NodeEnvironmentValidator,
+      {
+        env: process.env.NODE_ENV,
+        port: process.env.PORT,
+      },
+      {
+        enableImplicitConversion: true,
+      },
+    ),
+  ),
+);
+
+export const dbConfig = registerAs('dbConfig', () =>
+  validate(
+    plainToClass(
+      DatabaseEnvironmentValidator,
+      {
+        host: process.env.PGHOST,
+        port: process.env.PGPORT,
+        user: process.env.PGUSER,
+        password: process.env.PGPASSWORD,
+        database: process.env.PGDATABASE,
+      },
+      {
+        enableImplicitConversion: true,
+      },
+    ),
+  ),
+);
+
+export const authConfig = registerAs('authConfig', () =>
+  validate(
+    plainToClass(
+      AuthEnvironmentValidator,
+      {
+        issuerUrl: process.env.AUTH0_ISSUER_URL,
+        clientId: process.env.AUTH0_CLIENT_ID,
+        audience: process.env.AUTH0_AUDIENCE,
+        clientSecret: process.env.AUTH0_CLIENT_SECRET,
+      },
+      {
+        enableImplicitConversion: true,
+      },
+    ),
+  ),
+);

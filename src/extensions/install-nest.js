@@ -52,7 +52,6 @@ module.exports = (toolbox) => {
             removeAsync(`${appDir}/test/auth`),
             removeAsync(`${appDir}/test/todos`),
             removeAsync(`${appDir}/src/utils/environment.ts`),
-            removeAsync(`${appDir}/src/utils/environment.spec.ts`),
           ]);
 
           const promises = [
@@ -88,13 +87,6 @@ module.exports = (toolbox) => {
             copyAsync(
               `${assetsPath}/${framework}/multiple-choice-features/environment/${db}-${authOption}/environment.ts`,
               `${appDir}/src/utils/environment.ts`,
-            ),
-          );
-
-          promises.push(
-            copyAsync(
-              `${assetsPath}/${framework}/multiple-choice-features/environment/${db}-${authOption}/environment.spec.ts`,
-              `${appDir}/src/utils/environment.spec.ts`,
             ),
           );
 
