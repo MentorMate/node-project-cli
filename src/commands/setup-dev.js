@@ -161,7 +161,10 @@ module.exports = {
       stepsOfExecution.push(toolbox.setupMongoDB(userInput));
     }
 
-    if (userInput.isExampleApp && userInput.authOption == 'jwt') {
+    if (
+      userInput.isExampleApp &&
+      (!userInput.authOption || userInput.authOption === 'jwt')
+    ) {
       stepsOfExecution.push(toolbox.setupJwt(userInput));
     }
 
