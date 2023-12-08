@@ -15,9 +15,9 @@ export class Auth0Service implements OnModuleInit {
   public logger = new Logger('Auth0Service');
 
   private accessToken = '';
-  private baseURL = this.dbConfig.issuerUrl;
-  private AUTH0_CLIENT_ID = this.dbConfig.clientId;
-  private AUTH0_CLIENT_SECRET = this.dbConfig.clientSecret;
+  private baseURL = this.dbConfig.AUTH0_ISSUER_URL;
+  private AUTH0_CLIENT_ID = this.dbConfig.AUTH0_CLIENT_ID;
+  private AUTH0_CLIENT_SECRET = this.dbConfig.AUTH0_CLIENT_SECRET;
 
   constructor(
     private httpService: HttpService,

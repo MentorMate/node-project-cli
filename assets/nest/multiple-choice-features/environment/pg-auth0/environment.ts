@@ -19,51 +19,54 @@ export enum NodeEnvironment {
 
 class NodeEnvironmentValidator {
   @IsEnum(NodeEnvironment)
-  env: NodeEnvironment;
+  NODE_ENV: NodeEnvironment;
 
   @Min(1024)
   @Max(65535)
   @Transform(({ value }) => +value)
-  port: number;
+  PORT: number;
 }
 
 class DatabaseEnvironmentValidator {
   @IsString()
   @IsNotEmpty()
-  host: string;
+  PGHOST: string;
 
-  @IsInt()
   @Min(1024)
   @Max(65535)
-  port: number;
+  @IsInt()
+  PGPORT: number;
 
   @IsString()
   @IsNotEmpty()
-  user: string;
+  PGUSER: string;
 
   @IsString()
   @IsNotEmpty()
-  password: string;
+  PGPASSWORD: string;
 
   @IsString()
   @IsNotEmpty()
-  database: string;
+  PGDATABASE: string;
 }
 
 class AuthEnvironmentValidator {
   @IsString()
   @IsUrl()
   @Transform(({ value = '' }) => (value.endsWith('/') ? value : `${value}/`))
-  issuerUrl: string;
+  AUTH0_ISSUER_URL: string;
 
   @IsString()
-  clientId: string;
+  @IsNotEmpty()
+  AUTH0_CLIENT_ID: string;
 
   @IsString()
-  audience: string;
+  @IsNotEmpty()
+  AUTH0_AUDIENCE: string;
 
   @IsString()
-  clientSecret: string;
+  @IsNotEmpty()
+  AUTH0_CLIENT_SECRET: string;
 }
 
 const validate = <T extends object>(validatedConfig: T): T => {
@@ -76,13 +79,15 @@ const validate = <T extends object>(validatedConfig: T): T => {
   let errorMessage = '';
   errors.forEach((error) => {
     for (const constraint in error.constraints) {
-      errorMessage += `${error.property} - ${error.constraints[constraint]}\n`;
+      errorMessage += `${error.constraints[constraint]}\n`;
     }
   });
 
-  if (errorMessage) {
-    console.log(errorMessage);
-    process.exit(1);
+  if (errors.length > 0) {
+    console.log('\x1b[4m%s\x1b[0m', 'Environment validation errors:');
+    console.log('\x1b[31m%s\x1b[0m', errorMessage);
+
+    process.exit(0);
   }
 
   return validatedConfig;
@@ -90,50 +95,24 @@ const validate = <T extends object>(validatedConfig: T): T => {
 
 export const nodeConfig = registerAs('node', () =>
   validate(
-    plainToClass(
-      NodeEnvironmentValidator,
-      {
-        env: process.env.NODE_ENV,
-        port: process.env.PORT,
-      },
-      {
-        enableImplicitConversion: true,
-      },
-    ),
+    plainToClass(NodeEnvironmentValidator, process.env, {
+      enableImplicitConversion: true,
+    }),
   ),
 );
 
 export const dbConfig = registerAs('dbConfig', () =>
   validate(
-    plainToClass(
-      DatabaseEnvironmentValidator,
-      {
-        host: process.env.PGHOST,
-        port: process.env.PGPORT,
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-        database: process.env.PGDATABASE,
-      },
-      {
-        enableImplicitConversion: true,
-      },
-    ),
+    plainToClass(DatabaseEnvironmentValidator, process.env, {
+      enableImplicitConversion: true,
+    }),
   ),
 );
 
 export const authConfig = registerAs('authConfig', () =>
   validate(
-    plainToClass(
-      AuthEnvironmentValidator,
-      {
-        issuerUrl: process.env.AUTH0_ISSUER_URL,
-        clientId: process.env.AUTH0_CLIENT_ID,
-        audience: process.env.AUTH0_AUDIENCE,
-        clientSecret: process.env.AUTH0_CLIENT_SECRET,
-      },
-      {
-        enableImplicitConversion: true,
-      },
-    ),
+    plainToClass(AuthEnvironmentValidator, process.env, {
+      enableImplicitConversion: true,
+    }),
   ),
 );
