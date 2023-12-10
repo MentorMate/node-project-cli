@@ -140,6 +140,11 @@ module.exports = {
       await toolbox.installFramework(userInput);
     }
 
+    if (userInput.framework === 'express' && userInput.db === 'none') {
+      // Postgres is the default db for express
+      userInput.db = 'pg';
+    }
+
     stepsOfExecution.push(toolbox.jsLinters(userInput));
     stepsOfExecution.push(toolbox.jestConfig(userInput));
     stepsOfExecution.push(toolbox.auditConfig(userInput));
@@ -157,7 +162,9 @@ module.exports = {
 
     if (userInput.db === 'pg') {
       stepsOfExecution.push(toolbox.setupPostgreSQL(userInput));
-    } else if (userInput.db === 'mongodb') {
+    }
+
+    if (userInput.db === 'mongodb') {
       stepsOfExecution.push(toolbox.setupMongoDB(userInput));
     }
 
