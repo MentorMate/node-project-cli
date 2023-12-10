@@ -1,7 +1,8 @@
 import { verify } from 'jsonwebtoken';
 import { JwtService } from './jwt.service';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
+import { nodeConfig, dbConfig, authConfig } from '@utils/environment';
 
 describe('JwtService', () => {
   const env: { [key: string]: string } = {
@@ -13,6 +14,14 @@ describe('JwtService', () => {
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          load: [nodeConfig, dbConfig, authConfig],
+          cache: true,
+          ignoreEnvFile: true,
+          isGlobal: true,
+        })
+      ],
       providers: [
         {
           provide: ConfigService,
