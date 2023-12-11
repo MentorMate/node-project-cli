@@ -1,24 +1,42 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import jwt from 'jsonwebtoken';
 import { Test } from '@nestjs/testing';
 import { AuthGuard } from './auth.guard';
 import { JwtClaims } from '../interfaces';
 import { ObjectId } from 'mongodb';
+import { nodeConfig, dbConfig, authConfig } from '@utils/environment';
 
 describe('Auth Guard', () => {
   let authGuard: AuthGuard;
   let reflector: Reflector;
 
+  beforeAll(() => {
+    jest.spyOn(process, 'exit').mockImplementation(() => true as never);
+    jest.spyOn(console, 'log').mockImplementation(() => true as never);
+  });
+
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          load: [nodeConfig, dbConfig, authConfig],
+          ignoreEnvFile: true,
+          isGlobal: true,
+        }),
+      ],
       providers: [ConfigService, AuthGuard, Reflector],
     }).compile();
 
     authGuard = moduleRef.get<AuthGuard>(AuthGuard);
     reflector = moduleRef.get<Reflector>(Reflector);
+  });
+
+  afterAll(() => {
+    jest.spyOn(process, 'exit').mockRestore();
+    jest.spyOn(console, 'log').mockRestore();
   });
 
   it('should be defined', () => {

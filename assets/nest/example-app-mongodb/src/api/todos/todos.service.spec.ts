@@ -38,12 +38,12 @@ describe('TodosService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        DatabaseModule,
         ConfigModule.forRoot({
           load: [nodeConfig, dbConfig, authConfig],
           isGlobal: true,
           ignoreEnvFile: true,
         }),
+        DatabaseModule,
       ],
       controllers: [TodosController],
       providers: [TodosService, TodosRepository],

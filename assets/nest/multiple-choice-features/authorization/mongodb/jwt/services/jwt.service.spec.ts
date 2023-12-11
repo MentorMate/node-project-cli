@@ -1,8 +1,9 @@
 import { verify } from 'jsonwebtoken';
 import { JwtService } from './jwt.service';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { ObjectId } from 'mongodb';
+import { nodeConfig, dbConfig, authConfig } from '@utils/environment';
 
 describe('JwtService', () => {
   const env: { [key: string]: string } = {
@@ -12,20 +13,35 @@ describe('JwtService', () => {
 
   let jwtService: JwtService;
 
+  beforeAll(() => {
+    jest.spyOn(process, 'exit').mockImplementation(() => true as never);
+    jest.spyOn(console, 'log').mockImplementation(() => true as never);
+  });
+
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          load: [nodeConfig, dbConfig, authConfig],
+          ignoreEnvFile: true,
+          isGlobal: true,
+        }),
+      ],
       providers: [
         {
-          provide: ConfigService,
-          useFactory: () => ({
-            get: (key: string) => env[key],
-          }),
+          provide: authConfig.KEY,
+          useValue: env,
         },
         JwtService,
       ],
     }).compile();
 
     jwtService = moduleRef.get<JwtService>(JwtService);
+  });
+
+  afterAll(() => {
+    jest.spyOn(process, 'exit').mockRestore();
+    jest.spyOn(console, 'log').mockRestore();
   });
 
   describe('sign', () => {
@@ -40,7 +56,7 @@ describe('JwtService', () => {
         expect.objectContaining({
           email: claims.email,
           sub: claims.sub.toString(),
-        })
+        }),
       );
     });
   });

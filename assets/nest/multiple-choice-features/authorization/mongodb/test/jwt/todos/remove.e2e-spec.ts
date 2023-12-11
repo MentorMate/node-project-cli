@@ -13,13 +13,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
-import { expectError } from '../utils/expect-error';
+import { expectError, MongoDBTestSetup } from '@test/utils';
 import { ObjectId } from 'mongodb';
 
 describe('DELETE /v1/todos', () => {
   let app: NestFastifyApplication;
   let databaseService: DatabaseService;
-  let userId: ObjectId;
+  let databaseTestSetup: MongoDBTestSetup;
   const canActivate = jest.fn();
 
   class AuthGuardMock {
@@ -35,14 +35,14 @@ describe('DELETE /v1/todos', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
         whitelist: true,
-      })
+      }),
     );
 
     app.useGlobalInterceptors(new ServiceToHttpErrorsInterceptor());
@@ -50,16 +50,16 @@ describe('DELETE /v1/todos', () => {
     await app.init();
 
     databaseService = app.get(DatabaseService);
+    databaseTestSetup = new MongoDBTestSetup(databaseService.connection);
   });
 
   beforeEach(async () => {
-    await databaseService.migrate.rollback();
-    await databaseService.migrate.latest();
-    userId = await databaseService.seed.run();
+    await databaseTestSetup.removeSeededData();
+    await databaseTestSetup.seedData();
 
     canActivate.mockImplementation((context: ExecutionContext) => {
       const request = context.switchToHttp().getRequest();
-      request.user = { sub: userId.toString(), email: 'hello@email' };
+      request.user = { sub: databaseTestSetup.userId, email: 'hello@email' };
       return true;
     });
   });
@@ -101,6 +101,7 @@ describe('DELETE /v1/todos', () => {
 describe('DELETE /v1/todos - real AuthGuard', () => {
   let app: NestFastifyApplication;
   let databaseService: DatabaseService;
+  let databaseTestSetup: MongoDBTestSetup;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -108,16 +109,16 @@ describe('DELETE /v1/todos - real AuthGuard', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     await app.init();
 
     databaseService = app.get(DatabaseService);
+    databaseTestSetup = new MongoDBTestSetup(databaseService.connection);
 
-    await databaseService.migrate.rollback();
-    await databaseService.migrate.latest();
-    await databaseService.seed.run();
+    await databaseTestSetup.removeSeededData();
+    await databaseTestSetup.seedData();
   });
 
   afterAll(async () => {

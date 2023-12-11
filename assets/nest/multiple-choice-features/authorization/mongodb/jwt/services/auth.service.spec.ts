@@ -16,6 +16,7 @@ import { AuthGuard } from '../guards';
 import { AuthController } from '../auth.controller';
 import { NEST_MONGO_OPTIONS } from '@database/constants';
 import { DatabaseService } from '@database/database.service';
+import { authConfig, dbConfig, nodeConfig } from '@utils/environment';
 
 const registeredUser: User = {
   _id: new ObjectId(100),
@@ -42,9 +43,20 @@ describe('AuthService', () => {
   let passwordService: PasswordService;
   let usersRepository: UsersRepository;
 
+  beforeAll(() => {
+    jest.spyOn(process, 'exit').mockImplementation(() => true as never);
+    jest.spyOn(console, 'log').mockImplementation(() => true as never);
+  });
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule],
+      imports: [
+        ConfigModule.forRoot({
+          load: [nodeConfig, dbConfig, authConfig],
+          ignoreEnvFile: true,
+          isGlobal: true,
+        }),
+      ],
       providers: [
         JwtService,
         PasswordService,
@@ -76,6 +88,11 @@ describe('AuthService', () => {
     usersRepository = module.get<UsersRepository>(UsersRepository);
   });
 
+  afterAll(() => {
+    jest.spyOn(process, 'exit').mockRestore();
+    jest.spyOn(console, 'log').mockRestore();
+  });
+
   describe('register', () => {
     it('when the email is not registered should register the user', async () => {
       jest.spyOn(usersRepository, 'findByEmail').mockResolvedValueOnce(null);
@@ -101,7 +118,7 @@ describe('AuthService', () => {
         authService.register({
           email: registeredUser.email,
           password: registeredUser.password!,
-        })
+        }),
       ).rejects.toThrowError(new ConflictException('User email already taken'));
     });
   });
@@ -111,7 +128,7 @@ describe('AuthService', () => {
       jest.spyOn(usersRepository, 'findByEmail').mockResolvedValueOnce(null);
 
       await expect(authService.login(unregisteredCreds)).rejects.toThrowError(
-        new UnprocessableEntityException('Invalid email or password')
+        new UnprocessableEntityException('Invalid email or password'),
       );
     });
 
@@ -123,7 +140,7 @@ describe('AuthService', () => {
       jest.spyOn(passwordService, 'compare').mockResolvedValueOnce(false);
 
       await expect(authService.login(registeredCreds)).rejects.toThrowError(
-        new UnprocessableEntityException('Invalid email or password')
+        new UnprocessableEntityException('Invalid email or password'),
       );
     });
 

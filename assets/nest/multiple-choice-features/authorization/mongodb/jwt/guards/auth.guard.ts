@@ -1,21 +1,22 @@
 import {
   CanActivate,
   ExecutionContext,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '@utils/decorators/public.decorator';
-import { Environment } from '@utils/environment';
 import { Request } from 'express-jwt';
 import { verify } from 'jsonwebtoken';
 import { JwtClaims } from '../interfaces';
+import { authConfig } from '@utils/environment';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private readonly configService: ConfigService<Environment>,
+    @Inject(authConfig.KEY) private auth: ConfigType<typeof authConfig>,
     private reflector: Reflector,
   ) {}
 
@@ -34,7 +35,7 @@ export class AuthGuard implements CanActivate {
     try {
       const { sub, email } = verify(
         token,
-        this.configService.get('JWT_SECRET') as string,
+        this.auth.JWT_SECRET,
       ) as Partial<JwtClaims>;
       request.user = { sub, email } as JwtClaims;
     } catch {
