@@ -8,8 +8,10 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthModuleMetadata } from '../auth.module';
+import { AuthModule } from '../auth.module';
 import { Credentials } from '../interfaces';
+import { ConfigModule } from '@nestjs/config';
+import { authConfig, dbConfig, nodeConfig } from '@utils/environment';
 
 const registeredUser: User = {
   id: 1,
@@ -36,15 +38,32 @@ describe('AuthService', () => {
   let passwordService: PasswordService;
   let usersRepository: UsersRepository;
 
+  beforeAll(() => {
+    jest.spyOn(process, 'exit').mockImplementation(() => true as never);
+    jest.spyOn(console, 'log').mockImplementation(() => true as never);
+  });
+
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule(
-      AuthModuleMetadata,
-    ).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        AuthModule,
+        ConfigModule.forRoot({
+          load: [authConfig, dbConfig, nodeConfig],
+          isGlobal: true,
+          ignoreEnvFile: true,
+        }),
+      ],
+    }).compile();
 
     authService = module.get<AuthService>(AuthService);
     jwtService = module.get<JwtService>(JwtService);
     passwordService = module.get<PasswordService>(PasswordService);
     usersRepository = module.get<UsersRepository>(UsersRepository);
+  });
+
+  afterAll(() => {
+    jest.spyOn(process, 'exit').mockRestore();
+    jest.spyOn(console, 'log').mockRestore();
   });
 
   describe('register', () => {

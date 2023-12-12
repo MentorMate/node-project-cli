@@ -6,8 +6,7 @@ import jwt from 'jsonwebtoken';
 import { Test } from '@nestjs/testing';
 import { AuthGuard } from './auth.guard';
 import { JwtClaims } from '../interfaces';
-import { ObjectId } from 'mongodb';
-import { nodeConfig, dbConfig, authConfig } from '@utils/environment';
+import { authConfig, dbConfig, nodeConfig } from '@utils/environment';
 
 describe('Auth Guard', () => {
   let authGuard: AuthGuard;
@@ -45,7 +44,7 @@ describe('Auth Guard', () => {
 
   describe('canActivate', () => {
     const testClaims: JwtClaims = {
-      sub: new ObjectId(100).toString(),
+      sub: 'tz4a98xxat96iws9zmbrgj3a',
       email: 'admin@admin.com',
     };
 
@@ -79,7 +78,7 @@ describe('Auth Guard', () => {
       });
 
       expect(() => authGuard.canActivate(mockContext)).toThrow(
-        UnauthorizedException
+        UnauthorizedException,
       );
     });
 
@@ -90,7 +89,7 @@ describe('Auth Guard', () => {
       });
 
       expect(() => authGuard.canActivate(mockContext)).toThrow(
-        UnauthorizedException
+        UnauthorizedException,
       );
     });
   });
