@@ -9,7 +9,7 @@ export class AuthService {
 
   constructor(
     private usersRepository: UsersRepository,
-    private auth0Service: Auth0Service
+    private auth0Service: Auth0Service,
   ) {}
 
   async register({ email, password }: CredentialsDto) {
@@ -22,7 +22,7 @@ export class AuthService {
       })
       .catch(async (error) => {
         this.logger.warn(
-          'Creating a user in the database failed. Proceeding with deleting it in Auth0.'
+          'Creating a user in the database failed. Proceeding with deleting it in Auth0.',
         );
         this.logger.error(error);
 

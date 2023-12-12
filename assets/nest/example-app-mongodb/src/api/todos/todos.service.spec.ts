@@ -1,3 +1,4 @@
+import { DatabaseModule } from '@database/database.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TodosService } from './todos.service';
 import { TodosController } from './todos.controller';
@@ -14,38 +15,50 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Errors } from '@utils/enums';
+import { authConfig, dbConfig, nodeConfig } from '@utils/environment';
+import { ConfigModule } from '@nestjs/config';
 import { ObjectId } from 'mongodb';
 import { DatabaseService } from '@database/database.service';
-import { NEST_MONGO_OPTIONS } from '@database/constants';
 
 describe('TodosService', () => {
   let service: TodosService;
   let repository: TodosRepository;
-  const userId = new ObjectId(mockedUser.user.sub);
+  const userId = mockedUser.user.sub;
+
+  class DatabaseServiceMock {
+    public connection = {};
+    public client = {};
+  }
+
+  beforeAll(() => {
+    jest.spyOn(process, 'exit').mockImplementation(() => true as never);
+    jest.spyOn(console, 'log').mockImplementation(() => true as never);
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [],
-      controllers: [TodosController],
-      providers: [
-        TodosService,
-        TodosRepository,
-        {
-          provide: NEST_MONGO_OPTIONS,
-          useValue: {
-            urlString: 'mongodb://mock-host',
-            databaseName: 'test',
-            clientOptions: {},
-            migrationsDir: '../../migrations',
-            seedsDir: './seeds/test',
-          },
-        },
-        DatabaseService,
+      imports: [
+        ConfigModule.forRoot({
+          load: [nodeConfig, dbConfig, authConfig],
+          isGlobal: true,
+          ignoreEnvFile: true,
+        }),
+        DatabaseModule,
       ],
-    }).compile();
+      controllers: [TodosController],
+      providers: [TodosService, TodosRepository],
+    })
+      .overrideProvider(DatabaseService)
+      .useClass(DatabaseServiceMock)
+      .compile();
 
     service = module.get<TodosService>(TodosService);
     repository = module.get<TodosRepository>(TodosRepository);
+  });
+
+  afterAll(() => {
+    jest.spyOn(process, 'exit').mockRestore();
+    jest.spyOn(console, 'log').mockRestore();
   });
 
   describe('create', () => {
@@ -65,8 +78,8 @@ describe('TodosService', () => {
         .spyOn(repository, 'findOne')
         .mockImplementationOnce(async () => todo);
 
-      await expect(service.create(createTodoInput)).rejects.toThrowError(
-        new UnprocessableEntityException(Errors.UnprocessableEntity)
+      await expect(service.create(createTodoInput)).rejects.toThrow(
+        new UnprocessableEntityException(Errors.UnprocessableEntity),
       );
     });
   });
@@ -79,9 +92,9 @@ describe('TodosService', () => {
         .spyOn(repository, 'findAll')
         .mockImplementationOnce(async () => paginatedResponse);
 
-      expect(await service.findAll({ userId, query: {} })).toStrictEqual(
-        paginatedResponse
-      );
+      expect(
+        await service.findAll({ userId: new ObjectId(userId), query: {} }),
+      ).toStrictEqual(paginatedResponse);
     });
   });
 
@@ -91,9 +104,9 @@ describe('TodosService', () => {
         .spyOn(repository, 'findOne')
         .mockImplementationOnce(async () => todo);
 
-      expect(await service.findOne({ _id: todo._id, userId })).toStrictEqual(
-        todo
-      );
+      expect(
+        await service.findOne({ _id: todo._id, userId: new ObjectId(userId) }),
+      ).toStrictEqual(todo);
     });
   });
 
@@ -104,7 +117,10 @@ describe('TodosService', () => {
         .mockImplementationOnce(async () => todo);
 
       expect(
-        await service.findOneOrFail({ _id: todo._id, userId })
+        await service.findOneOrFail({
+          _id: todo._id,
+          userId: new ObjectId(userId),
+        }),
       ).toStrictEqual(todo);
     });
   });
@@ -120,9 +136,9 @@ describe('TodosService', () => {
       expect(
         await service.update({
           _id: todo._id,
-          userId,
+          userId: new ObjectId(userId),
           updateTodoDto: updateTodoDtoInput,
-        })
+        }),
       ).toStrictEqual(updatedTodo);
     });
 
@@ -134,9 +150,9 @@ describe('TodosService', () => {
       expect(
         await service.update({
           _id: todo._id,
-          userId,
+          userId: new ObjectId(userId),
           updateTodoDto: {},
-        })
+        }),
       ).toStrictEqual(todo);
     });
   });
@@ -146,15 +162,20 @@ describe('TodosService', () => {
       jest.spyOn(service, 'findOne').mockImplementationOnce(async () => todo);
       jest.spyOn(repository, 'remove').mockImplementationOnce(async () => todo);
 
-      expect(await service.remove({ _id: new ObjectId(1), userId })).toBe(true);
+      expect(
+        await service.remove({
+          _id: new ObjectId(),
+          userId: new ObjectId(userId),
+        }),
+      ).toBe(true);
     });
 
     it('should throw error if todo does not exist', async () => {
       jest.spyOn(repository, 'remove').mockImplementationOnce(async () => null);
 
       await expect(
-        service.remove({ _id: new ObjectId(1), userId })
-      ).rejects.toThrowError(new NotFoundException(Errors.NotFound));
+        service.remove({ _id: new ObjectId(), userId: new ObjectId(userId) }),
+      ).rejects.toThrow(new NotFoundException(Errors.NotFound));
     });
   });
 });

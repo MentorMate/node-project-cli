@@ -196,6 +196,10 @@ module.exports = {
       stepsOfExecution.push(toolbox.setupJwt(userInput));
     }
 
+    if (userInput.isExampleApp && userInput.authOption == 'auth0') {
+      stepsOfExecution.push(toolbox.setupAuth0(userInput));
+    }
+
     dir(userInput.workflowsFolder);
 
     stepsOfExecution.forEach((step) => {

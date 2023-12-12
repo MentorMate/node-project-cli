@@ -1,12 +1,13 @@
 import { HttpService } from '@nestjs/axios';
 import {
   BadRequestException,
+  Inject,
   Injectable,
   Logger,
   OnModuleInit,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Environment } from '@utils/environment';
+import { ConfigType } from '@nestjs/config';
+import { authConfig } from '@utils/environment';
 import { Auth0User } from '../interfaces';
 
 @Injectable()
@@ -14,15 +15,14 @@ export class Auth0Service implements OnModuleInit {
   public logger = new Logger('Auth0Service');
 
   private accessToken = '';
-  private baseURL = this.configService.get<string>('AUTH0_ISSUER_URL');
-  private AUTH0_CLIENT_ID = this.configService.get<string>('AUTH0_CLIENT_ID');
-  private AUTH0_CLIENT_SECRET = this.configService.get<string>(
-    'AUTH0_CLIENT_SECRET'
-  );
+  private baseURL = this.auth.AUTH0_ISSUER_URL;
+  private auth0ClientId = this.auth.AUTH0_CLIENT_ID;
+  private auth0ClientSecret = this.auth.AUTH0_CLIENT_SECRET;
 
   constructor(
     private httpService: HttpService,
-    private configService: ConfigService<Environment>
+    @Inject(authConfig.KEY)
+    private auth: ConfigType<typeof authConfig>,
   ) {}
 
   onModuleInit() {
@@ -41,15 +41,15 @@ export class Auth0Service implements OnModuleInit {
         `${this.baseURL}oauth/token`,
         new URLSearchParams({
           grant_type: 'client_credentials',
-          client_id: this.AUTH0_CLIENT_ID!,
-          client_secret: this.AUTH0_CLIENT_SECRET!,
+          client_id: this.auth0ClientId,
+          client_secret: this.auth0ClientSecret,
           audience: `${this.baseURL}api/v2/`,
         }),
         {
           headers: {
             'content-type': 'application/x-www-form-urlencoded',
           },
-        }
+        },
       )
       .catch((error) => {
         this.logger.error(error.response.data);
@@ -80,7 +80,7 @@ export class Auth0Service implements OnModuleInit {
 
     return this.httpService.axiosRef
       .post<Auth0User>(
-        `${process.env.AUTH0_ISSUER_URL}api/v2/users`,
+        `${this.baseURL}api/v2/users`,
         {
           email,
           user_metadata: {},
@@ -88,7 +88,7 @@ export class Auth0Service implements OnModuleInit {
           password,
           verify_email: true,
         },
-        { headers: this.buildHeaders() }
+        { headers: this.buildHeaders() },
       )
       .then(({ data }) => data)
       .catch((error) => {
@@ -99,20 +99,20 @@ export class Auth0Service implements OnModuleInit {
 
   public updateUserMetadata(
     userId: string,
-    metadata: Auth0User['user_metadata']
+    metadata: Auth0User['user_metadata'],
   ) {
     return this.httpService.axiosRef.patch<Auth0User>(
-      `${process.env.AUTH0_ISSUER_URL}api/v2/users/${userId}`,
+      `${this.baseURL}api/v2/users/${userId}`,
       {
         user_metadata: metadata,
       },
-      { headers: this.buildHeaders() }
+      { headers: this.buildHeaders() },
     );
   }
 
   public searchUsersByEmail(email: string) {
     return this.httpService.axiosRef
-      .get<Auth0User>(`${process.env.AUTH0_ISSUER_URL}api/v2/users-by-email`, {
+      .get<Auth0User>(`${this.baseURL}api/v2/users-by-email`, {
         params: { email },
         headers: this.buildHeaders(),
       })
@@ -125,12 +125,9 @@ export class Auth0Service implements OnModuleInit {
 
   public deleteUser(userId: string) {
     return this.httpService.axiosRef
-      .delete<Auth0User>(
-        `${process.env.AUTH0_ISSUER_URL}api/v2/users/${userId}`,
-        {
-          headers: this.buildHeaders(),
-        }
-      )
+      .delete<Auth0User>(`${this.baseURL}api/v2/users/${userId}`, {
+        headers: this.buildHeaders(),
+      })
       .catch((error) => {
         this.logger.error(error.response.data);
         throw new BadRequestException();

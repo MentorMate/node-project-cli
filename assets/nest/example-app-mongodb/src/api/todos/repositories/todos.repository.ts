@@ -35,20 +35,20 @@ export class TodosRepository extends BaseRepository<Todo> {
       updatedAt: Date.now(),
     };
 
-    return await this.repository()
+    return this.repository()
       .insertOne(todo)
       .then((value) => value.insertedId)
       .catch(rethrowError(TodoUserNotFound));
   }
 
   async findOne(
-    input: Partial<FindOneTodoInput>
+    input: Partial<FindOneTodoInput>,
   ): Promise<NullableKeysPartial<Todo> | null> {
     return this.repository().findOne(input);
   }
 
   async findOneOrFail(
-    input: Partial<FindOneTodoInput>
+    input: Partial<FindOneTodoInput>,
   ): Promise<NullableKeysPartial<Todo>> {
     return this.repository()
       .findOne(input)
@@ -56,27 +56,27 @@ export class TodosRepository extends BaseRepository<Todo> {
   }
 
   async update(
-    input: UpdateTodoInput
+    input: UpdateTodoInput,
   ): Promise<NullableKeysPartial<Todo> | null> {
     const { _id, userId, updateTodoDto } = input;
 
-    return await this.repository()
+    return this.repository()
       .findOneAndUpdate(
         { _id, userId },
         { $set: updateTodoDto },
-        { returnDocument: 'after' }
+        { returnDocument: 'after' },
       )
       .catch(rethrowError(TodoUserNotFound));
   }
 
   async remove(
-    input: FindOneTodoInput
+    input: FindOneTodoInput,
   ): Promise<NullableKeysPartial<Todo> | null> {
     return this.repository().findOneAndDelete(input);
   }
 
   async findAll(
-    input: FindAllTodosInput
+    input: FindAllTodosInput,
   ): Promise<Paginated<NullableKeysPartial<Todo>>> {
     const {
       userId,

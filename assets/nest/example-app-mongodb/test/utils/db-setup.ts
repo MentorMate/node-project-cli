@@ -30,7 +30,7 @@ async function seedDb(mongodb: Db, userId: ObjectId) {
       email: 'hello@email.com',
       password: '$2b$10$Mxur7NOiTlm22yuldEMZgOCbIV7bxDCcUbBLFbzrJ1MrnIczZB.92', // pragma: allowlist secret
       userId,
-    }
+    },
   );
   await mongodb.collection('todos').deleteMany();
   await mongodb.collection('todos').insertMany([

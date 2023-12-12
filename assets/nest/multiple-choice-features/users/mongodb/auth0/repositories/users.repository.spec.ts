@@ -49,7 +49,7 @@ describe('UsersRepository', () => {
     };
 
     mockFn.mockImplementationOnce(() =>
-      Promise.resolve({ insertedId: createdUser._id })
+      Promise.resolve({ insertedId: createdUser._id }),
     );
 
     const result = await usersRepository.insertOne({
@@ -62,7 +62,7 @@ describe('UsersRepository', () => {
       expect.objectContaining({
         email: insertUser.email,
         userId: insertUser.userId,
-      })
+      }),
     );
   });
 

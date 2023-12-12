@@ -15,21 +15,40 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Errors } from '@utils/enums';
+import { dbConfig, nodeConfig } from '@utils/environment';
+import { ConfigModule } from '@nestjs/config';
 
 describe('TodosService', () => {
   let service: TodosService;
   let repository: TodosRepository;
   const userId = mockedUser.user.sub;
 
+  beforeAll(() => {
+    jest.spyOn(process, 'exit').mockImplementation(() => true as never);
+    jest.spyOn(console, 'log').mockImplementation(() => true as never);
+  });
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [
+        DatabaseModule,
+        ConfigModule.forRoot({
+          load: [nodeConfig, dbConfig],
+          isGlobal: true,
+          ignoreEnvFile: true,
+        }),
+      ],
       controllers: [TodosController],
       providers: [TodosService, TodosRepository],
     }).compile();
 
     service = module.get<TodosService>(TodosService);
     repository = module.get<TodosRepository>(TodosRepository);
+  });
+
+  afterAll(() => {
+    jest.spyOn(process, 'exit').mockRestore();
+    jest.spyOn(console, 'log').mockRestore();
   });
 
   describe('create', () => {

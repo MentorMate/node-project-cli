@@ -1,30 +1,31 @@
 import { Module, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import * as pg from 'pg';
-
-import { Environment } from '@utils/environment';
+import { dbConfig, nodeConfig } from '@utils/environment';
 import { KNEX_CONNECTION, NEST_KNEX_OPTIONS } from './constants';
 import { NestKnexService } from './nest-knex.service';
 
 @Module({
-  imports: [ConfigModule],
   providers: [
     NestKnexService,
     {
       provide: NEST_KNEX_OPTIONS,
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<Environment>) => ({
+      inject: [dbConfig.KEY, nodeConfig.KEY],
+      useFactory: (
+        database: ConfigType<typeof dbConfig>,
+        node: ConfigType<typeof nodeConfig>,
+      ) => ({
         client: 'pg',
         useNullAsDefault: true,
         connection: {
-          host: configService.get('PGHOST'),
-          port: configService.get('PGPORT'),
-          user: configService.get('PGUSER'),
-          password: configService.get('PGPASSWORD'),
-          database: configService.get('PGDATABASE'),
+          host: database.PGHOST,
+          port: database.PGPORT,
+          user: database.PGUSER,
+          password: database.PGPASSWORD,
+          database: database.PGDATABASE,
         },
         seeds: {
-          directory: `./src/database/seeds/${configService.get('NODE_ENV')}`,
+          directory: `./src/database/seeds/${node.NODE_ENV}`,
         },
       }),
     },

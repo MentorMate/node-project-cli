@@ -9,17 +9,17 @@ export class DatabaseService {
 
   constructor(
     @Inject(NEST_MONGO_OPTIONS)
-    private _NestMongoOptions: {
+    nestMongoOptions: {
       urlString: string;
       databaseName: string;
       clientOptions: MongoClientOptions;
-    }
+    },
   ) {
     const client = new MongoClient(
-      _NestMongoOptions.urlString,
-      _NestMongoOptions.clientOptions
+      nestMongoOptions.urlString,
+      nestMongoOptions.clientOptions,
     );
-    const { databaseName } = _NestMongoOptions;
+    const { databaseName } = nestMongoOptions;
 
     this.connection = client.db(databaseName);
     this.client = client;

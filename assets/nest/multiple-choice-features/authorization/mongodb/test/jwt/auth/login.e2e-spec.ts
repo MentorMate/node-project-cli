@@ -11,12 +11,14 @@ import {
   UnprocessableEntityException,
   ValidationPipe,
 } from '@nestjs/common';
+import { MongoDBTestSetup } from '@test/utils';
 
 describe('POST /auth/login', () => {
   const credentials = { email: 'hello@email.com', password: 'pass@ord' };
 
   let app: NestFastifyApplication;
   let databaseService: DatabaseService;
+  let databaseTestSetup: MongoDBTestSetup;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -24,24 +26,24 @@ describe('POST /auth/login', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
         whitelist: true,
-      })
+      }),
     );
 
     await app.init();
     databaseService = app.get(DatabaseService);
+    databaseTestSetup = new MongoDBTestSetup(databaseService.connection);
   });
 
   beforeEach(async () => {
-    await databaseService.migrate.rollback();
-    await databaseService.migrate.latest();
-    await databaseService.seed.run();
+    await databaseTestSetup.removeSeededData();
+    await databaseTestSetup.seedData();
   });
 
   afterAll(async () => {

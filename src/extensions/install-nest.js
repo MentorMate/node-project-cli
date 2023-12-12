@@ -51,29 +51,46 @@ module.exports = (toolbox) => {
             db === 'mongodb' && removeAsync(`${appDir}/src/api/users`),
             removeAsync(`${appDir}/test/auth`),
             removeAsync(`${appDir}/test/todos`),
+            removeAsync(`${appDir}/src/utils/environment.ts`),
           ]);
 
-          await Promise.all([
-            await copyAsync(
+          const promises = [
+            copyAsync(
               `${assetsPath}/${framework}/multiple-choice-features/authorization/${db}/${authOption}`,
               `${appDir}/src/api/auth`,
             ),
-            await copyAsync(
+            copyAsync(
               `${assetsPath}/${framework}/multiple-choice-features/authorization/${db}/test/${authOption}/todos`,
               `${appDir}/test/todos`,
             ),
+          ];
 
-            authOption === 'jwt' &&
-              (await copyAsync(
+          if (authOption === 'jwt') {
+            promises.push(
+              copyAsync(
                 `${assetsPath}/${framework}/multiple-choice-features/authorization/${db}/test/${authOption}/auth`,
                 `${appDir}/test/auth`,
-              )),
-            db === 'mongodb' &&
-              (await copyAsync(
+              ),
+            );
+          }
+
+          if (db === 'mongodb') {
+            promises.push(
+              copyAsync(
                 `${assetsPath}/${framework}/multiple-choice-features/users/${db}/${authOption}`,
                 `${appDir}/src/api/users`,
-              )),
-          ]);
+              ),
+            );
+          }
+
+          promises.push(
+            copyAsync(
+              `${assetsPath}/${framework}/multiple-choice-features/environment/${db}-${authOption}/environment.ts`,
+              `${appDir}/src/utils/environment.ts`,
+            ),
+          );
+
+          await Promise.all(promises);
         }
       }
 
@@ -82,12 +99,6 @@ module.exports = (toolbox) => {
           PORT: 3000,
         },
       });
-
-      if (isExampleApp && authOption === 'auth0') {
-        Object.assign(pkgJson.dependencies, {
-          '@nestjs/axios': '^3.0.0',
-        });
-      }
 
       Object.assign(pkgJson.dependencies, {
         '@nestjs/platform-fastify': '^9.0.0',
@@ -105,7 +116,6 @@ module.exports = (toolbox) => {
           'node -r dotenv/config ./node_modules/@nestjs/cli/bin/nest.js start --watch',
       });
 
-      // Example Nest app
       if (isExampleApp) {
         Object.assign(pkgJson.dependencies, {
           '@nestjs/swagger': '^6.3.0',
@@ -114,14 +124,6 @@ module.exports = (toolbox) => {
           statuses: '^2.0.1',
           bcrypt: '^5.1.0',
         });
-
-        if (authOption === 'auth0') {
-          Object.assign(pkgJson.dependencies, {
-            '@nestjs/passport': '^10.0.1',
-            'passport-jwt': '^4.0.1',
-            'jwks-rsa': '^3.0.1',
-          });
-        }
 
         Object.assign(pkgJson.devDependencies, {
           '@fastify/static': '^6.10.2',
@@ -132,12 +134,6 @@ module.exports = (toolbox) => {
           '@types/uuid': '^9.0.1',
           uuid: '^9.0.0',
         });
-
-        if (authOption === 'auth0') {
-          Object.assign(pkgJson.devDependencies, {
-            '@types/passport-jwt': '^3.0.9',
-          });
-        }
 
         if (!devSetup) {
           await Promise.all(
