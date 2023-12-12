@@ -30,6 +30,18 @@ class NodeEnvironmentValidator {
   @Max(65535)
   @Transform(({ value }) => +value)
   PORT: number;
+
+  @Transform(({ value }) => Boolean(value))
+  @IsNotEmpty()
+  ERROR_LOGGING: boolean;
+
+  @Transform(({ value }) => Boolean(value))
+  @IsNotEmpty()
+  REQUEST_LOGGING: boolean;
+
+  @Transform(({ value }) => Boolean(value))
+  @IsNotEmpty()
+  SWAGGER: boolean;
 }
 
 class DatabaseEnvironmentValidator {
