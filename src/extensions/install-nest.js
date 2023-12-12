@@ -179,6 +179,19 @@ module.exports = (toolbox) => {
             },
           });
 
+          Object.assign(envVars, {
+            Knex: {
+              DEBUG: 'knex:query',
+            },
+            Logging: {
+              ERROR_LOGGING: true,
+              REQUEST_LOGGING: true,
+            },
+            Swagger: {
+              SWAGGER: true,
+            },
+          });
+
           Object.assign(pkgJson.dependencies, {
             knex: '^2.4.2',
             'pg-error-enum': '^0.6.0',

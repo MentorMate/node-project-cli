@@ -7,9 +7,34 @@ import {
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 
+const REMOVED = '[[REMOVED]]';
+
+const headersToRemove = ['Authorization', 'Cookies'];
+const bodyKeysToRemove = ['password'];
+
 @Injectable()
 export class RequestLoggingInterceptor implements NestInterceptor {
   private logger = new Logger('RequestLoggingInterceptor');
+
+  private sanitizeHeaders(headers: Record<string, any>): Record<string, any> {
+    const sanitizedHeaders = { ...headers };
+
+    headersToRemove.forEach((header) => {
+      sanitizedHeaders[header] = REMOVED;
+    });
+
+    return sanitizedHeaders;
+  }
+
+  private sanitizeBody(body: Record<string, any>): Record<string, any> {
+    const sanitizedBody = { ...body };
+
+    bodyKeysToRemove.forEach((key) => {
+      sanitizedBody[key] = REMOVED;
+    });
+
+    return sanitizedBody;
+  }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const timestamp = new Date().toISOString();
@@ -27,10 +52,10 @@ export class RequestLoggingInterceptor implements NestInterceptor {
           timestamp,
           duration: `${duration}ms`,
           ip,
-          headers,
+          headers: this.sanitizeHeaders(headers),
           method,
           url,
-          body,
+          body: this.sanitizeBody(body),
           response,
         };
 

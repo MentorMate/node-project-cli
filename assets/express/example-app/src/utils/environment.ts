@@ -12,6 +12,9 @@ export const environmentSchema = z.object({
   // HTTP
   PORT: port,
 
+  REQUEST_LOGGING: z.enum(['true', 'false']).transform((value) => value === 'true'),
+  ERROR_LOGGING: z.enum(['true', 'false']).transform((value) => value === 'true'),
+
   // PostgreSQL
   // TODO: this limits your options, should be revisited
   PGHOST: string,

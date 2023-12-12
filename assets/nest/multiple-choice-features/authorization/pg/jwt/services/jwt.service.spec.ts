@@ -12,6 +12,11 @@ describe('JwtService', () => {
 
   let jwtService: JwtService;
 
+  beforeAll(() => {
+    jest.spyOn(process, 'exit').mockImplementation(() => true as never);
+    jest.spyOn(console, 'log').mockImplementation(() => true as never);
+  });
+
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
@@ -20,20 +25,23 @@ describe('JwtService', () => {
           cache: true,
           ignoreEnvFile: true,
           isGlobal: true,
-        })
+        }),
       ],
       providers: [
         {
-          provide: ConfigService,
-          useFactory: () => ({
-            get: (key: string) => env[key],
-          }),
+          provide: authConfig.KEY,
+          useValue: env,
         },
         JwtService,
       ],
     }).compile();
 
     jwtService = moduleRef.get<JwtService>(JwtService);
+  });
+
+  afterAll(() => {
+    jest.spyOn(process, 'exit').mockRestore();
+    jest.spyOn(console, 'log').mockRestore();
   });
 
   describe('sign', () => {

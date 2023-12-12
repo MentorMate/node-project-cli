@@ -5,17 +5,17 @@ import {
 } from '@nestjs/platform-fastify';
 import helmet from '@fastify/helmet';
 import compression from '@fastify/compress';
-import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { ConfigType } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { RequestLoggingInterceptor } from '@utils/interceptors/request-logging.interceptor';
 import { ServiceToHttpErrorsInterceptor } from '@utils/interceptors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { NodeEnvironment } from '@utils/environment';
+import { ErrorLoggingFilter } from '@utils/error-logging.filter';
+import { nodeConfig } from '@utils/environment';
 
 async function bootstrap() {
-  // create the app
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
@@ -39,20 +39,22 @@ async function bootstrap() {
   // setup graceful shutdown
   app.enableShutdownHooks();
 
-  const configService = app.get(ConfigService);
-  const port = configService.get('PORT');
+  const configService = app.get<ConfigType<typeof nodeConfig>>(nodeConfig.KEY);
+  const port = configService.PORT;
 
-  if (configService.get('NODE_ENV') !== NodeEnvironment.Production) {
+  if (configService.REQUEST_LOGGING) {
     app.useGlobalInterceptors(new RequestLoggingInterceptor());
   }
 
-  if (configService.get('NODE_ENV') !== NodeEnvironment.Production) {
-    // Swagger setup
+  if (configService.SWAGGER) {
     const config = new DocumentBuilder().setTitle('To-Do Example API').build();
-
     const document = SwaggerModule.createDocument(app, config);
-
     SwaggerModule.setup('/swagger', app, document);
+  }
+
+  if (configService.ERROR_LOGGING) {
+    const httpAdapterHost = app.get(HttpAdapterHost);
+    app.useGlobalFilters(new ErrorLoggingFilter(httpAdapterHost));
   }
 
   // start server

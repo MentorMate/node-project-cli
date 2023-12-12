@@ -2,7 +2,7 @@ import { ErrorRequestHandler } from 'express';
 import { Logger } from 'pino';
 import createError from 'http-errors';
 
-export const handleError = function (logger: Logger): ErrorRequestHandler {
+export const handleError = function (logger: Logger, logErrors: boolean): ErrorRequestHandler {
   return function (err, _req, res, next) {
     // https://expressjs.com/en/guide/error-handling.html
     // If you call next() with an error after you have started writing the response (for example, if you encounter an error while streaming
@@ -13,14 +13,16 @@ export const handleError = function (logger: Logger): ErrorRequestHandler {
       return next(err);
     }
 
+    if (logErrors) {
+      logger.error(err);
+    }
+
     if (createError.isHttpError(err)) {
       res.status(err.statusCode).send({
         message: err.message,
         ...(err.errors && { errors: err.errors }),
       });
     } else {
-      logger.error(err);
-
       res.status(500).send({ message: 'Internal Server Error' });
     }
   };

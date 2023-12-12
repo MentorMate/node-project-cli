@@ -108,23 +108,23 @@ module.exports = (toolbox) => {
         await Promise.all([
           copyAsync(
             `${assetsPath}/express/example-app/scripts/generate-openapi.ts`,
-            `${appDir}/scripts/generate-openapi.ts`
+            `${appDir}/scripts/generate-openapi.ts`,
           ),
           copyAsync(
             `${assetsPath}/express/example-app/.openapi/gitignorefile`,
-            `${appDir}/.openapi/.gitignore`
+            `${appDir}/.openapi/.gitignore`,
           ),
           copyAsync(
             `${assetsPath}/express/example-app/docker-compose.yml`,
-            `${appDir}/docker-compose.yml`
+            `${appDir}/docker-compose.yml`,
           ),
           copyAsync(
             `${assetsPath}/express/example-app/docker-compose.override.example.yml`,
-            `${appDir}/docker-compose.override.example.yml`
+            `${appDir}/docker-compose.override.example.yml`,
           ),
           copyAsync(
             `${assetsPath}/express/example-app/migrations`,
-            `${appDir}/migrations`
+            `${appDir}/migrations`,
           ),
           copyAsync(`${assetsPath}/db/pg/scripts`, `${appDir}/scripts`, {
             overwrite: true,
@@ -165,7 +165,7 @@ module.exports = (toolbox) => {
     }
 
     success(
-      `${framework} installation completed successfully. Please wait for the other steps to be completed...`
+      `${framework} installation completed successfully. Please wait for the other steps to be completed...`,
     );
   };
 };

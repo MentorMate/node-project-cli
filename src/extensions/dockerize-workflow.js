@@ -40,12 +40,12 @@ module.exports = (toolbox) => {
         await patching.replace(
           `${appDir}/Dockerfile`,
           '/index.js',
-          entryPointPath
+          entryPointPath,
         );
       }
 
       success(
-        'Containerization with Docker setup successfully. Please wait for the other steps to be completed...'
+        'Containerization with Docker setup successfully. Please wait for the other steps to be completed...',
       );
     }
 

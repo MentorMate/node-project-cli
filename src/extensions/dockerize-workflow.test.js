@@ -88,7 +88,7 @@ describe('dockerize-workflow', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/express/example-app/Dockerfile`,
             `${input.appDir}/Dockerfile`,
-            { overwrite: true }
+            { overwrite: true },
           );
         });
       });
@@ -102,7 +102,7 @@ describe('dockerize-workflow', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/docker/js/Dockerfile`,
             `${input.appDir}/Dockerfile`,
-            { overwrite: true }
+            { overwrite: true },
           );
         });
       });
@@ -116,7 +116,7 @@ describe('dockerize-workflow', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/docker/ts/Dockerfile`,
             `${input.appDir}/Dockerfile`,
-            { overwrite: true }
+            { overwrite: true },
           );
         });
       });
@@ -125,7 +125,7 @@ describe('dockerize-workflow', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.dockerignore`,
           `${input.appDir}/.dockerignore`,
-          { overwrite: true }
+          { overwrite: true },
         );
       });
 
@@ -138,7 +138,7 @@ describe('dockerize-workflow', () => {
           expect(toolbox.patching.replace).toHaveBeenCalledWith(
             `${input.appDir}/Dockerfile`,
             '/index.js',
-            '/main.js'
+            '/main.js',
           );
         });
 
@@ -151,7 +151,7 @@ describe('dockerize-workflow', () => {
             expect(toolbox.patching.replace).toHaveBeenCalledWith(
               `${input.appDir}/Dockerfile`,
               '/index.js',
-              '/src/main.js'
+              '/src/main.js',
             );
           });
         });
