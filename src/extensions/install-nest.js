@@ -2,6 +2,7 @@
 
 module.exports = (toolbox) => {
   toolbox.installNest = async ({
+    devSetup,
     projectName,
     authOption,
     framework,
@@ -11,36 +12,85 @@ module.exports = (toolbox) => {
     envVars,
     isExampleApp,
     projectLanguage,
+    db,
   }) => {
     const {
       system: { run },
       print: { success, muted },
-      filesystem: { copyAsync, removeAsync, renameAsync },
+      filesystem: { copyAsync, removeAsync },
     } = toolbox;
 
     muted('Installing Nest...');
 
     try {
-      await run(
-        `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --strict --skip-git --skip-install --package-manager npm`
-      );
-
       const srcDir = isExampleApp
-        ? `${assetsPath}/${framework}/example-app/src/`
+        ? `${assetsPath}/${framework}/example-app-${db}/src/`
         : `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}/src/`;
+      const testDir = isExampleApp
+        ? `${assetsPath}/${framework}/example-app-${db}/test/`
+        : `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}/test/`;
 
-      await removeAsync(`${appDir}/src/`);
-      await removeAsync(`${appDir}/test/`);
-      await copyAsync(srcDir, `${appDir}/src/`);
+      if (!devSetup) {
+        await run(
+          `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --strict --skip-git --skip-install --package-manager npm`,
+        );
 
-      if (isExampleApp) {
-        if (authOption === 'auth0') {
-          await removeAsync(`${appDir}/src/api/auth`);
-          await renameAsync(`${appDir}/src/api/auth0`, 'auth');
-        }
+        await Promise.all([
+          removeAsync(`${appDir}/src/`),
+          removeAsync(`${appDir}/test/`),
+        ]);
 
-        if (authOption === 'jwt') {
-          await removeAsync(`${appDir}/src/api/auth0`);
+        await Promise.all([
+          copyAsync(srcDir, `${appDir}/src/`),
+          copyAsync(testDir, `${appDir}/test/`),
+        ]);
+
+        if (isExampleApp) {
+          await Promise.all([
+            removeAsync(`${appDir}/src/api/auth`),
+            db === 'mongodb' && removeAsync(`${appDir}/src/api/users`),
+            removeAsync(`${appDir}/test/auth`),
+            removeAsync(`${appDir}/test/todos`),
+            removeAsync(`${appDir}/src/utils/environment.ts`),
+          ]);
+
+          const promises = [
+            copyAsync(
+              `${assetsPath}/${framework}/multiple-choice-features/authorization/${db}/${authOption}`,
+              `${appDir}/src/api/auth`,
+            ),
+            copyAsync(
+              `${assetsPath}/${framework}/multiple-choice-features/authorization/${db}/test/${authOption}/todos`,
+              `${appDir}/test/todos`,
+            ),
+          ];
+
+          if (authOption === 'jwt') {
+            promises.push(
+              copyAsync(
+                `${assetsPath}/${framework}/multiple-choice-features/authorization/${db}/test/${authOption}/auth`,
+                `${appDir}/test/auth`,
+              ),
+            );
+          }
+
+          if (db === 'mongodb') {
+            promises.push(
+              copyAsync(
+                `${assetsPath}/${framework}/multiple-choice-features/users/${db}/${authOption}`,
+                `${appDir}/src/api/users`,
+              ),
+            );
+          }
+
+          promises.push(
+            copyAsync(
+              `${assetsPath}/${framework}/multiple-choice-features/environment/${db}-${authOption}/environment.ts`,
+              `${appDir}/src/utils/environment.ts`,
+            ),
+          );
+
+          await Promise.all(promises);
         }
       }
 
@@ -49,12 +99,6 @@ module.exports = (toolbox) => {
           PORT: 3000,
         },
       });
-
-      if (isExampleApp && authOption === 'auth0') {
-        Object.assign(pkgJson.dependencies, {
-          '@nestjs/axios': '^3.0.0',
-        });
-      }
 
       Object.assign(pkgJson.dependencies, {
         '@nestjs/platform-fastify': '^9.0.0',
@@ -72,7 +116,6 @@ module.exports = (toolbox) => {
           'node -r dotenv/config ./node_modules/@nestjs/cli/bin/nest.js start --watch',
       });
 
-      // Example Nest app
       if (isExampleApp) {
         Object.assign(pkgJson.dependencies, {
           '@nestjs/swagger': '^6.3.0',
@@ -81,14 +124,6 @@ module.exports = (toolbox) => {
           statuses: '^2.0.1',
           bcrypt: '^5.1.0',
         });
-
-        if (authOption === 'auth0') {
-          Object.assign(pkgJson.dependencies, {
-            '@nestjs/passport': '^10.0.1',
-            'passport-jwt': '^4.0.1',
-            'jwks-rsa': '^3.0.1',
-          });
-        }
 
         Object.assign(pkgJson.devDependencies, {
           '@fastify/static': '^6.10.2',
@@ -100,88 +135,94 @@ module.exports = (toolbox) => {
           uuid: '^9.0.0',
         });
 
-        if (authOption === 'auth0') {
-          Object.assign(pkgJson.devDependencies, {
-            '@types/passport-jwt': '^3.0.9',
-          });
+        if (!devSetup) {
+          await Promise.all(
+            [
+              copyAsync(
+                `${assetsPath}/nest/example-app-${db}/.openapi/gitignorefile`,
+                `${appDir}/.openapi/.gitignore`,
+              ),
+              copyAsync(
+                `${assetsPath}/nest/example-app-${db}/docker-compose.yml`,
+                `${appDir}/docker-compose.yml`,
+              ),
+              copyAsync(
+                `${assetsPath}/nest/example-app-${db}/docker-compose.override.example.yml`,
+                `${appDir}/docker-compose.override.example.yml`,
+              ),
+              copyAsync(
+                `${assetsPath}/nest/example-app-${db}/migrations`,
+                `${appDir}/migrations`,
+              ),
+              copyAsync(
+                `${assetsPath}/${framework}/example-app-${db}/tsconfig.build.json`,
+                `${appDir}/tsconfig.build.json`,
+                { overwrite: true },
+              ),
+              copyAsync(
+                `${assetsPath}/nest/example-app-${db}/tsconfig.json`,
+                `${appDir}/tsconfig.json`,
+                { overwrite: true },
+              ),
+              db === 'pg' &&
+                copyAsync(`${assetsPath}/db/pg/scripts`, `${appDir}/scripts`, {
+                  overwrite: true,
+                }),
+            ].filter(Boolean),
+          );
         }
 
-        await Promise.all([
-          copyAsync(
-            `${assetsPath}/nest/example-app/.openapi/gitignorefile`,
-            `${appDir}/.openapi/.gitignore`
-          ),
-          copyAsync(
-            `${assetsPath}/nest/example-app/docker-compose.yml`,
-            `${appDir}/docker-compose.yml`
-          ),
-          copyAsync(
-            `${assetsPath}/nest/example-app/docker-compose.override.example.yml`,
-            `${appDir}/docker-compose.override.example.yml`
-          ),
-          copyAsync(
-            `${assetsPath}/nest/example-app/migrations`,
-            `${appDir}/migrations`
-          ),
-          copyAsync(
-            `${assetsPath}/${framework}/example-app/tsconfig.build.json`,
-            `${appDir}/tsconfig.build.json`,
-            { overwrite: true }
-          ),
-          copyAsync(
-            `${assetsPath}/nest/example-app/tsconfig.json`,
-            `${appDir}/tsconfig.json`,
-            { overwrite: true }
-          ),
-        ]);
+        if (db === 'pg') {
+          Object.assign(envVars, {
+            Knex: {
+              DEBUG: 'knex:query',
+            },
+          });
 
-        Object.assign(envVars, {
-          Knex: {
-            DEBUG: 'knex:query',
-          },
-          Logging: {
-            ERROR_LOGGING: true,
-            REQUEST_LOGGING: true,
-          },
-          Swagger: {
-            SWAGGER: true,
-          },
-        });
+          Object.assign(envVars, {
+            Knex: {
+              DEBUG: 'knex:query',
+            },
+            Logging: {
+              ERROR_LOGGING: true,
+              REQUEST_LOGGING: true,
+            },
+            Swagger: {
+              SWAGGER: true,
+            },
+          });
 
-        Object.assign(pkgJson.dependencies, {
-          knex: '^2.4.2',
-          'pg-error-enum': '^0.6.0',
-        });
+          Object.assign(pkgJson.dependencies, {
+            knex: '^2.4.2',
+            'pg-error-enum': '^0.6.0',
+          });
 
-        Object.assign(pkgJson.scripts, {
-          'db:migrate:make':
-            'knex migrate:make -x ts --migrations-directory ./migrations',
-          'db:migrate:up':
-            'ts-node node_modules/knex/bin/cli.js migrate:up --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
-          'db:migrate:down':
-            'ts-node node_modules/knex/bin/cli.js migrate:down --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
-          'db:migrate:latest':
-            'ts-node node_modules/knex/bin/cli.js migrate:latest --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
-          'db:migrate:rollback':
-            'ts-node node_modules/knex/bin/cli.js migrate:rollback --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
-          'db:migrate:version':
-            'ts-node node_modules/knex/bin/cli.js migrate:currentVersion --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
-          'db:migrate:status':
-            'ts-node node_modules/knex/bin/cli.js migrate:status --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
-          'db:migrate:reset':
-            'npm run db:migrate:rollback --all && npm run db:migrate:latest',
-        });
-
-        await copyAsync(`${assetsPath}/db/pg/scripts`, `${appDir}/scripts`, {
-          overwrite: true,
-        });
+          Object.assign(pkgJson.scripts, {
+            'db:migrate:make':
+              'knex migrate:make -x ts --migrations-directory ./migrations',
+            'db:migrate:up':
+              'ts-node node_modules/knex/bin/cli.js migrate:up --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+            'db:migrate:down':
+              'ts-node node_modules/knex/bin/cli.js migrate:down --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+            'db:migrate:latest':
+              'ts-node node_modules/knex/bin/cli.js migrate:latest --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+            'db:migrate:rollback':
+              'ts-node node_modules/knex/bin/cli.js migrate:rollback --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+            'db:migrate:version':
+              'ts-node node_modules/knex/bin/cli.js migrate:currentVersion --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+            'db:migrate:status':
+              'ts-node node_modules/knex/bin/cli.js migrate:status --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
+            'db:migrate:reset':
+              'npm run db:migrate:rollback --all && npm run db:migrate:latest',
+          });
+        }
       }
     } catch (err) {
       throw new Error(`An error has occurred while installing Nest: ${err}`);
     }
 
     success(
-      'Nest installation completed successfully. Please wait for the other steps to be completed...'
+      'Nest installation completed successfully. Please wait for the other steps to be completed...',
     );
   };
 };

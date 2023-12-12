@@ -29,7 +29,7 @@ const getInitialFeatureChoices = (isPip3Available) =>
 
 const getQuestions = (
   { projectName, framework, isExampleApp },
-  isPip3Available
+  isPip3Available,
 ) => [
   {
     type: 'input',
@@ -60,7 +60,7 @@ const getQuestions = (
       { message: 'JWT', value: 'jwt' },
       { message: 'Auth0', value: 'auth0' },
     ],
-    skip: !(framework === 'nest' && isExampleApp),
+    skip: !isExampleApp || framework !== 'nest',
   },
   {
     type: 'select',
@@ -71,7 +71,18 @@ const getQuestions = (
       { message: 'TypeScript', value: 'TS' },
       { message: 'JavaScript', value: 'JS' },
     ],
-    skip: framework === 'nest',
+    skip: isExampleApp || framework === 'nest',
+  },
+  {
+    type: 'select',
+    name: 'db',
+    message: 'Select a database',
+    choices: [
+      !isExampleApp && { message: 'None', value: 'none' },
+      { message: 'PostgreSQL', value: 'pg' },
+      { message: 'MongoDB', value: 'mongodb' },
+    ].filter(Boolean),
+    skip: isExampleApp && framework !== 'nest',
   },
   {
     type: 'multiselect',
@@ -79,15 +90,6 @@ const getQuestions = (
     message: 'Select the features you want to be prebuilt',
     choices: getFeatureChoices(isPip3Available),
     initial: getInitialFeatureChoices(isPip3Available),
-  },
-  {
-    type: 'select',
-    name: 'db',
-    message: 'Select a database',
-    choices: [
-      { message: 'None', value: 'none' },
-      { message: 'PostgreSQL', value: 'pg' },
-    ],
   },
 ];
 

@@ -112,7 +112,7 @@ describe('jest-config-and-coverage-wf', () => {
       let assetsAppDir;
 
       beforeAll(() => {
-        input.framework = 'nest';
+        input.framework = 'express';
         assetsAppDir = input.isExampleApp
           ? `${input.assetsPath}/${input.framework}/example-app`
           : `${input.assetsPath}/${
@@ -137,44 +137,46 @@ describe('jest-config-and-coverage-wf', () => {
       it('should copy the coverage workflow config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.github/workflows/coverage.yaml`,
-          `${input.workflowsFolder}/coverage.yaml`
+          `${input.workflowsFolder}/coverage.yaml`,
         );
       });
 
       it('should copy the coverage-e2e workflow config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.github/workflows/coverage-e2e.yaml`,
-          `${input.workflowsFolder}/coverage-e2e.yaml`
+          `${input.workflowsFolder}/coverage-e2e.yaml`,
         );
       });
 
       it('should copy the jest config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${assetsAppDir}/jest.config.js`,
-          `${input.appDir}/jest.config.js`
+          `${input.appDir}/jest.config.js`,
         );
       });
 
       it('should copy the project tests', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${assetsAppDir}/test/`,
-          `${input.appDir}/test/`
+          `${input.appDir}/test/`,
         );
       });
 
       describe('and is the example app', () => {
         beforeAll(() => {
           input.isExampleApp = true;
+          input.db = 'pg';
         });
 
         afterAll(() => {
           input.isExampleApp = false;
+          input.db = 'none';
         });
 
         it('should copy the jest setup file', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/${input.framework}/example-app/jest.setup.ts`,
-            `${input.appDir}/jest.setup.ts`
+            `${input.appDir}/jest.setup.ts`,
           );
         });
 
@@ -186,7 +188,7 @@ describe('jest-config-and-coverage-wf', () => {
           it('should copy the example project unit test mocks', () => {
             expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
               `${input.assetsPath}/express/example-app/__mocks__/`,
-              `${input.appDir}/__mocks__/`
+              `${input.appDir}/__mocks__/`,
             );
           });
         });

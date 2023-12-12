@@ -1,5 +1,6 @@
 module.exports = (toolbox) => {
   toolbox.dockerizeWorkflow = ({
+    devSetup,
     projectName,
     appDir,
     assetsPath,
@@ -21,9 +22,17 @@ module.exports = (toolbox) => {
         ? `${assetsPath}/express/example-app/Dockerfile`
         : `${assetsPath}/docker/${projectLanguage.toLowerCase()}/Dockerfile`;
 
+      const skipCopyOfDockerfile =
+        devSetup && framework === 'express' && isExampleApp;
+
       await Promise.all([
-        copyAsync(dockerfile, `${appDir}/Dockerfile`),
-        copyAsync(`${assetsPath}/.dockerignore`, `${appDir}/.dockerignore`),
+        !skipCopyOfDockerfile &&
+          copyAsync(dockerfile, `${appDir}/Dockerfile`, {
+            overwrite: true,
+          }),
+        copyAsync(`${assetsPath}/.dockerignore`, `${appDir}/.dockerignore`, {
+          overwrite: true,
+        }),
       ]);
 
       if (framework === 'nest') {
@@ -31,14 +40,16 @@ module.exports = (toolbox) => {
         await patching.replace(
           `${appDir}/Dockerfile`,
           '/index.js',
-          entryPointPath
+          entryPointPath,
         );
       }
 
       success(
-        'Containerization with Docker setup successfully. Please wait for the other steps to be completed...'
+        'Containerization with Docker setup successfully. Please wait for the other steps to be completed...',
       );
     }
+
+    asyncOperations.requiredForDevSetup = true;
 
     function syncOperations() {
       Object.assign(pkgJson.scripts, {

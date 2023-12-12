@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  db:
+    image: mongodb:latest
+    restart: always
+    ports:
+      - '${MONGO_PORT}:5432'
+    environment:
+      MONGO_INITDB_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    command: --auth

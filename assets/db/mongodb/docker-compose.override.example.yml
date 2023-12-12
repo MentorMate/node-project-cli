@@ -1,0 +1,7 @@
+# uncomment the lines below and adjust the volume if desired
+
+# services:
+
+#   db:
+#     volumes:
+#       - /path/to/volume:/var/lib/mongodb/data

@@ -1,0 +1,13 @@
+Dockerfile
+.dockerignore
+.env
+.env.test
+.eslintignore
+.prettierignore
+.prettierrc.js
+nodemon.json
+package*.json
+
+coverage-e2e
+.vscode
+
