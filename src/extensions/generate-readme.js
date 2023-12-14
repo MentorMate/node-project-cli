@@ -6,7 +6,6 @@ module.exports = (toolbox) => {
     projectLanguage,
     features,
     appDir,
-    db,
     isExampleApp,
     framework,
   }) => {
@@ -21,19 +20,19 @@ module.exports = (toolbox) => {
         props: {
           projectName,
           prerequisites: {
-            pip3:
-              features.includes('huskyHooks') || features.includes('preCommit'),
-            docker: features.includes('dockerizeWorkflow'),
-            dockerCompose: db === 'pg' || isExampleApp,
+            dockerCompose: isExampleApp,
           },
           setup: {
             docker: features.includes('dockerizeWorkflow'),
-            dockerCompose: db === 'pg' || isExampleApp,
+            dockerCompose: {
+              express: isExampleApp && framework === 'express',
+              nest: isExampleApp && framework === 'nest',
+            },
             migrations: isExampleApp,
             tests: {
               unit: true,
               e2e: {
-                pg: isExampleApp,
+                db: isExampleApp,
                 knex: isExampleApp,
               },
             },
