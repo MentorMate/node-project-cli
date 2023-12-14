@@ -53,7 +53,7 @@ module.exports = {
 
     if (!isPip3Avaialble) {
       warning(
-        "No `pip3` found on your system, some of the offered functionalities won't be available",
+        "No `pip3` found on your system, some of the offered functionalities won't be available"
       );
     }
 
@@ -63,7 +63,7 @@ module.exports = {
 
     if (isInteractiveMode && isExampleApp) {
       return error(
-        'Flags `--interactive` and `--example-app` cannot be used at the same time',
+        'Flags `--interactive` and `--example-app` cannot be used at the same time'
       );
     }
 
@@ -75,13 +75,13 @@ module.exports = {
 
     if (isInteractiveMode) {
       userInput = await prompt.ask(
-        getQuestions(userInput, isPip3Avaialble).slice(0, 2),
+        getQuestions(userInput, isPip3Avaialble).slice(0, 2)
       );
 
       userInput = Object.assign(
         {},
         userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2)),
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2))
       );
     }
 
@@ -89,17 +89,17 @@ module.exports = {
       userInput = Object.assign(
         {},
         userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble)[1]),
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble)[1])
       );
       userInput = Object.assign(
         {},
         userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2, 5)),
+        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2, 5))
       );
 
       Object.assign(
         userInput,
-        exampleAppConfig(userInput.framework, isPip3Avaialble),
+        exampleAppConfig(userInput.framework, isPip3Avaialble)
       );
     }
 
@@ -294,6 +294,7 @@ module.exports = {
             origPath: `${userInput.assetsPath}/db/${userInput.db}/scripts/db-connection.ts`,
             linkPath: `${userInput.appDir}/scripts/db-connection.ts`,
           };
+
     const symlinkFiles = [
       isExampleApp && userInput.db === 'pg' && dbScriptLinkPaths,
       {
@@ -324,6 +325,16 @@ module.exports = {
           origPath: `${userInput.assetsPath}/tsconfig.build.json`,
           linkPath: `${userInput.appDir}/tsconfig.build.json`,
         },
+      userInput.framework === 'nest' &&
+        isExampleApp && {
+          origPath: `${userInput.assetsPath}/nest/example-app/Dockerfile`,
+          linkPath: `${userInput.appDir}/Dockerfile`,
+        },
+      userInput.framework === 'nest' &&
+        isExampleApp && {
+          origPath: `${userInput.assetsPath}/nest/example-app/.devcontainer`,
+          linkPath: `${userInput.appDir}/.devcontainer`,
+        },
     ].filter(Boolean);
 
     if (userInput.framework === 'nest' && isExampleApp) {
@@ -336,11 +347,11 @@ module.exports = {
         await run(
           `bash ${userInput.assetsPath}/nest/link-script.sh ${
             userInput.assetsPath
-          } ${userInput.authOption} ${userInput.db} ${os.isMac()}`,
+          } ${userInput.authOption} ${userInput.db} ${os.isMac()}`
         );
       } catch (err) {
         throw new Error(
-          `An error occurred while hard linking features files: ${err}`,
+          `An error occurred while hard linking features files: ${err}`
         );
       }
     }
@@ -354,7 +365,7 @@ module.exports = {
       }
     } catch (err) {
       throw new Error(
-        `An error occurred while writing the package.json file and linking config files: ${err}`,
+        `An error occurred while writing the package.json file and linking config files: ${err}`
       );
     }
 
