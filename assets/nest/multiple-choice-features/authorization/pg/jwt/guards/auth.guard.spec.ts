@@ -6,14 +6,26 @@ import jwt from 'jsonwebtoken';
 import { Test } from '@nestjs/testing';
 import { AuthGuard } from './auth.guard';
 import { JwtClaims } from '../interfaces';
+import { authConfig } from '@utils/environment';
 
 describe('Auth Guard', () => {
   let authGuard: AuthGuard;
   let reflector: Reflector;
 
+  const env: { [key: string]: string } = {
+    JWT_SECRET: 'very-secret',
+    JWT_EXPIRATION: '1d',
+  };
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [ConfigService, AuthGuard, Reflector],
+      providers: [
+        AuthGuard,
+        Reflector,
+        {
+          provide: authConfig.KEY,
+          useValue: env,
+        },
+      ],
     }).compile();
 
     authGuard = moduleRef.get<AuthGuard>(AuthGuard);
