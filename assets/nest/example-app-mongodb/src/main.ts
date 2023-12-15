@@ -1,4 +1,3 @@
-import '@database/extensions/knex/register';
 import {
   FastifyAdapter,
   NestFastifyApplication,
