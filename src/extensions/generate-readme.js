@@ -29,12 +29,12 @@ module.exports = (toolbox) => {
           setup: {
             docker: features.includes('dockerizeWorkflow'),
             dockerCompose: db === 'pg' || isExampleApp,
-            migrations: isExampleApp,
+            migrations: isExampleApp && db === 'pg',
             tests: {
               unit: true,
               e2e: {
                 pg: isExampleApp,
-                knex: isExampleApp,
+                knex: isExampleApp && db === 'pg',
               },
             },
             openApi: {
