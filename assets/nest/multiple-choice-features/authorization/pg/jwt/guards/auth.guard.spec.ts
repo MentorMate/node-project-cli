@@ -1,6 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import jwt from 'jsonwebtoken';
 import { Test } from '@nestjs/testing';

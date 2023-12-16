@@ -15,7 +15,7 @@ export class UsersRepository extends BaseRepository<User> {
   }
 
   insertOne(
-    payload: NullableKeysPartial<Pick<User, 'email' | 'password'>>
+    payload: NullableKeysPartial<Pick<User, 'email' | 'password'>>,
   ): Promise<ObjectId> {
     const _id = new ObjectId();
     const user = {
@@ -37,9 +37,9 @@ export class UsersRepository extends BaseRepository<User> {
   }
 
   updateOne(
-    id: ObjectId,
-    payload: NullableKeysPartial<User>
+    _id: ObjectId,
+    payload: Partial<Omit<User, '_id' | 'createdAt'>>,
   ): Promise<NullableKeysPartial<User> | null> {
-    return this.repository().findOneAndUpdate({ id }, payload);
+    return this.repository().findOneAndUpdate({ _id }, payload);
   }
 }
