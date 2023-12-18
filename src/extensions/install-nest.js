@@ -98,6 +98,13 @@ module.exports = (toolbox) => {
         HTTP: {
           PORT: 3000,
         },
+        Logging: {
+          ERROR_LOGGING: true,
+          REQUEST_LOGGING: true,
+        },
+        Swagger: {
+          SWAGGER: true,
+        },
       });
 
       Object.assign(pkgJson.dependencies, {
@@ -176,19 +183,6 @@ module.exports = (toolbox) => {
           Object.assign(envVars, {
             Knex: {
               DEBUG: 'knex:query',
-            },
-          });
-
-          Object.assign(envVars, {
-            Knex: {
-              DEBUG: 'knex:query',
-            },
-            Logging: {
-              ERROR_LOGGING: true,
-              REQUEST_LOGGING: true,
-            },
-            Swagger: {
-              SWAGGER: true,
             },
           });
 

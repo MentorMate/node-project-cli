@@ -8,6 +8,7 @@ module.exports = (toolbox) => {
     appDir,
     isExampleApp,
     framework,
+    db,
   }) => {
     const {
       template: { generate },
@@ -28,12 +29,12 @@ module.exports = (toolbox) => {
               express: isExampleApp && framework === 'express',
               nest: isExampleApp && framework === 'nest',
             },
-            migrations: isExampleApp,
+            migrations: isExampleApp && db === 'pg',
             tests: {
               unit: true,
               e2e: {
                 db: isExampleApp,
-                knex: isExampleApp,
+                knex: isExampleApp && db === 'pg',
               },
             },
             openApi: {
