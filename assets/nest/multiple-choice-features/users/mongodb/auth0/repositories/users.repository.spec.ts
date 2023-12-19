@@ -11,6 +11,7 @@ describe('UsersRepository', () => {
   const insertOne = jest.fn().mockImplementation(async () => mockFn());
   const findOne = jest.fn().mockImplementation(() => mockFn());
   const findOneAndUpdate = jest.fn().mockImplementation(() => mockFn());
+  const findOneAndDelete = jest.fn().mockImplementation(() => mockFn());
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
