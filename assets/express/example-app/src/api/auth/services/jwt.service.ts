@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { Environment } from '@utils/environment';
 import { JwtClaims } from '../entities';
-import { JwtServiceInterface } from '../interfaces';
 
-export class JwtService implements JwtServiceInterface {
+export class JwtService {
   constructor(
     private readonly env: Pick<Environment, 'JWT_SECRET' | 'JWT_EXPIRATION'>
   ) {}

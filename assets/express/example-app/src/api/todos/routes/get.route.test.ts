@@ -21,7 +21,7 @@ describe('route', () => {
       route.handler(req as never, res as never, jest.fn());
       expect(todosService.find).toHaveBeenCalledWith(
         req.params.id,
-        Number(req.auth.sub)
+        req.auth.sub
       );
     });
 

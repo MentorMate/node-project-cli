@@ -1,34 +1,38 @@
 import request from 'supertest';
 import {
   create as createApp,
-  createTodo,
   expectError,
   getTodoPayload,
-  registerUser,
   sortByField,
   Unauthorized,
 } from '../utils';
 import { JwtTokens } from '@api/auth';
+import { Knex } from 'knex';
+import { create } from '@database';
 
 describe('GET /v1/todos', () => {
   let app: Express.Application;
   let destroy: () => Promise<void>;
   let jwtTokens: JwtTokens;
+  let dbClient: Knex;
 
   beforeAll(() => {
     const { app: _app, destroy: _destroy } = createApp();
     app = _app;
     destroy = _destroy;
+    dbClient = create();
   });
 
-  beforeAll(async () => {
-    jwtTokens = await registerUser(app);
-  });
+  beforeEach(async () => {
+    await dbClient.migrate.rollback();
+    await dbClient.migrate.latest();
+    await dbClient.seed.run();
 
-  beforeAll(async () => {
-    await createTodo(app, jwtTokens.idToken, true);
-    await createTodo(app, jwtTokens.idToken);
-    await createTodo(app, jwtTokens.idToken);
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: 'hello@email.com', password: 'pass@ord' });
+
+    jwtTokens = res.body;
   });
 
   afterAll(async () => {

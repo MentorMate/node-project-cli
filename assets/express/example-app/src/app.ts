@@ -31,7 +31,6 @@ import {
   authRoutes,
 } from '@api/auth';
 import { healthcheckRoutes } from '@api/healthchecks';
-import { helloWorldRoutes } from '@api/hello-world';
 import { TodosRepository, TodosService, todoRoutes } from '@api/todos';
 import { UsersRepository } from '@api/users';
 
@@ -44,8 +43,7 @@ export function create(env: Environment) {
     name: 'http',
     ...(env.NODE_ENV === 'development' && {
       transport: {
-        target: 'pino-pretty',
-        colorize: false,
+        target: 'pino-pretty'
       },
     }),
   });
@@ -90,7 +88,6 @@ export function create(env: Environment) {
   // alternatively, a separate router instance can be used
   // for each group of routes (group by prefix)
   const routes = [
-    ...helloWorldRoutes,
     ...healthcheckRoutes,
     ...authRoutes,
     ...todoRoutes,

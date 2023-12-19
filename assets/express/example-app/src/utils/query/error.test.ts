@@ -19,7 +19,7 @@ describe('definedOrNotFound', () => {
     });
 
     it('should throw RecordNotFound when the value it is called with is undefined', () => {
-      expect(() => definedOrNotFound('message')(undefined)).toThrowError(
+      expect(() => definedOrNotFound('message')(undefined)).toThrow(
         new RecordNotFoundError('message')
       );
     });
@@ -39,7 +39,7 @@ describe('updatedOrNotFound', () => {
     });
 
     it('should throw RecordNotFound when the value it is called with is zero', () => {
-      expect(() => updatedOrNotFound('message')(0)).toThrowError(
+      expect(() => updatedOrNotFound('message')(0)).toThrow(
         new RecordNotFoundError('message')
       );
     });

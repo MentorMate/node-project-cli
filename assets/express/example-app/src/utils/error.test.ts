@@ -46,12 +46,12 @@ describe('rethrowError', () => {
 
     it('should rethrow the original error when no mapping matched it', () => {
       const error = new Error('message');
-      expect(() => rethrowError(mapping)(error)).toThrowError(error);
+      expect(() => rethrowError(mapping)(error)).toThrow(error);
     });
 
     it('should rethrow the matched error when a mapping matched it', () => {
       const error = new Error('some-message');
-      expect(() => rethrowError(mapping)(error)).toThrowError(
+      expect(() => rethrowError(mapping)(error)).toThrow(
         new TypeError('type-error')
       );
     });

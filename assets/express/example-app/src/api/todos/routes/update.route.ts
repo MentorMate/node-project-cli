@@ -23,7 +23,7 @@ export const updateTodoRoute = defineRoute({
   asyncHandler(async ({ body, params, services, auth: { sub } }, res) => {
     const todo = await services.todosService.update(
       params.id,
-      Number(sub),
+      sub,
       body
     );
 

@@ -8,10 +8,10 @@ export async function up(knex: Knex): Promise<void> {
     table.text('note');
     table.boolean('completed').notNullable().defaultTo(false);
     table.timestamps(false, true, true);
-    table.integer('userId');
+    table.string('userId');
     table
       .foreign('userId', 'fk_todos_user_id')
-      .references('id')
+      .references('userId')
       .inTable('users')
       .onDelete('CASCADE');
     table.index('name', 'idx_todos_name');

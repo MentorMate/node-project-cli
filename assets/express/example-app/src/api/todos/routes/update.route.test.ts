@@ -22,7 +22,7 @@ describe('route', () => {
       route.handler(req as never, res as never, jest.fn());
       expect(todosService.update).toHaveBeenCalledWith(
         req.params.id,
-        Number(req.auth.sub),
+        req.auth.sub,
         req.body
       );
     });

@@ -4,10 +4,9 @@ import { Paginated, extractPagination, parseCount } from '@utils/query';
 import { InsertTodo, ListTodosQuery, Todo, UpdateTodo } from '../entities';
 import { TodoUserNotFound } from '../error-mappings';
 import { filterByCompleted, filterByName } from '../filters';
-import { TodosRepositoryInterface } from '../interfaces';
 import { sortByCreatedAt, sortByName } from '../sorters';
 
-export class TodosRepository implements TodosRepositoryInterface {
+export class TodosRepository {
   constructor(private readonly knex: Knex) {}
 
   async insertOne(input: InsertTodo): Promise<Todo> {

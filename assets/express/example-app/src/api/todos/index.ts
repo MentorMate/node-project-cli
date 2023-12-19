@@ -1,7 +1,6 @@
 export * from './entities';
 export * from './error-mappings';
 export * from './filters';
-export * from './interfaces';
 export * from './repositories';
 export * from './routes';
 export * from './schemas';

@@ -12,6 +12,12 @@ export const create = () =>
       // see https://knexjs.org/guide/#pool
       min: 0,
     },
+    migrations: {
+      directory: './migrations',
+    },
+    seeds: {
+      directory: `./src/database/seeds/${process.env.NODE_ENV}`,
+    },
   });
 
 export const destroy = (knex: TKnex) => knex.destroy();

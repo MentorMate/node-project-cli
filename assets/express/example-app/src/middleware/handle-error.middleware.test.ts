@@ -45,7 +45,7 @@ describe('handleError', () => {
 
       describe('but the error is not an http-errors error', () => {
         const logger = { error: jest.fn() };
-        const middleware = handleError(logger as never, false);
+        const middleware = handleError(logger as never, true);
         const error = new Error('message');
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));

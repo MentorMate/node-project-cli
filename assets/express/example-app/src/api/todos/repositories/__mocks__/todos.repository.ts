@@ -1,8 +1,7 @@
 import { Paginated, extractPagination } from '@utils/query';
 import { InsertTodo, ListTodosQuery, Todo, UpdateTodo } from '../../entities';
-import { TodosRepositoryInterface } from '../../interfaces';
 
-export class TodosRepository implements TodosRepositoryInterface {
+export class TodosRepository {
   private lastId = 0;
   private records: Todo[] = [];
 
