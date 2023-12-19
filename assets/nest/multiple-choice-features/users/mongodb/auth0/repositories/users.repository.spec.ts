@@ -92,15 +92,13 @@ describe('UsersRepository', () => {
 
     const result = await usersRepository.updateOne(updatedUser._id, {
       email: updatedUser.email,
-      password: updatedUser.password,
     });
 
     expect(result).toBe(updatedUser);
     expect(findOneAndUpdate).toHaveBeenCalledWith(
-      { _id: updatedUser._id },
+      { id: updatedUser._id },
       {
         email: updatedUser.email,
-        password: updatedUser.password,
       },
     );
   });
