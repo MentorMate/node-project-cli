@@ -23,6 +23,13 @@ module.exports = (toolbox) => {
       HTTP: {
         PORT: 3000,
       },
+      Logging: {
+        ERROR_LOGGING: true,
+        REQUEST_LOGGING: true,
+      },
+      Swagger: {
+        SWAGGER: true,
+      },
     });
 
     Object.assign(pkgJson.dependencies, {
