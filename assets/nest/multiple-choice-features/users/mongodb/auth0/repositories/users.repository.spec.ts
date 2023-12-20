@@ -96,7 +96,7 @@ describe('UsersRepository', () => {
 
     expect(result).toBe(updatedUser);
     expect(findOneAndUpdate).toHaveBeenCalledWith(
-      { id: updatedUser._id },
+      { _id: updatedUser._id },
       {
         email: updatedUser.email,
       },
