@@ -32,7 +32,7 @@ module.exports = (toolbox) => {
 
       if (!devSetup) {
         await run(
-          `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --strict --skip-git --skip-install --package-manager npm`
+          `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --strict --skip-git --skip-install --package-manager npm`,
         );
 
         await Promise.all([
@@ -52,16 +52,18 @@ module.exports = (toolbox) => {
             removeAsync(`${appDir}/test/auth`),
             removeAsync(`${appDir}/test/todos`),
             removeAsync(`${appDir}/src/utils/environment.ts`),
+            authOption === 'auth0' &&
+              removeAsync(`${appDir}/test/jest-e2e.config.js`),
           ]);
 
           const promises = [
             copyAsync(
               `${assetsPath}/${framework}/multiple-choice-features/authorization/${db}/${authOption}`,
-              `${appDir}/src/api/auth`
+              `${appDir}/src/api/auth`,
             ),
             copyAsync(
               `${assetsPath}/${framework}/multiple-choice-features/authorization/${db}/test/${authOption}/todos`,
-              `${appDir}/test/todos`
+              `${appDir}/test/todos`,
             ),
           ];
 
@@ -69,8 +71,17 @@ module.exports = (toolbox) => {
             promises.push(
               copyAsync(
                 `${assetsPath}/${framework}/multiple-choice-features/authorization/${db}/test/${authOption}/auth`,
-                `${appDir}/test/auth`
-              )
+                `${appDir}/test/auth`,
+              ),
+            );
+          }
+
+          if (authOption === 'auth0') {
+            promises.push(
+              copyAsync(
+                `${assetsPath}/${framework}/multiple-choice-features/authorization/${db}/test/${authOption}/jest-e2e.config.js`,
+                `${appDir}/test/jest-e2e.config.js`,
+              ),
             );
           }
 
@@ -78,16 +89,20 @@ module.exports = (toolbox) => {
             promises.push(
               copyAsync(
                 `${assetsPath}/${framework}/multiple-choice-features/users/${db}/${authOption}`,
-                `${appDir}/src/api/users`
-              )
+                `${appDir}/src/api/users`,
+              ),
             );
           }
 
           promises.push(
             copyAsync(
               `${assetsPath}/${framework}/multiple-choice-features/environment/${db}-${authOption}/environment.ts`,
-              `${appDir}/src/utils/environment.ts`
-            )
+              `${appDir}/src/utils/environment.ts`,
+            ),
+            copyAsync(
+              `${assetsPath}/${framework}/multiple-choice-features/environment/${db}-${authOption}/environment.spec.ts`,
+              `${appDir}/src/utils/environment.spec.ts`,
+            ),
           );
 
           await Promise.all(promises);
@@ -147,35 +162,35 @@ module.exports = (toolbox) => {
             [
               copyAsync(
                 `${assetsPath}/nest/example-app-${db}/.openapi/gitignorefile`,
-                `${appDir}/.openapi/.gitignore`
+                `${appDir}/.openapi/.gitignore`,
               ),
               copyAsync(
                 `${assetsPath}/nest/example-app-${db}/docker-compose.yml`,
-                `${appDir}/docker-compose.yml`
+                `${appDir}/docker-compose.yml`,
               ),
               copyAsync(
                 `${assetsPath}/nest/example-app-${db}/docker-compose.override.example.yml`,
-                `${appDir}/docker-compose.override.example.yml`
+                `${appDir}/docker-compose.override.example.yml`,
               ),
               copyAsync(
                 `${assetsPath}/nest/example-app-${db}/migrations`,
-                `${appDir}/migrations`
+                `${appDir}/migrations`,
               ),
               copyAsync(
                 `${assetsPath}/${framework}/example-app-${db}/tsconfig.build.json`,
                 `${appDir}/tsconfig.build.json`,
-                { overwrite: true }
+                { overwrite: true },
               ),
               copyAsync(
                 `${assetsPath}/nest/example-app-${db}/tsconfig.json`,
                 `${appDir}/tsconfig.json`,
-                { overwrite: true }
+                { overwrite: true },
               ),
               db === 'pg' &&
                 copyAsync(`${assetsPath}/db/pg/scripts`, `${appDir}/scripts`, {
                   overwrite: true,
                 }),
-            ].filter(Boolean)
+            ].filter(Boolean),
           );
         }
 
@@ -216,7 +231,7 @@ module.exports = (toolbox) => {
     }
 
     success(
-      'Nest installation completed successfully. Please wait for the other steps to be completed...'
+      'Nest installation completed successfully. Please wait for the other steps to be completed...',
     );
   };
 };

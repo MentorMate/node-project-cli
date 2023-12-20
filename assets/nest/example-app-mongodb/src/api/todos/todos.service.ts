@@ -21,7 +21,7 @@ import { ObjectId } from 'mongodb';
 export class TodosService {
   constructor(
     @Inject(TodosRepository)
-    private readonly todos: TodosRepository,
+    private readonly todos: TodosRepository
   ) {}
 
   async create(input: CreateTodoInput): Promise<ObjectId> {
@@ -40,19 +40,13 @@ export class TodosService {
   }
 
   findAll(
-    input: FindAllTodosInput,
+    input: FindAllTodosInput
   ): Promise<Paginated<NullableKeysPartial<Todo>>> {
     return this.todos.findAll(input);
   }
 
-  findOne(
-    input: Partial<FindOneTodoInput>,
-  ): Promise<NullableKeysPartial<Todo> | null> {
-    return this.todos.findOne(input);
-  }
-
   findOneOrFail(
-    input: Partial<FindOneTodoInput>,
+    input: Partial<FindOneTodoInput>
   ): Promise<NullableKeysPartial<Todo>> {
     return this.todos.findOneOrFail(input);
   }

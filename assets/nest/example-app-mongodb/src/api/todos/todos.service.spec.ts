@@ -79,7 +79,7 @@ describe('TodosService', () => {
         .mockImplementationOnce(async () => todo);
 
       await expect(service.create(createTodoInput)).rejects.toThrow(
-        new UnprocessableEntityException(Errors.UnprocessableEntity),
+        new UnprocessableEntityException(Errors.UnprocessableEntity)
       );
     });
   });
@@ -93,7 +93,7 @@ describe('TodosService', () => {
         .mockImplementationOnce(async () => paginatedResponse);
 
       expect(
-        await service.findAll({ userId: new ObjectId(userId), query: {} }),
+        await service.findAll({ userId: new ObjectId(userId), query: {} })
       ).toStrictEqual(paginatedResponse);
     });
   });
@@ -101,11 +101,14 @@ describe('TodosService', () => {
   describe('findOne', () => {
     it('should return single todo', async () => {
       jest
-        .spyOn(repository, 'findOne')
+        .spyOn(repository, 'findOneOrFail')
         .mockImplementationOnce(async () => todo);
 
       expect(
-        await service.findOne({ _id: todo._id, userId: new ObjectId(userId) }),
+        await service.findOneOrFail({
+          _id: todo._id,
+          userId: new ObjectId(userId),
+        })
       ).toStrictEqual(todo);
     });
   });
@@ -120,7 +123,7 @@ describe('TodosService', () => {
         await service.findOneOrFail({
           _id: todo._id,
           userId: new ObjectId(userId),
-        }),
+        })
       ).toStrictEqual(todo);
     });
   });
@@ -138,7 +141,7 @@ describe('TodosService', () => {
           _id: todo._id,
           userId: new ObjectId(userId),
           updateTodoDto: updateTodoDtoInput,
-        }),
+        })
       ).toStrictEqual(updatedTodo);
     });
 
@@ -152,21 +155,20 @@ describe('TodosService', () => {
           _id: todo._id,
           userId: new ObjectId(userId),
           updateTodoDto: {},
-        }),
+        })
       ).toStrictEqual(todo);
     });
   });
 
   describe('remove', () => {
     it('should delete single todo', async () => {
-      jest.spyOn(service, 'findOne').mockImplementationOnce(async () => todo);
       jest.spyOn(repository, 'remove').mockImplementationOnce(async () => todo);
 
       expect(
         await service.remove({
           _id: new ObjectId(),
           userId: new ObjectId(userId),
-        }),
+        })
       ).toBe(true);
     });
 
@@ -174,7 +176,7 @@ describe('TodosService', () => {
       jest.spyOn(repository, 'remove').mockImplementationOnce(async () => null);
 
       await expect(
-        service.remove({ _id: new ObjectId(), userId: new ObjectId(userId) }),
+        service.remove({ _id: new ObjectId(), userId: new ObjectId(userId) })
       ).rejects.toThrow(new NotFoundException(Errors.NotFound));
     });
   });

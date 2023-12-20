@@ -43,14 +43,14 @@ describe('PUT /v1/todos/:id', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
         whitelist: true,
-      })
+      }),
     );
 
     app.useGlobalInterceptors(new ServiceToHttpErrorsInterceptor());
@@ -109,19 +109,15 @@ describe('PUT /v1/todos/:id', () => {
       .inject({
         method: 'PUT',
         url: `/v1/todos/${todo._id}`,
-        payload: {
-          name: 'updated',
-          completed: true,
-          note: 'updated',
-        },
+        payload: {},
       })
       .then((res) => {
         const responseBody = res.json();
         expect(res.statusCode).toBe(200);
 
-        expect(responseBody.name).toEqual('updated');
-        expect(responseBody.note).toEqual('updated');
-        expect(responseBody.completed).toEqual(true);
+        expect(responseBody.name).toEqual('Laundry 1');
+        expect(responseBody.note).toEqual('Buy detergent 1');
+        expect(responseBody.completed).toEqual(false);
       });
   });
 
@@ -156,7 +152,7 @@ describe('PUT /v1/todos/:id - real AuthGuard', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     await app.init();

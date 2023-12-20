@@ -77,12 +77,15 @@ class AuthEnvironmentValidator {
   AUTH0_ISSUER_URL: string;
 
   @IsString()
+  @IsNotEmpty()
   AUTH0_CLIENT_ID: string;
 
   @IsString()
+  @IsNotEmpty()
   AUTH0_AUDIENCE: string;
 
   @IsString()
+  @IsNotEmpty()
   AUTH0_CLIENT_SECRET: string;
 }
 

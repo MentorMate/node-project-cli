@@ -5,11 +5,13 @@ import {
   findAllTodosInput,
   findOneTodoInput,
   mockedUser,
+  secondTodo,
   todo,
   updateTodoInput,
 } from '../__mocks__';
 import { DatabaseService } from '@database/database.service';
 import { ObjectId } from 'mongodb';
+import { SortOrder } from '@utils/query';
 
 describe('TodosRepository', () => {
   let todosRepository: TodosRepository;
@@ -55,7 +57,7 @@ describe('TodosRepository', () => {
 
   it('create - create a todo', async () => {
     mockFn.mockImplementationOnce(() =>
-      Promise.resolve({ insertedId: todo._id }),
+      Promise.resolve({ insertedId: todo._id })
     );
 
     const result = await todosRepository.create(createTodoInput);
@@ -65,7 +67,7 @@ describe('TodosRepository', () => {
       expect.objectContaining({
         ...createTodoInput.createTodoDto,
         userId: createTodoInput.userId,
-      }),
+      })
     );
   });
 
@@ -111,7 +113,7 @@ describe('TodosRepository', () => {
             note: updateTodoInput.updateTodoDto.note,
           },
         },
-        { returnDocument: 'after' },
+        { returnDocument: 'after' }
       );
     });
   });
@@ -126,18 +128,42 @@ describe('TodosRepository', () => {
   });
 
   describe('findAll', () => {
-    it('find all todos for the user', async () => {
-      toArray.mockImplementationOnce(() => Promise.resolve([todo]));
-      jest.spyOn(todosRepository, 'count').mockResolvedValueOnce(1);
+    it('find all todos for the user sorted by `createdAt` in ascending order', async () => {
+      toArray.mockImplementationOnce(() => Promise.resolve([todo, secondTodo]));
+      jest.spyOn(todosRepository, 'count').mockResolvedValueOnce(2);
 
       const result = await todosRepository.findAll(findAllTodosInput);
 
+      expect(sort).toHaveBeenCalledWith('createdAt', 1);
       expect(result).toStrictEqual({
-        items: [todo],
-        total: 1,
+        items: [todo, secondTodo],
+        total: 2,
+        currentPage: 1,
+        totalPages: 1,
+      });
+    });
+
+    it('find all todos for the user sorted by `createdAt` in descending order', async () => {
+      toArray.mockImplementationOnce(() => Promise.resolve([secondTodo, todo]));
+      jest.spyOn(todosRepository, 'count').mockResolvedValueOnce(2);
+      const { userId, query } = findAllTodosInput;
+
+      const result = await todosRepository.findAll({
+        userId,
+        query: {
+          ...query,
+          order: SortOrder.Desc,
+        },
+      });
+
+      expect(sort).toHaveBeenCalledWith('createdAt', -1);
+      expect(result).toStrictEqual({
+        items: [secondTodo, todo],
+        total: 2,
         currentPage: 1,
         totalPages: 1,
       });
     });
   });
 });
+

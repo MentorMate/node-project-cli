@@ -170,9 +170,9 @@ describe('Auth0Service', () => {
         .spyOn(httpService.axiosRef, 'delete')
         .mockRejectedValueOnce({ response: { data: {} } });
 
-      await expect(
-        auth0Service.deleteUser(auth0User.user_id),
-      ).rejects.toThrow(new BadRequestException());
+      await expect(auth0Service.deleteUser(auth0User.user_id)).rejects.toThrow(
+        new BadRequestException(),
+      );
     });
   });
 
@@ -197,6 +197,14 @@ describe('Auth0Service', () => {
         .mockResolvedValueOnce(tokenResponse);
 
       await expect(auth0Service.onModuleInit()).rejects.toThrow(
+        new Error('Access token is missing!'),
+      );
+    });
+
+    it('throws error when axios response is falsy(undefined)', async () => {
+      jest.spyOn(httpService.axiosRef, 'post').mockResolvedValueOnce(undefined);
+
+      await expect(auth0Service.onModuleInit()).rejects.toThrowError(
         new Error('Access token is missing!'),
       );
     });

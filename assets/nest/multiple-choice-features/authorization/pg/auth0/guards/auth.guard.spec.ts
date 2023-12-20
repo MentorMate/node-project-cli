@@ -28,7 +28,7 @@ describe('Auth Guard', () => {
       expect(authGuard.canActivate(mockContext)).toBe(true);
     });
 
-    it.only("should call the super's object `canActivate` method", () => {
+    it("should call the super's object `canActivate` method", () => {
       reflector.getAllAndOverride = jest.fn().mockReturnValue(false);
       const superObj = Object.getPrototypeOf(Object.getPrototypeOf(authGuard));
       superObj.canActivate = jest.fn().mockReturnValue(true);
