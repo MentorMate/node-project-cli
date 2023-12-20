@@ -5,7 +5,7 @@ import {
   CallHandler,
   Logger,
 } from '@nestjs/common';
-import { Observable, tap } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 
 const REMOVED = '[[REMOVED]]';
 
@@ -61,6 +61,23 @@ export class RequestLoggingInterceptor implements NestInterceptor {
 
         this.logger.log(JSON.stringify(logMsg));
       }),
+      catchError((err: any) => {
+        const endTime = process.hrtime(startTime);
+        const duration = endTime[0] * 1000 + endTime[1] / 1000000;
+        const logMsg = {
+          timestamp,
+          duration: `${duration}ms`,
+          ip,
+          headers,
+          method,
+          url,
+          body,
+          err,
+        };
+
+        this.logger.log(JSON.stringify(logMsg));
+        return throwError(() => err);
+      })
     );
   }
 }
