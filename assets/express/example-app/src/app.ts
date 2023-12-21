@@ -44,8 +44,7 @@ export function create(env: Environment) {
     name: 'http',
     ...(env.NODE_ENV === 'development' && {
       transport: {
-        target: 'pino-pretty',
-        colorize: false,
+        target: 'pino-pretty'
       },
     }),
   });

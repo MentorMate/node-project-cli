@@ -3,7 +3,6 @@ import { Transform } from 'class-transformer';
 import { ObjectId } from 'mongodb';
 
 const toObjectId = (v: string) => {
-  console.log('TRANSFORMING?');
   try {
     return new ObjectId(v);
   } catch (err) {

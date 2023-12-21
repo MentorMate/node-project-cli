@@ -68,7 +68,7 @@ describe('UsersRepository', () => {
 
   it('findByEmail - find a user', async () => {
     const userFound = {
-      id: 1,
+      _id: new ObjectId(100),
       email: 'user@example.com',
       password: 'password',
     };
@@ -79,5 +79,27 @@ describe('UsersRepository', () => {
 
     expect(result).toBe(userFound);
     expect(findOne).toHaveBeenCalledWith({ email: 'user@example.com' });
+  });
+
+  it('updateOne - modify a user', async () => {
+    const updatedUser = {
+      _id: new ObjectId(100),
+      email: 'user@example.com',
+      password: 'new-password',
+    };
+
+    mockFn.mockImplementationOnce(() => Promise.resolve(updatedUser));
+
+    const result = await usersRepository.updateOne(updatedUser._id, {
+      email: updatedUser.email,
+    });
+
+    expect(result).toBe(updatedUser);
+    expect(findOneAndUpdate).toHaveBeenCalledWith(
+      { _id: updatedUser._id },
+      {
+        email: updatedUser.email,
+      },
+    );
   });
 });

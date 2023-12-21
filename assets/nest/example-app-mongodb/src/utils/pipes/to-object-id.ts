@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 
 @Injectable()
-export class toObjectIdPipe implements PipeTransform<any, ObjectId> {
+export class ToObjectIdPipe implements PipeTransform<any, ObjectId> {
   public transform(value: any): ObjectId {
     try {
       return new ObjectId(value);

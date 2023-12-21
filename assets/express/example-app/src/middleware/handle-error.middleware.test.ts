@@ -3,13 +3,13 @@ import { handleError } from './handle-error.middleware';
 
 describe('handleError', () => {
   it('should return an error handling middleware', () => {
-    const middleware = handleError({} as never);
+    const middleware = handleError({} as never, false);
     expect(middleware).toBeInstanceOf(Function);
     expect(middleware.length).toBe(4);
   });
 
   describe('middleware', () => {
-    const middleware = handleError({} as never);
+    const middleware = handleError({} as never, false);
 
     describe('when the response headers have been sent', () => {
       it('should call next with the error', () => {
@@ -45,7 +45,7 @@ describe('handleError', () => {
 
       describe('but the error is not an http-errors error', () => {
         const logger = { error: jest.fn() };
-        const middleware = handleError(logger as never);
+        const middleware = handleError(logger as never, true);
         const error = new Error('message');
         const send = jest.fn();
         const status = jest.fn(() => ({ send }));

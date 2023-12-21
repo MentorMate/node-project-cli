@@ -4,7 +4,7 @@ import {
   FindOneTodoInput,
   UpdateTodoInput,
 } from '../interfaces/todos.interface';
-import { Paginated } from '@utils/query';
+import { Paginated, SortOrder } from '@utils/query';
 import { Todo } from '../entities';
 import { TodosSortBy, UpdateTodoDto } from '../dto';
 import { UserData } from '@api/auth/interfaces';
@@ -26,6 +26,16 @@ export const todo: Todo = {
   completed: false,
   createdAt: new Date('2023-09-01T09:44:15.515Z').getTime(),
   updatedAt: new Date('2023-09-01T09:44:15.515Z').getTime(),
+  userId,
+};
+
+export const secondTodo: Todo = {
+  _id: new ObjectId(2),
+  name: 'second-todo',
+  note: null,
+  completed: false,
+  createdAt: new Date('2023-09-02:44:15.515Z').getTime(),
+  updatedAt: new Date('2023-09-02:44:15.515Z').getTime(),
   userId,
 };
 
@@ -60,6 +70,7 @@ export const findAllTodosInput: FindAllTodosInput = {
     pageNumber: 1,
     pageSize: 20,
     column: TodosSortBy.CreatedAt,
+    order: SortOrder.Asc,
   },
   userId,
 };
