@@ -9,7 +9,6 @@ npx --no -- ls-lint
 <% if (props.test.unit) { %>npm run test:cov<% } %>
 <% if (props.test.e2e) { %>npm run test:e2e:cov<% } %>
 scripts/detect-secrets.sh
-pre-commit run
 
 # Enable branch naming validation by uncommenting the lines below and adjust valid_branch_regex to your preference
 # # Enforce branch naming conventions

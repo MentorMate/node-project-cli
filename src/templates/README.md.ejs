@@ -27,13 +27,6 @@ nvm alias default $(cat .nvmrc)
 
 Follow the instructions for your shell [here](https://github.com/nvm-sh/nvm#deeper-shell-integration).
 
-<% if (props.prerequisites.pip3) { -%>
-#### Pip3
-
-Follow the instructions [here](https://pip.pypa.io/en/stable/installation/).
-<% } -%>
-
-<% if (props.prerequisites.docker) { -%>
 #### Docker
 
 Follow the instructions [here](https://docs.docker.com/engine/install/).
@@ -47,7 +40,6 @@ Follow the instructions [here](https://docs.docker.com/engine/install/linux-post
 
 In case `docker compose` isn't setup with the docker installation follow the
 instructions [here](https://docs.docker.com/compose/install/).
-<% } -%>
 <% } -%>
 
 ### Clone the repo and cd into the folder
@@ -82,8 +74,8 @@ cp .env .env.test
 
 Update `NODE_ENV` to `test`.
 
-<% if (props.setup.tests.e2e.pg) { -%>
-Make sure to provide a different `PGDATABASE` from what you have in `.env`
+<% if (props.setup.tests.e2e.db) { -%>
+Make sure to provide a different database name from what you have in `.env`
 as e2e tests wipe the database clean before they run.
 <% } -%>
 
@@ -92,7 +84,7 @@ You may want to disable query logging by removing `DEBUG=knex:query`.
 <% } -%>
 <% } -%>
 
-<% if (props.setup.dockerCompose) { -%>
+<% if (props.setup.dockerCompose.express || props.setup.dockerCompose.nest) { -%>
 ### Setup docker-compose overrides
 
 Create a `docker-compose.override.yml` file using the example:
@@ -116,13 +108,13 @@ If you're on Apple M1, uncomment the `platform: linux/amd64` line:
 ```
 <% } -%>
 
-<% if (props.setup.openApi?.nest) { -%>
-You can open the `docker-compose.override.yml` and adjust the volumes path for the database.
+<% if (props.setup.dockerCompose.nest) { -%>
+Open the `docker-compose.override.yml` file to adjust the database volume path.
 <% } -%>
 
 ### Provision the services
 
-In order to provision the database run:
+In order to provision the services run:
 
 ```bash
 docker-compose up -d
@@ -137,9 +129,28 @@ docker-compose --profile tools up -d
 
 To learn more about using profiles, checkout the [documentation](https://docs.docker.com/compose/profiles/).
 <% } -%>
+
+<% if (props.setup.dockerCompose.nest) { -%>
+**Note:**
+Make sure to change your database host variable in `.env` and `.env.test` files
+to your docker database service name that is in `docker-compose.yml` (e.g. `db`)
+
+### Dev Containers
+ 
+You can work inside a Docker container instead of your host if you like.
+  
+**How to use (VS Code):**
+ 
+- Make sure you have installed [Dev Containers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+- Open the project's folder in VS Code
+- Hit `Ctrl`/`Cmd` + `Shift` + `P` -> Dev Containers: Open Folder in Container
+  
+For more information on Dev Containers and [supported editors](https://containers.dev/supporting)
+you can check the [documentation](https://containers.dev/).
+<% } -%>
 <% } -%>
 
-<% if (props.setup.migrations) { -%>
+<% if (props.setup.migrations && !props.setup.dockerCompose.nest) { -%>
 ### Run database migrations
 
 ```bash
@@ -336,10 +347,8 @@ Go to the Debug menu (CTRL+SHIFT+D). From `RUN AND DEBUG` at the top select
 by pressing `F5`.
 <% } -%>
 
-<% if (props.troubleshooting) { -%>
-## Troubleshooting
-
 <% if (props.troubleshooting.openApi.express) { -%>
+## Troubleshooting  
 ### OpenAPI
 
 If `docker-compose` fails with this message and you're on Apple M1:
@@ -382,5 +391,4 @@ then you probably forgot to start the application:
 ```bash
 npm run start:dev
 ```
-<% } -%>
 <% } -%>

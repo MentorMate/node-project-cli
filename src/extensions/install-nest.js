@@ -146,8 +146,8 @@ module.exports = (toolbox) => {
           await Promise.all(
             [
               copyAsync(
-                `${assetsPath}/nest/example-app-${db}/.openapi/gitignorefile`,
-                `${appDir}/.openapi/.gitignore`
+                `${assetsPath}/nest/example-app/.devcontainer`,
+                `${appDir}/.devcontainer`
               ),
               copyAsync(
                 `${assetsPath}/nest/example-app-${db}/docker-compose.yml`,
