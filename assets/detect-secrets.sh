@@ -1,40 +1,27 @@
 #!/usr/bin/env bash
 
-# Install detect-secrets if not found
-if ! command -v detect-secrets &> /dev/null
-then
-    echo "detect-secrets could not be found. Installing detect-secrets..."
-    if command -v pip3 &> /dev/null
-    then
-      pip3 install detect-secrets==1.4.0 --upgrade
-    else
-      echo "pip3 not found, could not install detect-secrets"
-      exit 1
-    fi
-fi
+RED=$'\e[0;31m'
 
-# Switch to the needed version
-DETECT_SECRETS_VERSION=$(detect-secrets --version)
+echo "[INFO] Running detect-secrets hook"
 
-if [ "$DETECT_SECRETS_VERSION" != "1.4.0" ]
+# Exit if docker is not found
+if ! command -v docker &> /dev/null
 then
-  pip3 install detect-secrets==1.4.0 --upgrade
-fi
-
-# Install pre-commit if not found
-if ! command -v pre-commit &> /dev/null
-then
-    echo "pre-commit could not be found. Installing pre-commit..."
-    if command -v brew &> /dev/null
-    then
-      brew install pre-commit
-      elif command -v pip3 &> /dev/null
-      then
-      pip3 install pre-commit
-    else
-      echo "neither brew, nor pip3 found, could not install pre-commit"
-      exit 1
-    fi
+    echo "${RED}[ERROR] docker could not be found! Docker is required in order to run detect-secrets"
+    exit 1
 fi
 
 echo "[INFO] If you encounter any issues with detect-secrets, please refer to https://github.com/Yelp/detect-secrets"
+
+VOLUME_PATH="--volume $(pwd):/usr/src/app"
+EXCLUDED_FILES="--exclude-files .*\.(test|spec|e2e)(-e2e|-spec)?\.(js|ts)$ --exclude-files .github/workflows/coverage-e2e.yaml"
+STAGED_FILES_PATHS=$(git diff --staged --name-only -z | xargs -0)
+
+# shellcheck disable=SC2086
+if ! docker run --rm --name detect-secrets $VOLUME_PATH lirantal/detect-secrets $EXCLUDED_FILES --baseline .secrets.baseline $STAGED_FILES_PATHS;
+then
+    echo "${RED}[ERROR] Remove secrets before commiting."
+    exit 1
+fi
+
+echo "[INFO] detect-secrets hook completed succesfully. No secrets found!"

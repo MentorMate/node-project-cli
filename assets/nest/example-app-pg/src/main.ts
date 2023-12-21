@@ -58,7 +58,7 @@ async function bootstrap() {
   }
 
   // start server
-  await app.listen(port, () => {
+  await app.listen(port, '0.0.0.0', () => {
     console.log(`App is running on http://localhost:${port}`);
   });
 }

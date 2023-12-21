@@ -19,7 +19,9 @@ module.exports = (toolbox) => {
       muted('Setting up containerization with Docker...');
 
       const dockerfile = isExampleApp
-        ? `${assetsPath}/express/example-app/Dockerfile`
+        ? framework === 'express'
+          ? `${assetsPath}/express/example-app/Dockerfile`
+          : `${assetsPath}/nest/example-app/Dockerfile`
         : `${assetsPath}/docker/${projectLanguage.toLowerCase()}/Dockerfile`;
 
       const skipCopyOfDockerfile =
@@ -35,17 +37,12 @@ module.exports = (toolbox) => {
         }),
       ]);
 
-      if (framework === 'nest') {
-        const entryPointPath = isExampleApp ? '/src/main.js' : '/main.js';
-        await patching.replace(
-          `${appDir}/Dockerfile`,
-          '/index.js',
-          entryPointPath,
-        );
+      if (framework === 'nest' && !isExampleApp) {
+        await patching.replace(`${appDir}/Dockerfile`, '/index.js', '/main.js');
       }
 
       success(
-        'Containerization with Docker setup successfully. Please wait for the other steps to be completed...',
+        'Containerization with Docker setup successfully. Please wait for the other steps to be completed...'
       );
     }
 

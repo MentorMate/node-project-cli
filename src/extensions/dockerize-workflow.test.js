@@ -88,7 +88,7 @@ describe('dockerize-workflow', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/express/example-app/Dockerfile`,
             `${input.appDir}/Dockerfile`,
-            { overwrite: true },
+            { overwrite: true }
           );
         });
       });
@@ -102,7 +102,7 @@ describe('dockerize-workflow', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/docker/js/Dockerfile`,
             `${input.appDir}/Dockerfile`,
-            { overwrite: true },
+            { overwrite: true }
           );
         });
       });
@@ -116,7 +116,7 @@ describe('dockerize-workflow', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/docker/ts/Dockerfile`,
             `${input.appDir}/Dockerfile`,
-            { overwrite: true },
+            { overwrite: true }
           );
         });
       });
@@ -125,11 +125,11 @@ describe('dockerize-workflow', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.dockerignore`,
           `${input.appDir}/.dockerignore`,
-          { overwrite: true },
+          { overwrite: true }
         );
       });
 
-      describe('when the framework is Nest', () => {
+      describe('when the framework is Nest and is not example app', () => {
         beforeAll(() => {
           input.framework = 'nest';
         });
@@ -138,22 +138,8 @@ describe('dockerize-workflow', () => {
           expect(toolbox.patching.replace).toHaveBeenCalledWith(
             `${input.appDir}/Dockerfile`,
             '/index.js',
-            '/main.js',
+            '/main.js'
           );
-        });
-
-        describe('and is example app', () => {
-          beforeAll(() => {
-            input.isExampleApp = true;
-          });
-
-          it('should update the entry point script in Dockefile for example app', () => {
-            expect(toolbox.patching.replace).toHaveBeenCalledWith(
-              `${input.appDir}/Dockerfile`,
-              '/index.js',
-              '/src/main.js',
-            );
-          });
         });
       });
     });
