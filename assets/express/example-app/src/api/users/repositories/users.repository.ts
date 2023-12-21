@@ -2,9 +2,8 @@ import { Knex } from 'knex';
 import { rethrowError } from '@utils/error';
 import { InsertUser, User } from '../entities';
 import { UserEmailTaken } from '../error-mappings';
-import { UsersRepositoryInterface } from '../interfaces';
 
-export class UsersRepository implements UsersRepositoryInterface {
+export class UsersRepository {
   constructor(private readonly knex: Knex) {}
 
   async insertOne(input: InsertUser): Promise<User> {

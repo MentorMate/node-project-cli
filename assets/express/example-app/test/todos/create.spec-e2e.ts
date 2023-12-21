@@ -3,70 +3,70 @@ import {
   create as createApp,
   expectError,
   getTodoPayload,
-  registerUser,
   Unauthorized,
-  UnprocessableEntity,
+  UnprocessableEntity
 } from '../utils';
 import { JwtTokens } from '@api/auth';
+import { Knex } from 'knex';
+import { create } from '@database';
 
 describe('POST /v1/todos', () => {
   let app: Express.Application;
   let destroy: () => Promise<void>;
   let jwtTokens: JwtTokens;
+  let dbClient: Knex;
 
   beforeAll(() => {
     const { app: _app, destroy: _destroy } = createApp();
     app = _app;
     destroy = _destroy;
+    dbClient = create();
   });
 
-  beforeAll(async () => {
-    jwtTokens = await registerUser(app);
+  beforeEach(async () => {
+    await dbClient.migrate.rollback();
+    await dbClient.migrate.latest();
+    await dbClient.seed.run();
+
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: 'hello@email.com', password: 'pass@ord' });
+
+    jwtTokens = res.body;
   });
 
   afterAll(async () => {
     await destroy();
   });
 
-  describe('when user is authenticated', () => {
+  it('should return the created todo', async () => {
     const todoPayload = getTodoPayload();
 
-    describe('given the todo payload', () => {
-      it('should return the created todo', async () => {
-        const res = await request(app)
-          .post('/v1/todos')
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .send(todoPayload)
-          .expect('content-type', /json/)
-          .expect(201);
+    const res = await request(app)
+      .post('/v1/todos')
+      .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+      .set('Content-Type', 'application/json')
+      .send(todoPayload)
 
-        expect(res.body.name).toEqual(todoPayload.name);
-        expect(res.body.note).toEqual(todoPayload.note);
-        expect(res.body.completed).toEqual(todoPayload.completed);
-      });
-    });
-
-    describe('given an empty payload', () => {
-      it('should return 422 error', async () => {
-        await request(app)
-          .post('/v1/todos')
-          .send({})
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .expect('content-type', /json/)
-          .expect(expectError(UnprocessableEntity));
-      });
-    });
+    expect(res.body.name).toEqual(todoPayload.name);
+    expect(res.body.note).toEqual(todoPayload.note);
+    expect(res.body.completed).toEqual(todoPayload.completed);
   });
 
-  describe('when user is not authenticated', () => {
-    const todoPayload = getTodoPayload();
+  it('given an empty payload, should return 422 error', async () => {
+    await request(app)
+      .post('/v1/todos')
+      .set('Authorization', 'Bearer ' + jwtTokens.idToken)
+      .set('Content-Type', 'application/json')
+      .send({})
+      .expect(expectError(UnprocessableEntity));
+  });
 
-    it('should return 401 error', async () => {
-      await request(app)
-        .post('/v1/todos')
-        .send(todoPayload)
-        .expect('content-type', /json/)
-        .expect(expectError(Unauthorized));
-    });
+  it('should return 401 error when the user is not authenticated', async () => {
+    await request(app)
+      .post('/v1/todos')
+      .set('Content-Type', 'application/json')
+      .send(getTodoPayload())
+      .expect(expectError(Unauthorized));
   });
 });

@@ -8,7 +8,7 @@ jest.mock('../repositories/todos.repository');
 describe('TodoService', () => {
   const todos = new TodosRepository({} as never);
   const todosService = new TodosService(todos);
-  const userId = 1;
+  const userId = '1';
 
   describe('create', () => {
     it('should create the record', async () => {
@@ -26,7 +26,7 @@ describe('TodoService', () => {
       it('should throw an error', async () => {
         await expect(
           todosService.find(Date.now(), userId)
-        ).rejects.toThrowError(RecordNotFoundError);
+        ).rejects.toThrow(RecordNotFoundError);
       });
     });
 
@@ -52,7 +52,7 @@ describe('TodoService', () => {
       it('should throw an error', async () => {
         await expect(
           todosService.update(Date.now(), userId, { completed: true })
-        ).rejects.toThrowError(RecordNotFoundError);
+        ).rejects.toThrow(RecordNotFoundError);
       });
     });
 
@@ -80,7 +80,7 @@ describe('TodoService', () => {
       it('should throw an error', async () => {
         await expect(
           todosService.delete(Date.now(), userId)
-        ).rejects.toThrowError(RecordNotFoundError);
+        ).rejects.toThrow(RecordNotFoundError);
       });
     });
 
@@ -97,7 +97,7 @@ describe('TodoService', () => {
 
       it('should delete the record', async () => {
         await todosService.delete(todo.id, userId);
-        await expect(todosService.find(todo.id, userId)).rejects.toThrowError(
+        await expect(todosService.find(todo.id, userId)).rejects.toThrow(
           RecordNotFoundError
         );
       });
@@ -105,7 +105,7 @@ describe('TodoService', () => {
   });
 
   describe('list', () => {
-    const userId = 2;
+    const userId = '2';
 
     beforeAll(async () => {
       await todosService.create({ userId, name: 'Abc 1', completed: false });

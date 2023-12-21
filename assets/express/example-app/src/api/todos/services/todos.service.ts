@@ -1,9 +1,9 @@
 import { Paginated, definedOrNotFound, updatedOrNotFound } from '@utils/query';
 import { InsertTodo, ListTodosQuery, Todo, UpdateTodo } from '../entities';
-import { TodosRepositoryInterface, TodosServiceInterface } from '../interfaces';
+import { TodosRepository } from '../repositories';
 
-export class TodosService implements TodosServiceInterface {
-  constructor(private readonly todos: TodosRepositoryInterface) {}
+export class TodosService {
+  constructor(private readonly todos: TodosRepository) {}
 
   create(input: InsertTodo): Promise<Todo> {
     return this.todos.insertOne(input);

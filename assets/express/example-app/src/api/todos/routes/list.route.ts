@@ -19,7 +19,7 @@ export const listTodosRoute = defineRoute({
   },
 }).attachHandler(
   asyncHandler(async ({ query, services, auth: { sub } }, res) => {
-    const todos = await services.todosService.list(Number(sub), query);
+    const todos = await services.todosService.list(sub, query);
 
     res.send(todos);
   })

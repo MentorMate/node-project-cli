@@ -5,7 +5,7 @@ module.exports = (toolbox) => {
     const syncOperations = () => {
       Object.assign(envVars, {
         AUTH0: {
-          AUTH0_ISSUER_URL: 'URL',
+          AUTH0_ISSUER_URL: 'https://mock.auth0.com/api/v2/',
           AUTH0_CLIENT_ID: 'CLIENT_ID',
           AUTH0_AUDIENCE: 'AUDIENCE',
           AUTH0_CLIENT_SECRET: 'CLIENT_SECRET',

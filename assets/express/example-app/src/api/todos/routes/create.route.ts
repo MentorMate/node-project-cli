@@ -21,7 +21,7 @@ export const createTodoRoute = defineRoute({
   asyncHandler(async ({ body, services, auth: { sub } }, res) => {
     const todo = await services.todosService.create({
       ...body,
-      userId: Number(sub),
+      userId: sub,
     });
 
     res.status(201).send(todo);

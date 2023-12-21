@@ -23,6 +23,13 @@ module.exports = (toolbox) => {
       HTTP: {
         PORT: 3000,
       },
+      Logging: {
+        ERROR_LOGGING: true,
+        REQUEST_LOGGING: true,
+      },
+      Swagger: {
+        SWAGGER: true,
+      },
     });
 
     Object.assign(pkgJson.dependencies, {
@@ -30,7 +37,7 @@ module.exports = (toolbox) => {
     });
 
     Object.assign(pkgJson.devDependencies, {
-      nodemon: '^2.0.20',
+      nodemon: '^3.0.2',
     });
 
     const executable =
@@ -81,6 +88,7 @@ module.exports = (toolbox) => {
     if (isExampleApp) {
       Object.assign(pkgJson.dependencies, {
         pino: '^8.11.0',
+        '@paralleldrive/cuid2': '^2.2.2',
         'http-errors': '^2.0.0',
         bcrypt: '^5.1.0',
         'query-types': '^0.1.4',

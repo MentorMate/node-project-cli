@@ -15,7 +15,7 @@ describe('TodosRepository', () => {
   describe('insertOne', () => {
     it('should return the newly created record', async () => {
       const todo = {
-        userId: 1,
+        userId: '1',
         name: 'Laundry',
         note: 'Now!',
         completed: false,
@@ -46,7 +46,7 @@ describe('TodosRepository', () => {
     it('should retrun the first record found', async () => {
       const todo: Todo = {
         id: 1,
-        userId: 1,
+        userId: '1',
         name: 'Laundry',
         note: 'Now!',
         completed: false,
@@ -75,7 +75,7 @@ describe('TodosRepository', () => {
     it('should perform a findById with empty payload', async () => {
       const todo: Todo = {
         id: 1,
-        userId: 1,
+        userId: '1',
         name: 'Laundry',
         note: 'Now!',
         completed: false,
@@ -95,7 +95,7 @@ describe('TodosRepository', () => {
     it('should update the record and return it', async () => {
       const todo: Todo = {
         id: 1,
-        userId: 1,
+        userId: '1',
         name: 'Laundry',
         note: 'Now!',
         completed: false,
@@ -140,12 +140,12 @@ describe('TodosRepository', () => {
 
       expect(
         todos.insertOne({
-          userId: 1,
+          userId: '1',
           name: 'name',
           note: 'note',
           completed: false,
         })
-      ).rejects.toThrowError(new RecordNotFoundError('User not found'));
+      ).rejects.toThrow(new RecordNotFoundError('User not found'));
     });
   });
 
@@ -156,9 +156,9 @@ describe('TodosRepository', () => {
         .spyOn(todosQb, 'del')
         .mockImplementationOnce(() => Promise.resolve(1) as never);
 
-      const result = await todos.deleteById(1, 1);
+      const result = await todos.deleteById(1, '1');
 
-      expect(todosQb.where).toHaveBeenCalledWith({ id: 1, userId: 1 });
+      expect(todosQb.where).toHaveBeenCalledWith({ id: 1, userId: '1' });
       expect(todosQb.del).toHaveBeenCalled();
       expect(result).toBe(1);
     });
@@ -177,7 +177,7 @@ describe('TodosRepository', () => {
         .spyOn(todosQb, 'count')
         .mockImplementationOnce(() => Promise.resolve([{ count: 0 }]) as never);
 
-      const userId = 1;
+      const userId = '1';
       const query = {};
 
       await todos.list(userId, query);

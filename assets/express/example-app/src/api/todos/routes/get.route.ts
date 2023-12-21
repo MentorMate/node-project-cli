@@ -20,7 +20,7 @@ export const getTodoRoute = defineRoute({
   },
 }).attachHandler(
   asyncHandler(async ({ services, params, auth: { sub } }, res) => {
-    const todo = await services.todosService.find(params.id, Number(sub));
+    const todo = await services.todosService.find(params.id, sub);
 
     res.send(todo);
   })

@@ -53,7 +53,7 @@ describe('AuthService', () => {
       });
 
       it('should throw an error', async () => {
-        await expect(auth.register(creds)).rejects.toThrowError(
+        await expect(auth.register(creds)).rejects.toThrow(
           DuplicateRecordError
         );
       });

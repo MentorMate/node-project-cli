@@ -12,7 +12,7 @@ describe('UsersRepository', () => {
 
   describe('insertOne', () => {
     it('should return the newly created record', async () => {
-      const user = { email: 'email@example.com', password: '123' };
+      const user = { email: 'email@example.com', password: '123', userId: '1' };
 
       jest.spyOn(usersQb, 'insert');
       jest.spyOn(usersQb, 'returning');
@@ -45,8 +45,8 @@ describe('UsersRepository', () => {
         .mockImplementationOnce(thenable as never);
 
       expect(
-        users.insertOne({ email: 'email@example.com', password: '123' })
-      ).rejects.toThrowError(
+        users.insertOne({ email: 'email@example.com', password: '123', userId: '1' })
+      ).rejects.toThrow(
         new DuplicateRecordError('User email already taken')
       );
     });
@@ -57,6 +57,7 @@ describe('UsersRepository', () => {
       const user: User = {
         id: 1,
         email: 'email@example.com',
+        userId: '1',
         password: '123',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

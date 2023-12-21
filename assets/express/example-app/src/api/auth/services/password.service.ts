@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
-import { PasswordServiceInterface } from '../interfaces';
 
-export class PasswordService implements PasswordServiceInterface {
+export class PasswordService {
   async hash(password: string): Promise<string> {
     return bcrypt.hash(password, await bcrypt.genSalt());
   }

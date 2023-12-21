@@ -1,8 +1,7 @@
 import { DuplicateRecordError } from '@database/errors';
 import { InsertUser, User } from '../../entities';
-import { UsersRepositoryInterface } from '../../interfaces';
 
-export class UsersRepository implements UsersRepositoryInterface {
+export class UsersRepository {
   private lastId = 0;
   private records: User[] = [];
 

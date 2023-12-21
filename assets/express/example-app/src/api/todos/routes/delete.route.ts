@@ -20,7 +20,7 @@ export const deleteTodoRoute = defineRoute({
   },
 }).attachHandler(
   asyncHandler(async ({ params, services, auth: { sub } }, res) => {
-    await services.todosService.delete(params.id, Number(sub));
+    await services.todosService.delete(params.id, sub);
 
     res.status(204).send();
   })

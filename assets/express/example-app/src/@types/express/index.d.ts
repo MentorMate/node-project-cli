@@ -1,5 +1,5 @@
-import { AuthServiceInterface } from '@api/auth/interfaces';
-import { TodosServiceInterface } from '@api/todos/interfaces';
+import { AuthService } from "@api/auth";
+import { TodosService } from "@api/todos";
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -8,8 +8,8 @@ declare module 'express-serve-static-core' {
       email: string;
     };
     services: {
-      authService: AuthServiceInterface;
-      todosService: TodosServiceInterface;
+      authService: AuthService;
+      todosService: TodosService;
     };
   }
 }
