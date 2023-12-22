@@ -9,9 +9,6 @@ import { catchError, Observable, tap, throwError } from 'rxjs';
 
 const REMOVED = '[[REMOVED]]';
 
-const headersToRemove = ['Authorization', 'Cookies'];
-const bodyKeysToRemove = ['password'];
-
 @Injectable()
 export class RequestLoggingInterceptor implements NestInterceptor {
   private logger = new Logger('RequestLoggingInterceptor');
@@ -19,9 +16,13 @@ export class RequestLoggingInterceptor implements NestInterceptor {
   private sanitizeHeaders(headers: Record<string, any>): Record<string, any> {
     const sanitizedHeaders = { ...headers };
 
-    headersToRemove.forEach((header) => {
-      sanitizedHeaders[header] = REMOVED;
-    });
+    if (sanitizedHeaders.Authorization) {
+      sanitizedHeaders.Authorization = REMOVED;
+    }
+
+    if (sanitizedHeaders.Cookie) {
+      sanitizedHeaders.Cookie = REMOVED;
+    }
 
     return sanitizedHeaders;
   }
@@ -29,9 +30,9 @@ export class RequestLoggingInterceptor implements NestInterceptor {
   private sanitizeBody(body: Record<string, any>): Record<string, any> {
     const sanitizedBody = { ...body };
 
-    bodyKeysToRemove.forEach((key) => {
-      sanitizedBody[key] = REMOVED;
-    });
+    if (sanitizedBody.password) {
+      sanitizedBody.password = REMOVED;
+    }
 
     return sanitizedBody;
   }
@@ -45,7 +46,7 @@ export class RequestLoggingInterceptor implements NestInterceptor {
       .getRequest();
 
     return next.handle().pipe(
-      tap((response) => {
+      tap(() => {
         const endTime = process.hrtime(startTime);
         const duration = endTime[0] * 1000 + endTime[1] / 1000000;
         const logMsg = {
@@ -56,7 +57,6 @@ export class RequestLoggingInterceptor implements NestInterceptor {
           method,
           url,
           body: this.sanitizeBody(body),
-          response,
         };
 
         this.logger.log(JSON.stringify(logMsg));
@@ -77,7 +77,7 @@ export class RequestLoggingInterceptor implements NestInterceptor {
 
         this.logger.log(JSON.stringify(logMsg));
         return throwError(() => err);
-      })
+      }),
     );
   }
 }
