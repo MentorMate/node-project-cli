@@ -6,7 +6,6 @@ import { resolve } from 'path';
 
 import { environmentSchema } from '@utils/environment';
 import { generateDocument } from '@utils/openapi';
-import { helloWorldRoutes } from '@api/hello-world';
 import { healthcheckRoutes } from '@api/healthchecks';
 import { authRoutes } from '@api/auth';
 import { todoRoutes } from '@api/todos';
@@ -15,7 +14,6 @@ const run = async () => {
   const env = Object.freeze(environmentSchema.parse(process.env));
 
   const routes = [
-    ...helloWorldRoutes,
     ...healthcheckRoutes,
     ...authRoutes,
     ...todoRoutes,
