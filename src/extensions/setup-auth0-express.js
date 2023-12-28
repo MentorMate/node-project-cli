@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (toolbox) => {
-  toolbox.setupAuth0 = ({ envVars, pkgJson }) => {
+  toolbox.setupAuth0Express = ({ envVars, pkgJson }) => {
     const syncOperations = () => {
       Object.assign(envVars, {
         AUTH0: {
@@ -13,14 +13,14 @@ module.exports = (toolbox) => {
       });
 
       Object.assign(pkgJson.dependencies, {
-        '@nestjs/axios': '^3.0.0',
-        '@nestjs/passport': '^10.0.1',
-        'passport-jwt': '^4.0.1',
-        'jwks-rsa': '^3.0.1',
+        axios: '^1.6.3',
+        'express-jwt': '^8.4.1',
+        'express-oauth2-jwt-bearer': '^1.6.0',
+        jsonwebtoken: '^9.0.0',
       });
 
       Object.assign(pkgJson.devDependencies, {
-        '@types/passport-jwt': '^3.0.9',
+        '@types/jsonwebtoken': '^9.0.1',
       });
     };
 

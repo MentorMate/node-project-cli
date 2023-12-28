@@ -1,0 +1,23 @@
+{
+  "extends": "@tsconfig/recommended/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": false,
+    "lib": ["ES2021"],
+    "paths": {
+      "@api/*": ["src/api/*"],
+      "@database": ["src/database"],
+      "@database/*": ["src/database/*"],
+      "@extensions/*": ["src/extensions/*"],
+      "@middleware": ["src/middleware"],
+      "@utils/*": ["src/utils/*"]
+    }
+  },
+  "ts-node": {
+    "files": true,
+    "require": ["tsconfig-paths/register", "dotenv/config"]
+  }
+}

@@ -197,7 +197,13 @@ module.exports = {
     }
 
     if (userInput.isExampleApp && userInput.authOption == 'auth0') {
-      stepsOfExecution.push(toolbox.setupAuth0(userInput));
+      if (userInput.framework === 'nest') {
+        stepsOfExecution.push(toolbox.setupAuth0Nest(userInput));
+      }
+
+      if (userInput.framework === 'express') {
+        stepsOfExecution.push(toolbox.setupAuth0Express(userInput));
+      }
     }
 
     dir(userInput.workflowsFolder);

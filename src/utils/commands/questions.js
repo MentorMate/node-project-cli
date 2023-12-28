@@ -60,7 +60,7 @@ const getQuestions = (
       { message: 'JWT', value: 'jwt' },
       { message: 'Auth0', value: 'auth0' },
     ],
-    skip: !isExampleApp || framework !== 'nest',
+    skip: !isExampleApp,
   },
   {
     type: 'select',

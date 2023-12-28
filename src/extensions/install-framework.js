@@ -5,6 +5,7 @@ module.exports = (toolbox) => {
     devSetup,
     projectLanguage,
     framework,
+    authOption,
     appDir,
     assetsPath,
     pkgJson,
@@ -76,9 +77,18 @@ module.exports = (toolbox) => {
       }
     }
 
-    const srcDir = isExampleApp
-      ? `${assetsPath}/${framework}/example-app/src/`
-      : `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}/src/`;
+    let projectDir;
+    if (isExampleApp) {
+      if (framework === 'express' && authOption == 'auth0') {
+        projectDir = `${assetsPath}/${framework}/example-app-auth0`;
+      } else {
+        projectDir = `${assetsPath}/${framework}/example-app/src`;
+      }
+    } else {
+      projectDir = `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}`;
+    }
+
+    const srcDir = `${projectDir}/src/`;
 
     if (!devSetup) {
       await copyAsync(srcDir, `${appDir}/src/`);
@@ -115,25 +125,22 @@ module.exports = (toolbox) => {
       if (!devSetup) {
         await Promise.all([
           copyAsync(
-            `${assetsPath}/express/example-app/scripts/generate-openapi.ts`,
+            `${projectDir}/scripts/generate-openapi.ts`,
             `${appDir}/scripts/generate-openapi.ts`,
           ),
           copyAsync(
-            `${assetsPath}/express/example-app/.openapi/gitignorefile`,
+            `${projectDir}/.openapi/gitignorefile`,
             `${appDir}/.openapi/.gitignore`,
           ),
           copyAsync(
-            `${assetsPath}/express/example-app/docker-compose.yml`,
+            `${projectDir}/docker-compose.yml`,
             `${appDir}/docker-compose.yml`,
           ),
           copyAsync(
-            `${assetsPath}/express/example-app/docker-compose.override.example.yml`,
+            `${projectDir}/docker-compose.override.example.yml`,
             `${appDir}/docker-compose.override.example.yml`,
           ),
-          copyAsync(
-            `${assetsPath}/express/example-app/migrations`,
-            `${appDir}/migrations`,
-          ),
+          copyAsync(`${projectDir}/migrations`, `${appDir}/migrations`),
           copyAsync(`${assetsPath}/db/pg/scripts`, `${appDir}/scripts`, {
             overwrite: true,
           }),
