@@ -82,7 +82,7 @@ module.exports = (toolbox) => {
       if (framework === 'express' && authOption == 'auth0') {
         projectDir = `${assetsPath}/${framework}/example-app-auth0`;
       } else {
-        projectDir = `${assetsPath}/${framework}/example-app/src`;
+        projectDir = `${assetsPath}/${framework}/example-app`;
       }
     } else {
       projectDir = `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}`;
