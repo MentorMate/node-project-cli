@@ -1,17 +1,12 @@
-import {
-  ExecutionContext,
-  Injectable,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '@utils/decorators/public.decorator';
 import { AuthGuard as PassportAuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class AuthGuard extends PassportAuthGuard('jwt') {
-  constructor(
-    private reflector: Reflector,
-  ) {
-    super()
+  constructor(private reflector: Reflector) {
+    super();
   }
 
   private isPublic(context: ExecutionContext): boolean {

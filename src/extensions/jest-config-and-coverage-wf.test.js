@@ -162,35 +162,110 @@ describe('jest-config-and-coverage-wf', () => {
         );
       });
 
-      describe('and is the example app', () => {
+      describe('express example app - auth0', () => {
         beforeAll(() => {
           input.isExampleApp = true;
           input.db = 'pg';
+          input.authOption = 'auth0';
+          input.framework = 'express';
         });
 
         afterAll(() => {
           input.isExampleApp = false;
-          input.db = 'none';
+          input.db = undefined;
+          input.authOption = undefined;
         });
 
         it('should copy the jest setup file', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/${input.framework}/example-app-auth0/jest.config.js`,
+            `${input.appDir}/jest.config.js`,
+          );
+
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/${input.framework}/example-app-auth0/jest.setup.ts`,
+            `${input.appDir}/jest.setup.ts`,
+          );
+
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/express/example-app-auth0/__mocks__/`,
+            `${input.appDir}/__mocks__/`,
+          );
+        });
+      });
+
+      describe('express example app - jwt', () => {
+        beforeAll(() => {
+          input.isExampleApp = true;
+          input.db = 'pg';
+          input.authOption = 'jwt';
+          input.framework = 'express';
+        });
+
+        afterAll(() => {
+          input.isExampleApp = false;
+          input.authOption = undefined;
+        });
+
+        it('should copy the jest setup file', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/${input.framework}/example-app/jest.config.js`,
+            `${input.appDir}/jest.config.js`,
+          );
+
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/${input.framework}/example-app/jest.setup.ts`,
             `${input.appDir}/jest.setup.ts`,
           );
+
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/express/example-app/__mocks__/`,
+            `${input.appDir}/__mocks__/`,
+          );
+        });
+      });
+
+      describe('nest example app - postgres', () => {
+        beforeAll(() => {
+          input.isExampleApp = true;
+          input.db = 'pg';
+          input.authOption = 'auth0';
+          input.framework = 'nest';
         });
 
-        describe('and the framework is express', () => {
-          beforeAll(() => {
-            input.framework = 'express';
-          });
+        afterAll(() => {
+          input.isExampleApp = false;
+          input.db = undefined;
+          input.authOption = undefined;
+        });
 
-          it('should copy the example project unit test mocks', () => {
-            expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
-              `${input.assetsPath}/express/example-app/__mocks__/`,
-              `${input.appDir}/__mocks__/`,
-            );
-          });
+        it('should copy the jest setup file', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/${input.framework}/example-app-pg/jest.setup.ts`,
+            `${input.appDir}/jest.setup.ts`,
+          );
+        });
+      });
+
+      describe('nest example app - mongodb', () => {
+        beforeAll(() => {
+          input.isExampleApp = true;
+          input.db = 'mongodb';
+          input.authOption = 'auth0';
+          input.framework = 'nest';
+        });
+
+        afterAll(() => {
+          input.isExampleApp = false;
+          input.db = undefined;
+          input.authOption = undefined;
+        });
+
+        it('should copy the jest setup file', () => {
+          expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
+            `${input.assetsPath}/${input.framework}/example-app-mongodb/jest.config.js`,
+            `${input.appDir}/jest.config.js`,
+          );
         });
       });
     });

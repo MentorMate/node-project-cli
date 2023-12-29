@@ -34,8 +34,10 @@ module.exports = (toolbox) => {
       if (isExampleApp) {
         if (framework === 'express' && authOption === 'auth0') {
           assetsAppDir = `${assetsPath}/${framework}/example-app-auth0`;
-        } else {
+        } else if (framework === 'express' && authOption === 'jwt') {
           assetsAppDir = `${assetsPath}/${framework}/example-app`;
+        } else if (framework === 'nest') {
+          assetsAppDir = `${assetsPath}/${framework}/example-app-${db}`;
         }
       } else {
         assetsAppDir = `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}`;
