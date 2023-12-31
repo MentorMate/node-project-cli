@@ -8,6 +8,7 @@ module.exports = (toolbox) => {
     pkgJson,
     assetsPath,
     framework,
+    authOption,
     isExampleApp,
     db,
   }) => {
@@ -29,11 +30,18 @@ module.exports = (toolbox) => {
         `${workflowsFolder}/coverage-e2e.yaml`,
       );
 
-      const assetsAppDir = isExampleApp
-        ? framework === 'express'
-          ? `${assetsPath}/${framework}/example-app`
-          : `${assetsPath}/${framework}/example-app-${db}`
-        : `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}`;
+      let assetsAppDir;
+      if (isExampleApp) {
+        if (framework === 'express' && authOption === 'auth0') {
+          assetsAppDir = `${assetsPath}/${framework}/example-app-auth0`;
+        } else if (framework === 'express' && authOption === 'jwt') {
+          assetsAppDir = `${assetsPath}/${framework}/example-app`;
+        } else if (framework === 'nest') {
+          assetsAppDir = `${assetsPath}/${framework}/example-app-${db}`;
+        }
+      } else {
+        assetsAppDir = `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}`;
+      }
 
       await copyAsync(
         `${assetsAppDir}/jest.config.js`,
