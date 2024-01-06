@@ -224,7 +224,7 @@ module.exports = {
 
     await Promise.all(asyncOperations);
 
-    const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`));
+    const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`) || '{}');
 
     Object.assign(packageJson, {
       private: true,

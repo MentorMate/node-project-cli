@@ -3,7 +3,7 @@
   "version": "3.2.0",
   "description": "Node CLI",
   "repository": {
-    "url": "https://github.com/MentorMate/node-project-cli"
+    "url": "git+https://github.com/MentorMate/node-project-cli.git"
   },
   "license": "MIT",
   "bin": {
@@ -44,5 +44,15 @@
     "prettier": "^3.1.0",
     "sort-package-json": "^2.4.1",
     "spdx-license-list": "^6.6.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/MentorMate/node-project-cli/issues"
+  },
+  "homepage": "https://github.com/MentorMate/node-project-cli#readme",
+  "main": ".commitlintrc.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "keywords": [],
+  "author": ""
 }
