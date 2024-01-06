@@ -8,6 +8,7 @@
   "license": "MIT",
   "workspaces": [
     "node-cli",
-    "nest-pg-auth0"
+    "nest-pg-auth0",
+    "nest-mongo-auth0"
   ]
 }
