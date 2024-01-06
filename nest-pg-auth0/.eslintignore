@@ -1,0 +1,8 @@
+node_modules
+.vscode
+coverage
+dist/
+*.config.js
+*rc.js
+src/extensions/**/*.js
+licenses-allowed.js
