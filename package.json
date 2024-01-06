@@ -12,6 +12,7 @@
     "nest-pg-jwt",
     "nest-mongo-auth0",
     "nest-mongo-jwt",
-    "express-pg-jwt"
+    "express-pg-jwt",
+    "express-pg-auth0"
   ]
 }
