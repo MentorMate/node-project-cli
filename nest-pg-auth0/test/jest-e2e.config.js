@@ -2,21 +2,15 @@
  * @type {import('@jest/types').Config.InitialOptions}
  */
 module.exports = {
-  moduleFileExtensions: [
-    'js',
-    'json',
-    'ts'
-  ],
+  moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: '..',
   testEnvironment: 'node',
   testRegex: '.e2e-spec.ts$',
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest'
+    '^.+\\.(t|j)s$': 'ts-jest',
   },
   coverageDirectory: 'coverage-e2e',
-  collectCoverageFrom: [
-    '<rootDir>/src/api/**/*.(t|j)s'
-  ],
+  collectCoverageFrom: ['<rootDir>/src/api/**/*.(t|j)s'],
   coveragePathIgnorePatterns: [
     '<rootDir>/src/main.ts$',
     '<rootDir>/.*spec.ts$',
@@ -33,12 +27,10 @@ module.exports = {
       branches: 85,
       functions: 85,
       lines: 85,
-      statements: 85
-    }
+      statements: 85,
+    },
   },
-  setupFiles: [
-    '<rootDir>/jest.setup.ts'
-  ],
+  setupFiles: ['<rootDir>/jest.setup.ts'],
   // path aliases from tsconfig.json
   moduleNameMapper: {
     '^@api/(.*)$': '<rootDir>/src/api/$1',
@@ -48,4 +40,4 @@ module.exports = {
     '^@middleware$': '<rootDir>/src/middleware',
     '^@utils/(.*)$': '<rootDir>/src/utils/$1',
   },
-}
+};
