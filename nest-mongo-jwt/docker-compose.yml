@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  db:
+    image: mongo:latest
+    container_name: my-mongodb
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    command: --auth
+    volumes:
+      - db-data:/var/lib/mongodb/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: todo-api
+    image: todo-api-dev
+    ports:
+      - '${PORT}:${PORT}'
+    env_file:
+      - .env
+    # Mount host directory to docker container to support watch mode
+    volumes:
+      - .:/usr/src/app
+      # This ensures that the NestJS container manages the node_modules folder
+      # rather than synchronizes it with the host machine
+      - api-node_modules:/usr/src/app/node_modules
+    depends_on:
+      - db
+    command: >
+      sh -c "cd /usr/src/app
+      && npm run start:dev"
+
+volumes:
+  api-node_modules:
+  db-data:
+
+networks:
+  default:
+    name: nest-api
