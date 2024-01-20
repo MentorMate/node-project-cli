@@ -1,4 +1,4 @@
-# mocha
+# express-pg-auth0
 
 ## Setup
 

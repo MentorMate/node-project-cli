@@ -123,7 +123,7 @@ describe('POST /v1/todos/:id', () => {
 
   describe('when user is not authenticated', () => {
     it('should return 401 error', async () => {
-      authMock.mockImplementation((request: Request, response: Response, next) => {
+      authMock.mockImplementation((request, response, next) => {
         next(createError(401, 'No authorization token was found'))
       });
 

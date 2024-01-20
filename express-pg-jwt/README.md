@@ -1,4 +1,4 @@
-# mocha
+# express-pg-jwt
 
 ## Setup
 
