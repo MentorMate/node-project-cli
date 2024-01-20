@@ -20,7 +20,6 @@ module.exports = {
     '<rootDir>/src/.*entity.ts$',
     '<rootDir>/src/.*repository.ts$',
     '<rootDir>/src/.*guard.ts$',
-    '<rootDir>/src/api/auth/.*.ts$',
   ],
   coverageThreshold: {
     global: {
