@@ -52,13 +52,13 @@ module.exports = (toolbox) => {
         await copyAsync(`${assetsAppDir}/test/`, `${appDir}/test/`);
       }
 
-      if (isExampleApp && db === 'pg') {
+      if (isExampleApp) {
         await copyAsync(
           `${assetsAppDir}/jest.setup.ts`,
           `${appDir}/jest.setup.ts`,
         );
 
-        if (framework === 'express') {
+        if (framework === 'express' && db === 'pg') {
           await copyAsync(`${assetsAppDir}/__mocks__/`, `${appDir}/__mocks__/`);
         }
       }
