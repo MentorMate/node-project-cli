@@ -2,9 +2,7 @@
  * @type {import('@jest/types').Config.InitialOptions}
  */
 module.exports = {
-  collectCoverageFrom: [
-    '<rootDir>/src/**/*.(t|j)s'
-  ],
+  collectCoverageFrom: ['<rootDir>/src/**/*.(t|j)s'],
   coverageDirectory: './coverage',
   coveragePathIgnorePatterns: [
     '<rootDir>/src/main.ts$',
@@ -22,19 +20,15 @@ module.exports = {
       branches: 85,
       functions: 85,
       lines: 85,
-      statements: 85
-    }
+      statements: 85,
+    },
   },
-  moduleFileExtensions: [
-    'js',
-    'json',
-    'ts'
-  ],
+  moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: '.',
   testEnvironment: 'node',
   testRegex: '.*\\.spec\\.ts$',
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest'
+    '^.+\\.(t|j)s$': 'ts-jest',
   },
   // path aliases from tsconfig.json
   moduleNameMapper: {
@@ -45,5 +39,5 @@ module.exports = {
     '^@middleware$': '<rootDir>/src/middleware',
     '^@utils/(.*)$': '<rootDir>/src/utils/$1',
     '^@test/(.*)$': '<rootDir>/test/$1',
-  }
-}
+  },
+};
