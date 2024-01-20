@@ -43,8 +43,8 @@ describe('POST /v1/todos/:id', () => {
 
     authMock.mockImplementation(
       (
-        req: Request & { auth: { payload: { sub: string } } },
-        res: Response,
+        req: { auth: { payload: { sub: string } } },
+        res,
         next: () => true
       ) => {
         req.auth = {
