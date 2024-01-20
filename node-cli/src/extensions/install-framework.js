@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (toolbox) => {
-  toolbox.installFramework = async ({
+  toolbox.installExpress = async ({
     devSetup,
     projectLanguage,
     framework,
