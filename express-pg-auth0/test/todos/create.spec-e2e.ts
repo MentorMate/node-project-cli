@@ -40,8 +40,8 @@ describe('POST /v1/todos', () => {
 
     authMock.mockImplementation(
       (
-        req: Request & { auth: { payload: { sub: string } } },
-        res: Response,
+        req: { auth: { payload: { sub: string } } },
+        res,
         next: () => true
       ) => {
         req.auth = {
@@ -82,7 +82,7 @@ describe('POST /v1/todos', () => {
   });
 
   it('should return 401 error when the user is not authenticated', async () => {
-    authMock.mockImplementation((request: Request, response: Response, next) => {
+    authMock.mockImplementation((request, response, next) => {
       next(createError(401, 'No authorization token was found'))
     });
 

@@ -40,8 +40,8 @@ describe('DELETE /v1/todos/:id', () => {
 
     authMock.mockImplementation(
       (
-        req: Request & { auth: { payload: { sub: string } } },
-        res: Response,
+        req: { auth: { payload: { sub: string } } },
+        res,
         next: () => true
       ) => {
         req.auth = {
@@ -75,7 +75,7 @@ describe('DELETE /v1/todos/:id', () => {
   });
 
   it('should return 401 error when user is not authenticated', async () => {
-    authMock.mockImplementation((request: Request, response: Response, next) => {
+    authMock.mockImplementation((request, response, next) => {
       next(createError(401, 'No authorization token was found'))
     });
 

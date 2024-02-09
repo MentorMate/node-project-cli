@@ -32,7 +32,7 @@ module.exports = (toolbox) => {
 
       if (!devSetup) {
         await run(
-          `npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --strict --skip-git --skip-install --package-manager npm`,
+          `cd ${appDir} && cd ../ && npx @nestjs/cli@9.4.2 new ${projectName} --directory ${projectName} --strict --skip-git --skip-install --package-manager npm`,
         );
 
         await Promise.all([

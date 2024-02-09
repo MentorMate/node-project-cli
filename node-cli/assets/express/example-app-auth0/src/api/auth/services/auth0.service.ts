@@ -1,4 +1,4 @@
-import { Axios } from 'axios';
+import { AxiosStatic } from 'axios';
 import { Logger } from 'pino';
 import { Auth0User } from '../interfaces';
 import { Environment } from '@utils/environment';
@@ -12,7 +12,7 @@ export class Auth0Service {
 
   constructor(
     private logger: Logger,
-    private axios: Axios,
+    private axios: AxiosStatic,
     private env: Environment,
   ) {
     this.getAuth0AccessToken()

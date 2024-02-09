@@ -1,4 +1,4 @@
-# mocha
+# nest-mongo-auth0
 
 ## Setup
 

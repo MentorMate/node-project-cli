@@ -1,9 +1,10 @@
 'use strict';
 
-const { getQuestions } = require('../utils/commands/questions');
+const interactiveAppPrompting = require('../utils/commands/interactive-mode-prompting');
+const exampleAppPrompting = require('../utils/commands/example-app-prompting');
 const { CommandError } = require('../errors/command.error');
-const exampleAppConfig = require('../utils/commands/example-app.config');
 const getFeatures = require('../utils/commands/features');
+const exampleAppConfig = require('../utils/commands/example-app.config');
 
 const command = {
   name: 'generate',
@@ -26,6 +27,21 @@ const command = {
       alias: 'e',
       description: 'Generate an example To-Do app',
     },
+    {
+      name: 'database',
+      alias: 'db',
+      description: 'Possible values: pg, mongodb',
+    },
+    {
+      name: 'auth',
+      alias: 'a',
+      description: 'Possible values: jwt, auth0',
+    },
+    {
+      name: 'path',
+      alias: 'p',
+      description: 'Path to generate the project',
+    }
   ],
 };
 
@@ -51,18 +67,19 @@ module.exports = {
       return;
     }
 
-    const isPip3Avaialble = !!which('pip3');
-
-    if (!isPip3Avaialble) {
+    const isPip3Available = !!which('pip3');
+    if (!isPip3Available) {
       warning(
         "No `pip3` found on your system, some of the offered functionalities won't be available",
       );
     }
 
-    const pwd = strings.trim(cwd());
+    const pwd = strings.trim(options.path || cwd());
     const isInteractiveMode = !!options.interactive || !!options['i'];
     const isExampleApp = !!options['example-app'] || !!options['e'];
     const framework = options['framework'] || options['f'];
+    const db = options['database'] || options['db'];
+    const authOption = options['auth'] || options['a'];
     const projectName = first;
 
     if (isInteractiveMode && isExampleApp) {
@@ -71,48 +88,59 @@ module.exports = {
       );
     }
 
+    if (!projectName) {
+      throw new CommandError('You must specify a project name');
+    }
+
+    if (isExampleApp) {
+      if (framework && !['express', 'nest'].includes(framework)) {
+        return error(
+          `Invalid framework option "${framework}", possible values: express, nest`,
+        );
+      }
+
+      if (db && !['pg', 'mongodb'].includes(db)) {
+        return error(
+          `Invalid database option "${db}", possible values: pg, mongodb`,
+        );
+      }
+
+      if (db && framework === 'express' && db !== 'pg') {
+        return error(
+          `Invalid database option "${db}" for express, possible values: pg`,
+        );
+      }
+
+      if (authOption && !['jwt', 'auth0'].includes(authOption)) {
+        return error(
+          `Invalid auth option "${authOption}", possible values: jwt, auth0`,
+        );
+      }
+    }
+
     let userInput = {
       projectName,
       framework,
       isExampleApp,
+      db,
+      authOption,
     };
 
     if (isInteractiveMode) {
-      userInput = await prompt.ask(
-        getQuestions(userInput, isPip3Avaialble).slice(0, 2),
-      );
-
-      userInput = Object.assign(
-        {},
-        userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2)),
-      );
+      await interactiveAppPrompting(userInput, prompt, isPip3Available);
     }
 
-    if (userInput.isExampleApp) {
-      userInput = Object.assign(
-        {},
-        userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble)[1]),
-      );
-      userInput = Object.assign(
-        {},
-        userInput,
-        await prompt.ask(getQuestions(userInput, isPip3Avaialble).slice(2, 5)),
-      );
+    if (isExampleApp) {
+      await exampleAppPrompting(userInput, prompt);
 
       Object.assign(
         userInput,
-        exampleAppConfig(userInput.framework, isPip3Avaialble),
+        exampleAppConfig(userInput.framework, isPip3Available),
       );
     }
 
-    if (!userInput.projectName) {
-      throw new CommandError('You must specify a project name');
-    }
-
     userInput.framework ||= 'express';
-    userInput.features ||= getFeatures(isPip3Avaialble);
+    userInput.features ||= getFeatures(isPip3Available);
     userInput.db ||= 'none';
     userInput.projectLanguage = userInput.projectLanguage || 'TS';
     userInput.appDir = path(pwd, userInput.projectName);
@@ -141,20 +169,17 @@ module.exports = {
       await toolbox.installNest(userInput);
     } else if (userInput.framework) {
       await toolbox.initializeNpm(userInput);
-      await toolbox.installFramework(userInput);
+      await toolbox.installExpress(userInput);
     }
 
-    if (userInput.framework === 'express' && userInput.db === 'none') {
-      // Postgres is the default db for express
-      userInput.db = 'pg';
-    }
-
-    stepsOfExecution.push(toolbox.jsLinters(userInput));
-    stepsOfExecution.push(toolbox.jestConfig(userInput));
-    stepsOfExecution.push(toolbox.auditConfig(userInput));
-    stepsOfExecution.push(toolbox.debug(userInput));
-    stepsOfExecution.push(toolbox.generateReadme(userInput));
-    stepsOfExecution.push(toolbox.editorconfig(userInput));
+    stepsOfExecution.push(
+      toolbox.jsLinters(userInput),
+      toolbox.jestConfig(userInput),
+      toolbox.auditConfig(userInput),
+      toolbox.debug(userInput),
+      toolbox.generateReadme(userInput),
+      toolbox.editorconfig(userInput),
+    );
 
     if (userInput.projectLanguage === 'TS' && userInput.framework !== 'nest') {
       stepsOfExecution.push(toolbox.setupTs(userInput));
@@ -189,10 +214,7 @@ module.exports = {
       stepsOfExecution.push(toolbox.setupMongoDB(userInput));
     }
 
-    if (
-      userInput.isExampleApp &&
-      (!userInput.authOption || userInput.authOption === 'jwt')
-    ) {
+    if (userInput.isExampleApp && userInput.authOption === 'jwt') {
       stepsOfExecution.push(toolbox.setupJwt(userInput));
     }
 
@@ -224,7 +246,9 @@ module.exports = {
 
     await Promise.all(asyncOperations);
 
-    const packageJson = JSON.parse(read(`${userInput.appDir}/package.json`) || '{}');
+    const packageJson = JSON.parse(
+      read(`${userInput.appDir}/package.json`) || '{}',
+    );
 
     Object.assign(packageJson, {
       private: true,

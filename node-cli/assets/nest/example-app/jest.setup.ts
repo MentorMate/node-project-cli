@@ -1,6 +1,3 @@
-import '@database/extensions/knex/register';
-import 'reflect-metadata';
-
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 

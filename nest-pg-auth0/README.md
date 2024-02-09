@@ -1,4 +1,4 @@
-# mocha
+# nest-pg-auth0
 
 ## Setup
 

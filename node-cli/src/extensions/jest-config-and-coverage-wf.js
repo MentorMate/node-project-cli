@@ -52,13 +52,13 @@ module.exports = (toolbox) => {
         await copyAsync(`${assetsAppDir}/test/`, `${appDir}/test/`);
       }
 
-      if (isExampleApp && db === 'pg') {
+      if (isExampleApp) {
         await copyAsync(
           `${assetsAppDir}/jest.setup.ts`,
           `${appDir}/jest.setup.ts`,
         );
 
-        if (framework === 'express') {
+        if (framework === 'express' && db === 'pg') {
           await copyAsync(`${assetsAppDir}/__mocks__/`, `${appDir}/__mocks__/`);
         }
       }
@@ -72,7 +72,7 @@ module.exports = (toolbox) => {
       Object.assign(pkgJson.scripts, {
         test: 'jest',
         'test:cov': 'jest --coverage',
-        'test:e2e': `DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/jest/bin/jest.js --config ./test/jest-e2e.config.js`,
+        'test:e2e': 'npx jest --config ./test/jest-e2e.config.js --runInBand',
         'test:e2e:cov': 'npm run test:e2e -- --coverage',
       });
 
@@ -96,7 +96,7 @@ module.exports = (toolbox) => {
 
         Object.assign(pkgJson.scripts, {
           'test:e2e':
-            'DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/jest/bin/jest.js --config ./test/jest-e2e.config.js --runInBand',
+          'npx jest --config ./test/jest-e2e.config.js --runInBand',
         });
       }
     }
