@@ -1,0 +1,15 @@
+.env*
+.eslint*
+.git
+.husky
+.nvmrc
+.prettier*
+.vscode
+coverage
+coverage-e2e
+dist
+docker-compose*
+Dockerfile
+node_modules
+README.md
+test

@@ -1,0 +1,12 @@
+{
+  "watch": [
+    "src"
+  ],
+  "ext": "ts",
+  "ignore": [
+    "**/*.spec.*",
+    "**/*.test.*"
+  ],
+  "signal": "SIGINT",
+  "exec": "npx ts-node src/index"
+}

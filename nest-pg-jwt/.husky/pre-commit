@@ -1,0 +1,52 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx --no -- tsc --noEmit
+npx --no -- lint-staged
+npx --no -- ls-lint
+npm run lint:dockerfile
+npm run license:check
+npm run test:cov
+npm run test:e2e:cov
+scripts/detect-secrets.sh
+
+# Enable branch naming validation by uncommenting the lines below and adjust valid_branch_regex to your preference
+# # Enforce branch naming conventions
+# LC_ALL=C
+
+# # Git branch will return an empty line before the initial commit
+# git_branch=$(git branch)
+
+# if [ -z "$git_branch" ]; then
+#   echo "Initial commit, no branch name linting"
+#   exit 0
+# fi
+
+# # INSERT A REGEX PATTERN ACCORDING TO YOUR PROJECT BRANCH NAMING CONVENTION.
+# branch_regex="^(chore|feat|fix|docs|style|refactor|test|revert|ci)\/[a-z0-9._-]+$"
+
+# # Get the branch name
+# branch="$(git rev-parse --abbrev-ref HEAD)"
+
+# # UPDATE THE EXAMPLES TO MATCH YOUR PROJECT BRANCH NAMING CONVENTION.
+# error_message="Branch name validation failed. Branch name must adhere to: /$branch_regex/.
+# You should rename your branch to a valid name and try again. Here are some examples of valid branch names:
+
+#   feat/my-feature
+#   test/my-feature
+#   fix/that-bug
+#   chore/my-task
+#   docs/update-readme
+#   refactor/do-thing-differently
+#   ci/update-build-script
+# "
+
+
+# # Use grep to do the matching, as `if [[ ]]` is not available in `sh`
+# match=$(echo $branch | grep -E "$branch_regex") || echo ""
+
+# # Check if the match is a non-empty string
+# if [ -z "$match" ]; then
+#   echo "$error_message"
+#   exit 1
+# fi

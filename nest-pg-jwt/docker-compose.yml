@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:13-alpine
+    container_name: postgres
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_DB: ${PGDATABASE}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: todo-api
+    image: todo-api-dev
+    ports:
+      - '${PORT}:${PORT}'
+    env_file:
+      - .env
+    # Mount host directory to docker container to support watch mode
+    volumes:
+      - .:/usr/src/app
+      # This ensures that the NestJS container manages the node_modules folder
+      # rather than synchronizes it with the host machine
+      - api-node_modules:/usr/src/app/node_modules
+    depends_on:
+      - db
+    command: >
+      sh -c "cd /usr/src/app
+      && npm run db:migrate:latest
+      && npm run start:dev"
+
+volumes:
+  api-node_modules:
+  db-data:
+
+networks:
+  default:
+    name: nest-api
