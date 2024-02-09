@@ -276,7 +276,7 @@ describe('install-framework', () => {
 
       it('should add Knex env vars', () => {
         expect(envVars).toHaveProperty('Knex');
-        expect(envVars['Knex']).toHaveProperty('DEBUG');
+        expect(envVars['Knex']).toHaveProperty('DATABASE_LOG');
       });
 
       it('should add knex to dependencies', () => {
