@@ -7,7 +7,6 @@ import {
 } from '../utils';
 import { JwtTokens } from '@api/auth';
 import { Knex } from 'knex';
-import { create } from '@database';
 
 describe('DELETE /v1/todos/:id', () => {
   let app: Express.Application;
@@ -17,10 +16,10 @@ describe('DELETE /v1/todos/:id', () => {
   let dbClient: Knex;
 
   beforeAll(() => {
-    const { app: _app, destroy: _destroy } = createApp();
+    const { app: _app, destroy: _destroy, dbClient: _dbClient } = createApp();
     app = _app;
     destroy = _destroy;
-    dbClient = create();
+    dbClient = _dbClient;
   });
 
   beforeEach(async () => {
