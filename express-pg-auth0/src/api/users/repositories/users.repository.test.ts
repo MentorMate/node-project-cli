@@ -55,7 +55,7 @@ describe('UsersRepository', () => {
   describe('findByEmail', () => {
     it('should return the first record found', async () => {
       const user: User = {
-        id: 1,
+        id: '1',
         email: 'email@example.com',
         userId: '1',
         password: '123',

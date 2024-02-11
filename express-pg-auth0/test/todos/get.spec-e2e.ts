@@ -13,9 +13,7 @@ import {
   expectError,
   TodoNotFound,
   Unauthorized,
-  UnprocessableEntity,
 } from '../utils';
-import { Todo } from '@api/todos';
 import { Knex } from 'knex';
 import { create } from '@database';
 import createError from 'http-errors';
@@ -24,13 +22,6 @@ describe('GET /v1/todos/:id', () => {
   let app: Express.Application;
   let destroy: () => Promise<void>;
   let dbClient: Knex;
-  const todo: Partial<Todo> = {
-    id: 1,
-    name: 'Laundry 1',
-    note: 'Buy detergent 1',
-    completed: false,
-    userId: 'tz4a98xxat96iws9zmbrgj3a',
-  };
   const jwtTokens = {
     idToken: 'token',
   };
@@ -70,6 +61,11 @@ describe('GET /v1/todos/:id', () => {
   describe('when user is authenticated', () => {
     describe('given todo id in the query', () => {
       it('should return the todo', async () => {
+        const todo = await dbClient('todos').first();
+        if (!todo) {
+          throw new Error('Todo not found');
+        }
+
         const res = await request(app)
           .get(`/v1/todos/${todo.id}`)
           .set('Authorization', 'Bearer ' + jwtTokens.idToken)
@@ -90,15 +86,6 @@ describe('GET /v1/todos/:id', () => {
           .expect(expectError(TodoNotFound));
       });
     });
-
-    describe('given a text id in the query', () => {
-      it('should return 422 error', async () => {
-        await request(app)
-          .get(`/v1/todos/test`)
-          .set('Authorization', 'Bearer ' + jwtTokens.idToken)
-          .expect(expectError(UnprocessableEntity));
-      });
-    });
   });
 
   describe('when user is not authenticated', () => {
@@ -108,7 +95,7 @@ describe('GET /v1/todos/:id', () => {
       });
 
       await request(app)
-        .get(`/v1/todos/${todo.id}`)
+        .get('/v1/todos/tz4a98xxat96iws9zmbrgj3a')
         .expect(expectError(Unauthorized));
     });
   });
