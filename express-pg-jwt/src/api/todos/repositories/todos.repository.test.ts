@@ -33,7 +33,10 @@ describe('TodosRepository', () => {
 
       const result = await todos.insertOne(todo);
 
-      expect(todosQb.insert).toHaveBeenCalledWith(todo);
+      expect(todosQb.insert).toHaveBeenCalledWith({
+        id: expect.any(String),
+        ...todo,
+      });
       expect(todosQb.returning).toHaveBeenCalledWith('*');
       expect(todosQb.then).toHaveBeenCalled();
       expect(todosQb.catch).toHaveBeenCalled();
@@ -45,7 +48,7 @@ describe('TodosRepository', () => {
   describe('findById', () => {
     it('should retrun the first record found', async () => {
       const todo: Todo = {
-        id: 1,
+        id: '1',
         userId: '1',
         name: 'Laundry',
         note: 'Now!',
@@ -74,7 +77,7 @@ describe('TodosRepository', () => {
   describe('updateById', () => {
     it('should perform a findById with empty payload', async () => {
       const todo: Todo = {
-        id: 1,
+        id: '1',
         userId: '1',
         name: 'Laundry',
         note: 'Now!',
@@ -94,7 +97,7 @@ describe('TodosRepository', () => {
 
     it('should update the record and return it', async () => {
       const todo: Todo = {
-        id: 1,
+        id: '1',
         userId: '1',
         name: 'Laundry',
         note: 'Now!',
@@ -156,9 +159,9 @@ describe('TodosRepository', () => {
         .spyOn(todosQb, 'del')
         .mockImplementationOnce(() => Promise.resolve(1) as never);
 
-      const result = await todos.deleteById(1, '1');
+      const result = await todos.deleteById('1', '1');
 
-      expect(todosQb.where).toHaveBeenCalledWith({ id: 1, userId: '1' });
+      expect(todosQb.where).toHaveBeenCalledWith({ id: '1', userId: '1' });
       expect(todosQb.del).toHaveBeenCalled();
       expect(result).toBe(1);
     });
