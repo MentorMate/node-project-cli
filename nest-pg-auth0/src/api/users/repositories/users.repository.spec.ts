@@ -63,6 +63,7 @@ describe('UsersRepository', () => {
 
     expect(result).toBe(createdUser);
     expect(insert).toHaveBeenCalledWith({
+      id: expect.any(String),
       email: insertUser.email,
       password: insertUser.password,
     });
@@ -92,13 +93,13 @@ describe('UsersRepository', () => {
 
     returning.mockImplementationOnce(() => Promise.resolve([updatedUser]));
 
-    const result = await usersRepository.updateOne(1, {
+    const result = await usersRepository.updateOne('1', {
       email: updatedUser.email,
       password: updatedUser.password,
     });
 
     expect(result).toBe(updatedUser);
-    expect(where).toHaveBeenCalledWith({ id: 1 });
+    expect(where).toHaveBeenCalledWith({ id: '1' });
     expect(update).toHaveBeenCalledWith({
       email: updatedUser.email,
       password: updatedUser.password,

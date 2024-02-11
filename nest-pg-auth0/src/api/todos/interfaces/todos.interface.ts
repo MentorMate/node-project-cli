@@ -5,7 +5,7 @@ interface UserData {
 }
 
 interface TodoId {
-  id?: number;
+  id?: string;
 }
 
 export interface CreateTodoInput extends UserData {
