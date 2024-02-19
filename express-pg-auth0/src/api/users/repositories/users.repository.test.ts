@@ -26,7 +26,10 @@ describe('UsersRepository', () => {
 
       const result = await users.insertOne(user);
 
-      expect(usersQb.insert).toHaveBeenCalledWith(user);
+      expect(usersQb.insert).toHaveBeenCalledWith({
+        id: expect.any(String),
+        ...user,
+      });
       expect(usersQb.returning).toHaveBeenCalledWith('*');
       expect(usersQb.then).toHaveBeenCalled();
       expect(usersQb.catch).toHaveBeenCalled();
