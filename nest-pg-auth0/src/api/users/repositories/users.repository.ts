@@ -13,8 +13,8 @@ export class UsersRepository extends BaseRepository<User> {
     super(knex, Tables.Users);
   }
 
-  insertOne(payload: Partial<User>): Promise<User> {
-    return this.repository()
+  async insertOne(payload: Partial<User>): Promise<User> {
+    return await this.repository()
       .insert({
         id: createId(),
         ...payload,
