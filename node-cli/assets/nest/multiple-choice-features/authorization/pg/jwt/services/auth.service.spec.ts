@@ -94,7 +94,7 @@ describe('AuthService', () => {
           email: registeredUser.email,
           password: registeredUser.password!,
         }),
-      ).rejects.toThrowError(new ConflictException('User email already taken'));
+      ).rejects.toThrow(new ConflictException('User email already taken'));
     });
   });
 
@@ -104,7 +104,7 @@ describe('AuthService', () => {
         .spyOn(usersRepository, 'findByEmail')
         .mockResolvedValueOnce(undefined);
 
-      await expect(authService.login(unregisteredCreds)).rejects.toThrowError(
+      await expect(authService.login(unregisteredCreds)).rejects.toThrow(
         new UnprocessableEntityException('Invalid email or password'),
       );
     });
@@ -116,7 +116,7 @@ describe('AuthService', () => {
 
       jest.spyOn(passwordService, 'compare').mockResolvedValueOnce(false);
 
-      await expect(authService.login(registeredCreds)).rejects.toThrowError(
+      await expect(authService.login(registeredCreds)).rejects.toThrow(
         new UnprocessableEntityException('Invalid email or password'),
       );
     });

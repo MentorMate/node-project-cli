@@ -204,7 +204,7 @@ describe('Auth0Service', () => {
     it('throws error when axios response is falsy(undefined)', async () => {
       jest.spyOn(httpService.axiosRef, 'post').mockResolvedValueOnce(undefined);
 
-      await expect(auth0Service.onModuleInit()).rejects.toThrowError(
+      await expect(auth0Service.onModuleInit()).rejects.toThrow(
         new Error('Access token is missing!'),
       );
     });

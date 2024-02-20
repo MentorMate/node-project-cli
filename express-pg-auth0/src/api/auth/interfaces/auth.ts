@@ -19,4 +19,5 @@ export type Auth0User = {
   updated_at: string;
   user_id: string;
   user_metadata: Record<string, any>;
+  blocked: boolean;
 };

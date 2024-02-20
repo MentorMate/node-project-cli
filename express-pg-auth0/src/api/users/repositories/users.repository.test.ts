@@ -10,19 +10,18 @@ describe('UsersRepository', () => {
   const users = new UsersRepository(knex);
   const usersQb = knex('users');
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('insertOne', () => {
     it('should return the newly created record', async () => {
       const user = { email: 'email@example.com', password: '123', userId: '1' };
 
       jest.spyOn(usersQb, 'insert');
-      jest.spyOn(usersQb, 'returning');
-      jest.spyOn(usersQb, 'then');
-      jest.spyOn(usersQb, 'catch').mockImplementationOnce(async () => ({
-        id: 1,
-        ...user,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }));
+      jest
+        .spyOn(usersQb, 'returning')
+        .mockReturnValue(Promise.resolve([user]) as any);
 
       const result = await users.insertOne(user);
 
@@ -31,9 +30,6 @@ describe('UsersRepository', () => {
         ...user,
       });
       expect(usersQb.returning).toHaveBeenCalledWith('*');
-      expect(usersQb.then).toHaveBeenCalled();
-      expect(usersQb.catch).toHaveBeenCalled();
-
       expect(result).toEqual(expect.objectContaining(user));
     });
 
@@ -48,10 +44,12 @@ describe('UsersRepository', () => {
         .mockImplementationOnce(thenable as never);
 
       expect(
-        users.insertOne({ email: 'email@example.com', password: '123', userId: '1' })
-      ).rejects.toThrow(
-        new DuplicateRecordError('User email already taken')
-      );
+        users.insertOne({
+          email: 'email@example.com',
+          password: '123',
+          userId: '1',
+        })
+      ).rejects.toThrow(new DuplicateRecordError('User email already taken'));
     });
   });
 

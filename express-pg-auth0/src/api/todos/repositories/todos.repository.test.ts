@@ -12,6 +12,10 @@ describe('TodosRepository', () => {
   const todos = new TodosRepository(knex);
   const todosQb = knex('todos');
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('insertOne', () => {
     it('should return the newly created record', async () => {
       const todo = {
@@ -22,13 +26,7 @@ describe('TodosRepository', () => {
       };
 
       jest.spyOn(todosQb, 'insert');
-      jest.spyOn(todosQb, 'returning');
-      jest.spyOn(todosQb, 'then');
-      jest.spyOn(todosQb, 'catch').mockImplementationOnce(async () => ({
-        ...todo,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }));
+      jest.spyOn(todosQb, 'returning').mockReturnValue(Promise.resolve([todo]) as any);
 
       const result = await todos.insertOne(todo);
 
@@ -37,8 +35,6 @@ describe('TodosRepository', () => {
         ...todo,
       });
       expect(todosQb.returning).toHaveBeenCalledWith('*');
-      expect(todosQb.then).toHaveBeenCalled();
-      expect(todosQb.catch).toHaveBeenCalled();
 
       expect(result).toEqual(expect.objectContaining(todo));
     });
@@ -110,11 +106,7 @@ describe('TodosRepository', () => {
 
       jest.spyOn(todosQb, 'where');
       jest.spyOn(todosQb, 'update');
-      jest.spyOn(todosQb, 'returning');
-      jest.spyOn(todosQb, 'then');
-      jest
-        .spyOn(todosQb, 'catch')
-        .mockImplementationOnce(() => Promise.resolve(updated) as never);
+      jest.spyOn(todosQb, 'returning').mockReturnValue(Promise.resolve([updated]) as any);
 
       const result = await todos.updateById(todo.id, todo.userId, input);
 
@@ -124,8 +116,6 @@ describe('TodosRepository', () => {
       });
       expect(todosQb.update).toHaveBeenCalledWith(input);
       expect(todosQb.returning).toHaveBeenCalledWith('*');
-      expect(todosQb.then).toHaveBeenCalled();
-      expect(todosQb.catch).toHaveBeenCalled();
 
       expect(result).toEqual(updated);
     });

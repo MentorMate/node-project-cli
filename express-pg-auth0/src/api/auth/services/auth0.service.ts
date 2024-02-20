@@ -13,18 +13,10 @@ export class Auth0Service {
   constructor(
     private logger: Logger,
     private axios: AxiosStatic,
-    private env: Environment,
-  ) {
-    this.getAuth0AccessToken()
-      .then((token) => {
-        this.accessToken = token;
-      })
-      .catch((err) => {
-        throw err;
-      });
-  }
+    private env: Environment
+  ) {}
 
-  private async getAuth0AccessToken() {
+  public async getAuth0AccessToken() {
     const response = await this.axios
       .post<{ access_token: string }>(
         `${this.baseURL}oauth/token`,
@@ -53,11 +45,13 @@ export class Auth0Service {
     return response.data.access_token;
   }
 
-  private buildHeaders() {
+  private async buildHeaders() {
+    const accessToken = this.accessToken || (await this.getAuth0AccessToken());
+
     return {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${this.accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     };
   }
 
@@ -69,6 +63,7 @@ export class Auth0Service {
       );
     }
 
+    const headers = await this.buildHeaders();
     return this.axios
       .post<Auth0User>(
         `${this.baseURL}api/v2/users`,
@@ -79,7 +74,7 @@ export class Auth0Service {
           password,
           verify_email: true,
         },
-        { headers: this.buildHeaders() }
+        { headers }
       )
       .then(({ data }) => data)
       .catch((error) => {
@@ -88,24 +83,26 @@ export class Auth0Service {
       });
   }
 
-  public updateUserMetadata(
+  public async updateUserMetadata(
     userId: string,
     metadata: Auth0User['user_metadata']
   ) {
+    const headers = await this.buildHeaders();
     return this.axios.patch<Auth0User>(
       `${this.baseURL}api/v2/users/${userId}`,
       {
         user_metadata: metadata,
       },
-      { headers: this.buildHeaders() }
+      { headers }
     );
   }
 
-  public searchUsersByEmail(email: string) {
+  public async searchUsersByEmail(email: string) {
+    const headers = await this.buildHeaders();
     return this.axios
       .get<Auth0User>(`${this.baseURL}api/v2/users-by-email`, {
         params: { email },
-        headers: this.buildHeaders(),
+        headers,
       })
       .then(({ data }) => data)
       .catch((error) => {
@@ -114,10 +111,11 @@ export class Auth0Service {
       });
   }
 
-  public deleteUser(userId: string) {
+  public async deleteUser(userId: string) {
+    const headers = await this.buildHeaders();
     return this.axios
       .delete<Auth0User>(`${this.baseURL}api/v2/users/${userId}`, {
-        headers: this.buildHeaders(),
+        headers,
       })
       .catch((error) => {
         this.logger.error(error.response.data);

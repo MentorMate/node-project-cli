@@ -95,7 +95,7 @@ describe('AuthService', () => {
         .spyOn(auth0Service, 'deleteUser')
         .mockResolvedValueOnce(auth0User as any);
 
-      await expect(authService.register(userCreds)).rejects.toThrowError(
+      await expect(authService.register(userCreds)).rejects.toThrow(
         new BadRequestException('Something went wrong!'),
       );
     });
