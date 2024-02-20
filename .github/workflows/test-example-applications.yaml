@@ -24,7 +24,7 @@ jobs:
         ports: ["27017:27017"]
         env:
           MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: pass@ord
+          MONGO_INITDB_ROOT_PASSWORD: password
 
     steps:
     - name: Checkout code
@@ -34,6 +34,9 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: 20
+
+    - name: Clean npm cache
+      run: npm cache clean --force
 
     - name: Install dependencies
       run: npm install
