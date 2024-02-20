@@ -16,6 +16,7 @@
     "bin"
   ],
   "scripts": {
+    "build": "tsc -p tsconfig.build.json && tsc-alias && cp -r ./src/templates ./dist/templates/",
     "format": "prettier \"**/*.{js,md}\" --write --cache --cache-strategy metadata --cache-location .prettiercache",
     "license:check": "license-checker --summary --onlyAllow $(node ./licenses-allowed.js ';') > /dev/null",
     "license:for-review": "license-checker --summary --exclude $(node ./licenses-allowed.js ',')",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.4.3",
+    "@tsconfig/recommended": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "commitlint": "^17.4.3",
     "eslint": "^8.34.0",
@@ -43,7 +45,8 @@
     "markdownlint-cli": "^0.34.0",
     "prettier": "^3.1.0",
     "sort-package-json": "^2.4.1",
-    "spdx-license-list": "^6.6.0"
+    "spdx-license-list": "^6.6.0",
+    "tsc-alias": "^1.8.8"
   },
   "bugs": {
     "url": "https://github.com/MentorMate/node-project-cli/issues"

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 const { print } = require('gluegun');
-const { CommandError } = require('../src/errors/command.error');
+const { CommandError } = require('../dist/errors/command.error');
 
 // run the CLI with the current process arguments
-require('../src/cli')
+require('../dist/cli')
   .run(process.argv)
   .catch((err) => {
     if (err.name === CommandError.name) {
