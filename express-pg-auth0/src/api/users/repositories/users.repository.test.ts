@@ -18,7 +18,6 @@ describe('UsersRepository', () => {
       jest.spyOn(usersQb, 'returning');
       jest.spyOn(usersQb, 'then');
       jest.spyOn(usersQb, 'catch').mockImplementationOnce(async () => ({
-        id: 1,
         ...user,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

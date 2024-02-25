@@ -72,6 +72,7 @@ describe('TodosRepository', () => {
 
     expect(result).toBe(todo);
     expect(insert).toHaveBeenCalledWith({
+      id: expect.any(String),
       ...createTodoInput.createTodoDto,
       userId: createTodoInput.userId,
     });

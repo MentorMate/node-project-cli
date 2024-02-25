@@ -155,7 +155,7 @@ describe('TodosService', () => {
         .spyOn(service, 'findOne')
         .mockImplementationOnce(async () => undefined);
 
-      await expect(service.remove({ id: '1', userId })).rejects.toThrowError(
+      await expect(service.remove({ id: '1', userId })).rejects.toThrow(
         new NotFoundException(Errors.NotFound),
       );
     });

@@ -3,9 +3,13 @@ import { InsertUser, User } from '../../entities';
 import { createId } from '@paralleldrive/cuid2';
 
 export class UsersRepository {
-  private records: User[] = [];
+  private records: Partial<User>[] = [];
 
-  async insertOne(input: InsertUser): Promise<User> {
+  async insertOne(input: InsertUser): Promise<Partial<User>> {
+    if (!input.email) {
+      throw new Error('Email is required');
+    }
+
     const existingRecord = await this.findByEmail(input.email);
 
     if (existingRecord) {
@@ -15,7 +19,6 @@ export class UsersRepository {
     const record = {
       id: createId(),
       ...input,
-      password: input.password || null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -25,7 +28,7 @@ export class UsersRepository {
     return record;
   }
 
-  async findByEmail(email: string): Promise<User | undefined> {
+  async findByEmail(email: string): Promise<Partial<User> | undefined> {
     return this.records.find((r) => r.email === email);
   }
 }

@@ -3,7 +3,11 @@ import { createUpdatedAtTriggerSQL, dropUpdatedAtTriggerSQL } from './utils';
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('users', (table) => {
-    table.bigIncrements('id');
+    table
+      .string('id')
+      .unique({ indexName: 'unq_users_id' })
+      .index()
+      .notNullable();
     table
       .string('userId')
       .unique({ indexName: 'unq_users_user_id' })

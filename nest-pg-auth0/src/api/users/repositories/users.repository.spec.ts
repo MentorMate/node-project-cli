@@ -49,7 +49,7 @@ describe('UsersRepository', () => {
     };
 
     const createdUser = {
-      id: 1,
+      id: '1',
       email: 'user@example.com',
       password: 'password',
     };
@@ -71,7 +71,7 @@ describe('UsersRepository', () => {
 
   it('findByEmail - find a user', async () => {
     const userFound = {
-      id: 1,
+      id: '1',
       email: 'user@example.com',
       password: 'password',
     };
@@ -86,7 +86,7 @@ describe('UsersRepository', () => {
 
   it('updateOne - modify a user', async () => {
     const updatedUser = {
-      id: 1,
+      id: '1',
       email: 'user@example.com',
       password: 'new-password',
     };
