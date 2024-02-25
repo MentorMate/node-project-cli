@@ -39,6 +39,7 @@ jobs:
       run: |
         git init
         npm install
+      working-directory: ${{ matrix.project }}
 
     - name: Create .env.test file
       run: |
