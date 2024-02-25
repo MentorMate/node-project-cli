@@ -8,10 +8,7 @@ export async function up(knex: Knex): Promise<void> {
       .unique({ indexName: 'unq_users_id' })
       .index()
       .notNullable();
-    table
-      .string('userId')
-      .unique({ indexName: 'unq_users_user_id' })
-      .index();
+    table.string('userId').unique({ indexName: 'unq_users_user_id' }).index();
     table
       .string('email')
       .notNullable()

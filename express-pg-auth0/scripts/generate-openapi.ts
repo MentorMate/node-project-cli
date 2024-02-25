@@ -13,11 +13,7 @@ import { todoRoutes } from '@api/todos';
 const run = async () => {
   const env = Object.freeze(environmentSchema.parse(process.env));
 
-  const routes = [
-    ...healthcheckRoutes,
-    ...authRoutes,
-    ...todoRoutes,
-  ];
+  const routes = [...healthcheckRoutes, ...authRoutes, ...todoRoutes];
 
   const document = generateDocument({
     version: '3.0.3',

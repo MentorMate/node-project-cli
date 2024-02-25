@@ -90,13 +90,12 @@ is being served on (default is 3001).
 If you're on Apple M1, uncomment the `platform: linux/amd64` line:
 
 ```yaml
-  swaggerui:
-    # uncomment the line below for Apple M1
-    platform: linux/amd64
-    ports:
-      - '3001:8080'
+swaggerui:
+  # uncomment the line below for Apple M1
+  platform: linux/amd64
+  ports:
+    - '3001:8080'
 ```
-
 
 ### Provision the services
 
@@ -113,7 +112,6 @@ docker-compose --profile tools up -d
 ```
 
 To learn more about using profiles, checkout the [documentation](https://docs.docker.com/compose/profiles/).
-
 
 ### Run database migrations
 
@@ -238,7 +236,6 @@ API documentation.
 If you're experiencing issues setting this up, checkout the troubleshooting
 section at the bottom.
 
-
 ## Working with Licenses
 
 Whenever a new `npm` module is added to the project we need to check its
@@ -285,7 +282,8 @@ Go to the Debug menu (CTRL+SHIFT+D). From `RUN AND DEBUG` at the top select
 `Run Script: Launch via NPM`. You should now be able to start debugging
 by pressing `F5`.
 
-## Troubleshooting  
+## Troubleshooting
+
 ### OpenAPI
 
 If `docker-compose` fails with this message and you're on Apple M1:
@@ -298,11 +296,11 @@ platform (linux/arm64/v8) and no specific platform was requested
 then uncomment the `platform: linux/amd64` line in `docker-compose.override.yml`
 
 ```yaml
-  swaggerui:
-    # uncomment the line below for Apple M1
-    platform: linux/amd64
-    ports:
-      - '3001:8080'
+swaggerui:
+  # uncomment the line below for Apple M1
+  platform: linux/amd64
+  ports:
+    - '3001:8080'
 ```
 
 If you're seeing `This site can't be reached` after navigating to `http://localhost:3001`,

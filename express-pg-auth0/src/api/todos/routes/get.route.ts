@@ -19,9 +19,20 @@ export const getTodoRoute = defineRoute({
     422: response.UnprocessableEntity,
   },
 }).attachHandler(
-  asyncHandler(async ({ services, params, auth: { payload: { sub } } }, res) => {
-    const todo = await services.todosService.find(params.id, sub);
+  asyncHandler(
+    async (
+      {
+        services,
+        params,
+        auth: {
+          payload: { sub },
+        },
+      },
+      res
+    ) => {
+      const todo = await services.todosService.find(params.id, sub);
 
-    res.send(todo);
-  })
+      res.send(todo);
+    }
+  )
 );
