@@ -28,8 +28,8 @@ module.exports = (toolbox) => {
 
     function syncOperations() {
       Object.assign(pkgJson.scripts, {
-        clean: 'rimraf dist',
-        build: 'npm run clean && tsc -p tsconfig.build.json && tsc-alias',
+        build: 'rm -rf dist && tsc -p tsconfig.build.json && tsc-alias',
+        start: 'node -r dotenv/config dist/index'
       });
 
       Object.assign(pkgJson.devDependencies, {

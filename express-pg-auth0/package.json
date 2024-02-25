@@ -9,12 +9,11 @@
   "main": "index.js",
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json && tsc-alias",
-    "start": "node -r dotenv/config dist/index",
     "db:create:migration": "npx knex migrate:make -x ts --migrations-directory ./migrations",
-    "db:migrate:up": "ts-node node_modules/.bin/knex migrate:up --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)",
     "db:migrate:down": "ts-node node_modules/.bin/knex migrate:down --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)",
     "db:migrate:latest": "ts-node node_modules/.bin/knex migrate:latest --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)",
     "db:migrate:rollback": "ts-node node_modules/.bin/knex migrate:rollback --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)",
+    "db:migrate:up": "ts-node node_modules/.bin/knex migrate:up --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)",
     "format": "prettier \"**/*.{js,cjs,mjs,ts,md}\" --write --cache --cache-strategy metadata --cache-location .prettiercache",
     "image:build": "DOCKER_BUILDKIT=1 docker build -t express-pg-auth0 .",
     "image:run": "docker run --rm --net host -e NODE_ENV=production --env-file .env express-pg-auth0",
@@ -27,13 +26,14 @@
     "lint:markdown": "markdownlint **/*.md --ignore node_modules",
     "openapi:g": "ts-node scripts/generate-openapi",
     "prepare": "husky install",
+    "start": "node -r dotenv/config dist/index",
     "start:debug": "tsc --sourceMap -p tsconfig.build.json && tsc-alias && node --inspect -r dotenv/config dist/index",
     "start:dev": "nodemon",
     "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "jest",
-    "test:unit:cov": "jest --coverage",
     "test:e2e": "npx jest --config ./test/jest-e2e.config.js --runInBand",
-    "test:e2e:cov": "npm run test:e2e -- --coverage"
+    "test:e2e:cov": "npm run test:e2e -- --coverage",
+    "test:unit": "jest",
+    "test:unit:cov": "jest --coverage"
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.2",

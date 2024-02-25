@@ -22,19 +22,9 @@ describe('TodosRepository', () => {
       };
 
       jest.spyOn(todosQb, 'insert');
-<<<<<<< Updated upstream
-      jest.spyOn(todosQb, 'returning');
-      jest.spyOn(todosQb, 'then');
-      jest.spyOn(todosQb, 'catch').mockImplementationOnce(async () => ({
-        ...todo,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }));
-=======
       jest
         .spyOn(todosQb, 'returning')
         .mockReturnValue(Promise.resolve([todo]) as any);
->>>>>>> Stashed changes
 
       const result = await todos.insertOne(todo);
 
@@ -116,17 +106,9 @@ describe('TodosRepository', () => {
 
       jest.spyOn(todosQb, 'where');
       jest.spyOn(todosQb, 'update');
-<<<<<<< Updated upstream
-      jest.spyOn(todosQb, 'returning');
-      jest.spyOn(todosQb, 'then');
-      jest
-        .spyOn(todosQb, 'catch')
-        .mockImplementationOnce(() => Promise.resolve(updated) as never);
-=======
       jest
         .spyOn(todosQb, 'returning')
         .mockReturnValue(Promise.resolve([updated]) as any);
->>>>>>> Stashed changes
 
       const result = await todos.updateById(todo.id, todo.userId, input);
 

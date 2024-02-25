@@ -1,10 +1,5 @@
 import { environmentSchema } from './environment';
 
-<<<<<<< Updated upstream
-describe('envSchema', () => {
-  it('should be defined', () => {
-    expect(environmentSchema).toBeDefined();
-=======
 describe('Environment Schema', () => {
   it('validates correct environment variables', () => {
     const validEnv = {
@@ -49,6 +44,5 @@ describe('Environment Schema', () => {
     };
 
     expect(() => environmentSchema.parse(invalidEnv)).toThrow();
->>>>>>> Stashed changes
   });
 });

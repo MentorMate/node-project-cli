@@ -166,14 +166,8 @@ npm run test:e2e:cov
 The underlying library is `knex`. You can find their guide on migrations [here](http://knexjs.org/guide/migrations.html).
 
 ```bash
-# check what is the last applied migration
-npm run db:migrate:version
-
-# check which migrations have been run and how many are pending
-npm run db:migrate:status
-
 # create a new migration file
-npm run db:migrate:make <migration-name>
+npm run db:create:migration <migration-name>
 
 # run the next migration that has not yet been run
 npm run db:migrate:up
@@ -189,9 +183,6 @@ npm run db:migrate:rollback
 
 # rollback all migrations
 npm run db:migrate:rollback --all
-
-# rollback all migrations and re-apply latest
-npm run db:migrate:reset
 ```
 
 To debug migrations set the `DEBUG` environment variable to `knex:query`, e.g.

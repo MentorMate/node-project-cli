@@ -68,7 +68,8 @@ module.exports = (toolbox) => {
 
       Object.assign(pkgJson.scripts, {
         format: `prettier "**/*.{${formatExt}}" --write --cache --cache-strategy metadata --cache-location .prettiercache`,
-        lint: `eslint . --ext ${lintExt} --fix --cache`,
+        'lint': 'npm run lint:code && npm run lint:dockerfile && npm run lint:markdown',
+        'lint:code': `eslint . --ext ${lintExt} --fix --cache`,
       });
 
       Object.assign(pkgJson.devDependencies, {

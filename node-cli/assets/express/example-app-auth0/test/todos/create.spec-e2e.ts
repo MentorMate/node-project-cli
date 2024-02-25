@@ -1,5 +1,5 @@
 import { mockAxios } from '../utils/mock-axios';
-mockAxios()
+mockAxios();
 
 const authMock = jest.fn();
 
@@ -13,7 +13,7 @@ import {
   expectError,
   getTodoPayload,
   Unauthorized,
-  UnprocessableEntity
+  UnprocessableEntity,
 } from '../utils';
 import { Knex } from 'knex';
 import { create } from '@database';
@@ -40,11 +40,7 @@ describe('POST /v1/todos', () => {
     await dbClient.seed.run();
 
     authMock.mockImplementation(
-      (
-        req: { auth: { payload: { sub: string } } },
-        res,
-        next: () => true
-      ) => {
+      (req: { auth: { payload: { sub: string } } }, res, next: () => true) => {
         req.auth = {
           payload: {
             sub: 'tz4a98xxat96iws9zmbrgj3a',
@@ -66,7 +62,7 @@ describe('POST /v1/todos', () => {
       .post('/v1/todos')
       .set('Authorization', 'Bearer ' + jwtTokens.idToken)
       .set('Content-Type', 'application/json')
-      .send(todoPayload)
+      .send(todoPayload);
 
     expect(res.body.name).toEqual(todoPayload.name);
     expect(res.body.note).toEqual(todoPayload.note);
@@ -84,7 +80,7 @@ describe('POST /v1/todos', () => {
 
   it('should return 401 error when the user is not authenticated', async () => {
     authMock.mockImplementation((request, response, next) => {
-      next(createError(401, 'No authorization token was found'))
+      next(createError(401, 'No authorization token was found'));
     });
 
     await request(app)

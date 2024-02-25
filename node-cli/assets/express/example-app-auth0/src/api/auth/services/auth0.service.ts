@@ -6,25 +6,21 @@ import createHttpError from 'http-errors';
 
 export class Auth0Service {
   private accessToken = '';
-  private baseURL = this.env.AUTH0_ISSUER_URL;
-  private AUTH0_CLIENT_ID = this.env.AUTH0_CLIENT_ID;
-  private AUTH0_CLIENT_SECRET = this.env.AUTH0_CLIENT_SECRET;
+  private baseURL = '';
+  private AUTH0_CLIENT_ID = '';
+  private AUTH0_CLIENT_SECRET = '';
 
   constructor(
     private logger: Logger,
     private axios: AxiosStatic,
-    private env: Environment,
+    private env: Environment
   ) {
-    this.getAuth0AccessToken()
-      .then((token) => {
-        this.accessToken = token;
-      })
-      .catch((err) => {
-        throw err;
-      });
+    this.baseURL = this.env.AUTH0_ISSUER_URL;
+    this.AUTH0_CLIENT_ID = this.env.AUTH0_CLIENT_ID;
+    this.AUTH0_CLIENT_SECRET = this.env.AUTH0_CLIENT_SECRET;
   }
 
-  private async getAuth0AccessToken() {
+  public async getAuth0AccessToken() {
     const response = await this.axios
       .post<{ access_token: string }>(
         `${this.baseURL}oauth/token`,

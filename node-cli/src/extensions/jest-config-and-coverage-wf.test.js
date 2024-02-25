@@ -52,7 +52,7 @@ describe('jest-config-and-coverage-wf', () => {
       });
 
       it('should add the "test:cov" script', () => {
-        expect(scripts).toHaveProperty('test:cov');
+        expect(scripts).toHaveProperty('test:unit:cov');
       });
 
       it('should add the test:e2e script', () => {

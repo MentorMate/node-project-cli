@@ -1,5 +1,5 @@
 import { mockAxios } from '../utils/mock-axios';
-mockAxios()
+mockAxios();
 
 import request from 'supertest';
 import { create as createApp } from '../utils/app';
