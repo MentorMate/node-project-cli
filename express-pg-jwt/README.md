@@ -144,11 +144,8 @@ npm run start:debug
 # run
 npm run test
 
-# watch
-npm run test:watch
-
 # coverage
-npm run test:cov
+npm run test:unit:cov
 ```
 
 ### End-to-end Tests

@@ -67,7 +67,7 @@ jobs:
       working-directory: ${{ matrix.project }}
 
     - name: Run tests
-      run: npm run test
+      run: npm run test:unit
       working-directory: ${{ matrix.project }}
 
     - name: Run end-to-end tests
