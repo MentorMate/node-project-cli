@@ -19,7 +19,7 @@ export const mockedUser: UserData = {
 const userId = mockedUser.user.sub;
 
 export const todo: Todo = {
-  id: 1,
+  id: '1',
   name: 'todo',
   note: null,
   completed: false,

@@ -68,10 +68,11 @@ describe('PUT /v1/todos/:id', () => {
   });
 
   it('should return the updated todo', async () => {
+    const todo = await nestKnexService.connection('todos').first();
     await app
       .inject({
         method: 'PUT',
-        url: '/v1/todos/1',
+        url: `/v1/todos/${todo.id}`,
         payload: {
           name: 'updated',
           completed: true,
@@ -89,15 +90,12 @@ describe('PUT /v1/todos/:id', () => {
   });
 
   it('should return the not updated todo', async () => {
-    const todo = await nestKnexService
-      .connection('todos')
-      .where({ id: 1 })
-      .first();
+    const todo = await nestKnexService.connection('todos').first();
 
     await app
       .inject({
         method: 'PUT',
-        url: `/v1/todos/1`,
+        url: `/v1/todos/${todo.id}`,
         payload: {},
       })
       .then((res) => {

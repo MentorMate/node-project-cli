@@ -147,7 +147,7 @@ describe('TodosService', () => {
       jest.spyOn(service, 'findOne').mockImplementationOnce(async () => todo);
       jest.spyOn(repository, 'remove').mockImplementationOnce(async () => 1);
 
-      expect(await service.remove({ id: 1, userId })).toBe(1);
+      expect(await service.remove({ id: '1', userId })).toBe(1);
     });
 
     it('should throw error if todo does not exist', async () => {
@@ -155,7 +155,7 @@ describe('TodosService', () => {
         .spyOn(service, 'findOne')
         .mockImplementationOnce(async () => undefined);
 
-      await expect(service.remove({ id: 1, userId })).rejects.toThrowError(
+      await expect(service.remove({ id: '1', userId })).rejects.toThrow(
         new NotFoundException(Errors.NotFound),
       );
     });

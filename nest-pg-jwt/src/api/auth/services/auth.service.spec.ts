@@ -14,7 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 import { authConfig, dbConfig, nodeConfig } from '@utils/environment';
 
 const registeredUser: User = {
-  id: 1,
+  id: '1',
   userId: 'tz4a98xxat96iws9zmbrgj3a',
   createdAt: Date.now().toString(),
   updatedAt: Date.now().toString(),

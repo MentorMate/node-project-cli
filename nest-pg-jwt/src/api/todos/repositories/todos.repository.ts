@@ -15,16 +15,21 @@ import { paginatedResponse } from '@utils/api/response';
 import { BaseRepository } from '@database/base-repository.repository';
 import { Tables } from '@database/constants';
 import { Errors } from '@utils/enums';
+import { createId } from '@paralleldrive/cuid2';
 
 @Injectable()
 export class TodosRepository extends BaseRepository<Todo> {
-  constructor(private readonly knex: NestKnexService) {
+  constructor(knex: NestKnexService) {
     super(knex, Tables.Todos);
   }
 
   async create(input: CreateTodoInput): Promise<Todo> {
     return this.repository()
-      .insert({ ...input.createTodoDto, userId: input.userId })
+      .insert({
+        id: createId(),
+        ...input.createTodoDto,
+        userId: input.userId,
+      })
       .returning('*')
       .then(([todo]: Todo[]) => todo)
       .catch(rethrowError(TodoUserNotFound));

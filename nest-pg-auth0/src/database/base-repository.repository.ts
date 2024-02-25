@@ -2,8 +2,7 @@ import { NestKnexService } from '@database/nest-knex.service';
 import { SortOrder } from '@utils/query';
 import { Knex } from 'knex';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export class BaseRepository<Entity extends {}> {
+export class BaseRepository<Entity extends object> {
   private knexService;
 
   constructor(knex: NestKnexService, private readonly tableName: string) {

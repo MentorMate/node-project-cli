@@ -1,15 +1,15 @@
 import { DuplicateRecordError } from '@database/errors';
 import { InsertUser, User } from '../../entities';
+import { createId } from '@paralleldrive/cuid2';
 
 export class UsersRepository {
-  private lastId = 0;
-  private records: User[] = [];
+  private records: Partial<User>[] = [];
 
-  private nextId() {
-    return ++this.lastId;
-  }
+  async insertOne(input: InsertUser): Promise<Partial<User>> {
+    if (!input.email) {
+      throw new Error('Email is required');
+    }
 
-  async insertOne(input: InsertUser): Promise<User> {
     const existingRecord = await this.findByEmail(input.email);
 
     if (existingRecord) {
@@ -17,7 +17,7 @@ export class UsersRepository {
     }
 
     const record = {
-      id: this.nextId(),
+      id: createId(),
       ...input,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -28,7 +28,7 @@ export class UsersRepository {
     return record;
   }
 
-  async findByEmail(email: string): Promise<User | undefined> {
+  async findByEmail(email: string): Promise<Partial<User> | undefined> {
     return this.records.find((r) => r.email === email);
   }
 }

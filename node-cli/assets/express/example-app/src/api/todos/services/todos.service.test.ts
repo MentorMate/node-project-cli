@@ -25,7 +25,7 @@ describe('TodoService', () => {
     describe('when the record does not exist', () => {
       it('should throw an error', async () => {
         await expect(
-          todosService.find(Date.now(), userId)
+          todosService.find(Date.now().toString(), userId)
         ).rejects.toThrow(RecordNotFoundError);
       });
     });
@@ -51,7 +51,7 @@ describe('TodoService', () => {
     describe('when the record does not exist', () => {
       it('should throw an error', async () => {
         await expect(
-          todosService.update(Date.now(), userId, { completed: true })
+          todosService.update(Date.now().toString(), userId, { completed: true })
         ).rejects.toThrow(RecordNotFoundError);
       });
     });
@@ -79,7 +79,7 @@ describe('TodoService', () => {
     describe('when the record does not exist', () => {
       it('should throw an error', async () => {
         await expect(
-          todosService.delete(Date.now(), userId)
+          todosService.delete(Date.now().toString(), userId)
         ).rejects.toThrow(RecordNotFoundError);
       });
     });

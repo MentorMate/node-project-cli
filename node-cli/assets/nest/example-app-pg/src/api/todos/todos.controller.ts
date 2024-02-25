@@ -6,7 +6,6 @@ import {
   Param,
   Delete,
   Req,
-  ParseIntPipe,
   Put,
   Query,
 } from '@nestjs/common';
@@ -72,7 +71,7 @@ export class TodosController {
   @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
   @Get(':id')
   findOne(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Req() { user: { sub } }: UserData,
   ): Promise<Todo> {
     return this.todosService.findOneOrFail({ id, userId: sub });
@@ -87,7 +86,7 @@ export class TodosController {
   @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
   @Put(':id')
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Req() { user: { sub } }: UserData,
     @Body() updateTodoDto: UpdateTodoDto,
   ): Promise<Todo> {
@@ -98,7 +97,7 @@ export class TodosController {
   @ApiNotFoundResponse({ type: NotFoundDto, description: Errors.NotFound })
   @Delete(':id')
   remove(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Req() { user: { sub } }: UserData,
   ): Promise<number> {
     return this.todosService.remove({ id, userId: sub });
