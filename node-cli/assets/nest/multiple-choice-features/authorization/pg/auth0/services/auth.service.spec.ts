@@ -15,7 +15,7 @@ const userCreds: Credentials = {
 };
 
 const registeredUser: User = {
-  id: 1,
+  id: '1',
   createdAt: Date.now().toString(),
   updatedAt: Date.now().toString(),
   email: userCreds.email,

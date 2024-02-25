@@ -67,18 +67,19 @@ describe('DELETE /v1/todos', () => {
   });
 
   it('should return 200 when todo is deleted', async () => {
+    const todo = await nestKnexService.connection('todos').first();
     await app
       .inject({
         method: 'DELETE',
-        url: `/v1/todos/1`,
+        url: `/v1/todos/${todo.id}`,
       })
       .then(async ({ statusCode }) => {
         expect(statusCode).toBe(200);
-        const todo = await nestKnexService
+        const deletedTodo = await nestKnexService
           .connection('todos')
-          .where({ id: 1 })
+          .where({ id: todo.id })
           .first();
-        expect(todo).toBeUndefined();
+        expect(deletedTodo).toBeUndefined();
       });
   });
 

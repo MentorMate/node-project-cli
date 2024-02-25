@@ -5,7 +5,6 @@ const { createId } = require('@paralleldrive/cuid2');
  * @returns { Promise<void> }
  */
 exports.seed = async function (knex) {
-  // Deletes ALL existing entries
   await knex('users').del();
   await knex('users').insert([
     // The original password for this hash is 'pass@ord'

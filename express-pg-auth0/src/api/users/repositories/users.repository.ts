@@ -11,7 +11,7 @@ export class UsersRepository {
     return await this.knex('users')
       .insert({
         id: createId(),
-        ...input
+        ...input,
       })
       .returning('*')
       .then(([user]) => user)

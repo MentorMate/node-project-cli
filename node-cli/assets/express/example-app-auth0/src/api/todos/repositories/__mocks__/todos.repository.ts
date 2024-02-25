@@ -1,17 +1,13 @@
 import { Paginated, extractPagination } from '@utils/query';
 import { InsertTodo, ListTodosQuery, Todo, UpdateTodo } from '../../entities';
+import { createId } from '@paralleldrive/cuid2';
 
 export class TodosRepository {
-  private lastId = 0;
-  private records: Todo[] = [];
+  private records: Partial<Todo>[] = [];
 
-  private nextId() {
-    return ++this.lastId;
-  }
-
-  async insertOne(input: InsertTodo): Promise<Todo> {
+  async insertOne(input: InsertTodo): Promise<Partial<Todo>> {
     const record = {
-      id: this.nextId(),
+      id: createId(),
       ...input,
       note: input.note ?? null,
       createdAt: new Date().toISOString(),
@@ -26,7 +22,7 @@ export class TodosRepository {
   async findById(
     id: Todo['id'],
     userId: Todo['userId']
-  ): Promise<Todo | undefined> {
+  ): Promise<Partial<Todo> | undefined> {
     return this.records.find((r) => r.id === id && r.userId === userId);
   }
 
@@ -34,7 +30,7 @@ export class TodosRepository {
     id: Todo['id'],
     userId: Todo['userId'],
     input: UpdateTodo
-  ): Promise<Todo | undefined> {
+  ): Promise<Partial<Todo> | undefined> {
     const record = await this.findById(id, userId);
 
     if (!record) {
@@ -61,7 +57,7 @@ export class TodosRepository {
   async list(
     userId: Todo['userId'],
     query: ListTodosQuery
-  ): Promise<Paginated<Todo>> {
+  ): Promise<Paginated<Partial<Todo>>> {
     const { page, items } = extractPagination(query.pagination);
 
     const records = this.records.filter((r) => r.userId === userId);

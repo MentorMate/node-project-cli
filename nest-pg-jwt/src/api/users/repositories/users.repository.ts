@@ -9,12 +9,12 @@ import { createId } from '@paralleldrive/cuid2';
 
 @Injectable()
 export class UsersRepository extends BaseRepository<User> {
-  constructor(private readonly knex: NestKnexService) {
+  constructor(knex: NestKnexService) {
     super(knex, Tables.Users);
   }
 
-  insertOne(payload: Partial<User>): Promise<User> {
-    return this.repository()
+  async insertOne(payload: Partial<User>): Promise<User> {
+    return await this.repository()
       .insert({
         id: createId(),
         ...payload,

@@ -25,7 +25,6 @@ describe('TodosRepository', () => {
       jest.spyOn(todosQb, 'returning');
       jest.spyOn(todosQb, 'then');
       jest.spyOn(todosQb, 'catch').mockImplementationOnce(async () => ({
-        id: 1,
         ...todo,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
