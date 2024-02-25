@@ -5,7 +5,9 @@ import { Logger } from 'pino';
 
 const REMOVED = '[[REMOVED]]';
 
-export function sanitizeHeaders(headers: IncomingHttpHeaders): IncomingHttpHeaders {
+export function sanitizeHeaders(
+  headers: IncomingHttpHeaders
+): IncomingHttpHeaders {
   const sanitizedHeaders = { ...headers };
 
   if (sanitizedHeaders.Authorization) {
@@ -29,27 +31,28 @@ export function sanitizeBody(body: IncomingHttpHeaders): IncomingHttpHeaders {
   return sanitizedBody;
 }
 
-export const logRequest = (logger: Logger) => (req: Request, res: Response, next: NextFunction) => {
-  const timestamp = new Date().toISOString();
-  const startTime = performance.now();
+export const logRequest =
+  (logger: Logger) => (req: Request, res: Response, next: NextFunction) => {
+    const timestamp = new Date().toISOString();
+    const startTime = performance.now();
 
-  res.on('finish', () => {
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    const { url, body, method, headers, ip } = req;
+    res.on('finish', () => {
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      const { url, body, method, headers, ip } = req;
 
-    const logMsg = {
-      timestamp,
-      duration: `${duration}ms`,
-      ip,
-      headers: sanitizeHeaders(headers),
-      method,
-      url,
-      body: sanitizeBody(body),
-    };
+      const logMsg = {
+        timestamp,
+        duration: `${duration}ms`,
+        ip,
+        headers: sanitizeHeaders(headers),
+        method,
+        url,
+        body: sanitizeBody(body),
+      };
 
-    logger.info(logMsg);
-  });
+      logger.info(logMsg);
+    });
 
-  next();
-}
+    next();
+  };

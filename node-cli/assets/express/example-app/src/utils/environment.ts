@@ -16,7 +16,6 @@ export const environmentSchema = z.object({
   ERROR_LOGGING: z.enum(['true', 'false']).transform((value) => value === 'true'),
 
   // PostgreSQL
-  // TODO: this limits your options, should be revisited
   PGHOST: string,
   PGPORT: port,
   PGUSER: string,

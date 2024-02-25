@@ -51,7 +51,9 @@ describe('TodoService', () => {
     describe('when the record does not exist', () => {
       it('should throw an error', async () => {
         await expect(
-          todosService.update(Date.now().toString(), userId, { completed: true })
+          todosService.update(Date.now().toString(), userId, {
+            completed: true,
+          })
         ).rejects.toThrow(RecordNotFoundError);
       });
     });
