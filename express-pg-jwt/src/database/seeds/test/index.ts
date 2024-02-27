@@ -1,4 +1,5 @@
 import { Knex } from "knex";
+import { createId } from '@paralleldrive/cuid2';
 
 /**
  * @param { import("knex").Knex } knex
@@ -9,6 +10,7 @@ exports.seed = async function (knex: Knex) {
   await knex('users').insert([
     // The original password for this hash is 'pass@ord'
     {
+      id: createId(),
       email: 'hello@email.com',
       password: '$2b$10$Mxur7NOiTlm22yuldEMZgOCbIV7bxDCcUbBLFbzrJ1MrnIczZB.92', // pragma: allowlist secret
       userId: 'tz4a98xxat96iws9zmbrgj3a',
@@ -17,18 +19,21 @@ exports.seed = async function (knex: Knex) {
 
   await knex('todos').insert([
     {
+      id: createId(),
       name: 'Laundry 1',
       note: 'Buy detergent 1',
       completed: false,
       userId: 'tz4a98xxat96iws9zmbrgj3a',
     },
     {
+      id: createId(),
       name: 'Laundry 2',
       note: 'Buy detergent 2',
       completed: false,
       userId: 'tz4a98xxat96iws9zmbrgj3a',
     },
     {
+      id: createId(),
       name: 'Laundry 3',
       note: 'Buy detergent 3',
       completed: true,

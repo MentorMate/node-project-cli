@@ -68,15 +68,12 @@ describe('GET /v1/todos/:id', () => {
   });
 
   it('should return the todo - given todo id in the query', async () => {
-    const todo = await nestKnexService
-      .connection('todos')
-      .where({ id: 1 })
-      .first();
+    const todo = await nestKnexService.connection('todos').first();
 
     await app
       .inject({
         method: 'GET',
-        url: `/v1/todos/1`,
+        url: `/v1/todos/${todo.id}`,
       })
       .then((res) => {
         const { id, name, note, completed } = res.json();

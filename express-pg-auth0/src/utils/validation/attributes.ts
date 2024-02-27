@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const id = z.number().int().positive().openapi({ example: 1 });
+export const id = z.string().openapi({ example: 'tz4a98xxat96iws9zmbrgj3a' });
 
 export const email = z
   .string()

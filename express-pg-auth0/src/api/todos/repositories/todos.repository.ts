@@ -5,13 +5,17 @@ import { InsertTodo, ListTodosQuery, Todo, UpdateTodo } from '../entities';
 import { TodoUserNotFound } from '../error-mappings';
 import { filterByCompleted, filterByName } from '../filters';
 import { sortByCreatedAt, sortByName } from '../sorters';
+import { createId } from '@paralleldrive/cuid2';
 
 export class TodosRepository {
   constructor(private readonly knex: Knex) {}
 
   async insertOne(input: InsertTodo): Promise<Todo> {
     return await this.knex('todos')
-      .insert(input)
+      .insert({
+        id: createId(),
+        ...input,
+      })
       .returning('*')
       .then(([todo]) => todo)
       .catch(rethrowError(TodoUserNotFound));

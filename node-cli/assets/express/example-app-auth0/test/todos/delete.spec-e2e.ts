@@ -24,7 +24,6 @@ describe('DELETE /v1/todos/:id', () => {
   const jwtTokens = {
     idToken: 'token',
   };
-  const todoId = 1;
   let dbClient: Knex;
 
   beforeAll(() => {
@@ -60,8 +59,13 @@ describe('DELETE /v1/todos/:id', () => {
   });
 
   it('should return 204 when todo is deleted', async () => {
+    const todo = await dbClient('todos').first();
+    if (!todo) {
+      throw new Error('Todo not found');
+    }
+
     await request(app)
-      .delete(`/v1/todos/${todoId}`)
+      .delete(`/v1/todos/${todo.id}`)
       .set('Authorization', 'Bearer ' + jwtTokens.idToken)
       .set('Content-Type', 'application/json')
       .expect(204);
@@ -81,7 +85,7 @@ describe('DELETE /v1/todos/:id', () => {
     });
 
     await request(app)
-      .delete(`/v1/todos/${todoId}`)
+      .delete(`/v1/todos/tz4a98xxat96iws9zmbrgj3a`)
       .set('Content-Type', 'application/json')
       .expect(expectError(Unauthorized));
   });

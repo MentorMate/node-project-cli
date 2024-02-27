@@ -1,10 +1,5 @@
-import { AbstractHttpAdapter, HttpAdapterHost } from '@nestjs/core';
-import {
-  ArgumentsHost,
-  HttpException,
-  HttpStatus,
-  Logger,
-} from '@nestjs/common';
+import { HttpAdapterHost } from '@nestjs/core';
+import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { ErrorLoggingFilter } from './error-logging.filter';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
