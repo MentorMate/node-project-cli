@@ -106,7 +106,7 @@ export const getQuestions = (
     ],
     skip: isExampleApp || framework === Framework.NEST,
   },
-  selectDbPrompt(framework, isExampleApp),
+  ...selectDbPrompt(framework, isExampleApp),
   {
     type: 'multiselect',
     name: 'features',

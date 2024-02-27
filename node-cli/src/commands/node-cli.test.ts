@@ -1,4 +1,4 @@
-const nodeCli = require('./node-cli');
+import nodeCli from './node-cli';
 
 const toolbox = {
   print: {
@@ -15,7 +15,7 @@ describe('node-cli', () => {
 
   describe('run', () => {
     beforeAll(async () => {
-      await nodeCli.run(toolbox);
+      await nodeCli.run(toolbox as any);
     });
 
     it('should print info on using the cli', () => {

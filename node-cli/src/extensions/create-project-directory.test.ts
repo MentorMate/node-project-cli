@@ -1,15 +1,13 @@
-const extend = require('./create-project-directory');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './create-project-directory';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import { MockToolbox } from 'src/utils/test/types';
 
 describe('create-project-directory', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -49,7 +47,7 @@ describe('create-project-directory', () => {
 
       it('should throw an error', () => {
         expect(toolbox.createProjectDirectory(input)).rejects.toThrow(
-          `Directory already exists: ${input.appDir}`
+          `Directory already exists: ${input.appDir}`,
         );
       });
     });

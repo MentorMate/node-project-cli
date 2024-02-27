@@ -1,15 +1,18 @@
-const extend = require('./setup-jwt');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './setup-jwt';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import {
+  MockToolbox,
+  Operations,
+  ProjectEnvVars,
+  SampleExtensionInput,
+} from '../utils/test/types';
 
 describe('setup-jwt', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -21,8 +24,8 @@ describe('setup-jwt', () => {
   });
 
   describe('setupJwt', () => {
-    let input;
-    let ops;
+    let input: SampleExtensionInput;
+    let ops: Operations;
 
     beforeAll(() => {
       input = createExtensionInput();
@@ -37,9 +40,9 @@ describe('setup-jwt', () => {
     });
 
     describe('syncOperations', () => {
-      let envVars;
-      let dependencies;
-      let devDependencies;
+      let envVars: ProjectEnvVars;
+      let dependencies: Record<string, string>;
+      let devDependencies: Record<string, string>;
 
       beforeAll(() => {
         input.features = [];

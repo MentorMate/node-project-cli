@@ -1,15 +1,14 @@
-const extend = require('./ts-setup');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './ts-setup';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import { MockToolbox, Operations } from '../utils/test/types';
+import { Framework } from '../@types';
 
 describe('ts-setup', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -22,7 +21,7 @@ describe('ts-setup', () => {
 
   describe('setupTs', () => {
     const input = createExtensionInput();
-    let ops;
+    let ops: Operations;
 
     beforeEach(() => {
       ops = toolbox.setupTs(input);
@@ -34,11 +33,11 @@ describe('ts-setup', () => {
     });
 
     describe('syncOperations', () => {
-      let scripts;
-      let devDependencies;
+      let scripts: Record<string, string>;
+      let devDependencies: Record<string, string>;
 
       beforeAll(() => {
-        input.framework = 'express';
+        input.framework = Framework.EXPRESS;
         input.pkgJsonScripts = [];
         input.pkgJsonInstalls = [];
       });
@@ -46,7 +45,7 @@ describe('ts-setup', () => {
       beforeEach(() => {
         toolbox.filesystem.copy = jest.fn(() => {});
         toolbox.filesystem.read = jest.fn(() =>
-          JSON.stringify({ compilerOptions: {} })
+          JSON.stringify({ compilerOptions: {} }),
         );
         toolbox.filesystem.write = jest.fn(() => {});
         toolbox.setupTs(input).syncOperations();
@@ -93,7 +92,7 @@ describe('ts-setup', () => {
 
     describe('asyncOperations', () => {
       beforeAll(() => {
-        input.framework = 'express';
+        input.framework = Framework.EXPRESS;
       });
 
       beforeEach(async () => {
@@ -118,7 +117,7 @@ describe('ts-setup', () => {
         it('should copy the tsconfig file', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/express/example-app/tsconfig.json`,
-            `${input.appDir}/tsconfig.json`
+            `${input.appDir}/tsconfig.json`,
           );
         });
       });
@@ -131,7 +130,7 @@ describe('ts-setup', () => {
         it('should copy the tsconfig file', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/tsconfig.json`,
-            `${input.appDir}/tsconfig.json`
+            `${input.appDir}/tsconfig.json`,
           );
         });
       });
@@ -139,7 +138,7 @@ describe('ts-setup', () => {
       it('should copy the tsconfig build file', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/tsconfig.build.json`,
-          `${input.appDir}/tsconfig.build.json`
+          `${input.appDir}/tsconfig.build.json`,
         );
       });
     });

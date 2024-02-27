@@ -1,15 +1,13 @@
-const extend = require('./editorconfig');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './editorconfig';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import { MockToolbox, Operations } from 'src/utils/test/types';
 
 describe('editorconfig', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -22,7 +20,7 @@ describe('editorconfig', () => {
 
   describe('editorconfig', () => {
     let input = createExtensionInput();
-    let ops;
+    let ops: Operations;
 
     beforeEach(() => {
       ops = toolbox.editorconfig(input);
@@ -41,7 +39,7 @@ describe('editorconfig', () => {
       it('should copy the .editorconfig file', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.editorconfig`,
-          `${input.appDir}/.editorconfig`
+          `${input.appDir}/.editorconfig`,
         );
       });
     });

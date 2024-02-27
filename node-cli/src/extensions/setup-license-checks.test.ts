@@ -1,15 +1,17 @@
-const extend = require('./setup-license-checks');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './setup-license-checks';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import {
+  MockToolbox,
+  Operations,
+  SampleExtensionInput,
+} from '../utils/test/types';
 
 describe('setup-license-checks', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -21,8 +23,8 @@ describe('setup-license-checks', () => {
   });
 
   describe('setupLicenseChecks', () => {
-    let input;
-    let ops;
+    let input: SampleExtensionInput;
+    let ops: Operations;
 
     beforeAll(() => {
       input = createExtensionInput();
@@ -38,8 +40,8 @@ describe('setup-license-checks', () => {
     });
 
     describe('syncOperations', () => {
-      let scripts;
-      let devDependencies;
+      let scripts: Record<string, string>;
+      let devDependencies: Record<string, string>;
 
       beforeEach(() => {
         toolbox.setupLicenseChecks(input).syncOperations();
@@ -78,7 +80,7 @@ describe('setup-license-checks', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/licenses/`,
           `${input.appDir}/`,
-          { overwrite: true }
+          { overwrite: true },
         );
       });
     });

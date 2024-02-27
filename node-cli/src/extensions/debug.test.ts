@@ -1,15 +1,18 @@
-const extend = require('./debug');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './debug';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import {
+  MockToolbox,
+  Operations,
+  SampleExtensionInput,
+} from '../utils/test/types';
+import { Framework } from '../@types';
 
 describe('debug-extension', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -21,8 +24,8 @@ describe('debug-extension', () => {
   });
 
   describe('debug', () => {
-    let input;
-    let ops;
+    let input: SampleExtensionInput;
+    let ops: Operations;
 
     beforeAll(() => {
       input = createExtensionInput();
@@ -38,10 +41,10 @@ describe('debug-extension', () => {
     });
 
     describe('syncOperations', () => {
-      let scripts;
+      let scripts: Record<string, string>;
 
       beforeAll(() => {
-        input.framework = 'nest';
+        input.framework = Framework.NEST;
       });
 
       beforeEach(() => {
@@ -51,7 +54,7 @@ describe('debug-extension', () => {
 
       describe('when the framework is not nest', () => {
         beforeAll(() => {
-          input.framework = 'express';
+          input.framework = Framework.EXPRESS;
         });
 
         it('should add the start:debug script', () => {
@@ -69,7 +72,7 @@ describe('debug-extension', () => {
       it('should copy the vscode folder', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/vscode/`,
-          `${input.appDir}/.vscode/`
+          `${input.appDir}/.vscode/`,
         );
       });
     });

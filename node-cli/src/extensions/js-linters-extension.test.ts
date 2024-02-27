@@ -1,15 +1,14 @@
-const extend = require('./js-linters-extension');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './js-linters-extension';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import { MockToolbox, Operations } from '../utils/test/types';
+import { Framework, ProjectLanguage } from '../@types';
 
 describe('js-linters-extension', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -22,7 +21,7 @@ describe('js-linters-extension', () => {
 
   describe('jsLinters', () => {
     const input = createExtensionInput();
-    let ops;
+    let ops: Operations;
 
     beforeEach(() => {
       ops = toolbox.jsLinters(input);
@@ -34,8 +33,8 @@ describe('js-linters-extension', () => {
     });
 
     describe('syncOperations', () => {
-      let scripts;
-      let devDependencies;
+      let scripts: Record<string, string>;
+      let devDependencies: Record<string, string>;
 
       beforeEach(() => {
         toolbox.jsLinters(input).syncOperations();
@@ -45,8 +44,8 @@ describe('js-linters-extension', () => {
 
       describe('when the framework is not Nest', () => {
         beforeAll(() => {
-          input.framework = 'express';
-          input.projectLanguage = 'JS';
+          input.framework = Framework.EXPRESS;
+          input.projectLanguage = ProjectLanguage.JS;
         });
 
         it('should add a format script', () => {
@@ -59,12 +58,12 @@ describe('js-linters-extension', () => {
 
         describe('when the language is TypeScript', () => {
           beforeAll(() => {
-            input.projectLanguage = 'TS';
+            input.projectLanguage = ProjectLanguage.TS;
           });
 
           it('should add the @typescript-eslint/eslint-plugin package', () => {
             expect(devDependencies).toHaveProperty(
-              '@typescript-eslint/eslint-plugin'
+              '@typescript-eslint/eslint-plugin',
             );
           });
 
@@ -75,7 +74,7 @@ describe('js-linters-extension', () => {
 
         describe('when the language is JavaScript', () => {
           beforeAll(() => {
-            input.projectLanguage = 'JS';
+            input.projectLanguage = ProjectLanguage.JS;
           });
 
           it('should add a lint script', () => {
@@ -115,8 +114,8 @@ describe('js-linters-extension', () => {
 
       describe('when the framework is not Nest', () => {
         beforeAll(() => {
-          input.framework = 'express';
-          input.projectLanguage = 'JS';
+          input.framework = Framework.EXPRESS;
+          input.projectLanguage = ProjectLanguage.JS;
         });
 
         it('should generate an eslint config', () => {
@@ -129,7 +128,7 @@ describe('js-linters-extension', () => {
         it('should copy the prettier config', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/.prettierrc.js`,
-            `${input.appDir}/.prettierrc.js`
+            `${input.appDir}/.prettierrc.js`,
           );
         });
       });
@@ -137,14 +136,14 @@ describe('js-linters-extension', () => {
       it('should copy the .eslintignore file', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.eslintignore`,
-          `${input.appDir}/.eslintignore`
+          `${input.appDir}/.eslintignore`,
         );
       });
 
       it('should copy the prettier ignore fire', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.prettierignore`,
-          `${input.appDir}/.prettierignore`
+          `${input.appDir}/.prettierignore`,
         );
       });
 
@@ -159,7 +158,7 @@ describe('js-linters-extension', () => {
 
         it('should rethrow the error with an added user-friendly message', () => {
           expect(toolbox.jsLinters(input).asyncOperations()).rejects.toThrow(
-            `An error has occurred while executing JS linters configuration: ${error}`
+            `An error has occurred while executing JS linters configuration: ${error}`,
           );
         });
       });

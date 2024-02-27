@@ -1,15 +1,18 @@
-const extend = require('./husky-setup-extension');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './husky-setup-extension';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import {
+  MockToolbox,
+  Operations,
+  SampleExtensionInput,
+} from 'src/utils/test/types';
+import { Database, Framework } from '../@types';
 
 describe('husky-setup-extension', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -21,8 +24,8 @@ describe('husky-setup-extension', () => {
   });
 
   describe('setupHusky', () => {
-    let input;
-    let ops;
+    let input: SampleExtensionInput;
+    let ops: Operations;
 
     beforeAll(() => {
       input = createExtensionInput();
@@ -38,12 +41,12 @@ describe('husky-setup-extension', () => {
     });
 
     describe('syncOperations', () => {
-      let scripts;
-      let devDependencies;
+      let scripts: Record<string, string>;
+      let devDependencies: Record<string, string>;
 
       beforeAll(() => {
         input.features = [];
-        input.db = 'pg';
+        input.db = Database.POSTGRESQL;
       });
 
       beforeEach(() => {
@@ -71,7 +74,7 @@ describe('husky-setup-extension', () => {
 
         it('should add the @commitlint/config-conventional package', () => {
           expect(devDependencies).toHaveProperty(
-            '@commitlint/config-conventional'
+            '@commitlint/config-conventional',
           );
         });
 
@@ -130,10 +133,10 @@ describe('husky-setup-extension', () => {
     });
 
     describe('asyncOperations', () => {
-      let assetsPath;
-      let appDir;
-      let appHuskyPath;
-      let assetHuskyPath;
+      let assetsPath: string;
+      let appDir: string;
+      let appHuskyPath: string;
+      let assetHuskyPath: string;
 
       beforeAll(() => {
         assetsPath = input.assetsPath;
@@ -141,18 +144,6 @@ describe('husky-setup-extension', () => {
         appHuskyPath = `${appDir}/.husky`;
         assetHuskyPath = `${assetsPath}/.husky`;
         input.features = [];
-      });
-
-      beforeEach(() => {
-        toolbox.print.muted = jest.fn(() => {});
-        toolbox.print.success = jest.fn(() => {});
-        toolbox.print.error = jest.fn(() => {});
-        toolbox.filesystem.dir = jest.fn(() => {});
-        toolbox.filesystem.read = jest.fn(() => ({}));
-        toolbox.filesystem.copyAsync = jest.fn(() => {});
-        toolbox.filesystem.writeAsync = jest.fn(() => {});
-        toolbox.template.generate = jest.fn(() => Promise.resolve(''));
-        toolbox.system.run = jest.fn(() => {});
       });
 
       beforeEach(async () => {
@@ -172,7 +163,7 @@ describe('husky-setup-extension', () => {
       it('should copy the husky .gitignore', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${assetHuskyPath}/gitignorefile`,
-          `${appHuskyPath}/.gitignore`
+          `${appHuskyPath}/.gitignore`,
         );
       });
 
@@ -184,21 +175,21 @@ describe('husky-setup-extension', () => {
         it('should copy the commit lint config file', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${assetsPath}/.commitlintrc.js`,
-            `${appDir}/.commitlintrc.js`
+            `${appDir}/.commitlintrc.js`,
           );
         });
 
         it('should copy the Commitzen config file', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${assetsPath}/.czrc`,
-            `${appDir}/.czrc`
+            `${appDir}/.czrc`,
           );
         });
 
         it('should copy the commit msg hook', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${assetHuskyPath}/commit-msg`,
-            `${appHuskyPath}/commit-msg`
+            `${appHuskyPath}/commit-msg`,
           );
         });
       });
@@ -210,7 +201,7 @@ describe('husky-setup-extension', () => {
 
         it('should create a scripts directory', () => {
           expect(toolbox.filesystem.dir).toHaveBeenCalledWith(
-            `${appDir}/scripts`
+            `${appDir}/scripts`,
           );
         });
 
@@ -222,21 +213,21 @@ describe('husky-setup-extension', () => {
           });
 
           expect(toolbox.system.run).toHaveBeenCalledWith(
-            `chmod +x ${appDir}/.husky/pre-commit`
+            `chmod +x ${appDir}/.husky/pre-commit`,
           );
         });
 
         it('should write the lintstaged config', () => {
           expect(toolbox.filesystem.writeAsync).toHaveBeenCalledWith(
             `${appDir}/.lintstagedrc`,
-            {}
+            '{}',
           );
         });
 
         it('should copy the ls-lint config', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${assetsPath}/.ls-lint.yml`,
-            `${appDir}/.ls-lint.yml`
+            `${appDir}/.ls-lint.yml`,
           );
         });
 
@@ -251,26 +242,26 @@ describe('husky-setup-extension', () => {
 
           describe('and the fraemwork is nest', () => {
             beforeAll(() => {
-              input.framework = 'nest';
+              input.framework = Framework.NEST;
             });
 
             it('should copy the example app ls-lint config', () => {
               expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
                 `${assetsPath}/${input.framework}/example-app-pg/.ls-lint.yml`,
-                `${appDir}/.ls-lint.yml`
+                `${appDir}/.ls-lint.yml`,
               );
             });
           });
 
           describe('and the framework is express', () => {
             beforeAll(() => {
-              input.framework = 'express';
+              input.framework = Framework.EXPRESS;
             });
 
             it('should copy the example app ls-lint config', () => {
               expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
                 `${assetsPath}/${input.framework}/example-app/.ls-lint.yml`,
-                `${appDir}/.ls-lint.yml`
+                `${appDir}/.ls-lint.yml`,
               );
             });
           });
@@ -279,14 +270,14 @@ describe('husky-setup-extension', () => {
         it('should copy the detect-secrets script', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${assetsPath}/detect-secrets.sh`,
-            `${appDir}/scripts/detect-secrets.sh`
+            `${appDir}/scripts/detect-secrets.sh`,
           );
         });
 
         it('should copy the secrets baseline file', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${assetsPath}/.secrets.baseline`,
-            `${appDir}/.secrets.baseline`
+            `${appDir}/.secrets.baseline`,
           );
         });
       });
@@ -299,7 +290,7 @@ describe('husky-setup-extension', () => {
         it('should copy the pre-push hook', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${assetHuskyPath}/pre-push`,
-            `${appHuskyPath}/pre-push`
+            `${appHuskyPath}/pre-push`,
           );
         });
       });
@@ -315,7 +306,7 @@ describe('husky-setup-extension', () => {
 
         it('should rethrow the error with an added user-friendly message', () => {
           expect(toolbox.setupHusky(input).asyncOperations()).rejects.toThrow(
-            `An error has occurred while creating husky hooks: ${error}`
+            `An error has occurred while creating husky hooks: ${error}`,
           );
         });
       });

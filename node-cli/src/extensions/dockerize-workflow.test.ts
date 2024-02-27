@@ -1,15 +1,18 @@
-const extend = require('./dockerize-workflow');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './dockerize-workflow';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import {
+  MockToolbox,
+  Operations,
+  SampleExtensionInput,
+} from 'src/utils/test/types';
+import { Framework, ProjectLanguage } from '../@types';
 
 describe('dockerize-workflow', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -21,8 +24,8 @@ describe('dockerize-workflow', () => {
   });
 
   describe('dockerizeWorkflow', () => {
-    let input;
-    let ops;
+    let input: SampleExtensionInput;
+    let ops: Operations;
 
     beforeAll(() => {
       input = createExtensionInput();
@@ -38,7 +41,7 @@ describe('dockerize-workflow', () => {
     });
 
     describe('syncOperations', () => {
-      let scripts;
+      let scripts: Record<string, string>;
 
       beforeEach(() => {
         toolbox.dockerizeWorkflow(input).syncOperations();
@@ -88,35 +91,35 @@ describe('dockerize-workflow', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/express/example-app/Dockerfile`,
             `${input.appDir}/Dockerfile`,
-            { overwrite: true }
+            { overwrite: true },
           );
         });
       });
 
       describe('when the language is JavaScript', () => {
         beforeAll(() => {
-          input.projectLanguage = 'JS';
+          input.projectLanguage = ProjectLanguage.JS;
         });
 
         it('should copy Dockerfile', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/docker/js/Dockerfile`,
             `${input.appDir}/Dockerfile`,
-            { overwrite: true }
+            { overwrite: true },
           );
         });
       });
 
       describe('when the language is TypeScript', () => {
         beforeAll(() => {
-          input.projectLanguage = 'TS';
+          input.projectLanguage = ProjectLanguage.TS;
         });
 
         it('should copy Dockerfile', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/docker/ts/Dockerfile`,
             `${input.appDir}/Dockerfile`,
-            { overwrite: true }
+            { overwrite: true },
           );
         });
       });
@@ -125,20 +128,20 @@ describe('dockerize-workflow', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.dockerignore`,
           `${input.appDir}/.dockerignore`,
-          { overwrite: true }
+          { overwrite: true },
         );
       });
 
       describe('when the framework is Nest and is not example app', () => {
         beforeAll(() => {
-          input.framework = 'nest';
+          input.framework = Framework.NEST;
         });
 
         it('should update the entry point script in Dockefile', () => {
           expect(toolbox.patching.replace).toHaveBeenCalledWith(
             `${input.appDir}/Dockerfile`,
             '/index.js',
-            '/main.js'
+            '/main.js',
           );
         });
       });

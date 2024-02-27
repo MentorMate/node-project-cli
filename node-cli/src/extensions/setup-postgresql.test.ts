@@ -1,15 +1,18 @@
-const extend = require('./setup-postgresql');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './setup-postgresql';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import {
+  MockToolbox,
+  Operations,
+  ProjectEnvVars,
+  SampleExtensionInput,
+} from '../utils/test/types';
 
 describe('setup-postgresql', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -21,8 +24,8 @@ describe('setup-postgresql', () => {
   });
 
   describe('setupPostgreSQL', () => {
-    let input;
-    let ops;
+    let input: SampleExtensionInput;
+    let ops: Operations;
 
     beforeAll(() => {
       input = createExtensionInput();
@@ -38,9 +41,9 @@ describe('setup-postgresql', () => {
     });
 
     describe('syncOperations', () => {
-      let envVars;
-      let dependencies;
-      let devDependencies;
+      let envVars: ProjectEnvVars;
+      let dependencies: Record<string, string>;
+      let devDependencies: Record<string, string>;
 
       beforeAll(() => {
         input.features = [];
@@ -73,8 +76,8 @@ describe('setup-postgresql', () => {
     });
 
     describe('asyncOperations', () => {
-      let assetsPath;
-      let appDir;
+      let assetsPath: string;
+      let appDir: string;
 
       beforeAll(() => {
         assetsPath = input.assetsPath;
@@ -92,14 +95,14 @@ describe('setup-postgresql', () => {
       it('should copy the docker-compose.yml file', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${assetsPath}/db/pg/docker-compose.yml`,
-          `${appDir}/docker-compose.yml`
+          `${appDir}/docker-compose.yml`,
         );
       });
 
       it('should copy the docker-compose.override.yml file', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${assetsPath}/db/pg/docker-compose.override.example.yml`,
-          `${appDir}/docker-compose.override.example.yml`
+          `${appDir}/docker-compose.override.example.yml`,
         );
       });
     });

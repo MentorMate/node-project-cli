@@ -1,15 +1,13 @@
-const extend = require('./audit-workflow');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './audit-workflow';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import { MockToolbox, Operations } from 'src/utils/test/types';
 
 describe('audit-workflow', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -22,7 +20,7 @@ describe('audit-workflow', () => {
 
   describe('auditConfig', () => {
     let input = createExtensionInput();
-    let ops;
+    let ops: Operations;
 
     beforeEach(() => {
       ops = toolbox.auditConfig(input);
@@ -50,7 +48,7 @@ describe('audit-workflow', () => {
       it('should copy the audit workflow config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/.github/workflows/audit.yaml`,
-          `${input.workflowsFolder}/audit.yaml`
+          `${input.workflowsFolder}/audit.yaml`,
         );
       });
     });
@@ -66,7 +64,7 @@ describe('audit-workflow', () => {
 
       it('should rethrow the error with an added user-friendly message', () => {
         expect(toolbox.auditConfig(input).asyncOperations()).rejects.toThrow(
-          `An error has occurred while copying audit workflow: ${error}`
+          `An error has occurred while copying audit workflow: ${error}`,
         );
       });
     });

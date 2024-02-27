@@ -24,7 +24,6 @@ export default (toolbox: GluegunToolbox) => {
       filesystem: { copyAsync },
     } = toolbox;
 
-    console.log({ assetsPath, workflowsFolder });
     async function asyncOperations() {
       muted('Configuring Jest...');
 
@@ -57,7 +56,6 @@ export default (toolbox: GluegunToolbox) => {
         assetsAppDir = `${assetsPath}/${framework}/${projectLanguage.toLowerCase()}`;
       }
 
-      console.log({ assetsAppDir });
       await copyAsync(
         `${assetsAppDir}/jest.config.js`,
         `${appDir}/jest.config.js`,

@@ -1,12 +1,13 @@
-const extend = require('./os');
-const { createToolboxMock } = require('../utils/test/mocks');
+import extend from './os';
+import { createToolboxMock } from '../utils/test/mocks';
+import { MockToolbox } from '../utils/test/types';
 
 describe('os', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {

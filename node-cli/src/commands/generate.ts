@@ -15,7 +15,7 @@ import {
   UserInput,
 } from '../@types';
 
-const command = {
+export const command = {
   name: 'generate',
   description: 'Generate a Node.js project',
   usage: 'node-cli generate project-name [...options]',
@@ -71,7 +71,6 @@ export default {
       commandHelp,
     } = toolbox;
 
-    success('THIS IS CURRENT');
     if (commandHelp.shouldPrint()) {
       commandHelp.print(command);
       return;

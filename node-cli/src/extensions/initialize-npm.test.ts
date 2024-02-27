@@ -1,15 +1,13 @@
-const extend = require('./initialize-npm');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './initialize-npm';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import { MockToolbox } from '../utils/test/types';
 
 describe('initialize-npm', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {

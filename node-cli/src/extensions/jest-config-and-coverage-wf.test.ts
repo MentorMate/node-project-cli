@@ -1,15 +1,14 @@
-const extend = require('./jest-config-and-coverage-wf');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './jest-config-and-coverage-wf';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import { MockToolbox, Operations } from '../utils/test/types';
+import { AuthOption, Database, Framework, ProjectLanguage } from '../@types';
 
 describe('jest-config-and-coverage-wf', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -22,7 +21,7 @@ describe('jest-config-and-coverage-wf', () => {
 
   describe('jestConfig', () => {
     let input = createExtensionInput();
-    let ops;
+    let ops: Operations;
 
     beforeEach(() => {
       ops = toolbox.jestConfig(input);
@@ -34,11 +33,11 @@ describe('jest-config-and-coverage-wf', () => {
     });
 
     describe('syncOperations', () => {
-      let scripts;
-      let devDependencies;
+      let scripts: Record<string, string>;
+      let devDependencies: Record<string, string>;
 
       beforeAll(() => {
-        input.projectLanguage = 'JS';
+        input.projectLanguage = ProjectLanguage.JS;
       });
 
       beforeEach(() => {
@@ -73,7 +72,7 @@ describe('jest-config-and-coverage-wf', () => {
 
       describe('when the languange is TypeScript', () => {
         beforeAll(() => {
-          input.projectLanguage = 'TS';
+          input.projectLanguage = ProjectLanguage.TS;
         });
 
         it('should add the ts-jest devDependency', () => {
@@ -109,10 +108,10 @@ describe('jest-config-and-coverage-wf', () => {
     });
 
     describe('asyncOperations', () => {
-      let assetsAppDir;
+      let assetsAppDir: string;
 
       beforeAll(() => {
-        input.framework = 'express';
+        input.framework = Framework.EXPRESS;
         assetsAppDir = input.isExampleApp
           ? `${input.assetsPath}/${input.framework}/example-app`
           : `${input.assetsPath}/${
@@ -165,9 +164,9 @@ describe('jest-config-and-coverage-wf', () => {
       describe('express example app - auth0', () => {
         beforeAll(() => {
           input.isExampleApp = true;
-          input.db = 'pg';
-          input.authOption = 'auth0';
-          input.framework = 'express';
+          input.db = Database.POSTGRESQL;
+          input.authOption = AuthOption.AUTH0;
+          input.framework = Framework.EXPRESS;
         });
 
         afterAll(() => {
@@ -197,9 +196,9 @@ describe('jest-config-and-coverage-wf', () => {
       describe('express example app - jwt', () => {
         beforeAll(() => {
           input.isExampleApp = true;
-          input.db = 'pg';
-          input.authOption = 'jwt';
-          input.framework = 'express';
+          input.db = Database.POSTGRESQL;
+          input.authOption = AuthOption.JWT;
+          input.framework = Framework.EXPRESS;
         });
 
         afterAll(() => {
@@ -228,9 +227,9 @@ describe('jest-config-and-coverage-wf', () => {
       describe('nest example app - postgres', () => {
         beforeAll(() => {
           input.isExampleApp = true;
-          input.db = 'pg';
-          input.authOption = 'auth0';
-          input.framework = 'nest';
+          input.db = Database.POSTGRESQL;
+          input.authOption = AuthOption.AUTH0;
+          input.framework = Framework.NEST;
         });
 
         afterAll(() => {
@@ -250,9 +249,9 @@ describe('jest-config-and-coverage-wf', () => {
       describe('nest example app - mongodb', () => {
         beforeAll(() => {
           input.isExampleApp = true;
-          input.db = 'mongodb';
-          input.authOption = 'auth0';
-          input.framework = 'nest';
+          input.db = Database.MONGODB;
+          input.authOption = AuthOption.AUTH0;
+          input.framework = Framework.NEST;
         });
 
         afterAll(() => {

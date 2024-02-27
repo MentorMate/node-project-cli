@@ -1,15 +1,13 @@
-const extend = require('./initialize-git');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './initialize-git';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import { MockToolbox } from '../utils/test/types';
 
 describe('initialize-git', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -41,7 +39,7 @@ describe('initialize-git', () => {
 
       it('should throw an exception', () => {
         expect(toolbox.initializeGit(input)).rejects.toThrow(
-          `Command 'git' not found.`
+          `Command 'git' not found.`,
         );
       });
     });
@@ -55,14 +53,14 @@ describe('initialize-git', () => {
       it('should initialize git and create the main branch', () => {
         expect(toolbox.system.run).toHaveBeenCalledWith(
           `git init && git checkout -b main`,
-          { cwd: input.appDir }
+          { cwd: input.appDir },
         );
       });
 
       it('should copy the .gitignore file over', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/git/gitignorefile`,
-          `${input.appDir}/.gitignore`
+          `${input.appDir}/.gitignore`,
         );
       });
     });

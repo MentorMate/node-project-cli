@@ -1,15 +1,14 @@
-const extend = require('./install-framework');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './install-express';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import { MockToolbox, ProjectEnvVars } from '../utils/test/types';
+import { Framework, ProjectLanguage } from '../@types';
 
 describe('install-framework', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -17,29 +16,22 @@ describe('install-framework', () => {
   });
 
   it('should set installFramework on toolbox', () => {
-    expect(toolbox.installFramework).toBeDefined();
+    expect(toolbox.installExpress).toBeDefined();
   });
 
   describe('installFramework', () => {
     const input = createExtensionInput();
-    let envVars;
-    let scripts;
-    let dependencies;
-    let devDependencies;
+    let envVars: ProjectEnvVars;
+    let scripts: Record<string, string>;
+    let dependencies: Record<string, string>;
+    let devDependencies: Record<string, string>;
 
     beforeAll(() => {
-      input.projectLanguage = 'JS';
+      input.projectLanguage = ProjectLanguage.JS;
     });
 
     beforeEach(() => {
-      toolbox.print.muted = jest.fn(() => {});
-      toolbox.print.success = jest.fn(() => {});
-      toolbox.print.error = jest.fn(() => {});
-      toolbox.filesystem.dir = jest.fn(() => {});
-      toolbox.filesystem.copyAsync = jest.fn(() => {});
-      toolbox.template.generate = jest.fn(() => {});
-      toolbox.system.run = jest.fn(() => {});
-      toolbox.installFramework(input);
+      toolbox.installExpress(input);
       envVars = input.envVars;
       scripts = input.pkgJson.scripts;
       dependencies = input.pkgJson.dependencies;
@@ -86,8 +78,8 @@ describe('install-framework', () => {
 
     describe('when the framework is express', () => {
       beforeAll(() => {
-        input.projectLanguage = 'JS'; // else-branch coverage
-        input.framework = 'express';
+        input.projectLanguage = ProjectLanguage.JS; // else-branch coverage
+        input.framework = Framework.EXPRESS;
       });
 
       it('should install add the framework to dependencies', () => {
@@ -108,7 +100,7 @@ describe('install-framework', () => {
 
       describe('and the language is TypeScript', () => {
         beforeAll(() => {
-          input.projectLanguage = 'TS';
+          input.projectLanguage = ProjectLanguage.TS;
         });
 
         it('should add @types/express to devDependencies', () => {
@@ -132,26 +124,26 @@ describe('install-framework', () => {
 
       describe('and the language is JavaScript', () => {
         beforeAll(() => {
-          input.projectLanguage = 'JS';
+          input.projectLanguage = ProjectLanguage.JS;
         });
 
         it('should copy the project source', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/express/js/src/`,
-            `${input.appDir}/src/`
+            `${input.appDir}/src/`,
           );
         });
       });
 
       describe('and the language is TypeScript', () => {
         beforeAll(() => {
-          input.projectLanguage = 'TS';
+          input.projectLanguage = ProjectLanguage.TS;
         });
 
         it('should copy the project source', () => {
           expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
             `${input.assetsPath}/express/ts/src/`,
-            `${input.appDir}/src/`
+            `${input.appDir}/src/`,
           );
         });
       });
@@ -169,7 +161,7 @@ describe('install-framework', () => {
       it('should copy the example project source', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/express/example-app/src/`,
-          `${input.appDir}/src/`
+          `${input.appDir}/src/`,
         );
       });
 
@@ -235,42 +227,42 @@ describe('install-framework', () => {
 
       it('should add the openapi scripts', () => {
         expect(Object.keys(scripts)).toEqual(
-          expect.arrayContaining(['openapi:g'])
+          expect.arrayContaining(['openapi:g']),
         );
       });
 
       it('should copy the openapi-generate script', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/express/example-app/scripts/generate-openapi.ts`,
-          `${input.appDir}/scripts/generate-openapi.ts`
+          `${input.appDir}/scripts/generate-openapi.ts`,
         );
       });
 
       it('should copy the .openapi dir', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/express/example-app/.openapi/gitignorefile`,
-          `${input.appDir}/.openapi/.gitignore`
+          `${input.appDir}/.openapi/.gitignore`,
         );
       });
 
       it('should copy the docker-compose config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/express/example-app/docker-compose.yml`,
-          `${input.appDir}/docker-compose.yml`
+          `${input.appDir}/docker-compose.yml`,
         );
       });
 
       it('should copy the docker-compose override config', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/express/example-app/docker-compose.override.example.yml`,
-          `${input.appDir}/docker-compose.override.example.yml`
+          `${input.appDir}/docker-compose.override.example.yml`,
         );
       });
 
       it('should copy the database migrations', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/express/example-app/migrations`,
-          `${input.appDir}/migrations`
+          `${input.appDir}/migrations`,
         );
       });
 
@@ -299,7 +291,7 @@ describe('install-framework', () => {
             'db:migrate:version',
             'db:migrate:status',
             'db:migrate:reset',
-          ])
+          ]),
         );
       });
 
@@ -307,7 +299,7 @@ describe('install-framework', () => {
         expect(toolbox.filesystem.copyAsync).toHaveBeenCalledWith(
           `${input.assetsPath}/db/pg/scripts`,
           `${input.appDir}/scripts`,
-          { overwrite: true }
+          { overwrite: true },
         );
       });
     });

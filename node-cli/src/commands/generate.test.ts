@@ -1,13 +1,7 @@
-const generate = require('./generate');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import generate from './generate';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
 
 describe('generate', () => {
-  const userInput = createExtensionInput();
-  const toolbox = createToolboxMock();
-
   it('should be defined', () => {
     expect(generate).toBeDefined();
     expect(generate.name).toBeDefined();
@@ -17,48 +11,67 @@ describe('generate', () => {
   });
 
   describe('no pip3 run', () => {
+    const toolbox = createToolboxMock();
+
     beforeAll(async () => {
-      toolbox.system.which = () => false;
-      await generate.run(toolbox);
+      toolbox.system.which.mockReturnValue(false);
+      await generate.run(toolbox as any);
     });
 
     it('should log a warning for not having pip3', () => {
-      expect(toolbox.print.warning.toHaveBeenCalled);
+      expect(toolbox.print.warning).toHaveBeenCalled();
     });
   });
 
   describe('when --interactive and --example-app flags are provided at the same time', () => {
+    const toolbox = createToolboxMock();
+
     beforeAll(async () => {
-      toolbox.system.options = {
+      toolbox.parameters.options = {
         interactive: true,
         'example-app': true,
       };
-      await generate.run(toolbox);
+
+      await generate.run(toolbox as any);
     });
 
     it('should log an error and stop the process', () => {
-      expect(toolbox.print.error.toHaveBeenCalled);
+      expect(toolbox.print.error).toHaveBeenCalled();
     });
   });
 
   describe('normal run', () => {
+    const userInput = createExtensionInput();
+    const toolbox = createToolboxMock();
+
     describe('when --interactive flag is provided', () => {
       beforeAll(async () => {
-        toolbox.prompt.ask = jest.fn(async (questions) => {
-          const answers = questions.map((q) => {
-            const answer = [q.format, q.result]
-              .filter(Boolean)
-              .reduce((val, fn) => fn(val), userInput[q.name]);
-            return [q.name, answer];
-          });
-          return Object.fromEntries(answers);
-        });
-        toolbox.template.generate = jest.fn(() => {});
-        await generate.run(toolbox);
+        toolbox.prompt.ask.mockClear();
+        toolbox.prompt.ask.mockImplementation(
+          async (
+            questions: {
+              format: CallableFunction;
+              result: () => string;
+              name: string;
+            }[],
+          ) => {
+            const answers = questions.map((q) => {
+              const answer = [q.format, q.result]
+                .filter(Boolean)
+                .reduce(
+                  (val, fn: CallableFunction) => fn(val),
+                  userInput[q.name as never],
+                );
+              return [q.name, answer];
+            });
+            return Object.fromEntries(answers);
+          },
+        );
+        await generate.run(toolbox as any);
       });
 
       it('should prompt the user twice', () => {
-        expect(toolbox.prompt.ask).toHaveBeenCalledTimes(2);
+        expect(toolbox.prompt.ask as any).toHaveBeenCalledTimes(2);
       });
 
       it('should ask for the project name and framework', async () => {

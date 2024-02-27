@@ -1,15 +1,13 @@
-const extend = require('./generate-readme');
-const {
-  createToolboxMock,
-  createExtensionInput,
-} = require('../utils/test/mocks');
+import extend from './generate-readme';
+import { createToolboxMock, createExtensionInput } from '../utils/test/mocks';
+import { MockToolbox, Operations } from 'src/utils/test/types';
 
 describe('generate-readme', () => {
-  let toolbox;
+  let toolbox: MockToolbox;
 
   beforeEach(() => {
     toolbox = createToolboxMock();
-    extend(toolbox);
+    extend(toolbox as any);
   });
 
   it('should be defined', () => {
@@ -22,7 +20,7 @@ describe('generate-readme', () => {
 
   describe('generateReadme', () => {
     const input = createExtensionInput();
-    let ops;
+    let ops: Operations;
 
     beforeAll(() => {
       ops = toolbox.generateReadme(input);

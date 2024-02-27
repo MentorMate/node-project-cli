@@ -1,19 +1,20 @@
-/* eslint no-unused-vars: 0 */
+import { strings } from 'gluegun';
+import getFeatures from '../commands/features';
+import { MockToolbox, SampleExtensionInput } from './types';
+import { AuthOption, Database, Framework, ProjectLanguage } from '../../@types';
 
-import { GluegunToolbox, strings } from 'gluegun';
-import getFeatures from '../commands/features'
-
-const createToolboxMock = () => ({
+export const createToolboxMock = (): MockToolbox => ({
   filesystem: {
-    copy: (from, to, options) => {},
-    copyAsync: async (from, to, options) => {},
-    dir: (path, criteria) => {},
-    exists: (path) => false,
-    path: (...args) => args.join('/'),
-    read: (path) => JSON.stringify({}),
-    write: (path, data, options) => {},
-    cwd: () => '/path/to',
-    removeAsync: async (path) => {},
+    copy: jest.fn(),
+    copyAsync: jest.fn(),
+    dir: jest.fn(),
+    exists: jest.fn(),
+    path: jest.fn().mockImplementation((...args) => args.join('/')),
+    read: jest.fn().mockReturnValue(JSON.stringify({})),
+    write: jest.fn(),
+    cwd: jest.fn().mockReturnValue('/path/to'),
+    removeAsync: jest.fn(),
+    writeAsync: jest.fn(),
   },
   parameters: {
     plugin: 'node-cli',
@@ -40,105 +41,114 @@ const createToolboxMock = () => ({
     string: 'project-name',
   },
   patching: {
-    replace: (filename, oldContent, newContent) =>
+    replace: (filename: string, oldContent: string, newContent: string) =>
       filename.replace(oldContent, newContent),
   },
   print: {
-    success: (msg) => {},
-    highlight: (msg) => {},
-    error: (msg) => {},
-    muted: (msg) => {},
-    warning: (msg) => {},
+    success: jest.fn(),
+    highlight: jest.fn(),
+    error: jest.fn(),
+    muted: jest.fn(),
+    warning: jest.fn(),
   },
   prompt: {
-    ask: async (questions) => {
-      const answers = questions.map((q) => {
-        const answer = [q.format, q.result]
-          .filter(Boolean)
-          .reduce((val, fn) => fn(val), `${q.name}Answer`);
-        return [q.name, answer];
-      });
-      return Object.fromEntries(answers);
-    },
+    ask: jest.fn().mockImplementation(
+      async (
+        questions: {
+          format: CallableFunction;
+          result: () => string;
+          name: string;
+        }[],
+      ) => {
+        const answers = questions.map((q) => {
+          const answer = [q.format, q.result]
+            .filter(Boolean)
+            .reduce((val, fn: CallableFunction) => fn(val), `${q.name}Answer`);
+          return [q.name, answer];
+        });
+        return Object.fromEntries(answers);
+      },
+    ),
   },
   strings,
   system: {
-    run: (cmd) => '',
-    which: () => true,
+    run: jest.fn().mockReturnValue(''),
+    which: jest.fn().mockReturnValue(true),
   },
   meta: {
     src: '/path/to/project-name/src',
   },
   template: {
-    generate: (opts) => Promise.resolve(''),
+    generate: jest.fn().mockResolvedValue(''),
   },
   // Extensions
   os: {
-    isWin: () => false,
+    isWin: jest.fn().mockReturnValue(false),
   },
-  createProjectDirectory: async () => {},
-  initializeNpm: async () => {},
-  initializeGit: async () => {},
-  installFramework: async () => {},
-  installNest: async () => {},
-  jsLinters: () => ({
-    syncOperations: () => {},
-    asyncOperations: async () => {},
+  createProjectDirectory: jest.fn(),
+  initializeNpm: jest.fn(),
+  initializeGit: jest.fn(),
+  installExpress: jest.fn(),
+  installNest: jest.fn(),
+  jsLinters: jest.fn().mockReturnValue({
+    syncOperations: jest.fn(),
+    asyncOperations: jest.fn(),
   }),
-  jestConfig: () => ({
-    syncOperations: () => {},
-    asyncOperations: async () => {},
+  jestConfig: jest.fn().mockReturnValue({
+    syncOperations: jest.fn(),
+    asyncOperations: jest.fn(),
   }),
-  auditConfig: () => ({
-    asyncOperations: async () => {},
+  auditConfig: jest.fn().mockReturnValue({
+    asyncOperations: jest.fn(),
   }),
-  setupTs: () => ({
-    syncOperations: () => {},
-    asyncOperations: async () => {},
+  setupTs: jest.fn().mockReturnValue({
+    syncOperations: jest.fn(),
+    asyncOperations: jest.fn(),
   }),
-  setupHusky: () => ({
-    syncOperations: () => {},
-    asyncOperations: async () => {},
+  setupHusky: jest.fn().mockReturnValue({
+    syncOperations: jest.fn(),
+    asyncOperations: jest.fn(),
   }),
-  dockerizeWorkflow: () => ({
-    syncOperations: () => {},
-    asyncOperations: async () => {},
+  dockerizeWorkflow: jest.fn().mockReturnValue({
+    syncOperations: jest.fn(),
+    asyncOperations: jest.fn(),
   }),
-  setupJwt: () => ({
-    syncOperations: () => {},
-    asyncOperations: async () => {},
+  setupJwt: jest.fn().mockReturnValue({
+    syncOperations: jest.fn(),
+    asyncOperations: jest.fn(),
   }),
-  setupPostgreSQL: () => ({
-    syncOperations: () => {},
-    asyncOperations: async () => {},
+  setupPostgreSQL: jest.fn().mockReturnValue({
+    syncOperations: jest.fn(),
+    asyncOperations: jest.fn(),
   }),
-  generateReadme: () => ({
-    asyncOperations: async () => {},
+  generateReadme: jest.fn().mockReturnValue({
+    asyncOperations: jest.fn(),
   }),
-  debug: () => ({
-    syncOperations: () => {},
-    asyncOperations: async () => {},
+  debug: jest.fn().mockReturnValue({
+    syncOperations: jest.fn(),
+    asyncOperations: jest.fn(),
   }),
-  editorconfig: () => ({
-    asyncOperations: async () => {},
+  editorconfig: jest.fn().mockReturnValue({
+    asyncOperations: jest.fn(),
   }),
-  setupLicenseChecks: () => ({
-    syncOperations: () => {},
-    asyncOperations: async () => {},
+  setupLicenseChecks: jest.fn().mockReturnValue({
+    syncOperations: jest.fn(),
+    asyncOperations: jest.fn(),
   }),
-  setupMarkdownLinter: () => ({
-    syncOperations: () => {},
+  setupMarkdownLinter: jest.fn().mockReturnValue({
+    syncOperations: jest.fn(),
   }),
   commandHelp: {
-    shouldPrint: () => false,
-    print: () => {},
+    shouldPrint: jest.fn().mockReturnValue(false),
+    print: jest.fn(),
   },
 });
 
-const createExtensionInput = () => ({
+export const createExtensionInput = (): SampleExtensionInput => ({
   projectName: 'project-name',
-  framework: 'express',
-  projectLanguage: 'TS',
+  framework: Framework.EXPRESS,
+  projectLanguage: ProjectLanguage.TS,
+  authOption: AuthOption.JWT,
   appDir: '/path/to/project-name',
   assetsPath: '/path/to/project-name/assets',
   workflowsFolder: '/path/to/project-name/workflows',
@@ -153,11 +163,6 @@ const createExtensionInput = () => ({
       NODE_ENV: 'development',
     },
   },
-  db: 'none',
+  db: Database.NONE,
   isExampleApp: false,
 });
-
-module.exports = {
-  createToolboxMock,
-  createExtensionInput,
-};
