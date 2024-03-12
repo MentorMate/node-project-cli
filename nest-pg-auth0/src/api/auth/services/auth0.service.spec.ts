@@ -83,7 +83,7 @@ describe('Auth0Service', () => {
 
       await expect(
         auth0Service.createUser(userCreds.email, userCreds.password),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         new BadRequestException('A user with this email already exists.'),
       );
     });
@@ -98,7 +98,7 @@ describe('Auth0Service', () => {
 
       await expect(
         auth0Service.createUser(userCreds.email, userCreds.password),
-      ).rejects.toThrowError(new BadRequestException());
+      ).rejects.toThrow(new BadRequestException());
     });
   });
 
@@ -131,11 +131,11 @@ describe('Auth0Service', () => {
 
       await expect(
         auth0Service.searchUsersByEmail(auth0User.email),
-      ).rejects.toThrowError(new BadRequestException());
+      ).rejects.toThrow(new BadRequestException());
     });
   });
 
-  describe('searchUsersByEmail', () => {
+  describe('deleteUser', () => {
     it('when user is deleted', async () => {
       jest.spyOn(httpService.axiosRef, 'delete').mockResolvedValueOnce({});
 
@@ -149,9 +149,9 @@ describe('Auth0Service', () => {
         .spyOn(httpService.axiosRef, 'delete')
         .mockRejectedValueOnce({ response: { data: {} } });
 
-      await expect(
-        auth0Service.deleteUser(auth0User.user_id),
-      ).rejects.toThrowError(new BadRequestException());
+      await expect(auth0Service.deleteUser(auth0User.user_id)).rejects.toThrow(
+        new BadRequestException(),
+      );
     });
   });
 
@@ -175,7 +175,7 @@ describe('Auth0Service', () => {
         .spyOn(httpService.axiosRef, 'post')
         .mockResolvedValueOnce(tokenResponse);
 
-      await expect(auth0Service.onModuleInit()).rejects.toThrowError(
+      await expect(auth0Service.onModuleInit()).rejects.toThrow(
         new Error('Access token is missing!'),
       );
     });
@@ -183,7 +183,7 @@ describe('Auth0Service', () => {
     it('throws error when axios response is falsy(undefined)', async () => {
       jest.spyOn(httpService.axiosRef, 'post').mockResolvedValueOnce(undefined);
 
-      await expect(auth0Service.onModuleInit()).rejects.toThrowError(
+      await expect(auth0Service.onModuleInit()).rejects.toThrow(
         new Error('Access token is missing!'),
       );
     });
@@ -193,7 +193,7 @@ describe('Auth0Service', () => {
         .spyOn(httpService.axiosRef, 'post')
         .mockRejectedValueOnce({ response: { data: {} } });
 
-      await expect(auth0Service.onModuleInit()).rejects.toThrowError(
+      await expect(auth0Service.onModuleInit()).rejects.toThrow(
         new Error('Something went wrong!'),
       );
     });

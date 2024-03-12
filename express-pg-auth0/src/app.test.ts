@@ -7,7 +7,7 @@ describe('create', () => {
   it('should return an app instance and a destroy function', () => {
     const result = create({
       PORT: 3000,
-      REQUEST_LOGGING: false,
+      REQUEST_LOGGING: true,
       ERROR_LOGGING: false,
       AUTH0_ISSUER_URL: 'AUTH0_ISSUER_URL',
       AUTH0_CLIENT_ID: 'AUTH0_CLIENT_ID',
