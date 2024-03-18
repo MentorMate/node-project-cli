@@ -126,6 +126,7 @@ npm run db:migrate:latest
 ```bash
 # build the app
 npm run build
+
 # run in development mode
 npm run start
 

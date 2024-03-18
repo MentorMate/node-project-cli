@@ -6,7 +6,7 @@ npx --no -- lint-staged
 npx --no -- ls-lint
 npm run lint:dockerfile
 npm run license:check
-npm run tes:unit:cov
+npm run test:unit:cov
 npm run test:e2e:cov
 scripts/detect-secrets.sh
 

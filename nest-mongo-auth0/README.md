@@ -118,6 +118,7 @@ you can check the [documentation](https://containers.dev/).
 ```bash
 # build the app
 npm run build
+
 # run in development mode
 npm run start
 

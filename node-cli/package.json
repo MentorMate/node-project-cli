@@ -18,13 +18,12 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json && tsc-alias && cp -r ./src/templates ./dist/templates/",
     "format": "prettier \"**/*.{js,md}\" --write --cache --cache-strategy metadata --cache-location .prettiercache",
-    "license:check": "license-checker --summary --onlyAllow $(node ./licenses-allowed.js ';') > /dev/null",
+    "license:check": "license-checker --summary --onlyAllow $(node ./licenses-allowed.js ';')",
     "license:for-review": "license-checker --summary --exclude $(node ./licenses-allowed.js ',')",
     "license:summary": "license-checker --summary",
     "lint": "eslint \"**/*.js\" --fix --cache",
     "test": "jest",
-    "test:unit:cov": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:unit:cov": "jest --coverage"
   },
   "dependencies": {
     "gluegun": "^5.1.2"

@@ -19,7 +19,6 @@ export const environmentSchema = z.object({
     .transform((value) => value === 'true'),
 
   // PostgreSQL
-  // TODO: this limits your options, should be revisited
   PGHOST: string,
   PGPORT: port,
   PGUSER: string,

@@ -23,7 +23,7 @@ describe('Environment Schema', () => {
     expect(data).toEqual({
       NODE_ENV: 'development',
       PORT: 3000,
-      REQUEST_LOGGING: true,
+      REQUEST_LOGGING: false,
       ERROR_LOGGING: false,
       PGHOST: 'localhost',
       PGPORT: 5432,
