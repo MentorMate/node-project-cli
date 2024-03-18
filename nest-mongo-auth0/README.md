@@ -134,7 +134,7 @@ npm run start:debug
 
 ```bash
 # run
-npm run test
+npm run test:unit
 
 # coverage
 npm run test:unit:cov

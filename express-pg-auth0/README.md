@@ -126,6 +126,7 @@ npm run db:migrate:latest
 ```bash
 # build the app
 npm run build
+
 # run in development mode
 npm run start
 
@@ -142,7 +143,7 @@ npm run start:debug
 
 ```bash
 # run
-npm run test
+npm run test:unit
 
 # coverage
 npm run test:unit:cov
