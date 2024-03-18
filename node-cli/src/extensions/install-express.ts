@@ -44,11 +44,11 @@ export default (toolbox: GluegunToolbox) => {
 
     const executable =
       projectLanguage === ProjectLanguage.TS
-        ? 'npx ts-node'
-        : 'node -r dotenv/config';
+        ? 'node -r dotenv/config dist/index'
+        : 'node -r dotenv/config src/index';
 
     Object.assign(pkgJson.scripts, {
-      start: `${executable} src/index`,
+      start: executable,
       'start:dev': 'nodemon',
     });
 
@@ -57,7 +57,7 @@ export default (toolbox: GluegunToolbox) => {
       target: `${appDir}/nodemon.json`,
       props: {
         ext: projectLanguage === ProjectLanguage.TS ? 'ts' : 'js',
-        exec: pkgJson.scripts['start'],
+        exec: projectLanguage === ProjectLanguage.TS ? 'npx ts-node src/index' : pkgJson.scripts['start'],
       },
     });
 

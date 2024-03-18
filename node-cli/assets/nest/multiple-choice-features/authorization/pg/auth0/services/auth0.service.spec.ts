@@ -135,7 +135,7 @@ describe('Auth0Service', () => {
     });
   });
 
-  describe('searchUsersByEmail', () => {
+  describe('deleteUser', () => {
     it('when user is deleted', async () => {
       jest.spyOn(httpService.axiosRef, 'delete').mockResolvedValueOnce({});
 
@@ -149,9 +149,9 @@ describe('Auth0Service', () => {
         .spyOn(httpService.axiosRef, 'delete')
         .mockRejectedValueOnce({ response: { data: {} } });
 
-      await expect(
-        auth0Service.deleteUser(auth0User.user_id),
-      ).rejects.toThrow(new BadRequestException());
+      await expect(auth0Service.deleteUser(auth0User.user_id)).rejects.toThrow(
+        new BadRequestException(),
+      );
     });
   });
 

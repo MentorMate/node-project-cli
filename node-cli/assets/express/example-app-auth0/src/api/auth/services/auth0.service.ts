@@ -49,11 +49,13 @@ export class Auth0Service {
     return response.data.access_token;
   }
 
-  private buildHeaders() {
+  private async buildHeaders() {
+    const accessToken = this.accessToken || (await this.getAuth0AccessToken());
+
     return {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${this.accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     };
   }
 
@@ -65,6 +67,7 @@ export class Auth0Service {
       );
     }
 
+    const headers = await this.buildHeaders();
     return this.axios
       .post<Auth0User>(
         `${this.baseURL}api/v2/users`,
@@ -75,7 +78,7 @@ export class Auth0Service {
           password,
           verify_email: true,
         },
-        { headers: this.buildHeaders() }
+        { headers }
       )
       .then(({ data }) => data)
       .catch((error) => {
@@ -84,24 +87,26 @@ export class Auth0Service {
       });
   }
 
-  public updateUserMetadata(
+  public async updateUserMetadata(
     userId: string,
     metadata: Auth0User['user_metadata']
   ) {
+    const headers = await this.buildHeaders();
     return this.axios.patch<Auth0User>(
       `${this.baseURL}api/v2/users/${userId}`,
       {
         user_metadata: metadata,
       },
-      { headers: this.buildHeaders() }
+      { headers }
     );
   }
 
-  public searchUsersByEmail(email: string) {
+  public async searchUsersByEmail(email: string) {
+    const headers = await this.buildHeaders();
     return this.axios
       .get<Auth0User>(`${this.baseURL}api/v2/users-by-email`, {
         params: { email },
-        headers: this.buildHeaders(),
+        headers,
       })
       .then(({ data }) => data)
       .catch((error) => {
@@ -110,10 +115,11 @@ export class Auth0Service {
       });
   }
 
-  public deleteUser(userId: string) {
+  public async deleteUser(userId: string) {
+    const headers = await this.buildHeaders();
     return this.axios
       .delete<Auth0User>(`${this.baseURL}api/v2/users/${userId}`, {
-        headers: this.buildHeaders(),
+        headers,
       })
       .catch((error) => {
         this.logger.error(error.response.data);
