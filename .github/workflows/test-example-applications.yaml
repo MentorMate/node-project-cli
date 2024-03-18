@@ -35,6 +35,9 @@ jobs:
       with:
         node-version: 18
 
+    - name: Clean npm cache
+      run: npm cache clean --force
+
     - name: Install dependencies
       run: |
         git init

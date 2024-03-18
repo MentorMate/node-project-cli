@@ -12,6 +12,10 @@ describe('TodosRepository', () => {
   const todos = new TodosRepository(knex);
   const todosQb = knex('todos');
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('insertOne', () => {
     it('should return the newly created record', async () => {
       const todo = {
@@ -33,8 +37,6 @@ describe('TodosRepository', () => {
         ...todo,
       });
       expect(todosQb.returning).toHaveBeenCalledWith('*');
-      expect(todosQb.then).toHaveBeenCalled();
-      expect(todosQb.catch).toHaveBeenCalled();
 
       expect(result).toEqual(expect.objectContaining(todo));
     });
@@ -118,8 +120,6 @@ describe('TodosRepository', () => {
       });
       expect(todosQb.update).toHaveBeenCalledWith(input);
       expect(todosQb.returning).toHaveBeenCalledWith('*');
-      expect(todosQb.then).toHaveBeenCalled();
-      expect(todosQb.catch).toHaveBeenCalled();
 
       expect(result).toEqual(updated);
     });

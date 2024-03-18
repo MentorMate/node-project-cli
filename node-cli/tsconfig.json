@@ -1,0 +1,15 @@
+{
+  "extends": "@tsconfig/recommended/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": false,
+    "lib": ["ES2021"]
+  },
+  "ts-node": {
+    "files": true,
+    "require": ["tsconfig-paths/register", "dotenv/config"]
+  }
+}

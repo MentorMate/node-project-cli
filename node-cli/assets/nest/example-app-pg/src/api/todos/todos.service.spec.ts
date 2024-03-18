@@ -66,7 +66,7 @@ describe('TodosService', () => {
         .spyOn(repository, 'findOne')
         .mockImplementationOnce(async () => todo);
 
-      await expect(service.create(createTodoInput)).rejects.toThrowError(
+      await expect(service.create(createTodoInput)).rejects.toThrow(
         new UnprocessableEntityException(Errors.UnprocessableEntity),
       );
     });
