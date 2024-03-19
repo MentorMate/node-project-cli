@@ -24,8 +24,8 @@ export class ServiceToHttpErrorsInterceptor implements NestInterceptor {
         throwError(() => {
           const klass = map[err.name];
           return klass ? new klass(err.message) : err;
-        })
-      )
+        }),
+      ),
     );
   }
 }

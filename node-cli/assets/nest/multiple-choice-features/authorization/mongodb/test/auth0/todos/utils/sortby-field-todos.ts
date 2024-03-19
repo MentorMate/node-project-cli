@@ -6,7 +6,7 @@ type ListTodoSortColumn = 'name' | 'createdAt';
 export const sortByField: (
   list: Todo[],
   field: ListTodoSortColumn,
-  order?: SortOrder
+  order?: SortOrder,
 ) => Todo[] = (list, field, order) => {
   return list.sort((a, b) => {
     if (order === 'desc') {

@@ -83,7 +83,6 @@ Create a `docker-compose.override.yml` file using the example:
 cp docker-compose.override.example.yml docker-compose.override.yml
 ```
 
-
 Open the `docker-compose.override.yml` file to adjust the database volume path.
 
 ### Provision the services

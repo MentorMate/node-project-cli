@@ -57,7 +57,7 @@ describe('TodosRepository', () => {
 
   it('create - create a todo', async () => {
     mockFn.mockImplementationOnce(() =>
-      Promise.resolve({ insertedId: todo._id })
+      Promise.resolve({ insertedId: todo._id }),
     );
 
     const result = await todosRepository.create(createTodoInput);
@@ -67,7 +67,7 @@ describe('TodosRepository', () => {
       expect.objectContaining({
         ...createTodoInput.createTodoDto,
         userId: createTodoInput.userId,
-      })
+      }),
     );
   });
 
@@ -113,7 +113,7 @@ describe('TodosRepository', () => {
             note: updateTodoInput.updateTodoDto.note,
           },
         },
-        { returnDocument: 'after' }
+        { returnDocument: 'after' },
       );
     });
   });
@@ -166,4 +166,3 @@ describe('TodosRepository', () => {
     });
   });
 });
-

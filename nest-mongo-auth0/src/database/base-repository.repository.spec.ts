@@ -6,7 +6,7 @@ describe('BaseRepository', () => {
   let baseRepository: BaseRepository<object>;
 
   const estimatedDocumentCount = jest.fn(
-    (): Promise<unknown> => Promise.resolve()
+    (): Promise<unknown> => Promise.resolve(),
   );
 
   beforeEach(async () => {
