@@ -100,11 +100,11 @@ is being served on (default is 3001).
 If you're on Apple M1, uncomment the `platform: linux/amd64` line:
 
 ```yaml
-  swaggerui:
-    # uncomment the line below for Apple M1
-    platform: linux/amd64
-    ports:
-      - '3001:8080'
+swaggerui:
+  # uncomment the line below for Apple M1
+  platform: linux/amd64
+  ports:
+    - '3001:8080'
 ```
 <% } -%>
 
@@ -350,11 +350,11 @@ platform (linux/arm64/v8) and no specific platform was requested
 then uncomment the `platform: linux/amd64` line in `docker-compose.override.yml`
 
 ```yaml
-  swaggerui:
-    # uncomment the line below for Apple M1
-    platform: linux/amd64
-    ports:
-      - '3001:8080'
+swaggerui:
+  # uncomment the line below for Apple M1
+  platform: linux/amd64
+  ports:
+    - '3001:8080'
 ```
 
 If you're seeing `This site can't be reached` after navigating to `http://localhost:3001`,

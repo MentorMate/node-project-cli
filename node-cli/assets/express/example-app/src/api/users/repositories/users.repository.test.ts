@@ -47,10 +47,12 @@ describe('UsersRepository', () => {
         .mockImplementationOnce(thenable as never);
 
       expect(
-        users.insertOne({ email: 'email@example.com', password: '123', userId: '1' })
-      ).rejects.toThrow(
-        new DuplicateRecordError('User email already taken')
-      );
+        users.insertOne({
+          email: 'email@example.com',
+          password: '123',
+          userId: '1',
+        })
+      ).rejects.toThrow(new DuplicateRecordError('User email already taken'));
     });
   });
 
