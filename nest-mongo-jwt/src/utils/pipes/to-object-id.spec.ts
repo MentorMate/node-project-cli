@@ -16,7 +16,7 @@ describe('To ObjectId Pipe', () => {
 
   it('throws an error when the input is of invalid type', () => {
     expect(() => pipe.transform('test')).toThrow(
-      new BadRequestException('Invalid Id format')
+      new BadRequestException('Invalid Id format'),
     );
   });
 });

@@ -74,7 +74,6 @@ Update `NODE_ENV` to `test`.
 Make sure to provide a different database name from what you have in `.env`
 as e2e tests wipe the database clean before they run.
 
-
 ### Setup docker-compose overrides
 
 Create a `docker-compose.override.yml` file using the example:
@@ -82,7 +81,6 @@ Create a `docker-compose.override.yml` file using the example:
 ```bash
 cp docker-compose.override.example.yml docker-compose.override.yml
 ```
-
 
 Open the `docker-compose.override.yml` file to adjust the database volume path.
 
@@ -94,24 +92,22 @@ In order to provision the services run:
 docker-compose up -d
 ```
 
-
 **Note:**
 Make sure to change your database host variable in `.env` and `.env.test` files
 to your docker database service name that is in `docker-compose.yml` (e.g. `db`)
 
 ### Dev Containers
- 
+
 You can work inside a Docker container instead of your host if you like.
-  
+
 **How to use (VS Code):**
- 
+
 - Make sure you have installed [Dev Containers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 - Open the project's folder in VS Code
 - Hit `Ctrl`/`Cmd` + `Shift` + `P` -> Dev Containers: Open Folder in Container
-  
+
 For more information on Dev Containers and [supported editors](https://containers.dev/supporting)
 you can check the [documentation](https://containers.dev/).
-
 
 ## Running the app
 
@@ -151,7 +147,6 @@ npm run test:e2e
 npm run test:e2e:cov
 ```
 
-
 ## Working with Docker
 
 ```bash
@@ -161,7 +156,6 @@ npm run image:build
 # run the image
 npm run image:run
 ```
-
 
 ## Working with OpenAPI
 
@@ -216,4 +210,3 @@ npm run license:summary
 Go to the Debug menu (CTRL+SHIFT+D). From `RUN AND DEBUG` at the top select
 `Run Script: Launch via NPM`. You should now be able to start debugging
 by pressing `F5`.
-
