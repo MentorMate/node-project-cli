@@ -21,11 +21,7 @@ export const updateTodoRoute = defineRoute({
   },
 }).attachHandler(
   asyncHandler(async ({ body, params, services, auth: { sub } }, res) => {
-    const todo = await services.todosService.update(
-      params.id,
-      sub,
-      body
-    );
+    const todo = await services.todosService.update(params.id, sub, body);
 
     res.send(todo);
   })

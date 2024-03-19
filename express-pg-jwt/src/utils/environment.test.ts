@@ -13,7 +13,7 @@ describe('Environment Schema', () => {
       PGPASSWORD: 'password',
       PGDATABASE: 'testdb',
       JWT_EXPIRATION: '1000000',
-      JWT_SECRET: 'JWT_SECRET'
+      JWT_SECRET: 'JWT_SECRET',
     };
 
     const data = environmentSchema.parse(validEnv);
@@ -29,7 +29,7 @@ describe('Environment Schema', () => {
       PGPASSWORD: 'password',
       PGDATABASE: 'testdb',
       JWT_EXPIRATION: 1000000,
-      JWT_SECRET: 'JWT_SECRET'
+      JWT_SECRET: 'JWT_SECRET',
     });
   });
 
