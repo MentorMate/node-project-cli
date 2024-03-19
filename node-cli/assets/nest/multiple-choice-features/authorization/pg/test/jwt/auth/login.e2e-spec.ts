@@ -24,14 +24,14 @@ describe('POST /auth/login', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
         whitelist: true,
-      })
+      }),
     );
 
     await app.init();
