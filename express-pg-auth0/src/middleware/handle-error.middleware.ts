@@ -2,7 +2,10 @@ import { ErrorRequestHandler } from 'express';
 import { Logger } from 'pino';
 import createError from 'http-errors';
 
-export const handleError = function (logger: Logger, logErrors: boolean): ErrorRequestHandler {
+export const handleError = function (
+  logger: Logger,
+  logErrors: boolean
+): ErrorRequestHandler {
   return function (err, _req, res, next) {
     // https://expressjs.com/en/guide/error-handling.html
     // If you call next() with an error after you have started writing the response (for example, if you encounter an error while streaming

@@ -6,7 +6,7 @@ export default (toolbox: GluegunToolbox) => {
     const syncOperations = () => {
       Object.assign(pkgJson.scripts, {
         'license:check':
-          "license-checker --summary --excludePrivatePackages --onlyAllow $(node ./licenses-allowed.js ';') > /dev/null",
+          "license-checker --summary --excludePrivatePackages --onlyAllow $(node ./licenses-allowed.js ';')",
         'license:for-review':
           "license-checker --summary --excludePrivatePackages --exclude $(node ./licenses-allowed.js ',')",
         'license:summary': 'license-checker --summary',

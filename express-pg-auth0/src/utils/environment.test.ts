@@ -20,7 +20,7 @@ describe('Environment Schema', () => {
 
     const data = environmentSchema.parse(validEnv);
 
-    expect(data).toEqual(    {
+    expect(data).toEqual({
       NODE_ENV: 'development',
       PORT: 3000,
       REQUEST_LOGGING: true,
@@ -33,7 +33,7 @@ describe('Environment Schema', () => {
       AUTH0_ISSUER_URL: 'https://example.com/',
       AUTH0_CLIENT_ID: 'clientid',
       AUTH0_AUDIENCE: 'audience',
-      AUTH0_CLIENT_SECRET: 'secret_secret_secret'
+      AUTH0_CLIENT_SECRET: 'secret_secret_secret',
     });
   });
 

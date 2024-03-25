@@ -1,12 +1,12 @@
-import { AuthService } from "@api/auth";
-import { TodosService } from "@api/todos";
+import { AuthService } from '@api/auth';
+import { TodosService } from '@api/todos';
 
 declare module 'express-serve-static-core' {
   interface Request {
     auth: {
       payload: {
-        sub: string
-      },
+        sub: string;
+      };
       token: string;
     };
     services: {

@@ -40,14 +40,14 @@ describe('DELETE /v1/todos', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
         whitelist: true,
-      })
+      }),
     );
 
     app.useGlobalInterceptors(new ServiceToHttpErrorsInterceptor());
@@ -119,7 +119,7 @@ describe('DELETE /v1/todos - real AuthGuard', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     await app.init();

@@ -9,7 +9,7 @@ describe('route', () => {
     const todo = { id: 1, name: 'Laundry' };
     const todosService = { create: jest.fn(() => todo) };
     const req = {
-      auth: { payload:  { sub: '1' } },
+      auth: { payload: { sub: '1' } },
       body: { name: 'Laundry' },
       services: { todosService },
     };

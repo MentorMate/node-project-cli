@@ -2,7 +2,7 @@ import { HttpException } from '@nestjs/common';
 
 export const expectError = async <T extends HttpException>(
   ex: T,
-  jsonResponse: Response['json']
+  jsonResponse: Response['json'],
 ) => {
   const response = await jsonResponse();
 

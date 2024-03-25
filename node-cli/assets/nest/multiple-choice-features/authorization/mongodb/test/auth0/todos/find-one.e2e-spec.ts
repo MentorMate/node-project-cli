@@ -41,14 +41,14 @@ describe('GET /v1/todos/:id', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
         whitelist: true,
-      })
+      }),
     );
 
     app.useGlobalInterceptors(new ServiceToHttpErrorsInterceptor());
@@ -124,7 +124,7 @@ describe('GET /v1/todos/:id - real AuthGuard', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     await app.init();

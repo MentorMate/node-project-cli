@@ -1,7 +1,7 @@
 import { CreateTodoDto } from '@api/todos/dto/create-todo.dto';
 
 export const getTodoPayload: (completed?: boolean) => CreateTodoDto = (
-  completed
+  completed,
 ) => ({
   name: 'Laundry' + Date.now(),
   note: 'Buy detergent' + Date.now(),

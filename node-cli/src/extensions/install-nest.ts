@@ -209,8 +209,8 @@ export default (toolbox: GluegunToolbox) => {
           });
 
           Object.assign(pkgJson.scripts, {
-            'db:migrate:make':
-              'knex migrate:make -x ts --migrations-directory ./migrations',
+            'db:create:migration':
+              'npx knex migrate:make -x ts --migrations-directory ./migrations',
             'db:migrate:up':
               'ts-node node_modules/knex/bin/cli.js migrate:up --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
             'db:migrate:down':
@@ -219,12 +219,6 @@ export default (toolbox: GluegunToolbox) => {
               'ts-node node_modules/knex/bin/cli.js migrate:latest --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
             'db:migrate:rollback':
               'ts-node node_modules/knex/bin/cli.js migrate:rollback --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
-            'db:migrate:version':
-              'ts-node node_modules/knex/bin/cli.js migrate:currentVersion --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
-            'db:migrate:status':
-              'ts-node node_modules/knex/bin/cli.js migrate:status --migrations-directory ./migrations --client pg --migrations-table-name knex_migrations --connection $(ts-node scripts/db-connection)',
-            'db:migrate:reset':
-              'npm run db:migrate:rollback --all && npm run db:migrate:latest',
           });
         }
       }

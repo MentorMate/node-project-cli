@@ -79,7 +79,7 @@ describe('TodosService', () => {
         .mockImplementationOnce(async () => todo);
 
       await expect(service.create(createTodoInput)).rejects.toThrow(
-        new UnprocessableEntityException(Errors.UnprocessableEntity)
+        new UnprocessableEntityException(Errors.UnprocessableEntity),
       );
     });
   });
@@ -93,7 +93,7 @@ describe('TodosService', () => {
         .mockImplementationOnce(async () => paginatedResponse);
 
       expect(
-        await service.findAll({ userId: new ObjectId(userId), query: {} })
+        await service.findAll({ userId: new ObjectId(userId), query: {} }),
       ).toStrictEqual(paginatedResponse);
     });
   });
@@ -108,7 +108,7 @@ describe('TodosService', () => {
         await service.findOneOrFail({
           _id: todo._id,
           userId: new ObjectId(userId),
-        })
+        }),
       ).toStrictEqual(todo);
     });
   });
@@ -123,7 +123,7 @@ describe('TodosService', () => {
         await service.findOneOrFail({
           _id: todo._id,
           userId: new ObjectId(userId),
-        })
+        }),
       ).toStrictEqual(todo);
     });
   });
@@ -141,7 +141,7 @@ describe('TodosService', () => {
           _id: todo._id,
           userId: new ObjectId(userId),
           updateTodoDto: updateTodoDtoInput,
-        })
+        }),
       ).toStrictEqual(updatedTodo);
     });
 
@@ -155,7 +155,7 @@ describe('TodosService', () => {
           _id: todo._id,
           userId: new ObjectId(userId),
           updateTodoDto: {},
-        })
+        }),
       ).toStrictEqual(todo);
     });
   });
@@ -168,7 +168,7 @@ describe('TodosService', () => {
         await service.remove({
           _id: new ObjectId(),
           userId: new ObjectId(userId),
-        })
+        }),
       ).toBe(true);
     });
 
@@ -176,7 +176,7 @@ describe('TodosService', () => {
       jest.spyOn(repository, 'remove').mockImplementationOnce(async () => null);
 
       await expect(
-        service.remove({ _id: new ObjectId(), userId: new ObjectId(userId) })
+        service.remove({ _id: new ObjectId(), userId: new ObjectId(userId) }),
       ).rejects.toThrow(new NotFoundException(Errors.NotFound));
     });
   });

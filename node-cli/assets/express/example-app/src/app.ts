@@ -43,7 +43,7 @@ export function create(env: Environment) {
     name: 'http',
     ...(env.NODE_ENV === 'development' && {
       transport: {
-        target: 'pino-pretty'
+        target: 'pino-pretty',
       },
     }),
   });
@@ -87,11 +87,7 @@ export function create(env: Environment) {
   // flatten all routes into an array
   // alternatively, a separate router instance can be used
   // for each group of routes (group by prefix)
-  const routes = [
-    ...healthcheckRoutes,
-    ...authRoutes,
-    ...todoRoutes,
-  ];
+  const routes = [...healthcheckRoutes, ...authRoutes, ...todoRoutes];
 
   // register routes
   for (const {

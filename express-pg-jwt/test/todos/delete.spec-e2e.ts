@@ -3,7 +3,7 @@ import {
   create as createApp,
   expectError,
   Unauthorized,
-  TodoNotFound
+  TodoNotFound,
 } from '../utils';
 import { JwtTokens } from '@api/auth';
 import { Knex } from 'knex';

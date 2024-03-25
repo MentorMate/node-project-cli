@@ -40,14 +40,14 @@ describe('GET /v1/todos', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
         transform: true,
-      })
+      }),
     );
 
     await app.init();
@@ -181,7 +181,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'name', SortOrder.Desc)
+      sortByField(response.items, 'name', SortOrder.Desc),
     );
   });
 
@@ -206,7 +206,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'name', SortOrder.Asc)
+      sortByField(response.items, 'name', SortOrder.Asc),
     );
   });
 
@@ -231,7 +231,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'createdAt', SortOrder.Desc)
+      sortByField(response.items, 'createdAt', SortOrder.Desc),
     );
   });
 
@@ -256,7 +256,7 @@ describe('GET /v1/todos', () => {
 
     expect(sortedRes.total).toEqual(response.total);
     expect(sortedRes.items).toStrictEqual(
-      sortByField(response.items, 'createdAt', SortOrder.Asc)
+      sortByField(response.items, 'createdAt', SortOrder.Asc),
     );
   });
 
@@ -296,7 +296,7 @@ describe('GET /v1/todos - real AuthGuard', () => {
       .compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      new FastifyAdapter()
+      new FastifyAdapter(),
     );
 
     await app.init();

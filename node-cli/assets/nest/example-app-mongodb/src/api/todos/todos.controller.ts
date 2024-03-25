@@ -53,7 +53,7 @@ export class TodosController {
   @Post()
   create(
     @Body() createTodoDto: CreateTodoDto,
-    @Req() { user: { sub } }: UserData
+    @Req() { user: { sub } }: UserData,
   ): Promise<ObjectId> {
     return this.todosService.create({
       createTodoDto,
@@ -69,7 +69,7 @@ export class TodosController {
   @Get()
   findAll(
     @Req() { user: { sub } }: UserData,
-    @Query() query: FindAllTodosQueryDto
+    @Query() query: FindAllTodosQueryDto,
   ): Promise<Paginated<NullableKeysPartial<Todo>>> {
     return this.todosService.findAll({ userId: new ObjectId(sub), query });
   }
@@ -79,7 +79,7 @@ export class TodosController {
   @Get(':id')
   findOne(
     @Param('id', ToObjectIdPipe) _id: ObjectId,
-    @Req() { user: { sub } }: UserData
+    @Req() { user: { sub } }: UserData,
   ): Promise<NullableKeysPartial<Todo>> {
     return this.todosService.findOneOrFail({ _id, userId: new ObjectId(sub) });
   }
@@ -95,7 +95,7 @@ export class TodosController {
   async update(
     @Param('id', ToObjectIdPipe) _id: ObjectId,
     @Req() { user: { sub } }: UserData,
-    @Body() updateTodoDto: UpdateTodoDto
+    @Body() updateTodoDto: UpdateTodoDto,
   ): Promise<NullableKeysPartial<Todo>> {
     return await this.todosService.update({
       _id,
@@ -109,7 +109,7 @@ export class TodosController {
   @Delete(':id')
   remove(
     @Param('id', ToObjectIdPipe) _id: GenericEntity['_id'],
-    @Req() { user: { sub } }: UserData
+    @Req() { user: { sub } }: UserData,
   ): Promise<boolean> {
     return this.todosService.remove({ _id, userId: new ObjectId(sub) });
   }

@@ -18,7 +18,7 @@ export class AuthService {
     @Inject(JwtService)
     private readonly jwt: JwtService,
     @Inject(PasswordService)
-    private readonly password: PasswordService
+    private readonly password: PasswordService,
   ) {}
 
   async register({ email, password }: Credentials): Promise<JwtToken> {
@@ -46,7 +46,7 @@ export class AuthService {
 
     const passwordMatches = await this.password.compare(
       password,
-      user.password!
+      user.password!,
     );
 
     if (!passwordMatches) {

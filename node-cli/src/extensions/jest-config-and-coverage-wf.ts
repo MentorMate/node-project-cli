@@ -83,8 +83,9 @@ export default (toolbox: GluegunToolbox) => {
 
     function syncOperations() {
       Object.assign(pkgJson.scripts, {
-        test: 'jest',
-        'test:cov': 'jest --coverage',
+        test: 'npm run test:unit && npm run test:e2e',
+        'test:unit': 'jest',
+        'test:unit:cov': 'jest --coverage',
         'test:e2e': 'npx jest --config ./test/jest-e2e.config.js --runInBand',
         'test:e2e:cov': 'npm run test:e2e -- --coverage',
       });

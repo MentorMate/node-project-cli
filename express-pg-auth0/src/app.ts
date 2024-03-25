@@ -22,12 +22,7 @@ import {
   attachServices,
 } from '@middleware';
 
-import {
-  Auth0Service,
-  AuthService,
-  authGuard,
-  authRoutes,
-} from '@api/auth';
+import { Auth0Service, AuthService, authGuard, authRoutes } from '@api/auth';
 import { healthcheckRoutes } from '@api/healthchecks';
 import { TodosRepository, TodosService, todoRoutes } from '@api/todos';
 import { UsersRepository } from '@api/users';
@@ -42,7 +37,7 @@ export function create(env: Environment) {
     name: 'http',
     ...(env.NODE_ENV === 'development' && {
       transport: {
-        target: 'pino-pretty'
+        target: 'pino-pretty',
       },
     }),
   });
@@ -51,16 +46,8 @@ export function create(env: Environment) {
   const dbClient = createDbClient();
   const usersRepository = new UsersRepository(dbClient);
   const todosRepository = new TodosRepository(dbClient);
-  const auth0Service = new Auth0Service(
-    logger,
-    axios,
-    env
-  );
-  const authService = new AuthService(
-    logger,
-    auth0Service,
-    usersRepository
-  );
+  const auth0Service = new Auth0Service(logger, axios, env);
+  const authService = new AuthService(logger, auth0Service, usersRepository);
   const todosService = new TodosService(todosRepository);
   const services: Request['services'] = { todosService, authService };
 
@@ -89,11 +76,7 @@ export function create(env: Environment) {
   // flatten all routes into an array
   // alternatively, a separate router instance can be used
   // for each group of routes (group by prefix)
-  const routes = [
-    ...healthcheckRoutes,
-    ...authRoutes,
-    ...todoRoutes,
-  ];
+  const routes = [...healthcheckRoutes, ...authRoutes, ...todoRoutes];
 
   // register routes
   for (const {
@@ -124,7 +107,7 @@ export function create(env: Environment) {
   app.use(
     mapError({
       [RecordNotFoundError.name]: NotFound,
-      [DuplicateRecordError.name]: Conflict
+      [DuplicateRecordError.name]: Conflict,
     }),
     handleError(logger, env.ERROR_LOGGING)
   );

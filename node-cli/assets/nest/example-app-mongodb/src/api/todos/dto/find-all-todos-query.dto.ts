@@ -32,7 +32,7 @@ export class FindAllTodosQueryDto {
     required: false,
   })
   @Transform(({ value }) =>
-    value === 'true' ? true : value === 'false' ? false : undefined
+    value === 'true' ? true : value === 'false' ? false : undefined,
   )
   @IsOptional()
   completed?: boolean;

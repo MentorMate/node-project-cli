@@ -6,10 +6,10 @@ import { Credentials } from '../interfaces';
 
 export class AuthService {
   constructor(
-		private logger: Logger,
-		private auth0Service: Auth0Service,
-		private usersRepository: UsersRepository,
-	) {}
+    private logger: Logger,
+    private auth0Service: Auth0Service,
+    private usersRepository: UsersRepository
+  ) {}
 
   async register({ email, password }: Credentials) {
     const userAuth0 = await this.auth0Service.createUser(email, password);

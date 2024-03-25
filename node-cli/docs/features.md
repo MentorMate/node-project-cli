@@ -96,8 +96,7 @@ node-cli g <project-name>
   - `TypeScript` config
   - coverage config
 - `test` script
-- `test:watch` script
-- `test:cov` script
+- `test:unit:cov` script
 
 ### e2e tests
 
@@ -144,7 +143,7 @@ node-cli g <project-name>
   - `sort-package-json` (staged)
   - `ls-lint`
   - `detect-secrets`
-  - `test:cov`
+  - `test:unit:cov`
   - `test:e2e:cov`
   - commented out branch name linting example
 - pre-push (empty):
@@ -176,8 +175,7 @@ node-cli g <project-name>
   - `start:debug`
 - testing:
   - `test`
-  - `test:watch`
-  - `test:cov`
+  - `test:unit:cov`
   - `test:e2e`
   - `test:e2e:cov`
 - working with Docker:

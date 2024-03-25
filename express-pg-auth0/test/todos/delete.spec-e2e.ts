@@ -1,5 +1,5 @@
 import { mockAxios } from '../utils/mock-axios';
-mockAxios()
+mockAxios();
 
 const authMock = jest.fn();
 
@@ -12,7 +12,7 @@ import {
   create as createApp,
   expectError,
   Unauthorized,
-  TodoNotFound
+  TodoNotFound,
 } from '../utils';
 import { Knex } from 'knex';
 import { create } from '@database';
@@ -39,11 +39,7 @@ describe('DELETE /v1/todos/:id', () => {
     await dbClient.seed.run();
 
     authMock.mockImplementation(
-      (
-        req: { auth: { payload: { sub: string } } },
-        res,
-        next: () => true
-      ) => {
+      (req: { auth: { payload: { sub: string } } }, res, next: () => true) => {
         req.auth = {
           payload: {
             sub: 'tz4a98xxat96iws9zmbrgj3a',
@@ -81,7 +77,7 @@ describe('DELETE /v1/todos/:id', () => {
 
   it('should return 401 error when user is not authenticated', async () => {
     authMock.mockImplementation((request, response, next) => {
-      next(createError(401, 'No authorization token was found'))
+      next(createError(401, 'No authorization token was found'));
     });
 
     await request(app)

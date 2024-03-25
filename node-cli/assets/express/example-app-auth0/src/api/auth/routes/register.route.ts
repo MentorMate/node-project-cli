@@ -12,7 +12,7 @@ export const registerRoute = defineRoute({
     body: credentialsSchema,
   },
   responses: {
-    200: UserSchema
+    200: UserSchema,
   },
 }).attachHandler(
   asyncHandler(async ({ body, services }, res) => {

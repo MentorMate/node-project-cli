@@ -27,10 +27,7 @@ describe('route', () => {
 
     it('should call TodoService#list', () => {
       route.handler(req as never, res as never, jest.fn());
-      expect(todosService.list).toHaveBeenCalledWith(
-        req.auth.sub,
-        req.query
-      );
+      expect(todosService.list).toHaveBeenCalledWith(req.auth.sub, req.query);
     });
 
     it('should send the paginated todo list', () => {

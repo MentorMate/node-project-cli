@@ -26,7 +26,9 @@ describe('TodosRepository', () => {
       };
 
       jest.spyOn(todosQb, 'insert');
-      jest.spyOn(todosQb, 'returning').mockReturnValue(Promise.resolve([todo]) as any);
+      jest
+        .spyOn(todosQb, 'returning')
+        .mockReturnValue(Promise.resolve([todo]) as any);
 
       const result = await todos.insertOne(todo);
 
@@ -106,7 +108,9 @@ describe('TodosRepository', () => {
 
       jest.spyOn(todosQb, 'where');
       jest.spyOn(todosQb, 'update');
-      jest.spyOn(todosQb, 'returning').mockReturnValue(Promise.resolve([updated]) as any);
+      jest
+        .spyOn(todosQb, 'returning')
+        .mockReturnValue(Promise.resolve([updated]) as any);
 
       const result = await todos.updateById(todo.id, todo.userId, input);
 

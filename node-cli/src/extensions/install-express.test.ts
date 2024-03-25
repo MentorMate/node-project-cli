@@ -283,15 +283,12 @@ describe('install-framework', () => {
         expect(Object.keys(scripts)).toEqual(
           expect.arrayContaining([
             'db:connection:print',
-            'db:migrate:make',
+            'db:create:migration',
             'db:migrate:up',
             'db:migrate:down',
             'db:migrate:latest',
             'db:migrate:rollback',
-            'db:migrate:version',
-            'db:migrate:status',
-            'db:migrate:reset',
-          ]),
+          ])
         );
       });
 

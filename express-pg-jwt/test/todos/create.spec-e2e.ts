@@ -4,7 +4,7 @@ import {
   expectError,
   getTodoPayload,
   Unauthorized,
-  UnprocessableEntity
+  UnprocessableEntity,
 } from '../utils';
 import { JwtTokens } from '@api/auth';
 import { Knex } from 'knex';
@@ -46,7 +46,7 @@ describe('POST /v1/todos', () => {
       .post('/v1/todos')
       .set('Authorization', 'Bearer ' + jwtTokens.idToken)
       .set('Content-Type', 'application/json')
-      .send(todoPayload)
+      .send(todoPayload);
 
     expect(res.body.name).toEqual(todoPayload.name);
     expect(res.body.note).toEqual(todoPayload.note);

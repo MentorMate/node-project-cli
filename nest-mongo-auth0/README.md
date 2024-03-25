@@ -83,7 +83,6 @@ Create a `docker-compose.override.yml` file using the example:
 cp docker-compose.override.example.yml docker-compose.override.yml
 ```
 
-
 Open the `docker-compose.override.yml` file to adjust the database volume path.
 
 ### Provision the services
@@ -118,6 +117,7 @@ you can check the [documentation](https://containers.dev/).
 ```bash
 # build the app
 npm run build
+
 # run in development mode
 npm run start
 
@@ -134,13 +134,10 @@ npm run start:debug
 
 ```bash
 # run
-npm run test
-
-# watch
-npm run test:watch
+npm run test:unit
 
 # coverage
-npm run test:cov
+npm run test:unit:cov
 ```
 
 ### End-to-end Tests
