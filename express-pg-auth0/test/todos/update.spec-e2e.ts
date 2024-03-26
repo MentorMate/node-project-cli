@@ -16,7 +16,6 @@ import {
   Unauthorized,
 } from '../utils';
 import { Knex } from 'knex';
-import { create } from '@database';
 import createError from 'http-errors';
 
 describe('POST /v1/todos/:id', () => {
@@ -28,10 +27,10 @@ describe('POST /v1/todos/:id', () => {
   };
 
   beforeAll(() => {
-    const { app: _app, destroy: _destroy } = createApp();
+    const { app: _app, destroy: _destroy, dbClient: _dbClient } = createApp();
     app = _app;
     destroy = _destroy;
-    dbClient = create();
+    dbClient = _dbClient;
   });
 
   beforeEach(async () => {

@@ -129,5 +129,5 @@ export function create(env: Environment) {
     await destroyDbClient(dbClient);
   };
 
-  return { app, destroy };
+  return { app, dbClient, destroy };
 }

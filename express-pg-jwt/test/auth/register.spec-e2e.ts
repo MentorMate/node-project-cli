@@ -5,7 +5,6 @@ import {
   UnprocessableEntity,
   UserConflict,
 } from '../utils';
-import { create } from '@database';
 import { Knex } from 'knex';
 
 describe('POST /auth/register', () => {
@@ -14,10 +13,10 @@ describe('POST /auth/register', () => {
   let dbClient: Knex;
 
   beforeAll(() => {
-    const { app: _app, destroy: _destroy } = createApp();
+    const { app: _app, destroy: _destroy, dbClient: _dbClient } = createApp();
     app = _app;
     destroy = _destroy;
-    dbClient = create();
+    dbClient = _dbClient
   });
 
   afterAll(async () => {

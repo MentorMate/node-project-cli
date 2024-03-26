@@ -6,7 +6,6 @@ import {
   UnprocessableEntity,
 } from '../utils';
 import { Knex } from 'knex';
-import { create } from '@database';
 
 describe('POST /auth/login', () => {
   let app: Express.Application;
@@ -14,10 +13,10 @@ describe('POST /auth/login', () => {
   let dbClient: Knex;
 
   beforeAll(() => {
-    const { app: _app, destroy: _destroy } = createApp();
+    const { app: _app, destroy: _destroy, dbClient: _dbClient } = createApp();
     app = _app;
     destroy = _destroy;
-    dbClient = create();
+    dbClient = _dbClient
   });
 
   afterAll(async () => {
