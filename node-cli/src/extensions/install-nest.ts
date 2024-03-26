@@ -113,6 +113,7 @@ export default (toolbox: GluegunToolbox) => {
       Object.assign(envVars, {
         HTTP: {
           PORT: 3000,
+          HOST: 'localhost',
         },
         Logging: {
           ERROR_LOGGING: true,
