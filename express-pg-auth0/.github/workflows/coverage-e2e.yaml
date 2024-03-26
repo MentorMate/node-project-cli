@@ -9,6 +9,7 @@ env:
   NODE_ENV: test
   DEBUG: ''
   PORT: 3000
+  HOST: localhost
   PGHOST: localhost
   PGPORT: 5432
   PGUSER: user

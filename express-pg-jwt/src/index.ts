@@ -15,8 +15,8 @@ function bootstrap() {
   const { app, destroy: destroyApp } = createApp(env);
 
   // start server
-  const server = app.listen(env.PORT, () => {
-    console.log(`App is running on http://localhost:${env.PORT}`);
+  const server = app.listen(env.PORT, env.HOST, () => {
+    console.log(`App is running on http://${env.HOST}:${env.PORT}`);
   });
 
   // setup graceful shutdown

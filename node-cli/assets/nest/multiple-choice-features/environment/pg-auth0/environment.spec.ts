@@ -22,6 +22,7 @@ describe('Environment', () => {
   describe('NodeEnvironmentValidator', () => {
     function setValidEnv() {
       process.env.PORT = '3000';
+      process.env.HOST = 'localhost';
       process.env.ERROR_LOGGING = 'false';
       process.env.REQUEST_LOGGING = 'false';
       process.env.SWAGGER = 'false';

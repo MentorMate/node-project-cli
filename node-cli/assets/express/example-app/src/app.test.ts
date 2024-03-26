@@ -4,6 +4,7 @@ describe('create', () => {
   it('should return an app instance and a destroy function', () => {
     const result = create({
       PORT: 3000,
+      HOST: 'localhost',
       REQUEST_LOGGING: false,
       ERROR_LOGGING: false,
       JWT_EXPIRATION: 1,

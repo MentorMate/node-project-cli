@@ -57,8 +57,8 @@ async function bootstrap() {
   }
 
   // start server
-  await app.listen(port, '0.0.0.0', () => {
-    console.log(`App is running on http://localhost:${port}`);
+  await app.listen(port, configService.HOST, () => {
+    console.log(`App is running on http://${configService.HOST}:${port}`);
   });
 }
 

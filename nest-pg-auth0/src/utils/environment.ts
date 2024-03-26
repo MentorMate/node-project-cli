@@ -26,6 +26,10 @@ class NodeEnvironmentValidator {
   @Transform(({ value }) => +value)
   PORT: number;
 
+  @IsNotEmpty()
+  @IsString()
+  HOST: string;
+
   @Transform(({ value }) => Boolean(value))
   @IsNotEmpty()
   ERROR_LOGGING: boolean;

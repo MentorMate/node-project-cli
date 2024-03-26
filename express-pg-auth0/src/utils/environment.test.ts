@@ -5,6 +5,7 @@ describe('Environment Schema', () => {
     const validEnv = {
       NODE_ENV: 'development',
       PORT: 3000,
+      HOST: 'localhost',
       REQUEST_LOGGING: 'true',
       ERROR_LOGGING: 'false',
       PGHOST: 'localhost',
@@ -23,6 +24,7 @@ describe('Environment Schema', () => {
     expect(data).toEqual({
       NODE_ENV: 'development',
       PORT: 3000,
+      HOST: 'localhost',
       REQUEST_LOGGING: true,
       ERROR_LOGGING: false,
       PGHOST: 'localhost',

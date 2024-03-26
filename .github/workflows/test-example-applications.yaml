@@ -50,12 +50,13 @@ jobs:
 
         sed -i 's/NODE_ENV=.*/NODE_ENV=test/g' .env.test
         sed -i 's/PORT=.*/PORT=3000/g' .env.test
+        sed -i 's/HOST=.*/HOST=localhost/g' .env.test
 
         sed -i 's/ERROR_LOGGING=.*/ERROR_LOGGING=false/g' .env.test
         sed -i 's/REQUEST_LOGGING=.*/REQUEST_LOGGING=false/g' .env.test
         sed -i 's/SWAGGER=.*/SWAGGER=false/g' .env.test
 
-        sed -i 's/PGHOST=.*/PGHOST=0.0.0.0/g' .env.test
+        sed -i 's/PGHOST=.*/PGHOST=localhost/g' .env.test
         sed -i 's/PGPORT=.*/PGPORT=5432/g' .env.test
         sed -i 's/PGUSER=.*/PGUSER=postgres/g' .env.test
         sed -i 's/PGPASSWORD=.*/PGPASSWORD=password/g' .env.test
